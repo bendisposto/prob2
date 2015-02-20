@@ -2,6 +2,7 @@ package de.prob.web.views;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -9,22 +10,28 @@ import com.google.inject.Inject;
 
 import de.prob.animator.command.GetDottyForSigMergeCmd;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
-import de.prob.web.AbstractSession;
+import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
-public class SignatureMerge extends AbstractSession implements
-		IModelChangedListener, IAnimationChangeListener {
+public class SignatureMerge extends AbstractAnimationBasedView {
 
 	StateSpace stateSpace;
 
 	@Inject
-	public SignatureMerge(final AnimationSelector selector) {
-		selector.registerAnimationChangeListener(this);
+	public SignatureMerge(final AnimationSelector animations) {
+		super(animations, null);
 		incrementalUpdate = false;
+		animations.registerAnimationChangeListener(this);
+	}
+
+	// Constructor instantiated via reflection in multianimation mode.
+	public SignatureMerge(final AnimationSelector animations,
+			final UUID animationOfInterest) {
+		super(animations, animationOfInterest);
+		incrementalUpdate = false;
+		animations.registerAnimationChangeListener(this);
 	}
 
 	public void draw() {
@@ -34,14 +41,6 @@ public class SignatureMerge extends AbstractSession implements
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Dotty.draw",
 				"content", cmd.getContent());
 		submit(wrap);
-	}
-
-	@Override
-	public void modelChanged(final StateSpace s) {
-		this.stateSpace = s;
-		if (!(stateSpace == null)) {
-			draw();
-		}
 	}
 
 	@Override
@@ -60,8 +59,8 @@ public class SignatureMerge extends AbstractSession implements
 	}
 
 	@Override
-	public void traceChange(final Trace currentTrace,
-			final boolean currentAnimationChanged) {
+	public void performTraceChange(final Trace trace) {
+		stateSpace = trace == null ? null : trace.getStateSpace();
 		if (!(stateSpace == null)) {
 			draw();
 		}
@@ -69,7 +68,5 @@ public class SignatureMerge extends AbstractSession implements
 
 	@Override
 	public void animatorStatus(final boolean busy) {
-		// TODO Auto-generated method stub
-
 	}
 }

@@ -65,7 +65,7 @@ public class TranslatedEvalResult implements IEvalResult {
 			}
 
 			return new ComputationNotCompletedResult(code, Joiner.on(",").join(list))
-		} else {
+		} else if(pt.getFunctor() == "result"){
 			PrologTerm v = pt.getArgument(1);
 			ValueTranslator translator = new ValueTranslator();
 			Object vobj = translator.toGroovy(v);
@@ -82,6 +82,15 @@ public class TranslatedEvalResult implements IEvalResult {
 						translator.toGroovy(sol.getArgument(2)));
 			}
 			return new TranslatedEvalResult(vobj, solutions);
+		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "NOT-WELL-DEFINED") {
+			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
+			return new WDError(arg2.collect { it.getFunctor()})
+		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "IDENTIFIER(S) NOT YET INITIALISED") {
+			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
+			return new IdentifierNotInitialised(arg2.collect { it.getFunctor()})
+		} else if (pt.getFunctor() == "enum_warning") {
+			return new EnumerationWarning()
 		}
+		throw new IllegalArgumentException("Unknown result type "+pt.toString())
 	}
 }

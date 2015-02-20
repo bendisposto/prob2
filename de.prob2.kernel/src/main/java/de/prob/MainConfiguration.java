@@ -78,6 +78,7 @@ public class MainConfiguration extends AbstractModule {
 	 * @return an {@link Option} object containing the available command line
 	 *         options for ProB 2.0
 	 */
+	@SuppressWarnings("static-access")
 	@Provides
 	public final Options getCommandlineOptions() {
 		Options options = new Options();
@@ -89,15 +90,25 @@ public class MainConfiguration extends AbstractModule {
 
 		Option standalone = new Option("standalone", "Run in standalone mode");
 
-		@SuppressWarnings("static-access")
+		Option animation = new Option(
+				"multianimation",
+				"UI components will have the capability to show multiple animations"
+						+ " at once (NOTE: the development of this option is in the"
+						+ " experimental phase)");
+
+		Option maxCacheSize = OptionBuilder
+				.withArgName("maxSize")
+				.hasArg()
+				.withDescription(
+						"set the cache size for the states in the StateSpace")
+				.create("maxCacheSize");
+
 		Option browser = OptionBuilder.withArgName("url").hasArg()
 				.withDescription("Open URL in browser").create("browser");
 
-		@SuppressWarnings("static-access")
 		Option port = OptionBuilder.withArgName("port").hasArg()
 				.withDescription("Set specific port for UI").create("port");
 
-		@SuppressWarnings("static-access")
 		Option test = OptionBuilder
 				.withArgName("script/dir")
 				.hasArg()
@@ -105,7 +116,6 @@ public class MainConfiguration extends AbstractModule {
 						"run a Groovy test script or all .groovy files from a directory")
 				.create("test");
 
-		@SuppressWarnings("static-access")
 		Option upgrade = OptionBuilder
 				.hasOptionalArg()
 				.withArgName("version")
@@ -127,6 +137,8 @@ public class MainConfiguration extends AbstractModule {
 		options.addOption(restricted);
 		options.addOption(standalone);
 		options.addOption(upgrade);
+		options.addOption(animation);
+		options.addOption(maxCacheSize);
 		return options;
 	}
 

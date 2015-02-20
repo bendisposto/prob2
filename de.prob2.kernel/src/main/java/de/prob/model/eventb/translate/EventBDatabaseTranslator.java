@@ -1,6 +1,7 @@
 package de.prob.model.eventb.translate;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,20 +19,22 @@ import de.prob.model.eventb.EventBModel;
 public class EventBDatabaseTranslator {
 
 	public EventBDatabaseTranslator(final EventBModel model,
-			final String fileName) {
+			final String fileName) throws FileNotFoundException {
 		try {
 			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 			SAXParser saxParser = parserFactory.newSAXParser();
 
 			File modelFile = new File(fileName);
+			String fullFileName = modelFile.getAbsolutePath();
 			model.setModelFile(modelFile);
 
-			String directory = fileName.substring(0,
-					fileName.lastIndexOf(File.separatorChar));
+			String directory = fullFileName.substring(0,
+					fullFileName.lastIndexOf(File.separatorChar));
 			String workspacePath = directory.substring(0,
-					directory.lastIndexOf(File.separatorChar));
+					fullFileName.lastIndexOf(File.separatorChar));
 
-			File theoryFile = new File(directory + File.separator + "TheoryPath.tcl");
+			File theoryFile = new File(directory + File.separator
+					+ "TheoryPath.tcl");
 			Set<IFormulaExtension> typeEnv;
 			if (!theoryFile.exists()) {
 				typeEnv = new HashSet<IFormulaExtension>();
@@ -44,10 +47,10 @@ public class EventBDatabaseTranslator {
 
 			DefaultHandler xmlHandler = null;
 			if (fileName.endsWith(".bcc")) {
-				xmlHandler = new ContextXmlHandler(model, fileName, true,
+				xmlHandler = new ContextXmlHandler(model, fullFileName, true,
 						typeEnv);
 			} else {
-				xmlHandler = new MachineXmlHandler(model, fileName, true,
+				xmlHandler = new MachineXmlHandler(model, fullFileName, true,
 						typeEnv);
 			}
 
@@ -61,8 +64,9 @@ public class EventBDatabaseTranslator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (e instanceof FileNotFoundException) {
+				throw (FileNotFoundException) e;
+			}
 		}
 	}
 }

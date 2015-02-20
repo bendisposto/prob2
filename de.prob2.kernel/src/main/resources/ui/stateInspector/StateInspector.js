@@ -136,27 +136,25 @@ StateInspector = (function() {
             id = "#" + values[i].id;
             $(id + "_current").html(values[i].current);
             $(id + "_previous").html(values[i].previous);
+            $(id).removeClass("changed")
             if (values[i].current !== values[i].previous) {
-                $(id).addClass("changed");
+                $(id).addClass("changed")
             }
-            curr_id = id + "_current"
-            prev_id = id + "_previous"
-            if (values[i].current == "TRUE") {
-                $(curr_id).removeClass("false")
-                $(curr_id).addClass("true")
-            }
-            if (values[i].current == "FALSE") {
-                $(curr_id).removeClass("true")
-                $(curr_id).addClass("false")
-            }
-            if (values[i].previous == "TRUE") {
-                $(prev_id).removeClass("false")
-                $(prev_id).addClass("true")
-            } 
-            if (values[i].previous == "FALSE") {
-                $(prev_id).removeClass("true")
-                $(prev_id).addClass("false")
-            } 
+            updateClasses(id + "_current", values[i].current.toLowerCase())
+            updateClasses(id + "_previous", values[i].previous.toLowerCase())
+        }
+    }
+
+    function updateClasses(id, value) {
+        $(id).removeClass("false")
+        $(id).removeClass("true")
+        $(id).removeClass("not-well-defined")
+        $(id).removeClass("enum-warning")
+
+        value = value === "?(&infin;)" ? "enum-warning" : value
+        if (value === "false" || value === "true" || 
+            value === "not-well-defined" || value === "enum-warning") {
+            $(id).addClass(value)            
         }
     }
 

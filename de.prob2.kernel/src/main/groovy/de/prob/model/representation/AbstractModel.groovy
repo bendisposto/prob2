@@ -77,15 +77,11 @@ public abstract class AbstractModel extends AbstractElement {
 		+ " found.");
 	}
 
-	public abstract StateSchema getStateSchema();
-
 	public abstract AbstractElement getMainComponent();
 
 	public abstract IEvalElement parseFormula(String formula);
 
 	public abstract FormalismType getFormalismType();
-
-	public abstract void subscribeFormulasOfInterest();
 
 	protected void extractModelDir(File modelFile, String dirName) {
 		modelDirPath = modelFile.absolutePath.substring(0, modelFile.absolutePath.lastIndexOf(File.separator)+1) + dirName + File.separator

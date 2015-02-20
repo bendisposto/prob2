@@ -32,59 +32,57 @@ import de.prob.model.classicalb.ClassicalBModel;
  * @author joy
  * 
  */
-public class ClassicalBFactory extends ModelFactory {
+public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
 
 	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
-	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
 	public ClassicalBFactory(final Provider<ClassicalBModel> modelCreator,
 			final FileHandler fileHandler) {
-		super(fileHandler);
-		this.modelCreator = modelCreator;
+		super(modelCreator, fileHandler, LoadClosures.getB());
 	}
 
-	/**
-	 * This method loads a machine from file, parses all machines, starts the
-	 * animation, and returns the created {@link ClassicalBModel}
-	 * 
-	 * @param modelPath
-	 *           String path to the machine to be loaded.
-	 * @param prefs map of ProB preferences
-	 * @param loader actions to take place after the loading process
-	 * @return {@link ClassicalBModel} from the specified file.
-	 * @throws IOException
-	 * @throws BException
-	 */
-	public ClassicalBModel load(final String modelPath, final Map<String, String> prefs,
-			final Closure<?> subscriber) throws IOException, BException{
+	@Override
+	public ClassicalBModel load(final String modelPath,
+			final Map<String, String> prefs, final Closure<Object> subscriber)
+			throws IOException, ModelTranslationError {
 		ClassicalBModel classicalBModel = modelCreator.get();
 
 		File f = new File(modelPath);
 		BParser bparser = new BParser();
-		Start ast = parseFile(f, bparser);
-		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 
-		classicalBModel.initialize(ast, rml, f);
-		startAnimation(classicalBModel, rml,
-				getPreferences(classicalBModel, prefs), f);
-		subscriber.call(classicalBModel);
+		try {
+			Start ast = parseFile(f, bparser);
+			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
+
+			classicalBModel.initialize(ast, rml, f);
+			startAnimation(classicalBModel, rml,
+					getPreferences(classicalBModel, prefs), f);
+			subscriber.call(classicalBModel);
+		} catch (BException e) {
+			throw new ModelTranslationError(e.getMessage(), e);
+		}
 		return classicalBModel;
 	}
 
 	/**
-	 * This method is deprecated. Use {@link ClassicalBFactory#load(String, Map, Closure)} instead.
+	 * This method is deprecated. Use
+	 * {@link ClassicalBFactory#load(String, Map, Closure)} instead.
+	 * 
 	 * @param f
 	 *            {@link File} containing machine to be loaded.
-	 * @param prefs map of ProB preferences
-	 * @param loader actions to take place after the loading process
+	 * @param prefs
+	 *            map of ProB preferences
+	 * @param loader
+	 *            actions to take place after the loading process
 	 * @return {@link ClassicalBModel} from the specified file.
 	 * @throws IOException
-	 * @throws BException
+	 * @throws ModelTranslationError
 	 */
 	@Deprecated
 	public ClassicalBModel load(final File f, final Map<String, String> prefs,
-			final Closure<?> subscriber) throws IOException, BException {
+			final Closure<Object> subscriber) throws IOException,
+			ModelTranslationError {
 		return load(f.getAbsolutePath(), prefs, subscriber);
 	}
 
@@ -110,11 +108,9 @@ public class ClassicalBFactory extends ModelFactory {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 
-		final AbstractCommand loadcmd = new LoadBProjectCommand(rml, f);
-		cmds.add(loadcmd);
+		cmds.add(new LoadBProjectCommand(rml, f));
 		cmds.add(new StartAnimationCommand());
 		classicalBModel.getStateSpace().execute(new ComposedCommand(cmds));
-		classicalBModel.getStateSpace().setLoadcmd(loadcmd);
 	}
 
 	/**
@@ -160,4 +156,5 @@ public class ClassicalBFactory extends ModelFactory {
 		ast = bparser.parseFile(model, false);
 		return ast;
 	}
+
 }

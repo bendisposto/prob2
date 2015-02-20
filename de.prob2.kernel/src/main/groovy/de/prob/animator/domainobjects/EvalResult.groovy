@@ -31,12 +31,13 @@ public class EvalResult implements IEvalResult {
 
 	@Override
 	public String toString() {
+		def v = UnicodeTranslator.toUnicode(value)
 		if (solutions.isEmpty()) {
-			return value;
+			return v;
 		}
 		def sols = solutions.collect { "${it.getKey()} = ${it.getValue()}" }
 
-		return value + " (" + UnicodeTranslator.toUnicode(Joiner.on(" & ").join(sols)) + ")";
+		return v + " (" + UnicodeTranslator.toUnicode(Joiner.on(" & ").join(sols)) + ")";
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class EvalResult implements IEvalResult {
 			}
 
 			return new ComputationNotCompletedResult(code, Joiner.on(",").join(list))
-		} else {
+		} else if (pt.getFunctor() == "result"){
 			/*
 			 * If the formula in question was a predicate, the result term will have the following form:
 			 * result(Value,Solutions) where Value is 'TRUE','POSSIBLY TRUE', or 'FALSE'
@@ -132,7 +133,7 @@ public class EvalResult implements IEvalResult {
 						.getCompoundTerm(t, 2);
 				solutions.put(
 						StringUtil.generateString(cpt.getArgument(1).getFunctor()),
-						StringUtil.generateString(cpt.getArgument(2).getFunctor()));
+						StringUtil.generateString(cpt.getArgument(2).getFunctor()))
 			}
 
 			def res = new EvalResult(value, solutions);
@@ -140,7 +141,16 @@ public class EvalResult implements IEvalResult {
 				formulaCache.put(value, res)
 			}
 			return res
+		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "NOT-WELL-DEFINED") {
+			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
+			return new WDError(arg2.collect { it.getFunctor()})
+		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "IDENTIFIER(S) NOT YET INITIALISED") {
+			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
+			return new IdentifierNotInitialised(arg2.collect { it.getFunctor()})
+		} else if (pt.getFunctor() == "enum_warning") {
+			return new EnumerationWarning()
 		}
+		throw new IllegalArgumentException("Unknown result type "+pt.toString())
 	}
 
 	def Object asType(Class className) {

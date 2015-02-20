@@ -1,6 +1,7 @@
 package de.prob.web.views;
 
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -8,19 +9,26 @@ import com.google.inject.Inject;
 
 import de.prob.animator.command.GetDotForStateVizCmd;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
-import de.prob.web.AbstractSession;
+import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
-public class StateVisualization extends AbstractSession implements
-		IAnimationChangeListener {
+public class StateVisualization extends AbstractAnimationBasedView {
 
 	Trace currentTrace;
 
 	@Inject
-	public StateVisualization(final AnimationSelector selector) {
-		selector.registerAnimationChangeListener(this);
+	public StateVisualization(final AnimationSelector animations) {
+		super(animations, null);
+		animations.registerAnimationChangeListener(this);
+		incrementalUpdate = false;
+	}
+
+	// Constructor instantiated via reflection in multianimation mode.
+	public StateVisualization(final AnimationSelector animations,
+			final UUID animationOfInterest) {
+		super(animations, animationOfInterest);
+		animations.registerAnimationChangeListener(this);
 		incrementalUpdate = false;
 	}
 
@@ -49,17 +57,15 @@ public class StateVisualization extends AbstractSession implements
 	}
 
 	@Override
-	public void traceChange(final Trace currentTrace,
-			final boolean currentAnimationChanged) {
-		if (currentAnimationChanged) {
-			this.currentTrace = currentTrace;
-			if (!(currentTrace == null)) {
-				draw();
-			}
+	public void performTraceChange(final Trace trace) {
+		this.currentTrace = trace;
+		if (!(currentTrace == null)) {
+			draw();
 		}
 	}
 
 	@Override
 	public void animatorStatus(final boolean busy) {
 	}
+
 }

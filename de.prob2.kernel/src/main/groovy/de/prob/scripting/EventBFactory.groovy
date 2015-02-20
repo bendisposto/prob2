@@ -20,30 +20,18 @@ import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractElement
 import de.prob.statespace.StateSpace
 
-public class EventBFactory extends ModelFactory {
-
-	private final Provider<EventBModel> modelProvider;
+public class EventBFactory extends ModelFactory<EventBModel> {
 
 	@Inject
-	public EventBFactory(final Provider<EventBModel> modelProvider,
+	public EventBFactory(final Provider<EventBModel> modelCreator,
 	final FileHandler fileHandler) {
-		super(fileHandler);
-		this.modelProvider = modelProvider;
+		super(modelCreator, fileHandler, LoadClosures.getEVENTB());
 	}
 
-	/**
-	 * This method loads the Event-B model specified by the modelPath (after ensuring
-	 * that the modelPath is valid) and returns the loaded Event-B model.
-	 *
-	 * @param modelPath
-	 *           String path to the machine to be loaded.
-	 * @param prefs map of ProB preferences
-	 * @param loader actions to take place after the loading process
-	 * @return {@link EventBModel} from the specified file.
-	 */
+	@Override
 	public EventBModel load(final String modelPath, final Map<String, String> prefs,
-			final Closure loader) {
-		EventBModel model = modelProvider.get();
+			final Closure<Object> loader) throws IOException, ModelTranslationError {
+		EventBModel model = modelCreator.get();
 
 		new EventBDatabaseTranslator(model, getValidFileName(modelPath));
 
@@ -73,21 +61,18 @@ public class EventBFactory extends ModelFactory {
 	 * @return the same model after the loading process
 	 */
 	public static EventBModel loadModel(final EventBModel model,
-			final Map<String, String> prefs, final Closure loader) {
+			final Map<String, String> prefs, final Closure<Object> loader) throws IOException, ModelTranslationError {
 		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
 
 		for (Entry<String, String> pref : prefs.entrySet()) {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 
-		AbstractCommand loadcmd = new LoadEventBProjectCommand(
-				new EventBModelTranslator(model));
-
-		cmds.add(loadcmd);
+		cmds.add(new LoadEventBProjectCommand(
+				new EventBModelTranslator(model)));
 		cmds.add(new StartAnimationCommand());
 		StateSpace s = model.getStateSpace();
 		s.execute(new ComposedCommand(cmds));
-		s.setLoadcmd(loadcmd);
 
 		loader(model)
 		return model;
@@ -95,7 +80,7 @@ public class EventBFactory extends ModelFactory {
 
 	public EventBModel loadModelFromEventBFile(final String fileName,
 			final Map<String, String> prefs, final Closure loadClosure) throws IOException {
-		EventBModel model = modelProvider.get();
+		EventBModel model = modelCreator.get();
 		Pattern pattern = Pattern.compile("^package\\((.*?)\\)\\.");
 		File file = new File(fileName);
 		List<String> lines = readFile(file);
@@ -125,11 +110,8 @@ public class EventBFactory extends ModelFactory {
 		StateSpace s = model.getStateSpace();
 		s.execute(new ComposedCommand(cmds));
 
-		LoadEventBFileCommand load = new LoadEventBFileCommand(loadcmd);
-		s.execute(load);
+		s.execute(new LoadEventBFileCommand(loadcmd));
 		s.execute(new StartAnimationCommand());
-
-		s.setLoadcmd(load);
 
 		loadClosure(model)
 		return model;

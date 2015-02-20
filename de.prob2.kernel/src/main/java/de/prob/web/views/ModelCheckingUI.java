@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -11,7 +12,6 @@ import org.eclipse.jetty.util.ajax.JSON;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -36,11 +36,11 @@ import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
-import de.prob.web.AbstractSession;
+import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
-@Singleton
-public class ModelCheckingUI extends AbstractSession implements IModelChangedListener {
+public class ModelCheckingUI extends AbstractAnimationBasedView implements
+		IModelChangedListener {
 
 	private ModelCheckingOptions options;
 
@@ -58,6 +58,16 @@ public class ModelCheckingUI extends AbstractSession implements IModelChangedLis
 
 	@Inject
 	public ModelCheckingUI(final AnimationSelector animations) {
+		super(animations, null);
+		this.animations = animations;
+		animations.registerModelChangedListener(this);
+		options = ModelCheckingOptions.DEFAULT;
+	}
+
+	// Constructor instantiated via reflection in multianimation mode.
+	public ModelCheckingUI(final AnimationSelector animations,
+			final UUID animationOfInterest) {
+		super(animations, animationOfInterest);
 		this.animations = animations;
 		animations.registerModelChangedListener(this);
 		options = ModelCheckingOptions.DEFAULT;
@@ -199,10 +209,7 @@ public class ModelCheckingUI extends AbstractSession implements IModelChangedLis
 		String jobId = params.get("jobId")[0];
 		ModelChecker modelChecker = jobs.get(jobId);
 		if (modelChecker != null) {
-			// TODO: maybe the animator should not be freed up here (i.e if there is another job blocking the animator)
-			if (modelChecker.getStateSpace().isBusy()) {
-				modelChecker.getStateSpace().endTransaction();
-			}
+			modelChecker.cancel();
 			return WebUtils.wrap("cmd", "ModelChecking.cancelJob", "id", jobId);
 		} else {
 			// FIXME handle error
@@ -293,17 +300,37 @@ public class ModelCheckingUI extends AbstractSession implements IModelChangedLis
 
 	@Override
 	public void modelChanged(final StateSpace stateSpace) {
-		currentStateSpace = stateSpace;
-		String sId = currentStateSpace == null ? "none" : currentStateSpace
-				.getId();
+		boolean changed = false;
+		if (animationOfInterest != null) {
+			Trace t = animationsRegistry.getTrace(animationOfInterest);
+			if (t == null) {
+				changed = currentStateSpace == null;
+				currentStateSpace = null;
+			} else {
+				StateSpace old = currentStateSpace;
+				currentStateSpace = t.getStateSpace();
+				changed = !currentStateSpace.equals(old);
+			}
+		} else {
+			currentStateSpace = stateSpace;
+			changed = true;
+		}
 
-		boolean b_model = currentStateSpace == null ? false : currentStateSpace
-				.getModel().getFormalismType().equals(FormalismType.B);
-		List<String> eventNames = b_model ? extractEventNames(currentStateSpace)
-				: new ArrayList<String>();
-		selectedEvents = new ArrayList<String>();
-		submit(WebUtils.wrap("cmd", "ModelChecking.changeStateSpaces", "ssId",
-				sId, "events", JSON.toString(eventNames), "bType", b_model));
+		if (changed) {
+			currentStateSpace = stateSpace;
+			String sId = currentStateSpace == null ? "none" : currentStateSpace
+					.getId();
+
+			boolean b_model = currentStateSpace == null ? false
+					: currentStateSpace.getModel().getFormalismType()
+							.equals(FormalismType.B);
+			List<String> eventNames = b_model ? extractEventNames(currentStateSpace)
+					: new ArrayList<String>();
+			selectedEvents = new ArrayList<String>();
+			submit(WebUtils.wrap("cmd", "ModelChecking.changeStateSpaces",
+					"ssId", sId, "events", JSON.toString(eventNames), "bType",
+					b_model));
+		}
 	}
 
 	/**
@@ -363,6 +390,18 @@ public class ModelCheckingUI extends AbstractSession implements IModelChangedLis
 			ltlFormula = null;
 			return WebUtils.wrap("cmd", "ModelChecking.parseError", "id", id);
 		}
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void performTraceChange(final Trace trace) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

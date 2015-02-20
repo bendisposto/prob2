@@ -8,7 +8,7 @@ project.group = 'de.prob2'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
-project.version = '2.0.0-milestone-22'
+project.version = '2.0.0-milestone-23'
 
 repositories {
 	maven {
@@ -187,8 +187,15 @@ def os_extension() {
 	else return "probcli_linux" + (bits.equals("64") ? "64": "")
 }
 
-
+// run integration tests after downloading fresh CLI from Nightly Build
 task integrationtests(dependsOn: ['classes', 'downloadCli'], type:JavaExec){
+	main = 'de.prob.Main'
+	classpath = sourceSets.main.runtimeClasspath
+	args = ['-test', 'groovyTests']
+}
+
+// run integration tests WITHOUT downloading fresh CLI from Nightly Build
+task tests(dependsOn: ['classes'], type:JavaExec){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ['-test', 'groovyTests']

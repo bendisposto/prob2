@@ -34,16 +34,11 @@ public class LTLCheckingJob extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		if (!s.isBusy()) {
-			s.startTransaction();
-		}
 		if (time == -1) {
 			time = System.currentTimeMillis();
 		}
 		if (Thread.interrupted()) {
 			completed = true;
-			Thread.currentThread().interrupt();
-			s.endTransaction();
 			if (ui != null) {
 				ui.isFinished(jobId, System.currentTimeMillis() - time, res,
 						null);
@@ -63,9 +58,6 @@ public class LTLCheckingJob extends AbstractCommand {
 			ui.updateStats(jobId, System.currentTimeMillis() - time, res, null);
 		}
 		completed = !(res instanceof LTLNotYetFinished);
-		if (completed) {
-			s.endTransaction();
-		}
 
 		cmd = new LtlCheckingCommand(s, formula, MAX);
 	}
@@ -76,6 +68,11 @@ public class LTLCheckingJob extends AbstractCommand {
 
 	@Override
 	public boolean isCompleted() {
+		return completed;
+	}
+
+	@Override
+	public boolean blockAnimator() {
 		return true;
 	}
 

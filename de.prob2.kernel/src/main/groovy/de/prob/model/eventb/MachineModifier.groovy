@@ -1,7 +1,6 @@
 package de.prob.model.eventb
 
 import de.prob.model.eventb.Event.EventType
-import de.prob.model.representation.Invariant
 import de.prob.model.representation.ModelElementList
 
 class MachineModifier {
@@ -62,10 +61,10 @@ class MachineModifier {
 				iterator.remove()
 			}
 		}
-		
+
 		def invariant = new EventBInvariant("generated-inv-{uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
 		machine.invariants << invariant
-		machine.getChildrenOfType(Invariant.class) << invariant
+		machine.allInvariants << invariant
 		invariant
 	}
 
@@ -83,8 +82,8 @@ class MachineModifier {
 				iterator.remove()
 			}
 		}
-		
-		def a = machine.getChildrenOfType(Invariant.class).remove(invariant)
+
+		def a = machine.allInvariants.remove(invariant)
 		def b = machine.invariants.remove(invariant)
 		return a && b
 	}
@@ -152,7 +151,7 @@ class MachineModifier {
 		removePOsForEvent(event.name)
 		return machine.events.remove(event)
 	}
-	
+
 	def removePOsForEvent(String name) {
 		def iterator = machine.proofs.iterator()
 		while(iterator.hasNext()) {

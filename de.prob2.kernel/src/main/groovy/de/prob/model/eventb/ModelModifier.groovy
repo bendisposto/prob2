@@ -3,14 +3,13 @@ package de.prob.model.eventb
 import de.prob.Main
 import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.model.eventb.theory.Theory
-import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
 import de.prob.model.representation.Constant
-import de.prob.model.representation.Invariant
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.scripting.Api
 import de.prob.scripting.EventBFactory
+import de.prob.scripting.LoadClosures
 
 public class ModelModifier {
 
@@ -36,7 +35,7 @@ public class ModelModifier {
 			model.getStateSpace().execute(cmd)
 			prefs = cmd.getPreferences()
 			Api api = Main.getInjector().getInstance(Api.class)
-			loader = api.getSubscribeClosure()
+			loader = api.getSubscribeClosure(LoadClosures.EVENTB)
 		}
 	}
 
@@ -47,7 +46,7 @@ public class ModelModifier {
 	 */
 	public static EventBModel deepCopy(EventBModel model) {
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
-		EventBModel newModel = factory.modelProvider.get()
+		EventBModel newModel = factory.modelCreator.get()
 
 		def mainComp = deepCopy(newModel, model.getMainComponent())
 		newModel.addTheories(new ModelElementList<Theory>(model.getChildrenOfType(Theory.class)))
@@ -86,7 +85,7 @@ public class ModelModifier {
 		newContext.addProofs(new ModelElementList<ProofObligation>(context.proofs))
 
 		def axioms = context.axioms
-		def inherited = context.getChildrenOfType(Axiom.class).findAll {
+		def inherited = context.allAxioms.findAll {
 			!axioms.contains(it)
 		}
 		newContext.addAxioms(new ModelElementList<EventBAxiom>(axioms), new ModelElementList<EventBAxiom>(inherited))
@@ -126,7 +125,7 @@ public class ModelModifier {
 		newMachine.addVariables(new ModelElementList<EventBVariable>(machine.variables))
 
 		def invariants = machine.invariants
-		def inherited = machine.getChildrenOfType(Invariant.class).findAll {
+		def inherited = machine.allInvariants.findAll {
 			!invariants.contains(it)
 		}
 		newMachine.addInvariants(new ModelElementList<EventBInvariant>(invariants), new ModelElementList<EventBInvariant>(inherited))

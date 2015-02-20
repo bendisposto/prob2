@@ -18,19 +18,4 @@ public abstract class AbstractEvalElement implements IEvalElement {
 	public String getCode() {
 		return code;
 	}
-
-	@Override
-	public int hashCode() {
-		return getCode().hashCode();
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (obj instanceof IEvalElement) {
-			IEvalElement that = (IEvalElement) obj;
-			return that.getCode().equals(getCode());
-		}
-		return false;
-	}
-
 }

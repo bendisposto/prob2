@@ -3,6 +3,7 @@ package de.prob.scripting;
 import groovy.lang.Closure;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,40 +26,29 @@ import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
-import de.tla2b.exceptions.FrontEndException;
 import de.tla2b.exceptions.TLA2BException;
 import de.tla2bAst.Translator;
 
-public class TLAFactory extends ModelFactory {
+public class TLAFactory extends ModelFactory<ClassicalBModel> {
 
 	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
-	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
 	public TLAFactory(final Provider<ClassicalBModel> modelCreator,
 			final FileHandler fileHandler) {
-		super(fileHandler);
-		this.modelCreator = modelCreator;
+		super(modelCreator, fileHandler, LoadClosures.getB());
 	}
 
-	/**
-	 * This method loads a TLA module from file, parses the module, translates
-	 * the TLA AST to a B AST, starts the animation, and returns the created
-	 * {@link ClassicalBModel}
-	 * 
-	 * @param modelPath
-	 *            String path to the the TLA module to be loaded.
-	 * @param prefs map of ProB preferences
-	 * @param loader actions to take place after the loading process
-	 * @return {@link ClassicalBModel} translated from the specified TLA file.
-	 * @throws IOException
-	 * @throws BException
-	 * @throws FrontEndException
-	 */
-	public ClassicalBModel load(final String modelPath, final Map<String, String> prefs,
-			final Closure<?> loader) throws IOException, BException {
+	@Override
+	public ClassicalBModel load(final String fileName,
+			final Map<String, String> preferences, final Closure<Object> loader)
+			throws IOException, ModelTranslationError {
 		ClassicalBModel classicalBModel = modelCreator.get();
-		File f = new File(modelPath);
+		File f = new File(fileName);
+		if (!f.exists()) {
+			throw new FileNotFoundException("The TLA Model" + fileName
+					+ " was not found.");
+		}
 
 		Translator translator;
 		Start ast;
@@ -66,36 +56,44 @@ public class TLAFactory extends ModelFactory {
 			translator = new Translator(f.getAbsolutePath());
 			ast = translator.translate();
 		} catch (TLA2BException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Translation error");
+			throw new ModelTranslationError("Translation Error: "
+					+ e.getMessage(), e);
 		}
 
 		BParser bparser = new BParser();
 		bparser.getDefinitions().addAll(translator.getBDefinitions());
-
-		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
-		classicalBModel.initialize(ast, rml, f);
-		startAnimation(classicalBModel, rml,
-				getPreferences(classicalBModel, prefs), f);
-		loader.call(classicalBModel);
+		try {
+			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
+			classicalBModel.initialize(ast, rml, f);
+			startAnimation(classicalBModel, rml,
+					getPreferences(classicalBModel, preferences), f);
+			loader.call(classicalBModel);
+		} catch (BException e) {
+			throw new ModelTranslationError(e.getMessage(), e);
+		}
 		return classicalBModel;
 
 	}
 
 	/**
-	 * This method is deprecated. Use {@link TLAFactory#load(String, Map, Closure)} instead.
-	 * @param f {@link File} to be loaded
-	 * @param prefs preferences for the loading process
-	 * @param loader actions to take place after the loading process
+	 * This method is deprecated. Use
+	 * {@link TLAFactory#load(String, Map, Closure)} instead.
+	 * 
+	 * @param f
+	 *            {@link File} to be loaded
+	 * @param prefs
+	 *            preferences for the loading process
+	 * @param loader
+	 *            actions to take place after the loading process
 	 * @return {@link ClassicalBModel} translated from the specified TLA file.
 	 * @throws IOException
-	 * @throws BException
+	 * @throws ModelTranslationError
 	 */
 	@Deprecated
 	public ClassicalBModel load(final File f, final Map<String, String> prefs,
-			final Closure<?> loader) throws IOException, BException {
-		return load(f.getAbsolutePath(),prefs,loader);
-
+			final Closure<Object> loader) throws IOException,
+			ModelTranslationError {
+		return load(f.getAbsolutePath(), prefs, loader);
 	}
 
 	/**
@@ -121,11 +119,9 @@ public class TLAFactory extends ModelFactory {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 
-		final AbstractCommand loadcmd = new LoadBProjectCommand(rml, f);
-		cmds.add(loadcmd);
+		cmds.add(new LoadBProjectCommand(rml, f));
 		cmds.add(new StartAnimationCommand());
 		classicalBModel.getStateSpace().execute(new ComposedCommand(cmds));
-		classicalBModel.getStateSpace().setLoadcmd(loadcmd);
 	}
 
 	/**

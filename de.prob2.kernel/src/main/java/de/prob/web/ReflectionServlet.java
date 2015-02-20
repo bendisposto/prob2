@@ -3,6 +3,8 @@ package de.prob.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -30,6 +32,7 @@ import com.google.inject.Singleton;
 import de.prob.Main;
 import de.prob.annotations.PublicSession;
 import de.prob.annotations.Sessions;
+import de.prob.statespace.AnimationSelector;
 import de.prob.web.data.SessionResult;
 
 @SuppressWarnings("serial")
@@ -41,6 +44,7 @@ public class ReflectionServlet extends HttpServlet {
 	Logger logger = LoggerFactory.getLogger(ReflectionServlet.class);
 
 	private final Map<String, ISession> sessions;
+	private final AnimationSelector animations;
 	private final ExecutorService taskExecutor = Executors
 			.newFixedThreadPool(3);
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
@@ -49,8 +53,10 @@ public class ReflectionServlet extends HttpServlet {
 	private final static String FQN = "(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)+\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*";
 
 	@Inject
-	public ReflectionServlet(@Sessions final Map<String, ISession> sessions) {
+	public ReflectionServlet(@Sessions final Map<String, ISession> sessions,
+			final AnimationSelector animations) {
 		this.sessions = sessions;
+		this.animations = animations;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -88,9 +94,9 @@ public class ReflectionServlet extends HttpServlet {
 
 		String className = parts.get(2);
 		String session = parts.get(3);
-		boolean uuid = isUUID(session);
+		boolean isUuid = isUUID(session);
 
-		if (uuid && sessions.containsKey(session)) {
+		if (isUuid && sessions.containsKey(session)) {
 			// logger.trace("Delegating");
 			delegateToSession(req, resp, sessions.get(session));
 			// logger.trace("Delegated call completed");
@@ -103,7 +109,8 @@ public class ReflectionServlet extends HttpServlet {
 
 			// We have an implementation
 			logger.trace("Instantiating");
-			ISession obj = instantiate(clazz);
+			ISession obj = instantiate(clazz, isUuid ? UUID.fromString(session)
+					: null);
 			logger.trace("Got the object");
 			String id = obj.getSessionUUID().toString();
 			sessions.put(id, obj);
@@ -174,7 +181,7 @@ public class ReflectionServlet extends HttpServlet {
 		return rest;
 	}
 
-	private ISession instantiate(final Class<ISession> clazz)
+	private ISession instantiate(final Class<ISession> clazz, final UUID uuid)
 			throws IOException {
 		boolean publicSession = false;
 		Annotation[] annotations = clazz.getAnnotations();
@@ -186,8 +193,42 @@ public class ReflectionServlet extends HttpServlet {
 		}
 
 		ISession obj = null;
-		if (!Main.restricted || publicSession)
-			obj = Main.getInjector().getInstance(clazz);
+		if (!Main.restricted || publicSession) {
+			if (Main.multianimation
+					&& AbstractAnimationBasedView.class.isAssignableFrom(clazz) // is
+																				// AbstractAnimationBasedView
+																				// a
+																				// subtype
+																				// of
+																				// my
+																				// class
+					&& uuid != null) {
+				try {
+					Constructor<ISession> constructor = clazz.getConstructor(
+							AnimationSelector.class, UUID.class);
+					obj = constructor.newInstance(animations, uuid);
+				} catch (NoSuchMethodException e) {
+					logger.error("Constructors for AbstractAnimationBasedViews"
+							+ " must have the correct arguments to instantiate by reflection.");
+				} catch (SecurityException e) {
+					logger.error("Constructing AbstractAnimationBasedView with parameters resulted in an error");
+				} catch (InstantiationException e) {
+					logger.error("Instantiating the AbstractAnimationBasedView resulted in an exception.");
+				} catch (IllegalAccessException e) {
+					logger.error("Instantiating the AbstractAnimationBasedView is not allowed.");
+				} catch (IllegalArgumentException e) {
+					logger.error("The AbstractAnimationBasedView cannot be created with the given parameters");
+				} catch (InvocationTargetException e) {
+					logger.error("Invoking the constructor of the AbstractAnimationBasedView resulted in an exception.");
+				} finally {
+					if (obj == null) {
+						obj = Main.getInjector().getInstance(clazz);
+					}
+				}
+			} else {
+				obj = Main.getInjector().getInstance(clazz);
+			}
+		}
 		return obj;
 	}
 
@@ -215,7 +256,7 @@ public class ReflectionServlet extends HttpServlet {
 
 		@Override
 		public String get(final int index) {
-			if (index >= this.size()) {
+			if (index >= size()) {
 				return "";
 			} else {
 				return super.get(index);

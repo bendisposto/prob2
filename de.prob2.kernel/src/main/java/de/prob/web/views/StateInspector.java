@@ -6,49 +6,57 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
+import de.prob.animator.domainobjects.EnumerationWarning;
 import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.EvaluationErrorResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.IdentifierNotInitialised;
+import de.prob.annotations.PublicSession;
+import de.prob.model.eventb.EventBMachine;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractFormulaElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.ModelRep;
-import de.prob.scripting.FileHandler;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.FormalismType;
-import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
 import de.prob.unicode.UnicodeTranslator;
-import de.prob.web.AbstractSession;
+import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
-@Singleton
-public class StateInspector extends AbstractSession implements
-IAnimationChangeListener {
+@PublicSession
+public class StateInspector extends AbstractAnimationBasedView {
 
-	//private static final String HISTORY_FILE_NAME = "stateInspectorRepl";
 	List<IEvalElement> formulasForEvaluating = new ArrayList<IEvalElement>();
 	List<String> history = new ArrayList<String>();
 	Trace currentTrace;
 	AbstractModel currentModel;
-	//private final FileHandler fileWriter;
 
 	@Inject
-	public StateInspector(final FileHandler fileWriter,
-			final AnimationSelector animations) {
+	public StateInspector(final AnimationSelector animations) {
+		super(animations, null);
 		this.incrementalUpdate = false;
-		//this.fileWriter = fileWriter;
+		animations.registerAnimationChangeListener(this);
+	}
+
+	// Constructor instantiated via reflection in multianimation mode.
+	public StateInspector(final AnimationSelector animations,
+			final UUID animationOfInterest) {
+		super(animations, animationOfInterest);
+		incrementalUpdate = false;
 		animations.registerAnimationChangeListener(this);
 	}
 
@@ -75,14 +83,8 @@ IAnimationChangeListener {
 		}
 		history.add(code);
 		if (currentModel != null) {
-			//fileWriter.setContent(currentModel.getModelDirPath()
-			//		+ HISTORY_FILE_NAME, history);
-
 			Object eval = currentTrace.evalCurrent(currentModel
 					.parseFormula(code));
-			if (eval == null) {
-				eval = "Initialize machine!";
-			}
 			return WebUtils.wrap("cmd", "StateInspector.result", "code",
 					unicode(code), "result", eval.toString());
 		}
@@ -133,46 +135,36 @@ IAnimationChangeListener {
 	}
 
 	@Override
-	public void traceChange(final Trace trace,
-			final boolean currentAnimationChanged) {
-		if (currentAnimationChanged) {
-			if (trace == null) {
-				currentTrace = null;
-				currentModel = null;
-				submit(WebUtils.wrap("cmd", "StateInspector.clearInput"));
-				return;
-			}
-			currentTrace = trace;
-			AbstractModel newModel = trace.getModel();
-			if (!newModel.equals(currentModel)) {
-				currentModel = newModel;
-				extractFormulas(currentModel);
+	public void performTraceChange(final Trace trace) {
+		if (trace == null) {
+			currentTrace = null;
+			currentModel = null;
+			submit(WebUtils.wrap("cmd", "StateInspector.clearInput"));
+			return;
+		}
+		currentTrace = trace;
+		AbstractModel newModel = trace.getModel();
+		if (!newModel.equals(currentModel)) {
+			currentModel = newModel;
+			extractFormulas(currentModel);
 
-				history = getCurrentHistory(currentModel.getModelDirPath());
-
-				Object calculatedValues = calculateFormulas(currentTrace);
-				submit(WebUtils.wrap("cmd", "StateInspector.setModel",
-						"components",
-						WebUtils.toJson(ModelRep.translate(currentModel)),
-						"values", WebUtils.toJson(calculatedValues), "history",
-						WebUtils.toJson(history)));
-				return;
-			}
+			history = getCurrentHistory(currentModel.getModelDirPath());
 
 			Object calculatedValues = calculateFormulas(currentTrace);
-			submit(WebUtils.wrap("cmd", "StateInspector.updateValues",
-					"values", WebUtils.toJson(calculatedValues)));
+			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
+					"components",
+					WebUtils.toJson(ModelRep.translate(currentModel)),
+					"values", WebUtils.toJson(calculatedValues), "history",
+					WebUtils.toJson(history)));
+			return;
 		}
+
+		Object calculatedValues = calculateFormulas(currentTrace);
+		submit(WebUtils.wrap("cmd", "StateInspector.updateValues", "values",
+				WebUtils.toJson(calculatedValues)));
 	}
 
 	private List<String> getCurrentHistory(final String modelDirPath) {
-		/*String fileName = modelDirPath + HISTORY_FILE_NAME;
-		List<String> history = fileWriter.getListOfStrings(fileName);
-		if (history == null) {
-			history = new ArrayList<String>();
-			fileWriter.setContent(fileName, history);
-		}
-		return history; */
 		return new ArrayList<String>();
 	}
 
@@ -180,24 +172,37 @@ IAnimationChangeListener {
 		List<Object> extracted = new ArrayList<Object>();
 		StateSpace s = t.getStateSpace();
 		Transition currentTransition = t.getCurrentTransition();
-		Map<IEvalElement, IEvalResult> current = currentTransition == null ? s
-				.valuesAt(t.getCurrentState()) : s.valuesAt(currentTransition
-						.getDestination());
-				Map<IEvalElement, IEvalResult> previous = currentTransition == null ? new HashMap<IEvalElement, IEvalResult>()
-						: s.valuesAt(currentTransition.getSource());
+		State currentS = currentTransition == null ? t.getCurrentState()
+				: currentTransition.getDestination();
+		Map<IEvalElement, IEvalResult> current = s.valuesAt(currentS);
+		State prevS = currentTransition == null ? null : currentTransition
+				.getSource();
+		Map<IEvalElement, IEvalResult> previous = prevS == null ? new HashMap<IEvalElement, IEvalResult>()
+				: s.valuesAt(prevS);
 
-				for (IEvalElement e : formulasForEvaluating) {
-					String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current
-							.get(e)).getValue()) : "";
-					String previousVal = previous.get(e) instanceof EvalResult ? unicode(((EvalResult) previous
-							.get(e)).getValue()) : "";
-					extracted.add(WebUtils.wrap("id", e.getFormulaId().getUUID(),
-							"code", unicode(e.getCode()), "current",
-							current.get(e) == null ? "" : currentVal, "previous",
-									previous.get(e) == null ? "" : previousVal));
-				}
+		for (IEvalElement e : formulasForEvaluating) {
+			String currentVal = stringRep(current.get(e));
+			String previousVal = stringRep(previous.get(e));
+			extracted.add(WebUtils.wrap("id", e.getFormulaId().getUUID(),
+					"code", unicode(e.getCode()), "current", currentVal,
+					"previous", previousVal));
+		}
 
-				return extracted;
+		return extracted;
+	}
+
+	private String stringRep(final IEvalResult res) {
+		if (res instanceof EvalResult) {
+			return unicode(((EvalResult) res).getValue());
+		}
+		if (res instanceof EvaluationErrorResult
+				&& !(res instanceof IdentifierNotInitialised)) {
+			return ((EvaluationErrorResult) res).getResult();
+		}
+		if (res instanceof EnumerationWarning) {
+			return unicode("?(\u221E)");
+		}
+		return "";
 	}
 
 	private String unicode(final String code) {
@@ -218,6 +223,8 @@ IAnimationChangeListener {
 				formulasForEvaluating.add(formulaElement.getFormula());
 			}
 			return;
+		} else if (e instanceof EventBMachine) {
+
 		}
 		Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children = e
 				.getChildren();
@@ -238,5 +245,4 @@ IAnimationChangeListener {
 			submit(WebUtils.wrap("cmd", "StateInspector.enable"));
 		}
 	}
-
 }

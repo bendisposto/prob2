@@ -1,8 +1,10 @@
 package de.prob.model.classicalb;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.base.Joiner;
 
@@ -45,6 +47,12 @@ public class DomBuilder extends DepthFirstAdapter {
 	private final ModelElementList<BSet> sets = new ModelElementList<BSet>();
 	private final ModelElementList<Assertion> assertions = new ModelElementList<Assertion>();
 	private final ModelElementList<Operation> operations = new ModelElementList<Operation>();
+	private final boolean used;
+	private final Set<String> usedIds = new HashSet<String>();
+
+	public DomBuilder(final boolean used) {
+		this.used = used;
+	}
 
 	@Override
 	public void outStart(final Start node) {
@@ -105,6 +113,10 @@ public class DomBuilder extends DepthFirstAdapter {
 	@Override
 	public void outAVariablesMachineClause(final AVariablesMachineClause node) {
 		for (PExpression pExpression : node.getIdentifiers()) {
+			if (used) {
+				usedIds.add(((AIdentifierExpression) pExpression)
+						.getIdentifier().get(0).getText());
+			}
 			variables.add(new ClassicalBVariable(
 					createExpressionAST(pExpression)));
 		}
@@ -208,6 +220,7 @@ public class DomBuilder extends DepthFirstAdapter {
 		start.setPParseUnit(node);
 		start.setEOF(EOF);
 		node.setExpression((PExpression) expression.clone());
+		node.getExpression().apply(new RenameIdentifiers());
 		return start;
 	}
 
@@ -217,6 +230,21 @@ public class DomBuilder extends DepthFirstAdapter {
 		start.setPParseUnit(node2);
 		start.setEOF(EOF);
 		node2.setPredicate((PPredicate) pPredicate.clone());
+		node2.getPredicate().apply(new RenameIdentifiers());
 		return start;
+	}
+
+	private class RenameIdentifiers extends DepthFirstAdapter {
+		@Override
+		public void inAIdentifierExpression(final AIdentifierExpression node) {
+			if (used) {
+				String id = node.getIdentifier().get(0).getText();
+
+				if (usedIds.contains(id)) {
+					node.getIdentifier().set(0,
+							new TIdentifierLiteral(name + "." + id));
+				}
+			}
+		}
 	}
 }

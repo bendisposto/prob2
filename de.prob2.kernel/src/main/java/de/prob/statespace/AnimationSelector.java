@@ -2,9 +2,11 @@ package de.prob.statespace;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -34,7 +36,8 @@ public class AnimationSelector {
 	List<WeakReference<IAnimationChangeListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<IAnimationChangeListener>>();
 	List<WeakReference<IModelChangedListener>> modelListeners = new CopyOnWriteArrayList<WeakReference<IModelChangedListener>>();
 
-	Map<UUID, Trace> traces = new HashMap<UUID, Trace>();
+	Map<UUID, Trace> traces = new LinkedHashMap<UUID, Trace>();
+	Set<UUID> protectedTraces = new HashSet<UUID>();
 
 	Trace currentTrace = null;
 	StateSpace currentStateSpace = null;
@@ -49,7 +52,7 @@ public class AnimationSelector {
 			final IAnimationChangeListener listener) {
 
 		traceListeners
-		.add(new WeakReference<IAnimationChangeListener>(listener));
+				.add(new WeakReference<IAnimationChangeListener>(listener));
 		if (currentTrace != null) {
 			listener.traceChange(currentTrace, true);
 			listener.animatorStatus(currentTrace.getStateSpace().isBusy());
@@ -81,6 +84,10 @@ public class AnimationSelector {
 		}
 	}
 
+	public void addNewAnimation(final Trace trace) {
+		addNewAnimation(trace, true);
+	}
+
 	/**
 	 * Adds the specified {@link Trace} trace to the registry, sets the current
 	 * trace to trace, and notifies an animation change (
@@ -89,13 +96,20 @@ public class AnimationSelector {
 	 * and this is animated.
 	 * 
 	 * @param trace
+	 *            to be added
+	 * @param protect
+	 *            if protected, the trace will not be deleted when
+	 *            {@link AnimationSelector#clearUnprotected()} is called.
 	 */
-	public void addNewAnimation(final Trace trace) {
+	public void addNewAnimation(final Trace trace, final boolean protect) {
 		Trace t = trace;
 		if (traces.containsKey(trace.getUUID())) {
 			t = trace.copy();
 		}
 		traces.put(t.getUUID(), t);
+		if (protect) {
+			protectedTraces.add(t.getUUID());
+		}
 		currentTrace = t;
 		notifyAnimationChange(t, true);
 
@@ -104,6 +118,35 @@ public class AnimationSelector {
 			currentStateSpace = s;
 			notifyModelChanged(s);
 		}
+	}
+
+	public void setProtected(final Trace trace, final boolean isProtected) {
+		if (isProtected) {
+			protectedTraces.add(trace.getUUID());
+		} else {
+			protectedTraces.remove(trace.getUUID());
+		}
+	}
+
+	public void clearUnprotected() {
+		ArrayList<Trace> list = new ArrayList<Trace>(traces.values());
+		boolean currentChanged = false;
+		for (Trace trace : list) {
+			if (!protectedTraces.contains(trace.getUUID())) {
+				if (currentTrace != null
+						&& trace.getUUID().equals(currentTrace.getUUID())) {
+					currentTrace = null;
+					currentStateSpace = null;
+					currentChanged = true;
+				}
+				traces.remove(trace.getUUID());
+			}
+		}
+		if (currentChanged && !traces.isEmpty()) {
+			currentTrace = traces.values().iterator().next();
+			currentStateSpace = currentTrace.getStateSpace();
+		}
+		refresh();
 	}
 
 	/**
@@ -179,6 +222,14 @@ public class AnimationSelector {
 		return new ArrayList<Trace>(traces.values());
 	}
 
+	public Trace getTrace(final UUID uuid) {
+		return traces.get(uuid);
+	}
+
+	public Set<UUID> getProtectedTraces() {
+		return protectedTraces;
+	}
+
 	/**
 	 * @param trace
 	 * @return the {@link AbstractElement} model that corresponds to the given
@@ -200,7 +251,9 @@ public class AnimationSelector {
 	public void refresh() {
 		notifyAnimationChange(currentTrace, true);
 		notifyModelChanged(currentStateSpace);
-		notifyStatusChange(currentStateSpace.isBusy());
+		if (currentStateSpace != null) {
+			notifyStatusChange(currentStateSpace.isBusy());
+		}
 	}
 
 	/**
@@ -217,15 +270,15 @@ public class AnimationSelector {
 			traces.put(uuid, trace);
 			notifyAnimationChange(currentTrace, false);
 		} else {
-			//Trace oldT = traces.get(uuid);
+			// Trace oldT = traces.get(uuid);
 			traces.put(uuid, trace);
 			if (trace.getUUID().equals(currentTrace.getUUID())) {
 				notifyAnimationChange(trace, true);
 				Trace oldT = currentTrace;
 				currentTrace = trace;
 
-				if (oldT.getStateSpace().isBusy() != currentTrace.getStateSpace()
-						.isBusy()) {
+				if (oldT.getStateSpace().isBusy() != currentTrace
+						.getStateSpace().isBusy()) {
 					notifyStatusChange(currentTrace.getStateSpace().isBusy());
 				}
 			} else {

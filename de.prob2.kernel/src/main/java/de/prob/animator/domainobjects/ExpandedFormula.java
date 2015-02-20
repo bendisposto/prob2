@@ -19,6 +19,7 @@ public class ExpandedFormula {
 	private String name;
 	private Object value;
 	private String id;
+	private boolean hasError = false;
 	private List<ExpandedFormula> children;
 	private final Map<String, Object> fields = new HashMap<String, Object>();
 
@@ -35,6 +36,8 @@ public class ExpandedFormula {
 		value = getValue(v);
 		fields.put("value",
 				value instanceof String ? escapeUnicode((String) value) : value);
+		fields.put("hasError", hasError);
+
 		// Children
 		id = cpt.getArgument(3).getFunctor();
 		fields.put("id", id);
@@ -68,6 +71,10 @@ public class ExpandedFormula {
 		} else if (v.getFunctor().equals("v")) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
 			return UnicodeTranslator.toUnicode(cpt.getArgument(1).getFunctor());
+		} else if (v.getFunctor().equals("e")) {
+			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
+			hasError = true;
+			return cpt.getArgument(1).getFunctor();
 		}
 		v.getFunctor();
 		return null;

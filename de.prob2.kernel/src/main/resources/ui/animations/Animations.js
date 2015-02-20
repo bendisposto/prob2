@@ -11,6 +11,7 @@ Animations = (function() {
 		for (op in ops) {
 			var co = ops[op]
 			co.id = op;
+			co.protected = co.protected === "true"
 			if (co.isCurrent === "true") {
 				co.selected = "selected"
 			} else {
@@ -29,6 +30,9 @@ Animations = (function() {
 			e.preventDefault()
 			removeTrace(e.target.id)
 		})
+		$(".protect").click(function(e) {
+			protectTrace(e.target.parentElement.id, $(e.target).is(":checked"))
+		})
 	}
 
 	function selectTrace(id) {
@@ -41,6 +45,14 @@ Animations = (function() {
 	function removeTrace(id) {
 		session.sendCmd("removeTrace", {
 			"pos" : id,
+			"client" : extern.client
+		})
+	}
+
+	function protectTrace(id, protect) {
+		session.sendCmd("protectTrace", {
+			"pos" : id,
+			"protect" : protect,
 			"client" : extern.client
 		})
 	}

@@ -8,6 +8,7 @@ import de.prob.animator.command.ExploreStateCommand
 import de.prob.animator.command.GetBStateCommand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
+import de.prob.animator.domainobjects.StateError
 import de.prob.util.StringUtil
 
 
@@ -25,8 +26,12 @@ class State {
 	def StateSpace stateSpace;
 	def boolean explored
 	def List<Transition> transitions = []
-	def boolean initialised
-	def boolean invariantOk
+	def private boolean initialised
+	def private boolean invariantOk
+	def private boolean timeoutOccurred
+	def private Set<String> transitionsWithTimeout
+	def private boolean maxTransitionsCalculated
+	def private Collection<StateError> stateErrors
 	def Map<IEvalElement, IEvalResult> values = new HashMap<IEvalElement, IEvalResult>()
 
 	def State(String id, StateSpace space) {
@@ -145,9 +150,6 @@ class State {
 	 * @return the {@link IEvalResult} calculated from ProB
 	 */
 	def IEvalResult eval(String formula) {
-		if (!isInitialised()) {
-			return null
-		}
 		return eval(stateSpace.getModel().parseFormula(formula))
 	}
 
@@ -157,9 +159,6 @@ class State {
 	 * @return the {@link IEvalResult} calculated by ProB
 	 */
 	def IEvalResult eval(IEvalElement formula) {
-		if (!isInitialised()) {
-			return null
-		}
 		eval([formula])[0]
 	}
 
@@ -264,7 +263,35 @@ class State {
 		if (!explored) {
 			explore()
 		}
-		return isInvariantOk()
+		return invariantOk
+	}
+
+	def boolean isMaxTransitionsCalculated() {
+		if (!explored) {
+			explore()
+		}
+		return maxTransitionsCalculated
+	}
+
+	def boolean isTimeoutOccurred() {
+		if (!explored) {
+			explore()
+		}
+		return timeoutOccurred
+	}
+
+	def Set<String> getTransitionsWithTimeout() {
+		if (!explored) {
+			explore()
+		}
+		return transitionsWithTimeout
+	}
+
+	def Collection<StateError> getStateErrors() {
+		if (!explored) {
+			explore()
+		}
+		return stateErrors
 	}
 
 	/**
@@ -298,6 +325,10 @@ class State {
 		values.putAll(cmd.getFormulaResults())
 		initialised = cmd.isInitialised()
 		invariantOk = cmd.isInvariantOk()
+		timeoutOccurred = cmd.isTimeoutOccured()
+		maxTransitionsCalculated = cmd.isMaxOperationsReached()
+		stateErrors = cmd.getStateErrors()
+		transitionsWithTimeout = cmd.getOperationsWithTimeout()
 		explored = true
 		this
 	}

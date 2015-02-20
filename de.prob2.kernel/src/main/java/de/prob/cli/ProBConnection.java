@@ -116,7 +116,7 @@ public class ProBConnection {
 				// windows prob uses \r\n as new line.
 				String s = new String(buffer, 0, count, Charset
 						.defaultCharset().name());
-				result.append(s.trim());
+				result.append(s.replace("\r", "").replace("\n", ""));
 			} else {
 				done = true;
 			}

@@ -142,3 +142,13 @@ tr:nth-child(even) {
 	color: red;
 	font-weight: bold;
 }
+
+.not-well-defined {
+	color: darkorange;
+	font-weight: bold;
+}
+
+.enum-warning {
+	color: darkred;
+	font-weight: bold;
+}

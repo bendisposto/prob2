@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -17,8 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
+import de.prob.Main;
+import de.prob.animator.domainobjects.StateError;
 import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventParameter;
@@ -29,19 +31,17 @@ import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.State;
 import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
-import de.prob.web.AbstractSession;
+import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
 @PublicSession
-@Singleton
-public class Events extends AbstractSession implements IAnimationChangeListener {
+public class Events extends AbstractAnimationBasedView {
 
 	Logger logger = LoggerFactory.getLogger(Events.class);
 	Trace currentTrace;
-	private final AnimationSelector selector;
 	AbstractModel currentModel;
 	List<String> opNames = new ArrayList<String>();
 	Map<String, List<String>> opToParams = new HashMap<String, List<String>>();
@@ -54,10 +54,20 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	@Inject
 	public Events(final AnimationSelector selector,
 			final ScriptEngineProvider sep) {
-		this.selector = selector;
+		super(selector, null);
 		groovy = sep.get();
-		selector.registerAnimationChangeListener(this);
 		incrementalUpdate = false;
+		animationsRegistry.registerAnimationChangeListener(this);
+	}
+
+	// Constructor instantiated via reflection in multianimation mode.
+	public Events(final AnimationSelector animations,
+			final UUID animationOfInterest) {
+		super(animations, animationOfInterest);
+		groovy = Main.getInjector().getInstance(ScriptEngineProvider.class)
+				.get();
+		incrementalUpdate = false;
+		animationsRegistry.registerAnimationChangeListener(this);
 	}
 
 	// used in JS
@@ -69,63 +79,108 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		public final String enablement;
 
 		public Operation(final String id, final String name,
-				final List<String> params, final boolean isEnabled) {
+				final List<String> params, final boolean isEnabled,
+				final boolean hasTimeout) {
 			this.id = id;
 			this.name = name;
 			this.params = params;
-			enablement = isEnabled ? "enabled" : "notEnabled";
+			enablement = isEnabled ? "enabled" : hasTimeout ? "timeout"
+					: "notEnabled";
+		}
+	}
+
+	private static class Error {
+		public final String shortMsg;
+		public final String longMsg;
+
+		public Error(final String shortMsg, final String longMsg) {
+			this.shortMsg = shortMsg;
+			this.longMsg = longMsg;
 		}
 	}
 
 	@Override
-	public void traceChange(final Trace trace,
-			final boolean currentAnimationChanged) {
-		if (currentAnimationChanged) {
-			if (trace == null) {
-				currentTrace = null;
-				currentModel = null;
-				opNames = new ArrayList<String>();
-				if (sorter instanceof ModelOrder) {
-					sorter = new ModelOrder(opNames);
-				}
-				Map<String, String> wrap = WebUtils.wrap("cmd",
-						"Events.newTrace", "ops", WebUtils.toJson(opNames),
-						"canGoBack", false, "canGoForward", false);
-				submit(wrap);
-				return;
+	public void performTraceChange(final Trace trace) {
+		if (trace == null) {
+			currentTrace = null;
+			currentModel = null;
+			opNames = new ArrayList<String>();
+			if (sorter instanceof ModelOrder) {
+				sorter = new ModelOrder(opNames);
 			}
-
-			if (trace.getModel() != currentModel) {
-				updateModel(trace);
-			}
-			currentTrace = trace;
-			Set<Transition> ops = currentTrace.getStateSpace()
-					.evaluateTransitions(trace.getNextTransitions());
-			events = new ArrayList<Operation>(ops.size());
-			Set<String> notEnabled = new HashSet<String>(opNames);
-			for (Transition opInfo : ops) {
-				String name = extractPrettyName(opInfo.getName());
-				notEnabled.remove(name);
-				Operation o = new Operation(opInfo.getId(), name,
-						opInfo.getParams(), true);
-				events.add(o);
-			}
-			for (String s : notEnabled) {
-				if (!s.equals("INITIALISATION")) {
-					events.add(new Operation(s, s, opToParams.get(s), false));
-				}
-			}
-			try {
-				Collections.sort(events, sorter);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			String json = WebUtils.toJson(applyFilter(filter));
 			Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
-					"ops", json, "canGoBack", currentTrace.canGoBack(),
-					"canGoForward", currentTrace.canGoForward());
+					"ops", WebUtils.toJson(opNames), "canGoBack", false,
+					"canGoForward", false);
 			submit(wrap);
+			return;
 		}
+
+		if (trace.getModel() != currentModel) {
+			updateModel(trace);
+		}
+		currentTrace = trace;
+		Set<Transition> ops = currentTrace.getNextTransitions(true);
+		events = new ArrayList<Operation>(ops.size());
+		Set<String> notEnabled = new HashSet<String>(opNames);
+		Set<String> tWT = currentTrace.getCurrentState()
+				.getTransitionsWithTimeout();
+		for (Transition opInfo : ops) {
+			String name = extractPrettyName(opInfo.getName());
+			notEnabled.remove(name);
+			Operation o = new Operation(opInfo.getId(), name,
+					opInfo.getParams(), true, tWT.contains(name));
+			events.add(o);
+		}
+		for (String s : notEnabled) {
+			if (!s.equals("INITIALISATION")) {
+				events.add(new Operation(s, s, opToParams.get(s), false, tWT
+						.contains(s)));
+			}
+		}
+		try {
+			Collections.sort(events, sorter);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		List<Error> errors = extractErrors(currentTrace.getCurrentState());
+		String json = WebUtils.toJson(applyFilter(filter));
+		String stringErrors = WebUtils.toJson(errors);
+		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
+				"ops", json, "canGoBack", currentTrace.canGoBack(),
+				"canGoForward", currentTrace.canGoForward(), "errors",
+				stringErrors);
+		submit(wrap);
+	}
+
+	private List<Error> extractErrors(final State state) {
+		List<Error> errors = new ArrayList<Error>();
+
+		if (!state.isInvariantOk()) {
+			errors.add(new Error("Invariant Violation",
+					"One of the invariants was violated. "
+							+ "See the State Inspector for more details."));
+		}
+
+		if (state.isTimeoutOccurred()) {
+			errors.add(new Error("Timeout Occurred",
+					"A time out occurred for the current state."));
+		}
+
+		if (state.isMaxTransitionsCalculated()) {
+			errors.add(new Error(
+					"Max Transitions Reached",
+					"It is possible that not all possible transitions "
+							+ "were calculated for the given state. If you would like to calculate "
+							+ "more transitions, increase the MAX_OPERATIONS preference."));
+		}
+
+		for (StateError e : state.getStateErrors()) {
+			errors.add(new Error(e.getShortDescription(), "For event "
+					+ e.getEvent() + " the following error occurred: "
+					+ e.getLongDescription()));
+		}
+
+		return errors;
 	}
 
 	private String extractPrettyName(final String name) {
@@ -174,7 +229,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 
 	public Object execute(final Map<String, String[]> params) {
 		String id = params.get("id")[0];
-		selector.traceChange(currentTrace.add(id));
+		animationsRegistry.traceChange(currentTrace.add(id));
 		return null;
 	}
 
@@ -196,28 +251,38 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.setView",
-				"ops", WebUtils.toJson(events), "canGoBack",
+		Map<String, String> wrap = WebUtils.wrap(
+				"cmd",
+				"Events.setView",
+				"ops",
+				WebUtils.toJson(events),
+				"canGoBack",
 				currentTrace == null ? false : currentTrace.canGoBack(),
 				"canGoForward",
 				currentTrace == null ? false : currentTrace.canGoForward(),
-				"sortMode", getSortMode(), "hide", hide);
+				"sortMode",
+				getSortMode(),
+				"hide",
+				hide,
+				"errors",
+				currentTrace == null ? "[]" : WebUtils
+						.toJson(extractErrors(currentTrace.getCurrentState())));
 		submit(wrap);
 	}
 
 	public Object random(final Map<String, String[]> params) {
 		int num = Integer.parseInt(params.get("num")[0]);
-		selector.traceChange(currentTrace.randomAnimation(num));
+		animationsRegistry.traceChange(currentTrace.randomAnimation(num));
 		return null;
 	}
 
 	public Object back(final Map<String, String[]> params) {
-		selector.traceChange(currentTrace.back());
+		animationsRegistry.traceChange(currentTrace.back());
 		return null;
 	}
 
 	public Object forward(final Map<String, String[]> params) {
-		selector.traceChange(currentTrace.forward());
+		animationsRegistry.traceChange(currentTrace.forward());
 		return null;
 	}
 

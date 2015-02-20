@@ -28,8 +28,7 @@ public class DependencyWalker extends DepthFirstAdapter {
 
 	public DependencyWalker(final String machine,
 			final List<ClassicalBMachine> machines,
-			final DependencyGraph graph2,
-			final Map<String, Start> map) {
+			final DependencyGraph graph2, final Map<String, Start> map) {
 		src = machine;
 		this.machines = machines;
 		graph = graph2;
@@ -96,8 +95,8 @@ public class DependencyWalker extends DepthFirstAdapter {
 		return list.getLast().getText();
 	}
 
-	private ClassicalBMachine makeMachine(final String dest) {
-		final DomBuilder builder = new DomBuilder();
+	private ClassicalBMachine makeMachine(final String dest, final boolean used) {
+		final DomBuilder builder = new DomBuilder(used);
 		final Start start = map.get(dest);
 		start.apply(builder);
 		return builder.getMachine();
@@ -106,7 +105,8 @@ public class DependencyWalker extends DepthFirstAdapter {
 	// Takes the name of the destination machine, makes it, and puts it in the
 	// graph
 	private void addMachine(final String dest, final ERefType refType) {
-		final ClassicalBMachine newMachine = makeMachine(dest);
+		final ClassicalBMachine newMachine = makeMachine(dest,
+				refType.equals(ERefType.USES));
 		final String name = newMachine.getName();
 		machines.add(newMachine);
 		graph.addEdge(src, name, refType);

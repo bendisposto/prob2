@@ -3,6 +3,7 @@ package de.prob.web.views;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.servlet.AsyncContext;
@@ -23,15 +24,13 @@ import de.prob.animator.domainobjects.ExpandedFormula;
 import de.prob.animator.domainobjects.FormulaId;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.unicode.UnicodeTranslator;
-import de.prob.web.AbstractSession;
+import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
-public class FormulaView extends AbstractSession implements
-IAnimationChangeListener {
+public class FormulaView extends AbstractAnimationBasedView {
 
 	Logger logger = LoggerFactory.getLogger(FormulaView.class);
 	private Trace currentTrace;
@@ -42,8 +41,23 @@ IAnimationChangeListener {
 
 	@Inject
 	public FormulaView(final AnimationSelector animations) {
+		super(animations, null);
 		this.incrementalUpdate = false;
-		currentTrace = animations.getCurrentTrace();
+		currentTrace = getCurrentTrace();
+		if (currentTrace == null) {
+			currentStateSpace = null;
+		} else {
+			currentStateSpace = currentTrace.getStateSpace();
+			animations.registerAnimationChangeListener(this);
+		}
+	}
+
+	// Constructor instantiated via reflection in multianimation mode.
+	public FormulaView(final AnimationSelector animations,
+			final UUID animationOfInterest) {
+		super(animations, animationOfInterest);
+		this.incrementalUpdate = false;
+		currentTrace = getCurrentTrace();
 		if (currentTrace == null) {
 			currentStateSpace = null;
 		} else {
@@ -55,21 +69,18 @@ IAnimationChangeListener {
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
-		if(currentStateSpace == null) {
+		if (currentStateSpace == null) {
 			return "<html><head><title>Formula Visualization</title></head></html>";
 		}
 		return simpleRender(clientid, "ui/formulaView/index.html");
 	}
 
 	@Override
-	public void traceChange(final Trace trace,
-			final boolean currentAnimationChanged) {
-		if (currentAnimationChanged) {
-			currentTrace = trace;
-			if (currentTrace != null
-					&& currentTrace.getStateSpace().equals(currentStateSpace)) {
-				sendRefresh();
-			}
+	public void performTraceChange(final Trace trace) {
+		currentTrace = trace;
+		if (currentTrace != null
+				&& currentTrace.getStateSpace().equals(currentStateSpace)) {
+			sendRefresh();
 		}
 	}
 
@@ -129,8 +140,8 @@ IAnimationChangeListener {
 			Object data = calculateData();
 			return WebUtils.wrap("cmd", "FormulaView.formulaSet", "formula",
 					formula.getCode(), "unicode", StringEscapeUtils
-					.escapeHtml(UnicodeTranslator.toUnicode(formula
-							.getCode())), "data", data);
+							.escapeHtml(UnicodeTranslator.toUnicode(formula
+									.getCode())), "data", data);
 		} catch (Exception e) {
 			return sendError(
 					"Whoops!",
@@ -191,13 +202,13 @@ IAnimationChangeListener {
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		if(currentStateSpace != null) {
+		if (currentStateSpace != null) {
 			Object data = calculateData();
-			if(data != null) {
-				submit(WebUtils.wrap("cmd", "FormulaView.formulaSet", "formula",
-						formula.getCode(), "unicode", StringEscapeUtils
-						.escapeHtml(UnicodeTranslator.toUnicode(formula
-								.getCode())), "data", data));
+			if (data != null) {
+				submit(WebUtils.wrap("cmd", "FormulaView.formulaSet",
+						"formula", formula.getCode(), "unicode",
+						StringEscapeUtils.escapeHtml(UnicodeTranslator
+								.toUnicode(formula.getCode())), "data", data));
 			}
 		}
 	}

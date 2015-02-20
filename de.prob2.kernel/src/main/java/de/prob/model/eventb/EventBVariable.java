@@ -33,8 +33,8 @@ public class EventBVariable extends Variable {
 			return true;
 		}
 		if (that instanceof EventBVariable
-				&& this.getExpression().equals(
-						((EventBVariable) that).getExpression())) {
+				&& getExpression().getCode().equals(
+						((EventBVariable) that).getExpression().getCode())) {
 			return true;
 		}
 		return super.equals(that);
@@ -42,6 +42,6 @@ public class EventBVariable extends Variable {
 
 	@Override
 	public int hashCode() {
-		return getExpression().hashCode();
+		return getExpression().getCode().hashCode();
 	}
 }

@@ -43,12 +43,6 @@ public class CSPModel extends AbstractModel {
 	}
 
 	@Override
-	public StateSchema getStateSchema() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public AbstractElement getMainComponent() {
 		// TODO Auto-generated method stub
 		return null;
@@ -64,7 +58,4 @@ public class CSPModel extends AbstractModel {
 		return FormalismType.CSP;
 	}
 
-	@Override
-	public void subscribeFormulasOfInterest() {
-	}
 }

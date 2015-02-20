@@ -33,7 +33,7 @@ Console = (function() {
 
     $(document).ready(function() {
         controller = $("#console").console({
-            welcomeMessage : 'ProB 2.0 console',
+            welcomeMessage : 'ProB 2.0 Groovy console',
             promptLabel : 'ProB> ',
             continuedPromptLabel : '----| ',
             commandValidate : onValidate,

@@ -47,6 +47,13 @@
 	font-style: italic;
 }
 
+#events li.timeout {
+	list-style-image: url(/images/timeout.png);
+	color: #888;
+	cursor: not-allowed;
+	font-style: italic;
+}
+
 .CodeMirror {
 	border: 1px solid #000;
 	background: #eee;
@@ -79,4 +86,16 @@
 
 .disabled {
 	opacity: 0.1;
+}
+
+.my-alert {
+	border-color: #F3DBAE;
+	cursor: default;
+}
+
+.my-alert-btn {
+	color: #c09853;
+	background-color: #FAF5D9;
+	border-color: #F3DBAE;
+	margin-left: 10px;
 }

@@ -4,10 +4,10 @@ import spock.lang.Specification
 
 class EvalElementFactoryTest extends Specification {
 
-	def eventB
-	def classicalB
-	def eventBserialized
-	def classicalBserialized
+	def EventB eventB
+	def ClassicalB classicalB
+	def String eventBserialized
+	def String classicalBserialized
 	def factory
 
 	def setup() {
@@ -31,12 +31,12 @@ class EvalElementFactoryTest extends Specification {
 
 	def "Deserialization works for EventB"() {
 		expect:
-		factory.deserialize(eventBserialized) == eventB
+		factory.deserialize(eventBserialized).getCode() == eventB.getCode()
 	}
 
 	def "Deserialization works for ClassicalB"() {
 		expect:
-		factory.deserialize(classicalBserialized) == classicalB
+		factory.deserialize(classicalBserialized).getCode() == classicalB.getCode()
 	}
 
 	//TODO: create integration test to test serialization and deserialization of CSP

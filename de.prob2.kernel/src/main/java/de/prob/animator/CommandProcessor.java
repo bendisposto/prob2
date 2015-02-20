@@ -37,8 +37,9 @@ class CommandProcessor {
 
 		Map<String, PrologTerm> bindings = Collections.emptyMap();
 		final Start ast = parseResult(result);
-		bindings = BindingGenerator.createBindingMustNotFail(query, ast);
-		return new SimplifiedROMap<String, PrologTerm>(bindings);
+		bindings = BindingGenerator.createBinding(ast);
+		return bindings == null ? null
+				: new SimplifiedROMap<String, PrologTerm>(bindings);
 	}
 
 	private Start parseResult(final String input) {

@@ -174,6 +174,10 @@ Events = (function() {
             })
         },250))
 
+        $("#notification-button").click(function(e) {
+            $("#notification-screen").modal('show')
+        })
+
     })
 
     function changeSortMode() {
@@ -186,8 +190,9 @@ Events = (function() {
         }
     }
 
-    function setContent(ops_string) {
-        var ops = JSON.parse(ops_string);
+    function setContent(ops_string, errors) {
+        $(".alert").remove()
+        var ops = JSON.parse(ops_string)
         if (ops.length === 0) {
             $(".input-wrap").addClass("hide-input")
         } else {
@@ -215,6 +220,22 @@ Events = (function() {
         } else {
             $(".notEnabled").css("display","list-item")
         }
+
+        // Errors
+        var errs = JSON.parse(errors)
+        if (errs.length === 1) {
+            $("#alert-bar").html(session.render("/ui/eventview/erroralert.html",errs[0]))
+            $("#notification-button").click(function(e) {
+                $("#notification-screen").modal('show')
+            })
+        } else if(errs.length > 1) {
+            $("#alert-bar").html(session.render("/ui/eventview/erroralert.html",{shortMsg: "Errors Occurred"}))
+            $("#notification-button").click(function(e) {
+                $("#notification-screen").modal('show')
+            })
+        }
+
+        $("#notification").html(session.render("/ui/eventview/errorlist.html",{errors: errs}))
     }
 
     function setBackEnabled(enabled) {
@@ -255,17 +276,17 @@ Events = (function() {
         init()
     }
     extern.setContent = function(data) {
-        setContent(data.ops)
+        setContent(data.ops, "[]")
     }
     extern.setView = function(data) {
         setHide(data.hide)
-        setContent(data.ops)
+        setContent(data.ops,data.errors)
         setBackEnabled(data.canGoBack)
         setForwardEnabled(data.canGoForward)
         setSortMode(data.sortMode)
     }
     extern.newTrace = function(data) {
-        setContent(data.ops)
+        setContent(data.ops,data.errors)
         setBackEnabled(data.canGoBack)
         setForwardEnabled(data.canGoForward)
     }

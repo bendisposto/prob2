@@ -1,5 +1,6 @@
 import de.prob.statespace.*
 import de.prob.animator.command.*
+import de.prob.exception.ProBError;
 import de.prob.parser.*
 import de.prob.prolog.term.*
 
@@ -10,7 +11,7 @@ try {
 	cmd = new GetPluginResultCommand("Grounded Result State")
 	s.execute(cmd)
 	assert cmd.getResult() == ""
-} catch(ResultParserException e) {
+} catch(ProBError e) {
 	thrown = true
 }
 assert thrown
