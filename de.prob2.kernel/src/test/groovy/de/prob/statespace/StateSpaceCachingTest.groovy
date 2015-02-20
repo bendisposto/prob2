@@ -5,8 +5,7 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
+import com.google.common.util.concurrent.UncheckedExecutionException
 
 import de.prob.Main
 import de.prob.scripting.ClassicalBFactory
@@ -94,13 +93,13 @@ class StateSpaceCachingTest extends Specification {
 	}
 
 	def "the cache is emptied when it gets too full"() {
+		setup:
+		Main.maxCacheSize = 5
+
 		when:
-		s.states = CacheBuilder.newBuilder().maximumSize(5).build(new CacheLoader<String, State>() {
-					@Override
-					public State load(final String key) throws Exception {
-						return load(key);
-					}
-				})
+		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
+		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
+		StateSpace s = factory.load(path) as StateSpace
 		Trace t = new Trace(s)
 		def sizes = []
 		for (i in 1..10) {
@@ -110,5 +109,16 @@ class StateSpaceCachingTest extends Specification {
 
 		then:
 		sizes.inject(true) { result, i -> result && (i <= 5) }
+
+		cleanup:
+		Main.maxCacheSize = 100
+	}
+
+	def "trying to get a key from the LoadingCache that doesn't exist results in an exception"() {
+		when:
+		def t = s.states.get("b")
+
+		then:
+		thrown(UncheckedExecutionException)
 	}
 }

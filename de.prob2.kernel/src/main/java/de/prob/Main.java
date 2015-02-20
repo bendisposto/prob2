@@ -37,6 +37,7 @@ public class Main {
 	public static boolean standalone = false;
 	public static boolean local = false;
 	public static boolean multianimation = false;
+	public static int maxCacheSize = 100;
 	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
 	private final Options options;
@@ -130,6 +131,13 @@ public class Main {
 			}
 			if (line.hasOption("multianimation")) {
 				Main.multianimation = true;
+			}
+			if (line.hasOption("maxCacheSize")) {
+				logger.debug("setting maximum cache size requested");
+				String value = line.getOptionValue("maxCacheSize");
+				logger.debug("retrieved maxSize");
+				Main.maxCacheSize = Integer.valueOf(value);
+				logger.debug("Max size set successfully to {}", value);
 			}
 
 			runServer(url, iface, port);

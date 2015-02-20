@@ -39,6 +39,7 @@ import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.annotations.MaxCacheSize;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
@@ -74,23 +75,37 @@ public class StateSpace implements IAnimator {
 	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<IEvalElement, WeakHashMap<Object, Object>>();
 	private final Set<IEvalElement> subscribedFormulas = new HashSet<IEvalElement>();
 
-	LoadingCache<String, State> states = CacheBuilder.newBuilder()
-			.maximumSize(100)
-			// .expireAfterWrite(10, TimeUnit.MINUTES)
-			// .removalListener(MY_LISTENER) this might be useful for triggering
-			// removal of formulas?
-			.build(new CacheLoader<String, State>() {
-				@Override
-				public State load(final String key) throws Exception {
-					return load(key);
-				}
-			});
+	private final LoadingCache<String, State> states;
+
+	private class StateCacheLoader extends CacheLoader<String, State> {
+
+		private final StateSpace stateSpace;
+
+		public StateCacheLoader(final StateSpace stateSpace) {
+			this.stateSpace = stateSpace;
+		}
+
+		@Override
+		public State load(final String key) throws Exception {
+			CheckIfStateIdValidCommand cmd = new CheckIfStateIdValidCommand(key);
+			stateSpace.execute(cmd);
+			if (cmd.isValidState()) {
+				return new State(key, stateSpace);
+			}
+			throw new IllegalArgumentException(key
+					+ " does not represent a valid state in the StateSpace");
+		}
+
+	}
 
 	private AbstractModel model;
 
 	@Inject
-	public StateSpace(final Provider<IAnimator> panimator) {
+	public StateSpace(final Provider<IAnimator> panimator,
+			@MaxCacheSize final int maxSize) {
 		animator = panimator.get();
+		states = CacheBuilder.newBuilder().maximumSize(maxSize)
+				.build(new StateCacheLoader(this));
 	}
 
 	public State getRoot() {
@@ -98,19 +113,11 @@ public class StateSpace implements IAnimator {
 	}
 
 	public State getState(final String id) {
-		State sId = states.getIfPresent(id);
-		if (sId != null) {
-			return sId;
+		try {
+			return states.get(id);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getMessage());
 		}
-		CheckIfStateIdValidCommand cmd = new CheckIfStateIdValidCommand(id);
-		execute(cmd);
-		if (cmd.isValidState()) {
-			sId = new State(id, this);
-			states.put(id, sId);
-			return sId;
-		}
-		throw new IllegalArgumentException(id
-				+ " does not represent a valid state in the StateSpace");
 	}
 
 	State addState(final String id) {
@@ -118,6 +125,8 @@ public class StateSpace implements IAnimator {
 		if (sId != null) {
 			return sId;
 		}
+		// This avoids the prolog query because this can only be called by
+		// objects that know that this state id actually works.
 		sId = new State(id, this);
 		states.put(id, sId);
 		return sId;
