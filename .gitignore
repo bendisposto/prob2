@@ -6,3 +6,4 @@ de.prob2.kernel/groovyTests/Lift/lift0.eventb
 figwheel_server.log
 system.properties
 prob_log.txt
+ProB.log.*
