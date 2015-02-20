@@ -334,9 +334,12 @@ public class StateSpace implements IAnimator {
 	 *            who is interested in the given formulas
 	 * @param formulas
 	 *            that are of interest
+	 * @return whether or not the subscription was successful (will return true
+	 *         if at least one of the formulas was successfully subscribed)
 	 */
-	public void subscribe(final Object subscriber,
+	public boolean subscribe(final Object subscriber,
 			final List<IEvalElement> formulas) {
+		boolean success = false;
 		List<AbstractCommand> subscribeCmds = new ArrayList<AbstractCommand>();
 		for (IEvalElement formulaOfInterest : formulas) {
 			if (formulaOfInterest instanceof CSP) {
@@ -348,6 +351,7 @@ public class StateSpace implements IAnimator {
 					formulaRegistry.get(formulaOfInterest).put(subscriber,
 							new WeakReference<Object>(formulaOfInterest));
 					subscribedFormulas.add(formulaOfInterest);
+					success = true;
 				} else {
 					WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
 					subscribers.put(subscriber, new WeakReference<Object>(
@@ -356,10 +360,12 @@ public class StateSpace implements IAnimator {
 					subscribeCmds.add(new RegisterFormulaCommand(
 							formulaOfInterest));
 					subscribedFormulas.add(formulaOfInterest);
+					success = true;
 				}
 			}
 		}
 		execute(new ComposedCommand(subscribeCmds));
+		return success;
 	}
 
 	/**
@@ -374,14 +380,16 @@ public class StateSpace implements IAnimator {
 	 *            who is interested in the formula
 	 * @param formulaOfInterest
 	 *            that is to be subscribed
+	 * @return will return true if the subscription was not successful, false
+	 *         otherwise
 	 */
-	public void subscribe(final Object subscriber,
+	public boolean subscribe(final Object subscriber,
 			final IEvalElement formulaOfInterest) {
 		if (formulaOfInterest instanceof CSP) {
 			logger.info(
 					"CSP formula {} not subscribed because CSP evaluation is not state based. Use eval method instead",
 					formulaOfInterest.getCode());
-			return;
+			return false;
 		}
 
 		if (formulaRegistry.containsKey(formulaOfInterest)) {
@@ -396,6 +404,7 @@ public class StateSpace implements IAnimator {
 		if (!subscribedFormulas.contains(formulaOfInterest)) {
 			subscribedFormulas.add(formulaOfInterest);
 		}
+		return true;
 	}
 
 	/**
@@ -416,8 +425,11 @@ public class StateSpace implements IAnimator {
 	 *            who is no longer interested in the formula
 	 * @param formula
 	 *            which is to be unsubscribed
+	 * @return whether or not the unsubscription was successful (will return
+	 *         false if the formula was never subscribed to begin with)
 	 */
-	public void unsubscribe(final Object subscriber, final IEvalElement formula) {
+	public boolean unsubscribe(final Object subscriber,
+			final IEvalElement formula) {
 		if (formulaRegistry.containsKey(formula)) {
 			final WeakHashMap<Object, Object> subscribers = formulaRegistry
 					.get(formula);
@@ -425,7 +437,9 @@ public class StateSpace implements IAnimator {
 			if (subscribers.isEmpty()) {
 				subscribedFormulas.remove(formula);
 			}
+			return true;
 		}
+		return false;
 	}
 
 	/**
