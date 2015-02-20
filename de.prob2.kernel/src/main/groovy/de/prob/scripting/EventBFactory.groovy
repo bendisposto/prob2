@@ -68,14 +68,11 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 
-		AbstractCommand loadcmd = new LoadEventBProjectCommand(
-				new EventBModelTranslator(model));
-
-		cmds.add(loadcmd);
+		cmds.add(new LoadEventBProjectCommand(
+				new EventBModelTranslator(model)));
 		cmds.add(new StartAnimationCommand());
 		StateSpace s = model.getStateSpace();
 		s.execute(new ComposedCommand(cmds));
-		s.setLoadcmd(loadcmd);
 
 		loader(model)
 		return model;
@@ -113,11 +110,8 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 		StateSpace s = model.getStateSpace();
 		s.execute(new ComposedCommand(cmds));
 
-		LoadEventBFileCommand load = new LoadEventBFileCommand(loadcmd);
-		s.execute(load);
+		s.execute(new LoadEventBFileCommand(loadcmd));
 		s.execute(new StartAnimationCommand());
-
-		s.setLoadcmd(load);
 
 		loadClosure(model)
 		return model;

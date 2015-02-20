@@ -43,11 +43,9 @@ class CSPFactory extends ModelFactory<CSPModel> {
 
 		prefs.each { k,v -> cmds << new SetPreferenceCommand(k, v) }
 
-		def loadcmd = new LoadCSPCommand(f.getAbsolutePath());
-		cmds << loadcmd
+		cmds << new LoadCSPCommand(f.getAbsolutePath());
 		cmds << new StartAnimationCommand()
 
 		cspModel.getStateSpace().execute(new ComposedCommand(cmds));
-		cspModel.getStateSpace().setLoadcmd(loadcmd);
 	}
 }

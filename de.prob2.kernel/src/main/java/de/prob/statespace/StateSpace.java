@@ -481,14 +481,6 @@ public class StateSpace implements IAnimator {
 		return getTrace(cmd);
 	}
 
-	public AbstractCommand getLoadcmd() {
-		return loadcmd;
-	}
-
-	public void setLoadcmd(final AbstractCommand loadcmd) {
-		this.loadcmd = loadcmd;
-	}
-
 	/**
 	 * Set the model that is being animated. This should only be set at the
 	 * beginning of an animation. The currently supported model types are

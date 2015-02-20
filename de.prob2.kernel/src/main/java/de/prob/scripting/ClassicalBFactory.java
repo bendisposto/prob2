@@ -108,11 +108,9 @@ public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 
-		final AbstractCommand loadcmd = new LoadBProjectCommand(rml, f);
-		cmds.add(loadcmd);
+		cmds.add(new LoadBProjectCommand(rml, f));
 		cmds.add(new StartAnimationCommand());
 		classicalBModel.getStateSpace().execute(new ComposedCommand(cmds));
-		classicalBModel.getStateSpace().setLoadcmd(loadcmd);
 	}
 
 	/**
