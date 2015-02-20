@@ -77,6 +77,19 @@ public class StateSpace implements IAnimator {
 
 	private final LoadingCache<String, State> states;
 
+	/**
+	 * An implementation of a {@link CacheLoader} that tries to load a state
+	 * with the specified id into the {@link StateSpace#states} cache.
+	 * 
+	 * ProB prolog is queried to see if the specified state exists in the state
+	 * space on the prolog side, and if so, the state is loaded into the states
+	 * cache.
+	 * 
+	 * Otherwise, an {@link IllegalArgumentException} is thrown.
+	 * 
+	 * @author joy
+	 * 
+	 */
 	private class StateCacheLoader extends CacheLoader<String, State> {
 
 		private final StateSpace stateSpace;
@@ -108,10 +121,26 @@ public class StateSpace implements IAnimator {
 				.build(new StateCacheLoader(this));
 	}
 
+	/**
+	 * Retrieve the root state from the state space.
+	 * 
+	 * @return the root state from the state space (it will be added to the
+	 *         states cache if it doesn't yet exist)
+	 */
 	public State getRoot() {
 		return addState("root");
 	}
 
+	/**
+	 * Retrieve a state from the state space that has the specified state id.
+	 * 
+	 * @param id
+	 *            of the state to be retrieved
+	 * @return the state object associated with the given id. This is added to
+	 *         the cache via the loading mechanism in {@link StateCacheLoader}
+	 * @throws IllegalArgumentException
+	 *             if a state with the specified id doesn't exist
+	 */
 	public State getState(final String id) {
 		try {
 			return states.get(id);
@@ -120,6 +149,14 @@ public class StateSpace implements IAnimator {
 		}
 	}
 
+	/**
+	 * Adds a state with the specified id to the StateSpace (if it isn't already
+	 * in the state space), and returns the state to the user.
+	 * 
+	 * @param id
+	 *            of the state to be retrieved
+	 * @return a state object associated with the given id.
+	 */
 	State addState(final String id) {
 		State sId = states.getIfPresent(id);
 		if (sId != null) {
@@ -132,6 +169,16 @@ public class StateSpace implements IAnimator {
 		return sId;
 	}
 
+	/**
+	 * Most states in the state space use numeric ids. This method exists to
+	 * allow the user to access a given state via integer id instead of string
+	 * id. The integer value -1 maps to the root state (the only state id that
+	 * is not a number)
+	 * 
+	 * @param id
+	 *            integer value of the state id to be retrieved
+	 * @return a state associated with the id if one exists.
+	 */
 	public State getState(final int id) {
 		if (id == -1) {
 			return getRoot();
@@ -152,6 +199,25 @@ public class StateSpace implements IAnimator {
 		return animator.getId();
 	}
 
+	/**
+	 * <p>
+	 * Find states for which a given predicate is true.
+	 * </p>
+	 * 
+	 * <p>
+	 * <b>NOTE:</b> The returned list of states will also include states which
+	 * are not initialised. The semantics of the method could therefore be
+	 * better described as finding:
+	 * </p>
+	 * <p>
+	 * <code>{states matching predicate} &cup; {noninitialised states}</code>
+	 * </p>
+	 * 
+	 * 
+	 * @param predicate
+	 *            for which states will be found
+	 * @return a {@link List} of any states found
+	 */
 	public List<State> getStatesFromPredicate(final IEvalElement predicate) {
 		GetStatesFromPredicate cmd = new GetStatesFromPredicate(predicate);
 		execute(cmd);
@@ -218,6 +284,16 @@ public class StateSpace implements IAnimator {
 		return !command.hasErrors();
 	}
 
+	/**
+	 * Evaluates a list of formulas in a given state. Uses the implementation in
+	 * {@link State#eval(List)}
+	 * 
+	 * @param state
+	 *            for which the list of formulas should be evaluated
+	 * @param formulas
+	 *            to be evaluated
+	 * @return a list of {@link IEvalResult}s
+	 */
 	public List<IEvalResult> eval(final State state,
 			final List<IEvalElement> formulas) {
 		return state.eval(formulas);
@@ -225,25 +301,46 @@ public class StateSpace implements IAnimator {
 
 	/**
 	 * Calculates the registered formulas at the given state and returns the
-	 * cached values
+	 * cached values. Calls the {@link State#explore()} method, and uses the
+	 * {@link State#getValues()} method.
 	 * 
-	 * @param stateId
+	 * @param state
+	 *            for which the values are to be retrieved
 	 * @return map from {@link IEvalElement} object to {@link IEvalResult}
 	 *         objects
 	 */
-	public Map<IEvalElement, IEvalResult> valuesAt(final State stateId) {
-		stateId.explore();
-		return stateId.getValues();
+	public Map<IEvalElement, IEvalResult> valuesAt(final State state) {
+		state.explore();
+		return state.getValues();
 	}
 
-	public boolean canBeEvaluated(final State stateId) {
-		return stateId.isInitialised();
+	/**
+	 * This checks if the {@link State#isInitialised()} property is set. If so,
+	 * it is safe to evaluate formulas for the given state.
+	 * 
+	 * @param state
+	 *            which is to be tested
+	 * @return whether or not formulas should be evaluated in this state
+	 */
+	public boolean canBeEvaluated(final State state) {
+		return state.isInitialised();
 	}
 
+	/**
+	 * This method lets ProB know that the subscriber is interested in the
+	 * specified formulas. ProB will then evaluate the formulas for every state
+	 * (after which the values can be retrieved from the
+	 * {@link State#getValues()} method).
+	 * 
+	 * @param subscriber
+	 *            who is interested in the given formulas
+	 * @param formulas
+	 *            that are of interest
+	 */
 	public void subscribe(final Object subscriber,
-			final List<IEvalElement> formulasOfInterest) {
+			final List<IEvalElement> formulas) {
 		List<AbstractCommand> subscribeCmds = new ArrayList<AbstractCommand>();
-		for (IEvalElement formulaOfInterest : formulasOfInterest) {
+		for (IEvalElement formulaOfInterest : formulas) {
 			if (formulaOfInterest instanceof CSP) {
 				logger.info(
 						"CSP formula {} not subscribed because CSP evaluation is not state based. Use eval method instead",
@@ -276,7 +373,9 @@ public class StateSpace implements IAnimator {
 	 * based.
 	 * 
 	 * @param subscriber
+	 *            who is interested in the formula
 	 * @param formulaOfInterest
+	 *            that is to be subscribed
 	 */
 	public void subscribe(final Object subscriber,
 			final IEvalElement formulaOfInterest) {
@@ -301,6 +400,11 @@ public class StateSpace implements IAnimator {
 		}
 	}
 
+	/**
+	 * @param formula
+	 *            to be checked
+	 * @return whether or not a subscriber is interested in this formula
+	 */
 	public boolean isSubscribed(final IEvalElement formula) {
 		return formulaRegistry.containsKey(formula)
 				&& !formulaRegistry.get(formula).isEmpty();
@@ -311,20 +415,25 @@ public class StateSpace implements IAnimator {
 	 * particular formula, then they can unsubscribe to that formula
 	 * 
 	 * @param subscriber
-	 * @param formulaOfInterest
+	 *            who is no longer interested in the formula
+	 * @param formula
+	 *            which is to be unsubscribed
 	 */
-	public void unsubscribe(final Object subscriber,
-			final IEvalElement formulaOfInterest) {
-		if (formulaRegistry.containsKey(formulaOfInterest)) {
+	public void unsubscribe(final Object subscriber, final IEvalElement formula) {
+		if (formulaRegistry.containsKey(formula)) {
 			final WeakHashMap<Object, Object> subscribers = formulaRegistry
-					.get(formulaOfInterest);
+					.get(formula);
 			subscribers.remove(subscriber);
 			if (subscribers.isEmpty()) {
-				subscribedFormulas.remove(formulaOfInterest);
+				subscribedFormulas.remove(formula);
 			}
 		}
 	}
 
+	/**
+	 * @return a {@link Set} containing the formulas for which there are
+	 *         currently interested subscribers.
+	 */
 	public Set<IEvalElement> getSubscribedFormulas() {
 		List<IEvalElement> toRemove = new ArrayList<IEvalElement>();
 		for (IEvalElement e : subscribedFormulas) {
@@ -354,12 +463,28 @@ public class StateSpace implements IAnimator {
 	}
 
 	@Override
+	public void startTransaction() {
+		animator.startTransaction();
+	}
+
+	@Override
+	public void endTransaction() {
+		animator.endTransaction();
+	}
+
+	@Override
+	public boolean isBusy() {
+		return animator.isBusy();
+	}
+
+	@Override
 	public String toString() {
 		return animator.getId();
 	}
 
 	/**
 	 * @param state
+	 *            whose operations are to be printed
 	 * @return Returns a String representation of the operations available from
 	 *         the specified {@link State}. This is mainly useful for console
 	 *         output.
@@ -382,6 +507,7 @@ public class StateSpace implements IAnimator {
 
 	/**
 	 * @param state
+	 *            which is to be printed
 	 * @return Returns a String representation of the information about the
 	 *         state with the specified {@link State}. This includes the id for
 	 *         the state, the cached calculated values, and if an invariant
@@ -426,6 +552,8 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
+	 * Calculates a trace between the specified states.
+	 * 
 	 * @param sourceId
 	 *            of source node
 	 * @param destId
@@ -544,17 +672,23 @@ public class StateSpace implements IAnimator {
 	 * thrown if the specified id is unknown.
 	 * 
 	 * @throws IllegalArgumentException
-	 * @param that
+	 * @param stateId
+	 *            of the state thate is to be found.
 	 * @return {@link State} for the specified id
 	 */
-	public Object getAt(final int sId) {
-		return getState(sId);
+	public Object getAt(final int stateId) {
+		return getState(stateId);
 	}
 
 	/**
+	 * Takes a collection of transitions and retrieves any information that
+	 * needs to be retrieved (i.e. parameters, return values, etc.) if the
+	 * transitions have not yet been evaluated ({@link Transition#isEvaluated()}
+	 * ).
+	 * 
 	 * @param transitions
 	 *            to be evaluated
-	 * @return a set containing all of the evaluated ops
+	 * @return a set containing all of the evaluated transitions
 	 */
 	public Set<Transition> evaluateTransitions(
 			final Collection<Transition> transitions) {
@@ -570,7 +704,9 @@ public class StateSpace implements IAnimator {
 	 * the formula) the formula is cached.
 	 * 
 	 * @param states
+	 *            for which the formula is to be evaluated
 	 * @param formulas
+	 *            which are to be evaluated
 	 * @return a map of the formulas and their results for all of the specified
 	 *         states
 	 */
@@ -616,23 +752,7 @@ public class StateSpace implements IAnimator {
 			}
 			result.get(id).put(formula, value);
 		}
-
 		return result;
-	}
-
-	@Override
-	public void startTransaction() {
-		animator.startTransaction();
-	}
-
-	@Override
-	public void endTransaction() {
-		animator.endTransaction();
-	}
-
-	@Override
-	public boolean isBusy() {
-		return animator.isBusy();
 	}
 
 }
