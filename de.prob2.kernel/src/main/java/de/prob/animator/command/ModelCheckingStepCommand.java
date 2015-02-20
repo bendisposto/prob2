@@ -45,6 +45,7 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	private IModelCheckingResult result;
 	private final String RESULT = "Result";
 	private final String STATS = "Stats";
+	private boolean interrupted = false;
 
 	Logger logger = LoggerFactory.getLogger(ModelCheckingStepCommand.class);
 
@@ -77,6 +78,8 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 			stats = new StateSpaceStats(numberNodes, numberTrans,
 					numberProcessed);
 			result = extractResult(bindings.get(RESULT));
+		} else {
+			interrupted = true;
 		}
 	}
 
@@ -163,5 +166,9 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 
 	public StateSpaceStats getStats() {
 		return stats;
+	}
+
+	public boolean isInterrupted() {
+		return interrupted;
 	}
 }
