@@ -7,7 +7,9 @@
             [clojure.core.async :as async :refer (<! <!! >! >!! put! chan go go-loop)]
             [prone.middleware :refer [wrap-exceptions]]
             [environ.core :refer [env]]
-            [taoensso.sente :as sente]))
+            [taoensso.sente :as sente]
+            [cognitect.transit :as transit])
+  (:import java.io.ByteArrayOutputStream))
 
 
 (defmulti handle-updates (fn [{:keys [event]} _] (first event)))
@@ -15,7 +17,7 @@
 (defmethod handle-updates :de.prob2/hello [_ _] (println :hello))
 (defmethod handle-updates :default [e c] (println e))
 
-(defrecord Sente [post ws-handshake receive-channel send-fn! clients stop-routing-fn!]
+(defrecord Sente [post ws-handshake receive-channel send-fn! clients stop-routing-fn! encoding]
   component/Lifecycle
   (start [this]
     (if (:send-fn! this) this
@@ -45,12 +47,16 @@
             :clients nil))
       this)))
 
-(defn send! [sente user-id event]
-  (let [sf (:send-fn! sente)]
-    (sf user-id event)))
+(defn- encode [message encoding]
+  (let [s (ByteArrayOutputStream. 4096)
+        w (transit/writer s encoding)]
+    (transit/write w message)
+    (.toString s)))
 
-(defn mk-sente [] (map->Sente {}))
+(defn send! [{:keys [send-fn! encoding]} user-id event-id message]
+  (send-fn! user-id [event-id (encode message encoding)]))
 
+(defn mk-sente [] (map->Sente {:encoding :json-verbose}))
 
 (defn default-routes []
   (fn [{:keys [ws-handshake post]}]

@@ -24,7 +24,9 @@
                  [prone "0.8.0"]
                  [compojure "1.3.1"]
                  [selmer "0.8.0"]
-                 [environ "1.0.0"]]
+                 [environ "1.0.0"]
+                 [com.cognitect/transit-clj "0.8.259"]
+                 [com.cognitect/transit-cljs "0.8.205"]]
 
   :plugins [
             [lein-cljsbuild "1.0.4"]

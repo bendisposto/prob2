@@ -1,5 +1,6 @@
 (ns de.prob2.kernel
-  (:require [com.stuartsierra.component :as component])
+  (:require [com.stuartsierra.component :as component]
+            [de.prob2.handler :as handler])
   (:import de.prob.Main
            (de.prob.statespace AnimationSelector Trace IModelChangedListener IAnimationChangeListener StateSpace)))
 
@@ -19,6 +20,8 @@
 
 (defprotocol Transform (transform [this]))
 (extend-protocol Transform
+  de.prob.model.representation.AbstractModel
+  (transform [v] {:type (kebap-case (class v)) :dir (.getModelDirPath v) :file (.getAbsolutePath (.getModelFile v)) :main-component-name (.toString (.getMainComponent v))})
   de.prob.model.representation.Machine
   (transform [v] (default-map v {}))
   de.prob.model.eventb.Context
@@ -54,8 +57,8 @@
 
 
 
-(defn notify-model-changed [{:keys [clients send-fn!] :as sente} state-space]
-  (doseq [c (:any @clients)] (send-fn! c [::model-changed {:space :dude}])))
+(defn notify-model-changed [{:keys [clients] :as sente} state-space]
+  (doseq [c (:any @clients)] (handler/send! sente c ::model-changed {})))
 (defn notify-trace-changed [send-fn trace current?])
 (defn notify-animator-busy [busy?])
 
