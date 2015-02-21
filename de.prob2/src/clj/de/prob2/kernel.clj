@@ -49,21 +49,27 @@
 
 (defn extractE [absel]
   (let [chd (.getChildren absel)
-            tgt (transform absel)]
-        (if (seq chd)
-          (do (->> chd (map extractV) (into tgt)))
-          tgt)))
+        tgt (transform absel)]
+    (if (seq chd)
+      (do (->> chd (map extractV) (into tgt)))
+      tgt)))
 
 
 
-
+;; FIXME We should only send information to clients who actually care 
 (defn notify-model-changed [{:keys [clients] :as sente} state-space]
-  (doseq [c (:any @clients)] (handler/send! sente c ::model-changed {})))
-(defn notify-trace-changed [send-fn trace current?])
-(defn notify-animator-busy [busy?])
+  (doseq [c (:any @clients)]
+    (handler/send! sente c ::model-changed (extractE (.getModel state-space)))))
 
+;; FIXME We should only send information to clients who actually care 
+(defn notify-trace-changed [{:keys [clients] :as sente} trace current?]
+  (doseq [c (:any @clients)]
+    (handler/send! sente c ::trace-changed {:trace-id (.getProperty trace "UUID")})))
 
-
+;; FIXME We should only send information to clients who actually care 
+(defn notify-animator-busy [{:keys [clients] :as sente} busy?]
+  (doseq [c (:any @clients)]
+    (handler/send! sente c (if busy? ::animator-is-busy ::animator-is-idle) {})))
 
 
 
@@ -78,7 +84,7 @@
           (modelChanged [this state-space] (notify-model-changed sente state-space))
           IAnimationChangeListener
           (traceChange [this trace current] (notify-trace-changed sente trace current))
-          (animatorStatus [this busy] (notify-animator-busy busy)))]
+          (animatorStatus [this busy] (notify-animator-busy sente busy)))]
     (.registerAnimationChangeListener animations listener)
     (.registerModelChangedListener animations listener)
     listener))
