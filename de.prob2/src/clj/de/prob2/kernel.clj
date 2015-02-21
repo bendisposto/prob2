@@ -54,19 +54,41 @@
       (do (->> chd (map extractV) (into tgt)))
       tgt)))
 
+(defn transform-state [state] (.toString state))
+(defn transform-transition [transition] (.toString transition))
+
+;; TraceElement: previousTE  (-evt-> state)
+(defn append-trace-element [ts te]
+  (let [src (transform-state (.getSrc te))
+        dest (transform-state (.getDest te))
+        trans (transform-transition (.getTransition te))]
+    (conj ts {:src src :dest dest :trans trans})))
+
+(defn prepare-trace [trace]
+  (loop [te (.getProperty trace "current")
+         head (.getProperty trace "head")
+         ts []]
+    (println :te te)
+    (let [pr (.getPrevious te)]
+      (if (= te head) ts
+          (recur pr head (append-trace-element ts te))))))
 
 
-;; FIXME We should only send information to clients who actually care 
+;; FIXME We should only send information to clients who actually care
 (defn notify-model-changed [{:keys [clients] :as sente} state-space]
   (doseq [c (:any @clients)]
     (handler/send! sente c ::model-changed (extractE (.getModel state-space)))))
 
-;; FIXME We should only send information to clients who actually care 
+;; FIXME We should only send information to clients who actually care
 (defn notify-trace-changed [{:keys [clients] :as sente} trace current?]
   (doseq [c (:any @clients)]
-    (handler/send! sente c ::trace-changed {:trace-id (.getProperty trace "UUID")})))
+    (handler/send!
+     sente c
+     ::trace-changed
+     {:trace-id (.getProperty trace "UUID")
+      :trace (prepare-trace trace)})))
 
-;; FIXME We should only send information to clients who actually care 
+;; FIXME We should only send information to clients who actually care
 (defn notify-animator-busy [{:keys [clients] :as sente} busy?]
   (doseq [c (:any @clients)]
     (handler/send! sente c (if busy? ::animator-is-busy ::animator-is-idle) {})))
