@@ -263,11 +263,11 @@ Events = (function() {
     }
 
     function disable() {
-        $("body").append("<div class='modal-backdrop disabled'></div>")
+        $("body").append("<div class='modal-backdrop transparent'></div>")
     }
 
     function enable() {
-        $(".disabled").remove()
+        $(".transparent").remove()
     }
 
     extern.client = ""
