@@ -128,18 +128,14 @@ FormulaView = (function() {
         };
 
         var calcColor = function(d) {
-            if(hasChildren(d)) {
-                return colorMain(d);
+            if (d.hasError === true) {
+                return "#FFC1A8";
+            } else if(d.value === true) {
+                return "#A6F1A6";
+            } else if(d.value === false) {
+                return "#F0B6B6";
             } else {
-                if (d.hasError === true) {
-                    return "#FFA07A";
-                } else if(d.value === true) {
-                    return "#A6F1A6";
-                } else if(d.value === false) {
-                    return "#F39999";
-                } else {
-                    return "#fff";
-                };
+                return "#fff";
             };
         };
 
@@ -167,6 +163,15 @@ FormulaView = (function() {
             .attr("id", function(d) { return "node" + d.id; });
 
         nodeEnter.each(function(d) { d.width = 0 })
+
+        var rects = nodeEnter.append("svg:rect")
+            
+        rects.attr("height",60)
+            .attr("y",-30)
+            .attr("rx",10)
+            .style("fill", function(d) { return calcColor(d); })
+            .style("stroke", function(d) { return colorMain(d); })
+            .style("stroke-width", 1e-6);
 
         nodeEnter.append("svg:text")
             .attr("class","label")
@@ -198,16 +203,11 @@ FormulaView = (function() {
                 return "v"+d.id;
             });
 
-        nodeEnter.append("svg:rect")
-            .attr("height",60)
-            .attr("y",-30)
-            .attr("rx",10)
-            .attr("x", function(d) { return hasChildren(d) ? -(d.width) : 0})
+        rects.attr("x", function(d) { return hasChildren(d) ? -(d.width) : 0})
             .attr("width", function(d) { return d.width })
             .attr("id",function(d) { return "r"+d.id})
-            .style("fill", function(d) { return calcColor(d); })
-            .style("stroke", function(d) { return colorMain(d); })
-            .style("stroke-width", 1e-6);
+
+
 
         var maxWidths = []
         nodes.forEach(function(d) { if(maxWidths[d.depth] === undefined) {
@@ -227,7 +227,7 @@ FormulaView = (function() {
             .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
         nodeUpdate.select("rect")
-            .style("fill-opacity", 0.7)
+            .style("fill-opacity", 1)
             .style("stroke-width", "2px");
 
         nodeUpdate.selectAll("text.label")
