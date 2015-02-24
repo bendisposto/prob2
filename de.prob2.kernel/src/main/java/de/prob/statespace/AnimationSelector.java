@@ -146,6 +146,7 @@ public class AnimationSelector {
 			currentTrace = traces.values().iterator().next();
 			currentStateSpace = currentTrace.getStateSpace();
 		}
+		protectedTraces.clear();
 		refresh();
 	}
 
