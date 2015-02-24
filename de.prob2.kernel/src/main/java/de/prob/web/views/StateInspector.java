@@ -77,7 +77,8 @@ public class StateInspector extends AbstractAnimationBasedView {
 			Object eval = currentTrace.evalCurrent(currentModel
 					.parseFormula(code));
 			return WebUtils.wrap("cmd", "StateInspector.result", "code",
-					unicode(code), "result", eval.toString());
+					unicode(code), "result",
+					StringEscapeUtils.escapeHtml(eval.toString()));
 		}
 		return null;
 
