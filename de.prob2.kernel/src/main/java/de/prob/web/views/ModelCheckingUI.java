@@ -16,6 +16,7 @@ import com.google.inject.Inject;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.LTL;
+import de.prob.annotations.PublicSession;
 import de.prob.check.CBCDeadlockChecker;
 import de.prob.check.CBCInvariantChecker;
 import de.prob.check.ConsistencyChecker;
@@ -39,6 +40,7 @@ import de.prob.statespace.Trace;
 import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
+@PublicSession
 public class ModelCheckingUI extends AbstractAnimationBasedView implements
 		IModelChangedListener {
 
@@ -60,6 +62,7 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 	public ModelCheckingUI(final AnimationSelector animations) {
 		super(animations, null);
 		this.animations = animations;
+		incrementalUpdate = false;
 		animations.registerModelChangedListener(this);
 		options = ModelCheckingOptions.DEFAULT;
 	}
@@ -69,6 +72,7 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 			final UUID animationOfInterest) {
 		super(animations, animationOfInterest);
 		this.animations = animations;
+		incrementalUpdate = false;
 		animations.registerModelChangedListener(this);
 		options = ModelCheckingOptions.DEFAULT;
 	}
@@ -295,7 +299,12 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		// FIXME Requires something differend than resending!
+		Trace ofInterest = animationOfInterest == null ? animationsRegistry
+				.getCurrentTrace() : animationsRegistry
+				.getTrace(animationOfInterest);
+		if (ofInterest != null) {
+			modelChanged(ofInterest.getStateSpace());
+		}
 	}
 
 	@Override
