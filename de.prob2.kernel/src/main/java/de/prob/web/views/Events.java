@@ -98,7 +98,7 @@ public class Events extends AbstractAnimationBasedView {
 			}
 			Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
 					"ops", WebUtils.toJson(opNames), "canGoBack", false,
-					"canGoForward", false);
+					"canGoForward", false, "errors", "[]");
 			submit(wrap);
 			return;
 		}
