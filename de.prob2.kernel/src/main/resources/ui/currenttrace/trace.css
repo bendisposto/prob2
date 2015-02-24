@@ -40,6 +40,6 @@ ul {
 
 .transparent {
     zoom: 1;
-    filter: alpha(opacity=50);
-    opacity: 0.2;
+    filter: alpha(opacity=10);
+    opacity: 0.1;
 }
