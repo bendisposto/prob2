@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -60,17 +59,7 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 
 	@Inject
 	public ModelCheckingUI(final AnimationSelector animations) {
-		super(animations, null);
-		this.animations = animations;
-		incrementalUpdate = false;
-		animations.registerModelChangedListener(this);
-		options = ModelCheckingOptions.DEFAULT;
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public ModelCheckingUI(final AnimationSelector animations,
-			final UUID animationOfInterest) {
-		super(animations, animationOfInterest);
+		super(animations);
 		this.animations = animations;
 		incrementalUpdate = false;
 		animations.registerModelChangedListener(this);

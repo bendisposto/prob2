@@ -3,7 +3,6 @@ package de.prob.web.views;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.servlet.AsyncContext;
@@ -41,21 +40,7 @@ public class FormulaView extends AbstractAnimationBasedView {
 
 	@Inject
 	public FormulaView(final AnimationSelector animations) {
-		super(animations, null);
-		this.incrementalUpdate = false;
-		currentTrace = getCurrentTrace();
-		if (currentTrace == null) {
-			currentStateSpace = null;
-		} else {
-			currentStateSpace = currentTrace.getStateSpace();
-			animations.registerAnimationChangeListener(this);
-		}
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public FormulaView(final AnimationSelector animations,
-			final UUID animationOfInterest) {
-		super(animations, animationOfInterest);
+		super(animations);
 		this.incrementalUpdate = false;
 		currentTrace = getCurrentTrace();
 		if (currentTrace == null) {

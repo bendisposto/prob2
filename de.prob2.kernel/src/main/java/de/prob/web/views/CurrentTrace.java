@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -29,15 +28,7 @@ public class CurrentTrace extends AbstractAnimationBasedView {
 
 	@Inject
 	public CurrentTrace(final AnimationSelector animations) {
-		super(animations, null);
-		incrementalUpdate = false;
-		animations.registerAnimationChangeListener(this);
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public CurrentTrace(final AnimationSelector animations,
-			final UUID animationOfInterest) {
-		super(animations, animationOfInterest);
+		super(animations);
 		incrementalUpdate = false;
 		animations.registerAnimationChangeListener(this);
 	}

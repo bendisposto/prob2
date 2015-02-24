@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -19,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.Main;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.Event;
@@ -54,18 +52,8 @@ public class Events extends AbstractAnimationBasedView {
 	@Inject
 	public Events(final AnimationSelector selector,
 			final ScriptEngineProvider sep) {
-		super(selector, null);
+		super(selector);
 		groovy = sep.get();
-		incrementalUpdate = false;
-		animationsRegistry.registerAnimationChangeListener(this);
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public Events(final AnimationSelector animations,
-			final UUID animationOfInterest) {
-		super(animations, animationOfInterest);
-		groovy = Main.getInjector().getInstance(ScriptEngineProvider.class)
-				.get();
 		incrementalUpdate = false;
 		animationsRegistry.registerAnimationChangeListener(this);
 	}

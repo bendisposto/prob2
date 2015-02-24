@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -47,16 +46,8 @@ public class StateInspector extends AbstractAnimationBasedView {
 
 	@Inject
 	public StateInspector(final AnimationSelector animations) {
-		super(animations, null);
+		super(animations);
 		this.incrementalUpdate = false;
-		animations.registerAnimationChangeListener(this);
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public StateInspector(final AnimationSelector animations,
-			final UUID animationOfInterest) {
-		super(animations, animationOfInterest);
-		incrementalUpdate = false;
 		animations.registerAnimationChangeListener(this);
 	}
 
