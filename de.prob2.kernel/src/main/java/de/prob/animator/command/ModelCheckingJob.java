@@ -1,5 +1,6 @@
 package de.prob.animator.command;
 
+import de.prob.check.CheckInterrupted;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.ModelCheckingOptions;
 import de.prob.check.NotYetFinished;
@@ -51,7 +52,7 @@ public class ModelCheckingJob extends AbstractCommand {
 	}
 
 	public IModelCheckingResult getResult() {
-		return res;
+		return res == null && interrupted ? new CheckInterrupted() : res;
 	}
 
 	@Override
