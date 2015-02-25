@@ -59,10 +59,15 @@ public class ProBInstance {
 	@Inject
 	public void sendInterrupt() {
 		try {
-			final String command = home + osInfo.getUserInterruptCmd();
-			String[] cmd = new String[] { command,
-					Long.toString(userInterruptReference) };
-			Runtime.getRuntime().exec(cmd);
+			if (connection.isBusy()) {
+				logger.info("sending interrupt signal");
+				final String command = home + osInfo.getUserInterruptCmd();
+				String[] cmd = new String[] { command,
+						Long.toString(userInterruptReference) };
+				Runtime.getRuntime().exec(cmd);
+			} else {
+				logger.info("ignoring interrupt signal because the connection is not busy");
+			}
 		} catch (IOException e) {
 			logger.warn("calling the send_user_interrupt command failed", e);
 		}

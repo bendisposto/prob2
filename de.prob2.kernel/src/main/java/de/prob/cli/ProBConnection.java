@@ -22,6 +22,7 @@ public class ProBConnection {
 	private PrintStream outputStream;
 	private final Logger logger = LoggerFactory.getLogger(ProBConnection.class);
 	private volatile boolean shutingDown;
+	private volatile boolean busy;
 	private final String key;
 	private final int port;
 
@@ -70,13 +71,19 @@ public class ProBConnection {
 					"ProB has been shut down. It does not accept messages. Received: "
 							+ term);
 		}
+		busy = true;
 		if (isStreamReady()) {
 			outputStream.println(term);
 			outputStream.flush();
 		}
 		String answer = getAnswer();
+		busy = false;
 		logger.info(answer);
 		return answer;
+	}
+
+	public boolean isBusy() {
+		return busy;
 	}
 
 	private String getAnswer() throws IOException {
