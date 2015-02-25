@@ -44,8 +44,10 @@ public class LTLChecker implements IModelCheckJob {
 
 	@Override
 	public IModelCheckingResult getResult() {
-		return job.getResult() == null ? new LTLNotYetFinished(formula) : job
-				.getResult();
+		if (job.getResult() == null) {
+			return new NotYetFinished("No result was calculated", -1);
+		}
+		return job.getResult();
 	}
 
 	@Override

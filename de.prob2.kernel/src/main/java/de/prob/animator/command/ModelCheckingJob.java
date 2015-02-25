@@ -20,7 +20,7 @@ public class ModelCheckingJob extends AbstractCommand {
 	private StateSpaceStats stats;
 	private final ModelCheckingUI ui;
 
-	private final long time = -1;
+	private long time = -1;
 
 	public ModelCheckingJob(final ModelCheckingOptions options,
 			final String jobId, final ModelCheckingUI ui) {
@@ -33,6 +33,9 @@ public class ModelCheckingJob extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
+		if (time == -1) {
+			time = System.currentTimeMillis();
+		}
 		cmd.writeCommand(pto);
 	}
 
