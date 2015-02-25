@@ -15,7 +15,6 @@ public class ModelCheckingJob extends AbstractCommand {
 	private final String jobId;
 	private ModelCheckingOptions options;
 	private ModelCheckingStepCommand cmd;
-	private boolean completed = false;
 	private IModelCheckingResult res;
 	private StateSpaceStats stats;
 	private final ModelCheckingUI ui;
@@ -27,6 +26,7 @@ public class ModelCheckingJob extends AbstractCommand {
 		this.options = options;
 		this.jobId = jobId;
 		this.ui = ui;
+		this.completed = false;
 		cmd = new ModelCheckingStepCommand(TIME, options);
 	}
 
@@ -52,11 +52,6 @@ public class ModelCheckingJob extends AbstractCommand {
 
 	public IModelCheckingResult getResult() {
 		return res;
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return completed;
 	}
 
 	@Override

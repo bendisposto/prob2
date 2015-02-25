@@ -28,6 +28,7 @@ import de.prob.prolog.term.PrologTerm;
 public abstract class AbstractCommand {
 
 	protected boolean interrupted = false;
+	protected boolean completed = true;
 
 	/**
 	 * Creates the prolog term that is sent to the core. It gets the term output
@@ -87,7 +88,7 @@ public abstract class AbstractCommand {
 	}
 
 	public boolean isCompleted() {
-		return true;
+		return interrupted || completed;
 	}
 
 	/**
