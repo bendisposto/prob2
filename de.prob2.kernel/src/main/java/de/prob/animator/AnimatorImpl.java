@@ -46,28 +46,25 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public synchronized void execute(final AbstractCommand command) {
+		if (cli == null) {
+			logger.error("Probcli is missing. Try \"upgrade\".");
+			throw new CliError("no cli found");
+		}
+
+		if (DEBUG && !command.getSubcommands().isEmpty()) {
+			List<AbstractCommand> cmds = command.getSubcommands();
+			for (AbstractCommand abstractCommand : cmds) {
+				execute(abstractCommand);
+			}
+		}
+
 		if (command.blockAnimator()) {
 			startTransaction();
 		}
 		do {
-			if (cli == null) {
-				logger.error("Probcli is missing. Try \"upgrade\".");
-				throw new CliError("no cli found");
-			}
-			IPrologResult result = null;
-			List<String> errormessages = null;
-			try {
-				if (DEBUG && !command.getSubcommands().isEmpty()) {
-					List<AbstractCommand> cmds = command.getSubcommands();
-					for (AbstractCommand abstractCommand : cmds) {
-						execute(abstractCommand);
-					}
-				} else {
-					result = processor.sendCommand(command);
-				}
-			} finally {
-				errormessages = getErrors();
-			}
+			IPrologResult result = processor.sendCommand(command);
+			List<String> errormessages = getErrors();
+
 			if (result instanceof YesResult && errormessages.isEmpty()) {
 				command.processResult(((YesResult) result).getBindings());
 			} else {
@@ -113,6 +110,8 @@ class AnimatorImpl implements IAnimator {
 	@Override
 	public void sendInterrupt() {
 		Thread.currentThread().interrupt();
+
+		logger.info("Sending an interrupt to the CLI");
 		cli.sendInterrupt();
 	}
 

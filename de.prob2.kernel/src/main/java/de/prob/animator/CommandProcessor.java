@@ -1,7 +1,9 @@
 package de.prob.animator;
 
-import java.util.Collections;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
@@ -19,6 +21,9 @@ import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
 
 class CommandProcessor {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(CommandProcessor.class);
 
 	private ProBInstance cli;
 
@@ -39,9 +44,7 @@ class CommandProcessor {
 
 		String result = cli.send(query);
 
-		Map<String, PrologTerm> bindings = Collections.emptyMap();
 		final Start ast = parseResult(result);
-
 		return extractResult(ast);
 	}
 
@@ -59,10 +62,10 @@ class CommandProcessor {
 		} else if (topnode instanceof AExceptionResult) {
 			AExceptionResult r = (AExceptionResult) topnode;
 			String message = r.getString().getText();
-			throw new ProBError("Error while executing prolog. Message was: "
-					+ message);
+			throw new ProBError(message);
+		} else {
+			throw new ProBError("unknown prolog result " + ast);
 		}
-		return null;
 	}
 
 	private Start parseResult(final String input) {
