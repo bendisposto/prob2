@@ -6,11 +6,13 @@ import java.util.Map;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
 import de.prob.cli.ProBInstance;
+import de.prob.core.sablecc.node.AExceptionResult;
 import de.prob.core.sablecc.node.AInterruptedResult;
 import de.prob.core.sablecc.node.ANoResult;
 import de.prob.core.sablecc.node.AYesResult;
 import de.prob.core.sablecc.node.PResult;
 import de.prob.core.sablecc.node.Start;
+import de.prob.exception.ProBError;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ProBResultParser;
 import de.prob.prolog.output.PrologTermStringOutput;
@@ -54,13 +56,18 @@ class CommandProcessor {
 					.createBinding(ast);
 			return new YesResult(new SimplifiedROMap<String, PrologTerm>(
 					binding));
+		} else if (topnode instanceof AExceptionResult) {
+			AExceptionResult r = (AExceptionResult) topnode;
+			String message = r.getString().getText();
+			throw new ProBError("Error while executing prolog. Message was: "
+					+ message);
 		}
 		return null;
 	}
 
 	private Start parseResult(final String input) {
 		if (input == null) {
-			return null; // TODO: Why would this be null?
+			return null;
 		} else {
 			return ProBResultParser.parse(input);
 		}

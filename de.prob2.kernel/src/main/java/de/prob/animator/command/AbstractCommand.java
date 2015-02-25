@@ -145,7 +145,8 @@ public abstract class AbstractCommand {
 			processResult(((YesResult) result).getBindings());
 			throw new ProBError("ProB reported Errors: " + errormessages);
 		} else {
-			throw new ProBError("Unknown result type received from prolog.");
+			throw new ProBError("Errors were: "
+					+ Joiner.on("\n").join(errormessages));
 		}
 	}
 }
