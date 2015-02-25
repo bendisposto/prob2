@@ -14,4 +14,9 @@ public class YesResult implements IPrologResult {
 	public ISimplifiedROMap<String, PrologTerm> getBindings() {
 		return bindings;
 	}
+
+	@Override
+	public String toString() {
+		return "Yes: " + bindings.toString();
+	}
 }
