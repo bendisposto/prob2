@@ -55,7 +55,15 @@
       tgt)))
 
 (defn transform-state [state] (.toString state))
-(defn transform-transition [transition] (.toString transition))
+(defn transform-transition [transition]
+  (let [name (.getName transition)
+        id (.getId transition)
+        parameters (.getParameterPredicate transition)
+        return-values (.getReturnValues transition)]
+    {:name name
+     :id id
+     :parameters parameters
+     :return-values return-values}))
 
 ;; TraceElement: previousTE  (-evt-> state)
 (defn append-trace-element [ts te]
@@ -65,13 +73,12 @@
     (conj ts {:src src :dest dest :trans trans})))
 
 (defn prepare-trace [trace]
-  (loop [te (.getProperty trace "current")
-         head (.getProperty trace "head")
+  (loop [te (.getCurrent trace)
          ts []]
-    (println :te te)
     (let [pr (.getPrevious te)]
-      (if (= te head) ts
-          (recur pr head (append-trace-element ts te))))))
+      (println :te te :p pr)
+      (if-not pr ts
+          (recur pr (append-trace-element ts te))))))
 
 
 ;; FIXME We should only send information to clients who actually care
