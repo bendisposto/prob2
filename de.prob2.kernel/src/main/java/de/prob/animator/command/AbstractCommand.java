@@ -3,6 +3,12 @@ package de.prob.animator.command;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.Joiner;
+
+import de.prob.animator.IPrologResult;
+import de.prob.animator.InterruptedResult;
+import de.prob.animator.NoResult;
+import de.prob.animator.YesResult;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
@@ -20,6 +26,9 @@ import de.prob.prolog.term.PrologTerm;
  * 
  */
 public abstract class AbstractCommand {
+
+	protected boolean interrupted = false;
+
 	/**
 	 * Creates the prolog term that is sent to the core. It gets the term output
 	 * object from the animator. The animator will automatically take care of
@@ -93,6 +102,10 @@ public abstract class AbstractCommand {
 		return false;
 	}
 
+	public boolean isInterrupted() {
+		return interrupted;
+	}
+
 	/**
 	 * This code is called in three cases:
 	 * <ol>
@@ -108,27 +121,31 @@ public abstract class AbstractCommand {
 	 * {@link AbstractCommand}, but if a developer wants to implement special
 	 * behavior, he/she needs to overwrite this method.
 	 * 
-	 * @param bindings
+	 * @param result
 	 *            is <code>null</code> if Prolog answered no or a list of
 	 *            bindings if the execution of the Prolog query was successful.
 	 * @param errormessages
 	 *            contains a {@link String} listing the error messages or
 	 *            <code>null</code> if no error messages were logged.
 	 */
-	public void processErrorResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings,
-			final String errormessages) {
-		if (bindings == null) {
+	public void processErrorResult(final IPrologResult result,
+			final List<String> errormessages) {
+		if (result instanceof NoResult) {
 			String message = "Prolog said no.";
 			if (errormessages != null) {
-				message += " Error messages were: " + errormessages;
+				message += " Error messages were: "
+						+ Joiner.on("\n").join(errormessages);
 			} else {
 				message += " No error messages were produced.";
 			}
 			throw new ProBError(message);
-		} else {
-			processResult(bindings);
+		} else if (result instanceof InterruptedResult) {
+			interrupted = true;
+		} else if (result instanceof YesResult) {
+			processResult(((YesResult) result).getBindings());
 			throw new ProBError("ProB reported Errors: " + errormessages);
+		} else {
+			throw new ProBError("Unknown result type received from prolog.");
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package de.prob.animator;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -16,8 +17,7 @@ import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.GetErrorsCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.exception.CliError;
-import de.prob.parser.ISimplifiedROMap;
-import de.prob.prolog.term.PrologTerm;
+import de.prob.exception.ProBError;
 import de.prob.statespace.AnimationSelector;
 
 class AnimatorImpl implements IAnimator {
@@ -54,8 +54,8 @@ class AnimatorImpl implements IAnimator {
 				logger.error("Probcli is missing. Try \"upgrade\".");
 				throw new CliError("no cli found");
 			}
-			ISimplifiedROMap<String, PrologTerm> bindings = null;
-			String errormessages = null;
+			IPrologResult result = null;
+			List<String> errormessages = null;
 			try {
 				if (DEBUG && !command.getSubcommands().isEmpty()) {
 					List<AbstractCommand> cmds = command.getSubcommands();
@@ -63,15 +63,15 @@ class AnimatorImpl implements IAnimator {
 						execute(abstractCommand);
 					}
 				} else {
-					bindings = processor.sendCommand(command);
+					result = processor.sendCommand(command);
 				}
 			} finally {
 				errormessages = getErrors();
 			}
-			if (errormessages == null && bindings != null) {
-				command.processResult(bindings);
+			if (result instanceof YesResult && errormessages.isEmpty()) {
+				command.processResult(((YesResult) result).getBindings());
 			} else {
-				command.processErrorResult(bindings, errormessages);
+				command.processErrorResult(result, errormessages);
 			}
 		} while (!command.isCompleted());
 		if (command.blockAnimator()) {
@@ -79,18 +79,24 @@ class AnimatorImpl implements IAnimator {
 		}
 	}
 
-	private synchronized String getErrors() {
-		ISimplifiedROMap<String, PrologTerm> errorbindings;
-		List<String> errors;
-		errorbindings = processor.sendCommand(getErrors);
-		getErrors.processResult(errorbindings);
-		errors = getErrors.getErrors();
-		if (errors != null && !errors.isEmpty()) {
-			String msg = Joiner.on('\n').join(errors);
-			logger.error("ProB raised exception(s):\n", msg);
-			return msg;
+	private synchronized List<String> getErrors() {
+		List<String> errors = Collections.emptyList();
+		IPrologResult errorresult = processor.sendCommand(getErrors);
+		if (errorresult instanceof YesResult) {
+			getErrors.processResult(((YesResult) errorresult).getBindings());
+			errors = getErrors.getErrors();
+			if (!errors.isEmpty()) {
+				String msg = Joiner.on('\n').join(errors);
+				logger.error("ProB raised exception(s):\n", msg);
+				return errors;
+			}
+		} else if (errorresult instanceof NoResult
+				|| errorresult instanceof InterruptedResult) {
+			throw new ProBError("Get errors must be successful");
+		} else {
+			throw new ProBError("Unknown result type");
 		}
-		return null;
+		return errors;
 	}
 
 	@Override

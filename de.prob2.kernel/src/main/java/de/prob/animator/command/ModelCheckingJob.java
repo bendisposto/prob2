@@ -68,12 +68,4 @@ public class ModelCheckingJob extends AbstractCommand {
 		return stats;
 	}
 
-	@Override
-	public void processErrorResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings,
-			final String errormessages) {
-		// TODO Auto-generated method stub
-		super.processErrorResult(bindings, errormessages);
-	}
-
 }

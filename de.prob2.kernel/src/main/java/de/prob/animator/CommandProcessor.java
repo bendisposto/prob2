@@ -6,9 +6,12 @@ import java.util.Map;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
 import de.prob.cli.ProBInstance;
+import de.prob.core.sablecc.node.AInterruptedResult;
+import de.prob.core.sablecc.node.ANoResult;
+import de.prob.core.sablecc.node.AYesResult;
+import de.prob.core.sablecc.node.PResult;
 import de.prob.core.sablecc.node.Start;
 import de.prob.parser.BindingGenerator;
-import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ProBResultParser;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -17,8 +20,7 @@ class CommandProcessor {
 
 	private ProBInstance cli;
 
-	public ISimplifiedROMap<String, PrologTerm> sendCommand(
-			final AbstractCommand command) {
+	public IPrologResult sendCommand(final AbstractCommand command) {
 
 		String query = "";
 		if (command instanceof IRawCommand) {
@@ -37,14 +39,28 @@ class CommandProcessor {
 
 		Map<String, PrologTerm> bindings = Collections.emptyMap();
 		final Start ast = parseResult(result);
-		bindings = BindingGenerator.createBinding(ast);
-		return bindings == null ? null
-				: new SimplifiedROMap<String, PrologTerm>(bindings);
+
+		return extractResult(ast);
+	}
+
+	private IPrologResult extractResult(final Start ast) {
+		PResult topnode = ast.getPResult();
+		if (topnode instanceof ANoResult) {
+			return new NoResult();
+		} else if (topnode instanceof AInterruptedResult) {
+			return new InterruptedResult();
+		} else if (topnode instanceof AYesResult) {
+			Map<String, PrologTerm> binding = BindingGenerator
+					.createBinding(ast);
+			return new YesResult(new SimplifiedROMap<String, PrologTerm>(
+					binding));
+		}
+		return null;
 	}
 
 	private Start parseResult(final String input) {
 		if (input == null) {
-			return null;
+			return null; // TODO: Why would this be null?
 		} else {
 			return ProBResultParser.parse(input);
 		}
