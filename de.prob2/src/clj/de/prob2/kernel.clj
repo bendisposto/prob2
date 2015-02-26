@@ -1,6 +1,6 @@
 (ns de.prob2.kernel
   (:require [com.stuartsierra.component :as component]
-            [de.prob2.handler :as handler])
+            [de.prob2.sente :as snt])
   (:import de.prob.Main
            (de.prob.statespace AnimationSelector Trace IModelChangedListener IAnimationChangeListener StateSpace)))
 
@@ -96,12 +96,12 @@
 ;; FIXME We should only send information to clients who actually care
 (defn notify-model-changed [{:keys [clients] :as sente} state-space]
   (doseq [c (:any @clients)]
-    (handler/send! sente c ::model-changed (extractE (.getModel state-space)))))
+    (snt/send! sente c ::model-changed (extractE (.getModel state-space)))))
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-trace-changed [{:keys [clients] :as sente} trace current?]
   (doseq [c (:any @clients)]
-    (handler/send!
+    (snt/send!
      sente c
      ::trace-changed
      {:trace-id (.getProperty trace "UUID")
@@ -110,7 +110,7 @@
 ;; FIXME We should only send information to clients who actually care
 (defn notify-animator-busy [{:keys [clients] :as sente} busy?]
   (doseq [c (:any @clients)]
-    (handler/send! sente c (if busy? ::animator-is-busy ::animator-is-idle) {})))
+    (snt/send! sente c (if busy? ::animator-is-busy ::animator-is-idle) {})))
 
 
 
