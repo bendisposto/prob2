@@ -153,7 +153,9 @@ public class Transition {
 		if (predicateString != null) {
 			return predicateString;
 		}
-		predicateString = Joiner.on(" & ").join(getParameterPredicates());
+		List<String> params = getParameterPredicates();
+		predicateString = params.isEmpty() ? "TRUE=TRUE" : Joiner.on(" & ")
+				.join(params);
 		return predicateString;
 	}
 
@@ -162,6 +164,9 @@ public class Transition {
 	 *         parameters for this transition
 	 */
 	public List<String> getParameterPredicates() {
+		if (isArtificialTransition()) {
+			return Collections.emptyList();
+		}
 		evaluate();
 		List<String> predicates = new ArrayList<String>();
 		AbstractElement mainComponent = stateSpace.getModel()
@@ -220,6 +225,11 @@ public class Transition {
 		return rep;
 	}
 
+	public boolean isArtificialTransition() {
+		return name.equals("$initialise_machine")
+				|| name.equals("$setup_constants");
+	}
+
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj == this) {
@@ -236,7 +246,8 @@ public class Transition {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(getId(), getSource().getId(), getDestination().getId());
+		return Objects.hashCode(getId(), getSource().getId(), getDestination()
+				.getId());
 	}
 
 	/**
