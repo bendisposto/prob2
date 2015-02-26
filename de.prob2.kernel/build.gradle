@@ -114,6 +114,9 @@ version=${project.version}"""
 compileGroovy { dependsOn= [createBuildConstants]}
 
 
+
+
+
 test.doFirst { systemProperties['integrationtest'] = 'true' }
 
 groovydoc {
@@ -173,9 +176,10 @@ task downloadCli << {
 	new File(target).setExecutable(true)
 }
 
-test { ignoreFailures=true; dependsOn= [downloadCli] }
-
-
+test { 
+  ignoreFailures=true
+  dependsOn << downloadCli
+}
 
 def os_extension() {
 	def bits = System.getProperty("sun.arch.data.model");
