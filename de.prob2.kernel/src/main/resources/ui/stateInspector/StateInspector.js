@@ -68,6 +68,8 @@ StateInspector = (function() {
 
     function clearInput() {
         $("#content").replaceWith("<tbody id='content'></tbody>");
+        clearResults()
+        $(".CodeMirror").addClass("_empty")
     }
 
     function extractOfInterest(data) {
@@ -91,6 +93,7 @@ StateInspector = (function() {
             extractOfInterest(model[i])
         };
         $("input").click(clickFunction)
+        $(".CodeMirror").removeClass("_empty")
     }
 
     function clickFunction(e) {
@@ -193,6 +196,8 @@ StateInspector = (function() {
         $("#edit").click(function(e) {
             $("#edit-screen").modal('show')
         })
+
+        $(".CodeMirror").addClass("_empty")
     }
 
     function disable() {
