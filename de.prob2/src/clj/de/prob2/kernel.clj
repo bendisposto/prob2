@@ -8,11 +8,11 @@
 (defn kebap-case
   ([cls] (kebap-case cls ""))
   ([cls add]
-     (keyword
-      (str (clojure.string/join
-            "-"
-            (map (fn [s] (.toLowerCase s))
-                 (map second (re-seq #"([A-Z][a-z]*)" (.getSimpleName cls))))) add))))
+   (keyword
+    (str (clojure.string/join
+          "-"
+          (map (fn [s] (.toLowerCase s))
+               (map second (re-seq #"([A-Z][a-z]*)" (.getSimpleName cls))))) add))))
 
 (defn default-map [v m]
   (into  {:type (kebap-case (class v)) :name (.toString v)} m))
@@ -54,7 +54,19 @@
       (do (->> chd (map extractV) (into tgt)))
       tgt)))
 
-(defn transform-state [state] (.toString state))
+(defn transform-state-values [initialized? values]
+  (into {} (map (fn [x] [(.toString (.getKey x)) (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
+
+(defn transform-state [state]
+  {:initialized? (.isInitialised state)
+   :inv-ok? (.isInvariantOk state)
+   :timeout? (.isTimeoutOccurred state)
+   :max-trans? (.isMaxTransitionsCalculated state)
+   :id (.getId state)
+   :state-errors (into [] (.getStateErrors state))
+   :transitions-with-timeout (into #{} (.getTransitionsWithTimeout state))
+   :values (transform-state-values (.isInitialised state) (.getValues state))})
+
 (defn transform-transition [transition]
   (let [name (.getName transition)
         id (.getId transition)
@@ -63,23 +75,23 @@
     {:name name
      :id id
      :parameters parameters
-     :return-values return-values}))
+     :return-values (into [] return-values)}))
 
 ;; TraceElement: previousTE  (-evt-> state)
 (defn append-trace-element [ts te]
   (let [src (transform-state (.getSrc te))
         dest (transform-state (.getDest te))
-        trans (transform-transition (.getTransition te))]
+        t (.getTransition te)
+        trans (when t (transform-transition t))]
     (conj ts {:src src :dest dest :trans trans})))
 
 (defn prepare-trace [trace]
   (loop [te (.getCurrent trace)
          ts []]
     (let [pr (.getPrevious te)]
-      (println :te te :p pr)
-      (if-not pr ts
-          (recur pr (append-trace-element ts te))))))
-
+      (if-not pr
+        ts
+        (recur pr (append-trace-element ts te))))))
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-model-changed [{:keys [clients] :as sente} state-space]

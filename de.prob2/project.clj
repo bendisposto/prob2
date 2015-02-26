@@ -58,6 +58,7 @@
                                         :pretty-print  true}}}}
 
   :profiles {:dev {:repl-options {:init-ns user
+                                  :timeout 120000
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
                    :dependencies [[ring-mock "0.1.5"]
