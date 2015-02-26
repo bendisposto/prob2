@@ -9,6 +9,7 @@
             [goog.history.EventType :as EventType]
             [cljs.core.async :as async :refer (<! >! put! chan)]
             [taoensso.sente  :as sente :refer (cb-success?)]
+            [clojure.data]
             [taoensso.encore :as enc    :refer (logf log logp)]
             [cljsjs.react :as react])
   (:import goog.History))
@@ -36,7 +37,14 @@
 (defmulti handle first)
 
 (defmethod handle :de.prob2.kernel/model-changed [[_ m]]
-  (logp m))
+  (logp "Model changed"))
+
+(defmethod handle :de.prob2.kernel/trace-changed [[_ {:keys [trace-id current previous transition]}]]
+  (logp "Trace: " trace-id)
+  (logp "Current State: " current)
+  (logp "Previous State: " previous)
+  (logp "Transition: " transition)
+  (logp "Diff: " (keys (first (clojure.data/diff (:values current) (:values  previous))))))
 
 
 (defmethod handle :default [[t m]]

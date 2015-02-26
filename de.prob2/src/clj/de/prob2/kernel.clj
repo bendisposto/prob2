@@ -77,21 +77,24 @@
      :parameters parameters
      :return-values (into [] return-values)}))
 
-;; TraceElement: previousTE  (-evt-> state)
-(defn append-trace-element [ts te]
+(defn prepare-trace-element [te]
   (let [src (transform-state (.getSrc te))
         dest (transform-state (.getDest te))
         t (.getTransition te)
         trans (when t (transform-transition t))]
-    (conj ts {:src src :dest dest :trans trans})))
+    {:src src :dest dest :trans trans}))
 
-(defn prepare-trace [trace]
+(defn prepare-full-trace [trace]
   (loop [te (.getCurrent trace)
          ts []]
     (let [pr (.getPrevious te)]
       (if-not pr
         ts
-        (recur pr (append-trace-element ts te))))))
+        (recur pr (conj ts (prepare-trace-element te)))))))
+
+(defn prepare-trace [trace]
+  (let [te (.getCurrent trace)]
+    (prepare-trace-element te)))
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-model-changed [{:keys [clients] :as sente} state-space]
@@ -100,12 +103,15 @@
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-trace-changed [{:keys [clients] :as sente} trace current?]
-  (doseq [c (:any @clients)]
-    (snt/send!
-     sente c
-     ::trace-changed
-     {:trace-id (.getProperty trace "UUID")
-      :trace (prepare-trace trace)})))
+  (let [{:keys [src dest trans]} (prepare-trace trace)]
+    (doseq [c (:any @clients)]
+      (snt/send!
+       sente c
+       ::trace-changed
+       {:trace-id (.getProperty trace "UUID")
+        :current dest
+        :previous src
+        :transition trans}))))
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-animator-busy [{:keys [clients] :as sente} busy?]
