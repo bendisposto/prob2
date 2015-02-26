@@ -16,23 +16,30 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class GetErrorsCommand extends AbstractCommand {
 	public static final String ERRORS_VARIABLE = "Errors";
+	public static final String WARNINGS_ONLY_VARIABLE = "WarningsOnly";
 	private List<String> errors;
+	private boolean warningsOnly;
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		errors = PrologTerm.atomicStrings((ListPrologTerm) bindings
 				.get(ERRORS_VARIABLE));
+		warningsOnly = "true".equals(bindings.get(WARNINGS_ONLY_VARIABLE).getFunctor());
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		errors = Collections.emptyList();
-		pto.openTerm("get_error_messages").printVariable(ERRORS_VARIABLE)
+		pto.openTerm("get_error_messages").printVariable(WARNINGS_ONLY_VARIABLE).printVariable(ERRORS_VARIABLE)
 				.closeTerm();
 	}
 
 	public List<String> getErrors() {
 		return errors;
+	}
+	
+	public boolean onlyWarningsOccurred() {
+		return warningsOnly;
 	}
 }
