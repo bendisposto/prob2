@@ -113,7 +113,6 @@ version=${project.version}"""
 
 compileGroovy { dependsOn= [createBuildConstants]}
 
-test { ignoreFailures=true }
 
 test.doFirst { systemProperties['integrationtest'] = 'true' }
 
@@ -173,6 +172,9 @@ task downloadCli << {
 	download("http://nightly.cobra.cs.uni-duesseldorf.de/cspmf/"+targetName,target)
 	new File(target).setExecutable(true)
 }
+
+test { ignoreFailures=true; dependsOn= [downloadCli] }
+
 
 
 def os_extension() {
