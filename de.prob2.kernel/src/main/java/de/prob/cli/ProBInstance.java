@@ -28,6 +28,9 @@ public class ProBInstance {
 
 	private final OsSpecificInfo osInfo;
 
+	private String[] interruptCommand;
+
+	@Inject
 	public ProBInstance(final Process process, final BufferedReader stream,
 			final Long userInterruptReference, final ProBConnection connection,
 			final String home, final OsSpecificInfo osInfo) {
@@ -36,6 +39,9 @@ public class ProBInstance {
 		this.home = home;
 		this.osInfo = osInfo;
 		this.userInterruptReference = userInterruptReference.longValue();
+		final String command = home + osInfo.getUserInterruptCmd();
+		interruptCommand = new String[] { command,
+				Long.toString(userInterruptReference) };
 		thread = makeOutputPublisher(stream);
 		thread.start();
 	}
@@ -56,15 +62,11 @@ public class ProBInstance {
 		}
 	}
 
-	@Inject
 	public void sendInterrupt() {
 		try {
 			if (connection.isBusy()) {
 				logger.info("sending interrupt signal");
-				final String command = home + osInfo.getUserInterruptCmd();
-				String[] cmd = new String[] { command,
-						Long.toString(userInterruptReference) };
-				Runtime.getRuntime().exec(cmd);
+				Runtime.getRuntime().exec(interruptCommand);
 			} else {
 				logger.info("ignoring interrupt signal because the connection is not busy");
 			}

@@ -71,13 +71,11 @@ public class ProBConnection {
 					"ProB has been shut down. It does not accept messages. Received: "
 							+ term);
 		}
-		busy = true;
 		if (isStreamReady()) {
 			outputStream.println(term);
 			outputStream.flush();
 		}
 		String answer = getAnswer();
-		busy = false;
 		logger.info(answer);
 		return answer;
 	}
@@ -107,8 +105,11 @@ public class ProBConnection {
 			 * Or add some kind of timer to prevent the thread blocks forever.
 			 * See task#102
 			 */
+			busy = true;
 			int count = inputStream.read(buffer);
-
+			busy = false; // as soon as we read something, we know that the
+							// Prolog has been processed and we do not want to
+							// allow interruption
 			if (count > 0) {
 				final byte length = 1;
 
