@@ -54,18 +54,18 @@
       (do (->> chd (map extractV) (into tgt)))
       tgt)))
 
-(defn transform-state-values [values]
-  (into {} (map (fn [x] [(.toString (.getKey x)) (.toString (.getValue x))]) values)))
+(defn transform-state-values [initialized? values]
+  (into {} (map (fn [x] [(.toString (.getKey x)) (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
 
 (defn transform-state [state]
-  {:initialized (.isInitialised state)
+  {:initialized? (.isInitialised state)
    :inv-ok? (.isInvariantOk state)
    :timeout? (.isTimeoutOccurred state)
    :max-trans? (.isMaxTransitionsCalculated state)
    :id (.getId state)
    :state-errors (into [] (.getStateErrors state))
    :transitions-with-timeout (into #{} (.getTransitionsWithTimeout state))
-   :values (transform-state-values (.getValues state))})
+   :values (transform-state-values (.isInitialised state) (.getValues state))})
 
 (defn transform-transition [transition]
   (let [name (.getName transition)
@@ -86,13 +86,12 @@
     (conj ts {:src src :dest dest :trans trans})))
 
 (defn prepare-trace [trace]
-  (let [x (loop [te (.getCurrent trace)
-                 ts []]
-            (let [pr (.getPrevious te)]
-
-              (if-not pr ts
-                      (recur pr (append-trace-element ts te)))))] (println :res x) x))
-
+  (loop [te (.getCurrent trace)
+         ts []]
+    (let [pr (.getPrevious te)]
+      (if-not pr
+        ts
+        (recur pr (append-trace-element ts te))))))
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-model-changed [{:keys [clients] :as sente} state-space]
