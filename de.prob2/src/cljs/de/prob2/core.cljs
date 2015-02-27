@@ -5,6 +5,9 @@
             [reagent.session :as session]
             [secretary.core :as secretary :include-macros true]
             [goog.events :as events]
+            [goog.dom.query]
+            [goog.array]
+            [goog.dom.dataset]
             [cognitect.transit :as transit]
             [goog.history.EventType :as EventType]
             [cljs.core.async :as async :refer (<! >! put! chan)]
@@ -13,10 +16,13 @@
             [taoensso.encore :as enc    :refer (logf log logp)]
             [cljsjs.react :as react])
   (:import goog.History))
-
+ 
 ;; -------------------------
 ;; Views
                                         ;(sente/set-logging-level! :trace)
+
+
+(def trace (atom {}))
 
 
 (let [{:keys [chsk ch-recv send-fn state]}
@@ -39,13 +45,13 @@
 (defmethod handle :de.prob2.kernel/model-changed [[_ m]]
   (logp "Model changed"))
 
-(defmethod handle :de.prob2.kernel/trace-changed [[_ {:keys [trace-id current previous transition]}]]
-  (logp "Trace: " trace-id)
+(defmethod handle :de.prob2.kernel/trace-changed [[_ {:keys [trace-id current previous transition] :as t}]]
+  (reset! trace t)
+  (logp "Trace: " (str trace-id))
   (logp "Current State: " current)
   (logp "Previous State: " previous)
   (logp "Transition: " transition)
   (logp "Diff: " (keys (first (clojure.data/diff (:values current) (:values  previous))))))
-
 
 (defmethod handle :default [[t m]]
   (logp "Received Type: " t)
@@ -58,6 +64,21 @@
    (when (= (:id e) :chsk/recv)
      (let [[e-type raw-msg] (:?data e)]
        (handle [e-type (read-transit raw-msg)])))))
+
+(defn null-component [] [:div "Not yet implemented"])
+
+(defn state-row [name current-value previous-value]
+  [:tr [:td name] [:td current-value] [:td previous-value]])
+
+(defn state-view []
+  (let [{:keys [trace-id current previous transition]} @trace
+        names (map first (:values current))
+        cvals (map second (:values current))
+        pvals (map second (:values previous))]
+    [:div (str  trace-id)]
+    (into [:table {:class "table"}] (map (fn [n c p] [state-row n c p]) names cvals pvals))
+    ))
+
 
 (defn home-page []
   [:div [:h2 "Welcome to ProB 2.0"]
@@ -80,6 +101,9 @@
 (secretary/defroute "/about" []
   (session/put! :current-page #'about-page))
 
+(secretary/defroute "/stateview" []
+  (session/put! :current-page #'state-view))
+
 ;; -------------------------
 ;; History
 ;; must be called after routes have been defined
@@ -91,8 +115,27 @@
        (secretary/dispatch! (.-token event))))
     (.setEnabled true)))
 
+
+;; -------------------------
+;; Components
+
+(def components {"state-view" state-view})
+
+
 ;; -------------------------
 ;; Initialize app
+
+(defn ^:export register
+  ([component-name gui-id settings]
+     (println settings)
+     (when-let [t (. js/document (getElementById gui-id))]
+       (reagent/render-component [(get components component-name null-component)] t)))) 
+
+(defn setup-components []
+  (let [cs (goog.dom.query "div[data-type]")]
+    (doseq [c (array-seq cs 0)]
+      (register (goog.dom.dataset/get c "type") (.-id c) (js->clj (goog.dom.dataset/getAll c))))))
+
 (defn init! []
   (hook-browser-navigation!)
-  (reagent/render-component [current-page] (.getElementById js/document "app")))
+  (setup-components))
