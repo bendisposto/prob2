@@ -127,11 +127,6 @@ class State {
 	 * @return a list of solutions found, or an empty list if no solutions were found
 	 */
 	def List<Transition> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
-
-		if (name.startsWith("\$") && !(name == "\$setup_constants" || name == "\$initialise_machine")) {
-			name = name.substring(1)
-		}
-
 		String predicate = predicates == []? "TRUE = TRUE" : predicates.join(" & ")
 		try {
 			def newOps = stateSpace.transitionFromPredicate(this, name, predicate, nrOfSolutions)
@@ -185,11 +180,7 @@ class State {
 		}
 
 		formulas.collect {
-			if (values.containsKey(it)) {
-				return values.get(it)
-			} else {
-				return results.get(it)
-			}
+			values.containsKey(it) ? values.get(it) : results.get(it)
 		}
 	}
 
@@ -203,6 +194,10 @@ class State {
 		return id;
 	}
 
+	def long numericalId() {
+		return id == "root" ? -1 : id as long;
+	}
+
 	def String getStateRep() {
 		if (stateSpace.getModel().getFormalismType() == FormalismType.B) {
 			GetBStateCommand cmd = new GetBStateCommand(this)
@@ -212,9 +207,7 @@ class State {
 		return StringUtil.generateString("unknown")
 	}
 
-	def long numericalId() {
-		return id == "root" ? -1 : id as long;
-	}
+
 
 
 	def boolean equals(Object that) {

@@ -225,6 +225,9 @@ public class Trace {
 	 */
 	@Deprecated
 	def invokeMethod(String method, params) {
+		if(method.startsWith("\$") && !(method == "\$setup_constants" || method == "\$initialise_machine")) {
+			method = method.substring(1)
+		}
 		def transition = getCurrentState().findTransition(method, params as List)
 		if (transition == null) {
 			throw new IllegalArgumentException("Could not execute event with name "+method+" and parameters "+params.toString());
