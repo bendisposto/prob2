@@ -7,6 +7,8 @@ import spock.lang.Specification
 import de.prob.Main
 import de.prob.animator.domainobjects.CSP
 import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.IEvalElement
+import de.prob.animator.domainobjects.IEvalResult
 import de.prob.model.representation.CSPModel
 import de.prob.scripting.ClassicalBFactory
 
@@ -265,5 +267,34 @@ class StateSpaceEvaluationTest extends Specification {
 		success
 		before
 		!s.getSubscribedFormulas().contains(formula)
+	}
+
+	def "it is possible to evaluate multiple formulas in multiple states"() {
+		when:
+		def waiting = "waiting" as ClassicalB
+		def ready = "ready" as ClassicalB
+		def active = "active" as ClassicalB
+		def state2 = firstState.new("pp=PID1")
+		def state3 = firstState.new("pp=PID2")
+		def state4 = firstState.new("pp=PID3")
+		def states = [
+			root,
+			firstState,
+			state2,
+			state3,
+			state4
+		]
+		s.subscribe("I'm a subscriber!",[ready])
+		Map<State, Map<IEvalElement, IEvalResult>> result = s.evaluateForGivenStates(states, [waiting, ready, active])
+
+		then:
+		result[root] == null // ignored because it is not initialised
+		def statesWOroot = states.findAll { it != root}
+		statesWOroot.collect { result[it][ready].getValue() }.inject(true) {acc, i -> acc && i == "{}"}
+		statesWOroot.collect { result[it][active].getValue() }.inject(true) {acc, i -> acc && i == "{}"}
+		result[firstState][waiting].getValue() == "{}"
+		result[state2][waiting].getValue() == "{PID1}"
+		result[state3][waiting].getValue() == "{PID2}"
+		result[state4][waiting].getValue() == "{PID3}"
 	}
 }

@@ -185,6 +185,22 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
+	 * This method is implemented to provide access to the {@link State} objects
+	 * specified by an integer identifier. This maps to a groovy operator so
+	 * that in the console users can type variableOfTypeStateSpace[stateId] and
+	 * receive the corresponding StateId back. An IllegalArgumentException is
+	 * thrown if the specified id is unknown.
+	 * 
+	 * @throws IllegalArgumentException
+	 * @param stateId
+	 *            of the state thate is to be found.
+	 * @return {@link State} for the specified id
+	 */
+	public Object getAt(final int stateId) {
+		return getState(stateId);
+	}
+
+	/**
 	 * Whenever a {@link StateSpace} instance is created, it is assigned a
 	 * unique identifier to help external parties differentiate between two
 	 * instances. This getter method returns this id.
@@ -676,22 +692,6 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
-	 * This method is implemented to provide access to the {@link State} objects
-	 * specified by an integer identifier. This maps to a groovy operator so
-	 * that in the console users can type variableOfTypeStateSpace[stateId] and
-	 * receive the corresponding StateId back. An IllegalArgumentException is
-	 * thrown if the specified id is unknown.
-	 * 
-	 * @throws IllegalArgumentException
-	 * @param stateId
-	 *            of the state thate is to be found.
-	 * @return {@link State} for the specified id
-	 */
-	public Object getAt(final int stateId) {
-		return getState(stateId);
-	}
-
-	/**
 	 * Takes a collection of transitions and retrieves any information that
 	 * needs to be retrieved (i.e. parameters, return values, etc.) if the
 	 * transitions have not yet been evaluated ({@link Transition#isEvaluated()}
@@ -733,19 +733,14 @@ public class StateSpace implements IAnimator {
 
 				// Check for cached values
 				Map<IEvalElement, IEvalResult> map = stateId.getValues();
-				if (map == null) {
-					for (IEvalElement f : formulas) {
+				for (IEvalElement f : formulas) {
+					if (map.containsKey(f)) {
+						res.put(f, map.get(f));
+					} else {
 						cmds.add(f.getCommand(stateId));
 					}
-				} else {
-					for (IEvalElement f : formulas) {
-						if (map.containsKey(f)) {
-							res.put(f, map.get(f));
-						} else {
-							cmds.add(f.getCommand(stateId));
-						}
-					}
 				}
+
 			}
 		}
 
@@ -754,13 +749,7 @@ public class StateSpace implements IAnimator {
 		for (EvaluationCommand efCmd : cmds) {
 			IEvalElement formula = efCmd.getEvalElement();
 			IEvalResult value = efCmd.getValue();
-			State id = getState(efCmd.getStateId());
-			Map<IEvalElement, IEvalResult> values = id.getValues();
-
-			if (formulaRegistry.containsKey(formula)
-					&& !formulaRegistry.get(formula).isEmpty()) {
-				values.put(formula, value);
-			}
+			State id = addState(efCmd.getStateId());
 			result.get(id).put(formula, value);
 		}
 		return result;
