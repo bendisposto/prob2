@@ -16,7 +16,7 @@
             [taoensso.encore :as enc    :refer (logf log logp)]
             [cljsjs.react :as react])
   (:import goog.History))
- 
+
 ;; -------------------------
 ;; Views
                                         ;(sente/set-logging-level! :trace)
@@ -40,17 +40,28 @@
     (transit/read r msg)))
 
 
+(defn fix-names [{:keys [history] :as t}]
+  (assoc
+   t
+   :history
+   (map
+    (fn [e]
+      (assoc e
+             :name (get {"$initialise_machine" "INITIALIZATION"
+                         "$setup_constants" "SETUP CONSTANTS"} (:name e) (:name e)))) history)))
+
+
 (defmulti handle first)
 
 (defmethod handle :de.prob2.kernel/model-changed [[_ m]]
   (logp "Model changed"))
 
-(defmethod handle :de.prob2.kernel/trace-changed [[_ {:keys [trace-id current previous transition] :as t}]]
-  (reset! trace t)
+(defmethod handle :de.prob2.kernel/trace-changed [[_ {:keys [trace-id current previous history] :as t}]]
+  (reset! trace (fix-names t))
   (logp "Trace: " (str trace-id))
   (logp "Current State: " current)
   (logp "Previous State: " previous)
-  (logp "Transition: " transition)
+  (logp "History: " history)
   (logp "Diff: " (keys (first (clojure.data/diff (:values current) (:values  previous))))))
 
 (defmethod handle :default [[t m]]
@@ -78,6 +89,15 @@
     [:div (str  trace-id)]
     (into [:table {:class "table"}] (map (fn [n c p] [state-row n c p]) names cvals pvals))
     ))
+
+
+(defn pp-transition [{:keys [name parameters return-values]}]
+  (let [ppp (if (seq parameters) (str "(" (clojure.string/join "," parameters) ")") "")
+        pprv (if (seq return-values) (str (clojure.string/join "," return-values) \u21DC)  "")] (str pprv name ppp)))
+
+
+(defn history-view []
+  [:ul (for [item (:history @trace)] [:li (pp-transition item)])])
 
 
 (defn home-page []
@@ -119,7 +139,8 @@
 ;; -------------------------
 ;; Components
 
-(def components {"state-view" state-view})
+(def components {"state-view" state-view
+                 "history-view" history-view})
 
 
 ;; -------------------------
@@ -127,9 +148,9 @@
 
 (defn ^:export register
   ([component-name gui-id settings]
-     (println settings)
-     (when-let [t (. js/document (getElementById gui-id))]
-       (reagent/render-component [(get components component-name null-component)] t)))) 
+   (println settings)
+   (when-let [t (. js/document (getElementById gui-id))]
+     (reagent/render-component [(get components component-name null-component)] t))))
 
 (defn setup-components []
   (let [cs (goog.dom.query "div[data-type]")]

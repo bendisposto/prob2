@@ -67,10 +67,12 @@
    :transitions-with-timeout (into #{} (.getTransitionsWithTimeout state))
    :values (transform-state-values (.isInitialised state) (.getValues state))})
 
+
+
 (defn transform-transition [transition]
   (let [name (.getName transition)
         id (.getId transition)
-        parameters (.getParameterPredicate transition)
+        parameters (.getParams transition)
         return-values (.getReturnValues transition)]
     {:name name
      :id id
@@ -79,22 +81,17 @@
 
 (defn prepare-trace-element [te]
   (let [src (transform-state (.getSrc te))
-        dest (transform-state (.getDest te))
-        t (.getTransition te)
-        trans (when t (transform-transition t))]
-    {:src src :dest dest :trans trans}))
+        dest (transform-state (.getDest te))]
+    {:previous src :current dest}))
 
-(defn prepare-full-trace [trace]
-  (loop [te (.getCurrent trace)
-         ts []]
-    (let [pr (.getPrevious te)]
-      (if-not pr
-        ts
-        (recur pr (conj ts (prepare-trace-element te)))))))
 
-(defn prepare-trace [trace]
-  (let [te (.getCurrent trace)]
-    (prepare-trace-element te)))
+(defn prepare-trace-packet [trace]
+  (let [h (.getTransitionList trace true)
+        history (map transform-transition h)
+        cur (prepare-trace-element (.getCurrent trace))
+        uuid (.getUUID trace)]
+    (assoc cur :trace-id uuid :history history)))
+
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-model-changed [{:keys [clients] :as sente} state-space]
@@ -103,15 +100,12 @@
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-trace-changed [{:keys [clients] :as sente} trace current?]
-  (let [{:keys [src dest trans]} (prepare-trace trace)]
+  (let [packet (prepare-trace-packet trace)]
     (doseq [c (:any @clients)]
       (snt/send!
        sente c
        ::trace-changed
-       {:trace-id (.getProperty trace "UUID")
-        :current dest
-        :previous src
-        :transition trans}))))
+       packet))))
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-animator-busy [{:keys [clients] :as sente} busy?]
