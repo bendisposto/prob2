@@ -63,4 +63,57 @@ class BasicStateTest extends Specification {
 		cleanup:
 		s.model = oldmodel
 	}
+
+	def "equivalence in a state is based on id and state space"() {
+		when:
+		def sameroot = new State("root", s)
+		def otherroot = new State("root", Mock(StateSpace))
+
+		then:
+		root == sameroot
+		sameroot == root
+		root != otherroot
+		otherroot != root
+	}
+
+	def "a state is not equal to something else"() {
+		expect:
+		root != "I'm not a State!"
+	}
+
+	def "hashcode is based also on id and state space"() {
+		when:
+		def sameroot = new State("root", s)
+		def otherroot = new State("root", Mock(StateSpace))
+
+		then:
+		root.hashCode() == sameroot.hashCode()
+		root.hashCode() != otherroot.hashCode()
+	}
+
+	def "isInitialised contacts Prolog to check initialisation status (if it isn't explored)"() {
+		setup:
+		root.initialised = true
+		root.explored = false
+
+		when:
+		def init = root.isInitialised()
+
+		then:
+		!init
+		root.isExplored()
+	}
+
+	def "isInvariantOk contacts Prolog to check invariant status (if it isn't explored)"() {
+		setup:
+		firstState.invariantOk = false
+		firstState.explored = false
+
+		when:
+		def invok = firstState.isInvariantOk()
+
+		then:
+		invok
+		firstState.isExplored()
+	}
 }

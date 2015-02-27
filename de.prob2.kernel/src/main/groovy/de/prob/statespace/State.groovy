@@ -138,6 +138,32 @@ class State {
 		return Collections.EMPTY_LIST
 	}
 
+	def State anyOperation(filter) {
+		List<Transition> ops = getOutTransitions(true)
+		if (filter != null && filter instanceof String) {
+			ops=ops.findAll {
+				it.getName().matches(filter);
+			}
+		}
+		if (filter != null && filter instanceof ArrayList) {
+			ops=ops.findAll {
+				filter.contains(it.getName())
+			}
+		}
+		if (!ops.isEmpty()) {
+			Collections.shuffle(ops)
+			def op = ops[0]
+			def newState = op.getDestination()
+			newState.explore()
+			return newState;
+		}
+		this
+	}
+
+	def State anyEvent(filter) {
+		anyOperation(filter);
+	}
+
 	/**
 	 * Takes a formula and evaluates it via the {@link StateId#eval(IEvalElement)}
 	 * method. The formula is parsed via the {@link AbstractModel#parseFormula(String)} method.
@@ -222,28 +248,7 @@ class State {
 		return Objects.hashCode(id, stateSpace)
 	};
 
-	def State anyOperation(filter) {
-		List<Transition> ops = getOutTransitions(true)
-		if (filter != null && filter instanceof String) {
-			ops=ops.findAll {
-				it.getName().matches(filter);
-			}
-		}
-		if (filter != null && filter instanceof ArrayList) {
-			ops=ops.findAll {
-				filter.contains(it.getName())
-			}
-		}
-		Collections.shuffle(ops)
-		def op = ops[0]
-		def newState = op.getDestination()
-		newState.explore()
-		return newState;
-	}
 
-	def State anyEvent(filter) {
-		anyOperation(filter);
-	}
 
 	def boolean isInitialised() {
 		if (!explored) {

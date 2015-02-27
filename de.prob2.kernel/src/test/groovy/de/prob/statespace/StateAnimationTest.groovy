@@ -89,4 +89,32 @@ class StateAnimationTest extends Specification {
 		firstState.findTransitions("new", [], 3).size() == 3
 		firstState.findTransitions("new", ["pp=PID1"], 1)[0].getParams() == ["PID1"]
 	}
+
+	def "can execute an event via the anyOperation method"() {
+		when:
+		State s2 = root.anyOperation()
+		State s3 = root.anyOperation().anyOperation("new")
+		State s4 = root.anyOperation().anyOperation(["new"])
+		State s5 = root.anyOperation("blah") // will return original state
+
+		then:
+		s2 == firstState
+		s3.eval("waiting").getValue() != "{}"
+		s4.eval("waiting").getValue() != "{}"
+		s5 == root
+	}
+
+	def "can execute an event via the anyEvent method"() {
+		when:
+		State s2 = root.anyEvent()
+		State s3 = root.anyEvent().anyEvent("new")
+		State s4 = root.anyEvent().anyEvent(["new"])
+		State s5 = root.anyEvent("blah") // will return original state
+
+		then:
+		s2 == firstState
+		s3.eval("waiting").getValue() != "{}"
+		s4.eval("waiting").getValue() != "{}"
+		s5 == root
+	}
 }
