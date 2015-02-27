@@ -95,9 +95,13 @@
   (let [ppp (if (seq parameters) (str "(" (clojure.string/join "," parameters) ")") "")
         pprv (if (seq return-values) (str (clojure.string/join "," return-values) \u21DC)  "")] (str pprv name ppp)))
 
+#_(fn [f] (get {identity reverse} f identity))
 
 (defn history-view []
-  [:ul (for [item (:history @trace)] [:li (pp-transition item)])])
+  (let [sort-order (atom identity)]
+    (fn []
+      [:ul (for [item (@sort-order (:history @trace))]
+             [:li (pp-transition item)])])))
 
 
 (defn home-page []
