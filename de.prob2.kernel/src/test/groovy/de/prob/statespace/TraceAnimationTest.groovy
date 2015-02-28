@@ -39,7 +39,23 @@ class TraceAnimationTest extends Specification {
 		then:
 		t2.getCurrentTransition().getName() == "\$initialise_machine"
 	}
+	
+	def "the empty trace has a size of 0"(){
+		when:
+		Trace t = new Trace(m)
 
+		then:
+		t.size() == 0
+	}
+	
+	def "a trace containing three steps has a size of 3"(){
+		when:
+		Trace t = new Trace(m).anyEvent().anyEvent().anyEvent()
+
+		then:
+		t.size() == 3
+	}
+	
 	def "you can add a transition via its string id"() {
 		when:
 		Trace t2 = t.add("0")
