@@ -99,14 +99,17 @@
 (defn history-view []
   (let [sort-order (atom identity)]
     (fn []
-      [:div
-       [:ul
+      [:div {:class "history-view"}
+       [:span {:class "glyphicon glyphicon-sort pull-right"
+               :id "sort-button"
+               :on-click (fn [_] (swap! sort-order
+                                       (fn [f] (get {identity reverse} f identity))))}]
+       [:ul {:class "history-list"}
         (for [item (@sort-order (:history @trace))]
-          [:li {:on-click (fn [_] (logp "Clicked" item))} (pp-transition item)])]
-       [:button
-        {:on-click
-         (fn [_] (swap! sort-order
-                       (fn [f] (get {identity reverse} f identity))))}]])))
+          [:li {:class "history-item"
+                :on-click (fn [_] (logp "Clicked" item))}
+           (pp-transition item)])]
+       ])))
 
 
 (defn home-page []
