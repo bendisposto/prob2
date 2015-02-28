@@ -1,0 +1,45 @@
+.history-view li {
+  list-style-type: none;
+    cursor: pointer;
+}
+
+.history-view li:nth-child(odd) {
+  background-color: white;
+}
+
+.history-view .future {
+    font-style: italic;
+    color: #888;
+}
+
+.history-view .current {
+    font-weight: bold;
+}
+
+.history-view .start {
+    color: #bbb;
+    letter-spacing: 2px;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.history-view .disabled {
+    opacity: 0.1;
+}
+
+.history-view li:nth-child(even) {
+  background-color: #f3f6ff;
+}
+
+.history-view ul {
+    padding-left: 0px;
+}
+
+.history-view #sort {
+    cursor: pointer;
+}
+
+.history-view .transparent {
+    zoom: 1;
+    filter: alpha(opacity=10);
+    opacity: 0.1;
+}

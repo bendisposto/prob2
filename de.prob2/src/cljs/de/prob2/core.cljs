@@ -56,12 +56,13 @@
 (defmethod handle :de.prob2.kernel/model-changed [[_ m]]
   (logp "Model changed"))
 
-(defmethod handle :de.prob2.kernel/trace-changed [[_ {:keys [trace-id current previous history] :as t}]]
+(defmethod handle :de.prob2.kernel/trace-changed [[_ {:keys [trace-id current previous history current-index] :as t}]]
   (reset! trace (fix-names t))
   (logp "Trace: " (str trace-id))
   (logp "Current State: " current)
   (logp "Previous State: " previous)
   (logp "History: " history)
+  (logp "History index: " current-index)
   (logp "Diff: " (keys (first (clojure.data/diff (:values current) (:values  previous))))))
 
 (defmethod handle :default [[t m]]
@@ -95,21 +96,24 @@
   (let [ppp (if (seq parameters) (str "(" (clojure.string/join "," parameters) ")") "")
         pprv (if (seq return-values) (str (clojure.string/join "," return-values) \u21DC)  "")] (str pprv name ppp)))
 
+(defn- mk-history-item [current index item]
+  ^{:key (str "h" index)}
+  [:li {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
+        :on-click (fn [_] (logp "Clicked" item))}
+   (pp-transition item)])
 
 (defn history-view []
   (let [sort-order (atom identity)]
     (fn []
-      [:div {:class "history-view"}
-       [:span {:class "glyphicon glyphicon-sort pull-right"
-               :id "sort-button"
-               :on-click (fn [_] (swap! sort-order
-                                       (fn [f] (get {identity reverse} f identity))))}]
-       [:ul {:class "history-list"}
-        (for [item (@sort-order (:history @trace))]
-          [:li {:class "history-item"
-                :on-click (fn [_] (logp "Clicked" item))}
-           (pp-transition item)])]
-       ])))
+      (let [t @trace]
+        [:div {:class "history-view"}
+         [:span {:class "glyphicon glyphicon-sort pull-right"
+                 :id "sort-button"
+                 :on-click (fn [_] (swap! sort-order
+                                         (fn [f] (get {identity reverse} f identity))))}]
+         [:ul {:class "history-list"}
+          (map-indexed (partial mk-history-item (:current-index t)) (@sort-order (:history t)))]
+         ]))))
 
 
 (defn home-page []

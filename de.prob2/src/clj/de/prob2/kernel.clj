@@ -68,7 +68,6 @@
    :values (transform-state-values (.isInitialised state) (.getValues state))})
 
 
-
 (defn transform-transition [transition]
   (let [name (.getName transition)
         id (.getId transition)
@@ -88,9 +87,12 @@
 (defn prepare-trace-packet [trace]
   (let [h (.getTransitionList trace true)
         history (map transform-transition h)
-        cur (prepare-trace-element (.getCurrent trace))
-        uuid (.getUUID trace)]
-    (assoc cur :trace-id uuid :history history)))
+        te (.getCurrent trace)
+        cur (prepare-trace-element te)
+        uuid (.getUUID trace)
+        cur-index (.getIndex te)
+        ]
+    (assoc cur :trace-id uuid :history history :current-index cur-index)))
 
 
 ;; FIXME We should only send information to clients who actually care
