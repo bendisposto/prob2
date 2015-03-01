@@ -14,7 +14,8 @@
             [taoensso.sente  :as sente :refer (cb-success?)]
             [clojure.data]
             [taoensso.encore :as enc    :refer (logf log logp)]
-            [cljsjs.react :as react])
+            [cljsjs.react :as react]
+            [ajax.core :refer [GET POST]])
   (:import goog.History))
 
 ;; -------------------------
@@ -99,7 +100,7 @@
 (defn- mk-history-item [current index item]
   ^{:key (str "h" index)}
   [:li {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
-        :on-click (fn [_] (logp "Clicked" item))}
+        :on-click (fn [_] (GET (str "/history/goto/" index)))}
    (pp-transition item)])
 
 (defn history-view []

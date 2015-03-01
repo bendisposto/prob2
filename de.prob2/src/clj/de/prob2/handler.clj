@@ -9,6 +9,7 @@
             [environ.core :refer [env]]
             [de.prob2.sente :as snt]
             [de.prob2.stateview :as sv]
+            [de.prob2.kernel :as kernel]
             [cognitect.transit :as transit])
   (:import java.io.ByteArrayOutputStream))
 
@@ -19,6 +20,13 @@
      (GET  "/updates" req (ws-handshake req))
      (GET "/stateview/:trace" [trace] (sv/create-state-view prob trace))
      (POST "/updates" req (post req))
+     (GET "/history/goto/:id" [id]
+          (let [id (read-string id)
+                ani (kernel/instantiate prob de.prob.statespace.AnimationSelector)
+                t (.getCurrentTrace ani)
+                t' (.gotoPosition t id)]
+            (.traceChange ani t'))
+          :ok)
      (resources "/")
      (not-found "Not Found")]))
 
@@ -46,14 +54,14 @@
       this
       (do (println "Creating Webapp")
           (assoc this
-            :handler
-            (let [handler
-                  (wrap-defaults
-                   (:route-fn routes)
-                   site-defaults)]
-              (if (env :dev?)
-                (wrap-exceptions handler)
-                handler))))))
+                 :handler
+                 (let [handler
+                       (wrap-defaults
+                        (:route-fn routes)
+                        site-defaults)]
+                   (if (env :dev?)
+                     (wrap-exceptions handler)
+                     handler))))))
   (stop [this]
     (if handler
       (do (println "Destroying Webapp")

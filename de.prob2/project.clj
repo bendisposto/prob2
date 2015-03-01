@@ -26,7 +26,8 @@
                  [selmer "0.8.0"]
                  [environ "1.0.0"]
                  [com.cognitect/transit-clj "0.8.259"]
-                 [com.cognitect/transit-cljs "0.8.205"]]
+                 [com.cognitect/transit-cljs "0.8.205"]
+                 [cljs-ajax "0.3.10"]]
 
   :plugins [
             [lein-cljsbuild "1.0.4"]
