@@ -3,6 +3,7 @@
             [de.prob2.handler :as handler]
             [de.prob2.sente :as sente]
             [de.prob2.kernel :as kernel]
+            [de.prob2.views :as views]
             [com.stuartsierra.component :as component]))
 
 ;; Extending the routing can be done like this:
@@ -18,4 +19,5 @@
      :sente (sente/mk-sente)
      :handler (handler/mk-handler)
      :routes (handler/mk-routes (handler/default-routes))
+     :views (views/mk-views)
      :prob (kernel/prob))))

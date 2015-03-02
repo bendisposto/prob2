@@ -70,6 +70,11 @@
   (logp "Received Type: " t)
   (logp "Received Msg: " m))
 
+;; (c/chsk-send! [:de.prob2/hello {:target :world}] 8000 (fn [x] (println x)))
+(defn send! [msg-type msg-map]
+  (logp msg-type)
+  (logp msg-map)
+  (chsk-send! [msg-type msg-map]))
 
 (sente/start-chsk-router!
  ch-chsk
@@ -100,7 +105,7 @@
 (defn- mk-history-item [trace-id current index item]
   ^{:key (str "h" index)}
   [:li {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
-        :on-click (fn [_] (GET (str "/history/" trace-id  "/goto/" index)))}
+        :on-click (fn [_] (send! :history/goto {:trace-id trace-id :index index}))}
    (pp-transition item)])
 
 (defn history-view []

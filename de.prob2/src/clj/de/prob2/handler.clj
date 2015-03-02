@@ -9,6 +9,7 @@
             [environ.core :refer [env]]
             [de.prob2.sente :as snt]
             [de.prob2.stateview :as sv]
+            [de.prob2.views]
             [de.prob2.kernel :as kernel]
             [cognitect.transit :as transit])
   (:import java.io.ByteArrayOutputStream))
@@ -20,14 +21,6 @@
      (GET  "/updates" req (ws-handshake req))
      (GET "/stateview/:trace" [trace] (sv/create-state-view prob trace))
      (POST "/updates" req (post req))
-     (GET "/history/:trace-id/goto/:id" [trace-id id]
-          (let [id (read-string id)
-                trace-id (java.util.UUID/fromString trace-id)
-                ani (kernel/instantiate prob de.prob.statespace.AnimationSelector)
-                t (.getTrace ani trace-id)
-                t' (.gotoPosition t id)]
-             (.traceChange ani t'))
-          "ok")
      (resources "/")
      (not-found "Not Found")]))
 
