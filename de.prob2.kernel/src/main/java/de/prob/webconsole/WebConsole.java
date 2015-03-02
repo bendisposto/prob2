@@ -24,7 +24,7 @@ public class WebConsole {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(WebConsole.class);
 
-	private static int PORT = 8080;
+	private static int PORT = 17180;
 
 	public static void run(final String local, final String iface, int port)
 			throws Exception {
@@ -98,10 +98,10 @@ public class WebConsole {
 			} catch (BindException ex) {
 				port++;
 			}
-		} while (!found && port < 8180);
+		} while (!found && port < 17180);
 
 		if (!found) {
-			throw new BindException("No free port found between 8080 and 8179");
+			throw new BindException("No free port found between 17080 and 17179");
 		}
 
 		WebConsole.PORT = port;

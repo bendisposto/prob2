@@ -198,7 +198,7 @@ public class Transition {
 	 * not yet evaluated (the values for name, parameters, and return values
 	 * have not yet been retrieved), this is done via {@link #evaluate()}.
 	 * 
-	 * @return a String represenation of the operation
+	 * @return a String representation of the operation
 	 */
 	private String generateRep() {
 		evaluate();

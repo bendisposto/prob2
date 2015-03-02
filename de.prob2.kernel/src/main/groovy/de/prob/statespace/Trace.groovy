@@ -52,6 +52,9 @@ public class Trace {
 		return getCurrentState().eval(formula)
 	}
 
+	def int size() {
+		return transitionList.size();
+	}
 
 	def List<Tuple2<String,IEvalResult>> eval(formula) {
 		def f = formula;
@@ -143,6 +146,25 @@ public class Trace {
 		}
 		return this
 	}
+	
+	
+	def Trace gotoPosition(int pos) {
+		def trace = this;
+		int currentIndex = trace.getCurrent().getIndex();
+		if (pos == currentIndex) {
+			return trace;
+		} else if (pos > currentIndex && pos < size()) {
+			while (!(pos == trace.getCurrent().getIndex())) {
+				trace = trace.forward();
+			}
+		} else if (pos < currentIndex && pos >= 0) {
+			while (!(pos == trace.getCurrent().getIndex())) {
+				trace = trace.back();
+			}
+		}
+		return trace;
+	}
+	
 
 	/**
 	 * Determines if a branching in the list is taking place

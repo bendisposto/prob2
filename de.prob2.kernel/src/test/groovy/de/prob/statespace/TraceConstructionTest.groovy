@@ -74,6 +74,7 @@ class TraceConstructionTest extends Specification {
 		then:
 		t.transitionList == t as ArrayList
 	}
+	
 
 	def "casting trace with other kind of class doesn't work"() {
 		when:
