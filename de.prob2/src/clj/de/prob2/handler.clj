@@ -20,13 +20,14 @@
      (GET  "/updates" req (ws-handshake req))
      (GET "/stateview/:trace" [trace] (sv/create-state-view prob trace))
      (POST "/updates" req (post req))
-     (GET "/history/goto/:id" [id]
+     (GET "/history/:trace-id/goto/:id" [trace-id id]
           (let [id (read-string id)
+                trace-id (java.util.UUID/fromString trace-id)
                 ani (kernel/instantiate prob de.prob.statespace.AnimationSelector)
-                t (.getCurrentTrace ani)
+                t (.getTrace ani trace-id)
                 t' (.gotoPosition t id)]
-            (.traceChange ani t'))
-          :ok)
+             (.traceChange ani t'))
+          "ok")
      (resources "/")
      (not-found "Not Found")]))
 
