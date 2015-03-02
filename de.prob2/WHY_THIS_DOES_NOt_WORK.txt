@@ -1,0 +1,1 @@
+Getting the post right without exposing the API to Cross Site Scripting attacks is difficult, websockets are secure by default!

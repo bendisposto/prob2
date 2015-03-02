@@ -100,7 +100,7 @@
 (defn- mk-history-item [trace-id current index item]
   ^{:key (str "h" index)}
   [:li {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
-        :on-click (fn [_] (GET (str "/history/" trace-id  "/goto/" index)))}
+        :on-click (fn [_] (POST "/history/goto" {:params {:trace-id trace-id :index index}}))}
    (pp-transition item)])
 
 (defn history-view []
