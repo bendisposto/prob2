@@ -9,7 +9,6 @@
 
 (defmulti handle-updates (fn [{:keys [event]} _] (first event)))
 (defmethod handle-updates :chsk/ws-ping [_ _]) ;; do nothing
-(defmethod handle-updates :default [e c] (println e))
 
 (defrecord Sente [post ws-handshake receive-channel send-fn! clients stop-routing-fn! encoding]
   component/Lifecycle

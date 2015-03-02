@@ -10,16 +10,14 @@
         t' (.gotoPosition t index)]
     (.traceChange ani t')))
 
-
 (defmulti handle (fn [_ {:keys [event]} _] (first event)))
 (defmethod handle :history/goto [prob {:keys [?data]} _] (goto-position prob ?data))
 
-(derive :history/goto :history/history)
 
 (defrecord Views [prob] component/Lifecycle
            (start [this]
              (println "Starting views")
-             (defmethod sente/handle-updates :history/history [a b] (handle prob a b))
+             (defmethod sente/handle-updates :default [a b] (handle prob a b))
              this)
            (stop [this] (println "Stopping views") this))
 
