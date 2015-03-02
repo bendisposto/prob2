@@ -5,6 +5,7 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 import de.prob.Main
+import de.prob.animator.domainobjects.StateError
 import de.prob.model.representation.CSPModel
 import de.prob.scripting.ClassicalBFactory
 
@@ -104,6 +105,18 @@ class BasicStateTest extends Specification {
 		root.isExplored()
 	}
 
+	def "if cached, initialised doesn't contact prolog"() {
+		setup:
+		root.initialised = true
+		root.explored = true
+
+		when:
+		def init = root.isInitialised()
+
+		then:
+		init
+	}
+
 	def "isInvariantOk contacts Prolog to check invariant status (if it isn't explored)"() {
 		setup:
 		firstState.invariantOk = false
@@ -115,5 +128,216 @@ class BasicStateTest extends Specification {
 		then:
 		invok
 		firstState.isExplored()
+	}
+
+	def "if cached, invariantOk doesn't contact prolog"() {
+		setup:
+		firstState.invariantOk = false
+		firstState.explored = true
+
+		when:
+		def invok = firstState.isInvariantOk()
+
+		then:
+		!invok
+	}
+
+	def "isMaxTransitionsCalculated contacts Prolog to check max transitions status (if it isn't explored)"() {
+		setup:
+		firstState.maxTransitionsCalculated = true
+		firstState.explored = false
+
+		when:
+		def maxtrans = firstState.isMaxTransitionsCalculated()
+
+		then:
+		!maxtrans
+		firstState.isExplored()
+	}
+
+	def "isMaxTransitionsCalculated doesn't contact prolog if cached"() {
+		setup:
+		firstState.maxTransitionsCalculated = true
+		firstState.explored = true
+
+		when:
+		def maxtrans = firstState.isMaxTransitionsCalculated()
+
+		then:
+		maxtrans
+	}
+
+	def "isTimeoutOccurred contacts Prolog to check if a timeout occurred (if it isn't explored)"() {
+		setup:
+		firstState.timeoutOccurred = true
+		firstState.explored = false
+
+		when:
+		def timeout = firstState.isTimeoutOccurred()
+
+		then:
+		!timeout
+		firstState.isExplored()
+	}
+
+	def "isTimeoutOccurred doesn't contact prolog if cached"() {
+		setup:
+		firstState.timeoutOccurred = true
+		firstState.explored = true
+
+		when:
+		def timeout = firstState.isTimeoutOccurred()
+
+		then:
+		timeout
+	}
+
+	def "getTransitionsWithTimeout contacts prolog if not explored"() {
+		setup:
+		firstState.transitionsWithTimeout = new HashSet<String>(["blah", "blub"])
+		firstState.explored = false
+
+		when:
+		def transitions = firstState.getTransitionsWithTimeout()
+
+		then:
+		transitions.isEmpty()
+		firstState.isExplored()
+	}
+
+	def "getTransitionsWithTimeout does not contacts prolog if explored"() {
+		setup:
+		def set = new HashSet<String>(["blah", "blub"])
+		firstState.transitionsWithTimeout = set
+		firstState.explored = true
+
+		when:
+		def transitions = firstState.getTransitionsWithTimeout()
+
+		then:
+		transitions == set
+	}
+
+	def "getStateErrors contacts prolog if not explored"() {
+		setup:
+		def errors = [
+			new StateError("blah", "it went wront", "it went wrong")
+		]
+		firstState.stateErrors = errors
+		firstState.explored = false
+
+		when:
+		def errs = firstState.getStateErrors()
+
+		then:
+		errs.isEmpty()
+		firstState.isExplored()
+	}
+
+	def "getStateErrors does not contacts prolog if explored"() {
+		setup:
+		def errors = [
+			new StateError("blah", "it went wront", "it went wrong")
+		]
+		firstState.stateErrors = errors
+		firstState.explored = true
+
+		when:
+		def errs = firstState.getStateErrors()
+
+		then:
+		errs == errors
+	}
+
+	def "state contacts prolog to calculate out transitions if not explored"() {
+		setup:
+		root.explored = false
+		root.transitions = [
+			Transition.generateArtificialTransition(s, "blah", "desc", "srcId", "destId")
+		]
+
+		when:
+		def transitions = root.getOutTransitions()
+
+		then:
+		transitions.size() == 1
+		transitions[0].getName() == "\$initialise_machine"
+	}
+
+	def "state returns cached transitions if not explored"() {
+		setup:
+		root.explored = true
+		def t = [
+			Transition.generateArtificialTransition(s, "blah", "desc", "srcId", "destId")
+		]
+		root.transitions = t
+
+		when:
+		def transitions = root.getOutTransitions()
+
+		then:
+		transitions == t
+	}
+
+	def "getOutTransitions doesn't evaluate by default"() {
+		setup:
+		firstState.explored = false
+
+		when:
+		def transitions = firstState.getOutTransitions()
+
+		then:
+		transitions.inject(true) { acc, i -> acc && !i.isEvaluated() }
+	}
+
+	def "don't evaluate transitions"() {
+		setup:
+		firstState.explored = false
+
+		when:
+		def transitions = firstState.getOutTransitions(false)
+
+		then:
+		transitions.inject(true) { acc, i -> acc && !i.isEvaluated() }
+	}
+
+	def "evaluate transitions"() {
+		setup:
+		firstState.explored = false
+
+		when:
+		def transitions = firstState.getOutTransitions(true)
+
+		then:
+		transitions.inject(true) { acc, i -> acc && i.isEvaluated() }
+	}
+
+	def "explore changes all the values"() {
+		setup:
+		root.transitions = []
+		root.values = [:]
+		root.initialised = true
+		root.invariantOk = false
+		root.timeoutOccurred = true
+		root.maxTransitionsCalculated = true
+		root.stateErrors = [
+			new StateError("blah", "blub", "blih")
+		]
+		root.transitionsWithTimeout = new HashSet<String>(["blah"])
+		root.explored = false
+
+		when:
+		root.explore()
+
+		then:
+		!root.transitions.isEmpty()
+		!root.getValues().isEmpty()
+		root.initialised == false
+		root.invariantOk == true
+		root.timeoutOccurred == false
+		root.maxTransitionsCalculated == false
+		root.stateErrors.isEmpty()
+		root.transitionsWithTimeout.isEmpty()
+		root.explored == true
 	}
 }
