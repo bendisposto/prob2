@@ -102,7 +102,7 @@
   (let [ppp (if (seq parameters) (str "(" (clojure.string/join "," parameters) ")") "")
         pprv (if (seq return-values) (str (clojure.string/join "," return-values) \u21DC " ")  "")] (str pprv name ppp)))
 
-(defn- mk-history-item [trace-id current index item]
+(defn- mk-history-item [trace-id current {:keys [index] :as item}]
   ^{:key (str "h" index)}
   [:li {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
         :on-click (fn [_] (send! :history/goto {:trace-id trace-id :index index}))}
@@ -111,14 +111,15 @@
 (defn history-view []
   (let [sort-order (atom identity)]
     (fn []
-      (let [t @trace]
+      (let [t @trace
+            h (map-indexed (fn [index element] (assoc element :index index)) (:history t))] 
         [:div {:class "history-view"}
          [:span {:class "glyphicon glyphicon-sort pull-right"
                  :id "sort-button"
                  :on-click (fn [_] (swap! sort-order
                                          (fn [f] (get {identity reverse} f identity))))}]
          [:ul {:class "history-list"}
-          (map-indexed (partial mk-history-item (:trace-id t) (:current-index t)) (@sort-order (:history t)))]
+          (map (partial mk-history-item (:trace-id t) (:current-index t)) (@sort-order h))]
          ]))))
 
 
