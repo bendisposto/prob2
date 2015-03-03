@@ -22,7 +22,7 @@ public class Trace {
 	def final TraceElement head
 	def final StateSpace stateSpace
 	def final UUID UUID
-	def final PersistentVector<Transition> transitionList
+	def final List<Transition> transitionList
 
 	def Trace(final AbstractModel m) {
 		this(m.getStateSpace())
