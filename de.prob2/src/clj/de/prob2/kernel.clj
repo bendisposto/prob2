@@ -2,7 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [de.prob2.sente :as snt])
   (:import de.prob.Main
-           (de.prob.statespace AnimationSelector Trace IModelChangedListener IAnimationChangeListener StateSpace)))
+           (de.prob.statespace AnimationSelector Trace ITraceChangesListener StateSpace)))
 
 
 (defn kebap-case
@@ -58,6 +58,7 @@
   (into {} (map (fn [x] [(.toString (.getKey x)) (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
 
 (defn transform-state [state]
+  (println state)
   {:initialized? (.isInitialised state)
    :inv-ok? (.isInvariantOk state)
    :timeout? (.isTimeoutOccurred state)
@@ -79,8 +80,11 @@
      :return-values (into [] return-values)}))
 
 (defn prepare-trace-element [te]
-  (let [src (transform-state (.getSrc te))
-        dest (transform-state (.getDest te))]
+  
+  (let [s (.getSrc te)
+        src (transform-state s)
+        d (.getDest te)
+        dest (transform-state (if d d s))]
     {:previous src :current dest}))
 
 
@@ -91,8 +95,11 @@
         cur (prepare-trace-element te)
         uuid (.getUUID trace)
         cur-index (.getIndex te)
+        model (extractE (.getModel trace))
+        model-id (.getId (.getStateSpace trace))
         ]
-    (assoc cur :trace-id uuid :history history :current-index cur-index)))
+
+    (assoc cur :trace-id uuid :history history :current-index cur-index :model {:data model :model-id model-id})))
 
 
 ;; FIXME We should only send information to clients who actually care
@@ -101,8 +108,9 @@
     (snt/send! sente c ::model-changed (extractE (.getModel state-space)))))
 
 ;; FIXME We should only send information to clients who actually care
-(defn notify-trace-changed [{:keys [clients] :as sente} trace current?]
-  (let [packet (prepare-trace-packet trace)]
+(defn notify-trace-changed [{:keys [clients] :as sente} traces]
+  (let [packet (mapv prepare-trace-packet traces)]
+    (println packet)
     (doseq [c (:any @clients)]
       (snt/send!
        sente c
@@ -119,20 +127,17 @@
 (defn instantiate [{inj :injector :as prob} cls]
   (.getInstance inj cls))
 
-(defn- install-handlers [sente injector]
-  (let [animations (.getInstance injector AnimationSelector)
-        listener
+(defn- install-handlers [sente animations]
+  (let [listener
         (reify
-          IModelChangedListener
-          (modelChanged [this state-space] (notify-model-changed sente state-space))
-          IAnimationChangeListener
-          (traceChange [this trace current] (notify-trace-changed sente trace current))
-          (animatorStatus [this busy] (notify-animator-busy sente busy)))]
+          ITraceChangesListener
+          (changed [this traces] (notify-trace-changed sente traces))
+          (removed [this traces] (println "removed"))
+          (animatorStatus [this busy] (println "animation status")))]
     (.registerAnimationChangeListener animations listener)
-    (.registerModelChangedListener animations listener)
     listener))
 
-(defrecord ProB [injector listener sente]
+(defrecord ProB [injector listener sente animations]
   component/Lifecycle
   (start [this]
     (if injector
@@ -140,9 +145,11 @@
       (do (println "Preparing ProB 2.0 Kernel")
           (let [injector (Main/getInjector)
                 _ (println " -> Got the injector")
-                listener (install-handlers sente injector)
+                animations (.getInstance injector de.prob.statespace.Animations)
+                _ (println " -> got Animations object")
+                listener (install-handlers sente animations)
                 _ (println " -> Installed Listeners")]
-            (assoc this :injector injector :listener listener)))))
+            (assoc this :injector injector :listener listener :animations animations)))))
   (stop [this]
     (if injector (do (println "Shutting down ProB 2.0")
                      (dissoc this :injector :listener))

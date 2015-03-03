@@ -3,11 +3,10 @@
             [de.prob2.sente :as sente]
             [com.stuartsierra.component :as component]))
 
-(defn goto-position [prob {:keys [index trace-id]}]
-  (let [ani (kernel/instantiate prob de.prob.statespace.AnimationSelector)
-        t (.getTrace ani trace-id)
+(defn goto-position [{:keys [animations] :as prob} {:keys [index trace-id]}]
+  (let [t (.getTrace animations trace-id)
         t' (.gotoPosition t index)]
-    (.traceChange ani t')))
+    (.traceChange animations t')))
 
 
 
