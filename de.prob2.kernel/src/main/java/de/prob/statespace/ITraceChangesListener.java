@@ -7,7 +7,7 @@ import java.util.UUID;
 public interface ITraceChangesListener {
 	void changed(List<Trace> t);
 
-	void remove(List<UUID> t);
+	void removed(List<UUID> t);
 
 	void animatorStatus(Set<UUID> busy);
 }

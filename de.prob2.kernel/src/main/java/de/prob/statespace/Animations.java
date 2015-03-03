@@ -95,7 +95,7 @@ public class Animations {
 			ITraceChangesListener listener = ref.get();
 			if (listener != null)
 				try {
-					listener.remove(java.util.Collections.singletonList(trace
+					listener.removed(java.util.Collections.singletonList(trace
 							.getUUID()));
 				} catch (Exception e) {
 					logger.error("An exception of type "
