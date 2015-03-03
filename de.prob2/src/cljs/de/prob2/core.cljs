@@ -16,15 +16,15 @@
             [taoensso.encore :as enc    :refer (logf log logp)]
             [cljsjs.react :as react]
             [ajax.core :refer [GET POST]])
-  (:import goog.History))
+  (:import goog.History)) 
 
 ;; -------------------------
 ;; Views
                                         ;(sente/set-logging-level! :trace)
 
 
-(def trace (atom {}))
-
+(def traces (atom {}))
+ 
 
 (let [{:keys [chsk ch-recv send-fn state]}
       (sente/make-channel-socket! "/updates" ; Note the same path as before
@@ -51,20 +51,10 @@
              :name (get {"$initialise_machine" "INITIALIZATION"
                          "$setup_constants" "SETUP CONSTANTS"} (:name e) (:name e)))) history)))
 
-
 (defmulti handle first)
 
-(defmethod handle :de.prob2.kernel/model-changed [[_ m]]
-  (logp "Model changed"))
-
-(defmethod handle :de.prob2.kernel/trace-changed [[_ {:keys [trace-id current previous history current-index] :as t}]]
-  (reset! trace (fix-names t))
-  (logp "Trace: " (str trace-id))
-  (logp "Current State: " current)
-  (logp "Previous State: " previous)
-  (logp "History: " history)
-  (logp "History index: " current-index)
-  (logp "Diff: " (keys (first (clojure.data/diff (:values current) (:values  previous))))))
+(defmethod handle :de.prob2.kernel/trace-changed [[_ msgs]]
+  (reset! traces (map fix-names msgs)))
 
 (defmethod handle :default [[t m]]
   (logp "Received Type: " t)
@@ -81,6 +71,7 @@
  (fn [e]
    (when (= (:id e) :chsk/recv)
      (let [[e-type raw-msg] (:?data e)]
+       (logp raw-msg)
        (handle [e-type (read-transit raw-msg)])))))
 
 (defn null-component [] [:div "Not yet implemented"])
@@ -89,7 +80,7 @@
   [:tr [:td name] [:td current-value] [:td previous-value]])
 
 (defn state-view []
-  (let [{:keys [trace-id current previous transition]} @trace
+  (let [{:keys [trace-id current previous transition]} (first @traces)
         names (map first (:values current))
         cvals (map second (:values current))
         pvals (map second (:values previous))]
@@ -102,7 +93,7 @@
   (let [ppp (if (seq parameters) (str "(" (clojure.string/join "," parameters) ")") "")
         pprv (if (seq return-values) (str (clojure.string/join "," return-values) \u21DC " ")  "")] (str pprv name ppp)))
 
-(defn- mk-history-item [trace-id current index item]
+(defn- mk-history-item [trace-id current {:keys [index] :as item}]
   ^{:key (str "h" index)}
   [:li {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
         :on-click (fn [_] (send! :history/goto {:trace-id trace-id :index index}))}
@@ -111,14 +102,15 @@
 (defn history-view []
   (let [sort-order (atom identity)]
     (fn []
-      (let [t @trace]
+      (let [t (first @traces)
+            h (map-indexed (fn [index element] (assoc element :index index)) (:history t))] 
         [:div {:class "history-view"}
          [:span {:class "glyphicon glyphicon-sort pull-right"
                  :id "sort-button"
                  :on-click (fn [_] (swap! sort-order
                                          (fn [f] (get {identity reverse} f identity))))}]
          [:ul {:class "history-list"}
-          (map-indexed (partial mk-history-item (:trace-id t) (:current-index t)) (@sort-order (:history t)))]
+          (map (partial mk-history-item (:trace-id t) (:current-index t)) (@sort-order h))]
          ]))))
 
 
@@ -180,5 +172,6 @@
       (register (goog.dom.dataset/get c "type") (.-id c) (js->clj (goog.dom.dataset/getAll c))))))
 
 (defn init! []
+  (logp :huhu)
   (hook-browser-navigation!)
-  (setup-components))
+  (setup-components)) 
