@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.model.representation.AbstractElement;
@@ -30,6 +31,13 @@ import de.prob.model.representation.AbstractElement;
  */
 @Singleton
 public class AnimationSelector {
+
+//	private Animations animations;
+//
+//	@Inject
+//	public AnimationSelector(Animations animations) {
+//		this.animations = animations;
+//	}
 
 	Logger logger = LoggerFactory.getLogger(AnimationSelector.class);
 
