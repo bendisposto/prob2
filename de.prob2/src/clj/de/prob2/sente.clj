@@ -1,14 +1,24 @@
 (ns de.prob2.sente
   (:require [taoensso.sente :as sente]
             [com.stuartsierra.component :as component]
-             [cognitect.transit :as transit])
+            [cognitect.transit :as transit])
   (:import java.io.ByteArrayOutputStream)
   )
 
 
+(defn extract-action
+  ([a b] (extract-action nil a b))
+  ([_ {:keys [event]} _] (keyword (name (first event)))))
 
-(defmulti handle-updates (fn [{:keys [event]} _] (first event)))
-(defmethod handle-updates :chsk/ws-ping [_ _]) ;; do nothing
+
+(defmulti dispatch-ws extract-action)
+(defmethod dispatch-ws :ping [_ _])
+(defmethod dispatch-ws :default [a b] (println :chsk a b))
+
+
+(defmulti handle-updates (fn [{:keys [event]} _] (keyword (namespace (first event)))))
+(defmethod handle-updates :chsk [a b] (dispatch-ws a b) ) ;; do nothing
+(defmethod handle-updates :default [a b] (println :unknown-message a b))
 
 (defrecord Sente [post ws-handshake receive-channel send-fn! clients stop-routing-fn! encoding]
   component/Lifecycle
