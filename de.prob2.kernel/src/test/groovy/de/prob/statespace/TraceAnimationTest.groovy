@@ -39,7 +39,7 @@ class TraceAnimationTest extends Specification {
 		then:
 		t2.getCurrentTransition().getName() == "\$initialise_machine"
 	}
-	
+
 	def "the empty trace has a size of 0"(){
 		when:
 		Trace t = new Trace(m)
@@ -47,7 +47,7 @@ class TraceAnimationTest extends Specification {
 		then:
 		t.size() == 0
 	}
-	
+
 	def "a trace containing three steps has a size of 3"(){
 		when:
 		Trace t = new Trace(m).anyEvent().anyEvent().anyEvent()
@@ -55,7 +55,7 @@ class TraceAnimationTest extends Specification {
 		then:
 		t.size() == 3
 	}
-	
+
 	def "you can add a transition via its string id"() {
 		when:
 		Trace t2 = t.add("0")
@@ -164,13 +164,11 @@ class TraceAnimationTest extends Specification {
 		when:
 		Trace t2 = t.$initialise_machine().new("pp=PID1")
 		def t2list = t2.transitionList
-		def t2listSize = t2list.size()
 		Trace t3 = t2.new("pp=PID2")
 		def t3list = t3.transitionList
 
 		then:
-		t2listSize == 2
-		t2list.is(t3list)
+		t2list.size() == 2
 		t3list.size() == 3
 	}
 
@@ -356,7 +354,7 @@ class TraceAnimationTest extends Specification {
 
 		then:
 		t1.getTransitionList().first().getSource() == s.getRoot()
-		t.getTransitionList().size() == 10
+		t1.getTransitionList().size() == 10
 
 		t2 == t
 

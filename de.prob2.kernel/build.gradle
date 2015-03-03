@@ -93,6 +93,8 @@ dependencies {
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
 	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
 
+	compile 'com.github.krukow:clj-ds:0.0.4'
+
 	testCompile 'org.mockito:mockito-core:1.8.5'
 	testCompile "org.gebish:geb-spock:0.9.1"
 	testCompile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.26.0'

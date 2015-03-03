@@ -67,15 +67,6 @@ class TraceConstructionTest extends Specification {
 		t.getStateSpace() == t as StateSpace
 	}
 
-	def "casting trace with ArrayList works (and returns transition list)"() {
-		when:
-		Trace t = new Trace(m)
-
-		then:
-		t.transitionList == t as ArrayList
-	}
-	
-
 	def "casting trace with other kind of class doesn't work"() {
 		when:
 		Trace t = new Trace(m)
@@ -160,7 +151,6 @@ class TraceConstructionTest extends Specification {
 		t.current == t2.current
 		t.head == t2.head
 		t.transitionList == t2.transitionList
-		!t.transitionList.is(t2.transitionList)
 		t.getUUID() != t2.getUUID()
 	}
 }
