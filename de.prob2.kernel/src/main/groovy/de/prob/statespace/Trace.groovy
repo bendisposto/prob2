@@ -159,7 +159,7 @@ public class Trace {
 			while (!(pos == trace.getCurrent().getIndex())) {
 				trace = trace.forward();
 			}
-		} else if (pos < currentIndex && pos >= 0) {
+		} else if (pos < currentIndex && pos >= -1) {
 			while (!(pos == trace.getCurrent().getIndex())) {
 				trace = trace.back();
 			}
