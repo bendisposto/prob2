@@ -12,7 +12,7 @@
 
 
 (defmulti dispatch-ws extract-action)
-(defmethod dispatch-ws :ping [_ _])
+(defmethod dispatch-ws :ws-ping [_ _])
 (defmethod dispatch-ws :default [a b] (println :chsk a b))
 
 
