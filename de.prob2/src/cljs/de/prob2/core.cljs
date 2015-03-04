@@ -55,7 +55,7 @@
 (defmulti handle first)
 
 (defmethod handle :de.prob2.kernel/trace-changed [[_ msgs]]
-  (reset! traces (map fix-names msgs)))
+  (reset! traces (into {} (map fix-names msgs))))
 
 
 (defmethod handle :default [[t m]]
@@ -84,7 +84,7 @@
   [:tr [:td name] [:td current-value] [:td previous-value]])
 
 (defn state-view []
-  (let [{:keys [trace-id current previous transition]} (first @traces)
+  (let [{:keys [trace-id current previous transition]} @traces
         names (map first (:values current))
         cvals (map second (:values current))
         pvals (map second (:values previous))]
@@ -106,8 +106,8 @@
 (defn history-view []
   (let [sort-order (atom identity)]
     (fn []
-      (let [t (first @traces)
-            h (map-indexed (fn [index element] (assoc element :index index)) (:history t))]
+      (let [t @traces
+            h (cons {:name "-- root --" :return-values [] :parameters [] :id -1 :index -1} (map-indexed (fn [index element] (assoc element :index index)) (:history t)))]
         [:div {:class "history-view"}
          [:span {:class "glyphicon glyphicon-sort pull-right"
                  :id "sort-button"
