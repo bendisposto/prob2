@@ -33,7 +33,6 @@ class StateSpaceAsAnimatorTest extends Specification {
 
 		then:
 		!cmd.isInterrupted()
-		Thread.interrupted() // tests to see if the thread is interrupted and then clears interrupted status.
 	}
 
 	def "it is possible to execute a single command"() {
