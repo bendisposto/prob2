@@ -88,7 +88,8 @@ public abstract class AbstractCommand {
 	}
 
 	public boolean isCompleted() {
-		return interrupted || completed;
+		return interrupted || completed
+				|| Thread.currentThread().isInterrupted();
 	}
 
 	/**
