@@ -109,8 +109,6 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public void sendInterrupt() {
-		Thread.currentThread().interrupt();
-
 		logger.info("Sending an interrupt to the CLI");
 		cli.sendInterrupt();
 	}
