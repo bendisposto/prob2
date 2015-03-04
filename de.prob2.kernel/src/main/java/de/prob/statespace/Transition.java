@@ -54,20 +54,14 @@ public class Transition {
 	Logger logger = LoggerFactory.getLogger(Transition.class);
 
 	private Transition(final StateSpace stateSpace, final String id,
-			final String name, final State src, final State dest,
-			final boolean evaluated) {
+			final String name, final State src, final State dest) {
 		this.stateSpace = stateSpace;
 		this.id = id;
 		this.name = name;
 		this.src = src;
 		this.dest = dest;
-		this.evaluated = evaluated;
+		this.evaluated = false;
 		formalismType = stateSpace.getModel().getFormalismType();
-		if (evaluated) {
-			params = Collections.emptyList();
-			returnValues = Collections.emptyList();
-			rep = name;
-		}
 	}
 
 	/**
@@ -338,7 +332,7 @@ public class Transition {
 			final String transId, final String description, final String srcId,
 			final String destId) {
 		return new Transition(s, transId, description, s.addState(srcId),
-				s.addState(destId), true);
+				s.addState(destId));
 	}
 
 	/**
@@ -359,7 +353,7 @@ public class Transition {
 		String srcId = Transition.getIdFromPrologTerm(cpt.getArgument(3));
 		String destId = Transition.getIdFromPrologTerm(cpt.getArgument(4));
 		return new Transition(s, opId, name, s.addState(srcId),
-				s.addState(destId), false);
+				s.addState(destId));
 	}
 
 	/**

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.scMachineFile org.eventb.core.accurate="true" org.eventb.core.configuration="org.eventb.core.fwd;de.prob2.rodin.units.mchBase">
+<org.eventb.core.scInvariant name="'" org.eventb.core.label="inv1" org.eventb.core.predicate="time∈ℕ" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.invariant#)" org.eventb.core.theorem="false"/>
+<org.eventb.core.scInvariant name="(" org.eventb.core.label="inv2" org.eventb.core.predicate="variable∈ℕ" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.invariant#+" org.eventb.core.theorem="false"/>
+<org.eventb.core.scVariable de.prob2.rodin.units.unitPragmaAttribute="" name="time" org.eventb.core.abstract="false" org.eventb.core.concrete="true" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.variable#(" org.eventb.core.type="ℤ"/>
+<org.eventb.core.scVariable de.prob2.rodin.units.unitPragmaAttribute="" name="variable" org.eventb.core.abstract="false" org.eventb.core.concrete="true" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.variable#*" org.eventb.core.type="ℤ"/>
+<org.eventb.core.scEvent name="variablf" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#'">
+<org.eventb.core.scAction name="'" org.eventb.core.assignment="time ≔ 0" org.eventb.core.label="act1" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#'|org.eventb.core.action#'"/>
+<org.eventb.core.scAction name="(" org.eventb.core.assignment="variable ≔ 0" org.eventb.core.label="act2" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#'|org.eventb.core.action#("/>
+</org.eventb.core.scEvent>
+<org.eventb.core.scEvent name="variablg" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="tick" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#,">
+<org.eventb.core.scGuard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="up∈ℕ" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#,|org.eventb.core.guard#(" org.eventb.core.theorem="false"/>
+<org.eventb.core.scParameter name="up" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#,|org.eventb.core.parameter#'" org.eventb.core.type="ℤ"/>
+<org.eventb.core.scAction name="uq" org.eventb.core.assignment="variable ≔ variable+up" org.eventb.core.label="act1" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#,|org.eventb.core.action#)"/>
+<org.eventb.core.scAction name="ur" org.eventb.core.assignment="time ≔ time+1" org.eventb.core.label="act2" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#,|org.eventb.core.action#*"/>
+</org.eventb.core.scEvent>
+<org.eventb.core.scEvent name="variablh" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="tock" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#-">
+<org.eventb.core.scGuard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="down∈ℕ" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#-|org.eventb.core.guard#(" org.eventb.core.theorem="false"/>
+<org.eventb.core.scParameter name="down" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#-|org.eventb.core.parameter#'" org.eventb.core.type="ℤ"/>
+<org.eventb.core.scAction name="dowo" org.eventb.core.assignment="time ≔ time+1" org.eventb.core.label="act1" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#-|org.eventb.core.action#)"/>
+<org.eventb.core.scAction name="dowp" org.eventb.core.assignment="variable ≔ variable − down" org.eventb.core.label="act2" org.eventb.core.source="/Time/clock.bum|org.eventb.core.machineFile#clock|org.eventb.core.event#-|org.eventb.core.action#*"/>
+</org.eventb.core.scEvent>
+</org.eventb.core.scMachineFile>
