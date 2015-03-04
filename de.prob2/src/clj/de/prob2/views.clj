@@ -11,13 +11,13 @@
 
 
 (defmulti dispatch-history sente/extract-action)
-(defmethod dispatch-history :goto [prob {:keys [?data]} _] (goto-position prob ?data))
+(defmethod dispatch-history :goto [prob {:keys [?data]}] (goto-position prob ?data))
 
 
 (defrecord Views [prob] component/Lifecycle
            (start [this]
              (println "Starting views")
-             (defmethod sente/handle-updates :history  [a b] (dispatch-history prob a b))
+             (defmethod sente/handle-updates :history  [a] (dispatch-history prob a))
              this)
            (stop [this] (println "Stopping views") this))
 
