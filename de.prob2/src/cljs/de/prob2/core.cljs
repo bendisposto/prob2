@@ -24,7 +24,7 @@
 
 
 (def traces (atom {}))
- 
+(def encoding (clojure.core/atom nil)) 
 
 (let [{:keys [chsk ch-recv send-fn state]}
       (sente/make-channel-socket! "/updates" ; Note the same path as before
@@ -37,8 +37,9 @@
   )
 
 (defn read-transit [msg]
-  (let [r (transit/reader :json-verbose)]
-    (transit/read r msg)))
+  (if @encoding (let [r (transit/reader @encoding)]
+                  (transit/read r msg))
+      msg))
 
 
 (defn fix-names [{:keys [history] :as t}]
@@ -55,6 +56,10 @@
 
 (defmethod handle :de.prob2.kernel/trace-changed [[_ msgs]]
   (reset! traces (map fix-names msgs)))
+
+(defmethod handle :sente/encoding [[_ m]]
+  (logp "Received encoding" m)
+  (clojure.core/reset! encoding (keyword  m)))
 
 (defmethod handle :default [[t m]]
   (logp "Received Type: " t)
@@ -172,6 +177,5 @@
       (register (goog.dom.dataset/get c "type") (.-id c) (js->clj (goog.dom.dataset/getAll c))))))
 
 (defn init! []
-  (logp :huhu)
   (hook-browser-navigation!)
   (setup-components)) 

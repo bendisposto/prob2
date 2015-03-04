@@ -4,22 +4,25 @@
             [cognitect.transit :as transit])
   (:import java.io.ByteArrayOutputStream))
 
+(declare send!)
 
 (defn extract-action
   ([a] (extract-action nil a))
   ([_ {:keys [event]}] (keyword (name (first event)))))
 
+(defn get-uid [a] (get-in a [:ring-req :session :uid]))
 
 (defmulti dispatch-ws extract-action)
-(defmethod dispatch-ws :ws-ping [x] ;(println :ping (get-in x
-                                    ;[:ring-req :session :uid]))
-  )
-(defmethod dispatch-ws :default [a] (println :chsk a))
+(defmethod dispatch-ws :ws-ping [_ _])
+
+(defmethod dispatch-ws :uidport-open [{:keys [send-fn! encoding]} x]
+  (let [c (get-uid x)] (send-fn! c [:sente/encoding encoding])))
+(defmethod dispatch-ws :default [_ a] (println (get-in a [:ring-req :session :uid]) (extract-action a)))
 
 
-(defmulti handle-updates (fn [{:keys [event]}] (keyword (namespace (first event)))))
-(defmethod handle-updates :chsk [a] (dispatch-ws a) ) ;; do nothing
-(defmethod handle-updates :default [a] (println :unknown-message a))
+(defmulti handle-updates (fn [sente {:keys [event]}] (keyword (namespace (first event)))))
+(defmethod handle-updates :chsk [sente a] (dispatch-ws sente a)) ;; do nothing
+(defmethod handle-updates :default [sente a] (println :unknown-message a))
 
 (defrecord Sente [post ws-handshake receive-channel send-fn! clients stop-routing-fn! encoding]
   component/Lifecycle
@@ -29,14 +32,14 @@
                       connected-uids]}
               (sente/make-channel-socket! {})
               this' (assoc this
-                           :stop-routing-fn! (sente/start-chsk-router! ch-recv handle-updates)
+                          
                            :post ajax-post-fn
                            :ws-handshake ajax-get-or-ws-handshake-fn
                            :receive-channel ch-recv
                            :send-fn! send-fn
                            :clients connected-uids)]
           (println "Initializing Websockets")
-          this')))
+          (assoc this'  :stop-routing-fn! (sente/start-chsk-router! ch-recv (partial handle-updates this'))))))
   (stop [this]
     (if send-fn!
       (do (println "Stopping Message Handling")

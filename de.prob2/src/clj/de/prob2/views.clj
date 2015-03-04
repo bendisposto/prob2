@@ -17,7 +17,7 @@
 (defrecord Views [prob] component/Lifecycle
            (start [this]
              (println "Starting views")
-             (defmethod sente/handle-updates :history  [a] (dispatch-history prob a))
+             (defmethod sente/handle-updates :history  [_ a] (dispatch-history prob a))
              this)
            (stop [this] (println "Stopping views") this))
 
