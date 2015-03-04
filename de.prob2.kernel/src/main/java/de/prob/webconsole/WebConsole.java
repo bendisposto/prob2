@@ -24,10 +24,10 @@ public class WebConsole {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(WebConsole.class);
 
-	private static int PORT = 17180;
+	private static int PORT = 17080;
 
-	public static void run(final String local, final String iface, int port)
-			throws Exception {
+	public static void run(final String local, final String iface,
+			final int port) throws Exception {
 
 		if (port > 0) {
 			PORT = port;
@@ -52,7 +52,7 @@ public class WebConsole {
 		});
 	}
 
-	public static void run(String iface, final Runnable openBrowser)
+	public static void run(final String iface, final Runnable openBrowser)
 			throws Exception {
 
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
@@ -101,7 +101,8 @@ public class WebConsole {
 		} while (!found && port < 17180);
 
 		if (!found) {
-			throw new BindException("No free port found between 17080 and 17179");
+			throw new BindException(
+					"No free port found between 17080 and 17179");
 		}
 
 		WebConsole.PORT = port;
