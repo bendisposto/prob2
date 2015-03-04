@@ -2,23 +2,24 @@
   (:require [taoensso.sente :as sente]
             [com.stuartsierra.component :as component]
             [cognitect.transit :as transit])
-  (:import java.io.ByteArrayOutputStream)
-  )
+  (:import java.io.ByteArrayOutputStream))
 
 
 (defn extract-action
-  ([a b] (extract-action nil a b))
-  ([_ {:keys [event]} _] (keyword (name (first event)))))
+  ([a] (extract-action nil a))
+  ([_ {:keys [event]}] (keyword (name (first event)))))
 
 
 (defmulti dispatch-ws extract-action)
-(defmethod dispatch-ws :ws-ping [_ _])
-(defmethod dispatch-ws :default [a b] (println :chsk a b))
+(defmethod dispatch-ws :ws-ping [x] ;(println :ping (get-in x
+                                    ;[:ring-req :session :uid]))
+  )
+(defmethod dispatch-ws :default [a] (println :chsk a))
 
 
-(defmulti handle-updates (fn [{:keys [event]} _] (keyword (namespace (first event)))))
-(defmethod handle-updates :chsk [a b] (dispatch-ws a b) ) ;; do nothing
-(defmethod handle-updates :default [a b] (println :unknown-message a b))
+(defmulti handle-updates (fn [{:keys [event]}] (keyword (namespace (first event)))))
+(defmethod handle-updates :chsk [a] (dispatch-ws a) ) ;; do nothing
+(defmethod handle-updates :default [a] (println :unknown-message a))
 
 (defrecord Sente [post ws-handshake receive-channel send-fn! clients stop-routing-fn! encoding]
   component/Lifecycle
@@ -28,7 +29,7 @@
                       connected-uids]}
               (sente/make-channel-socket! {})
               this' (assoc this
-                           :stop-routing-fn! (sente/start-chsk-router-loop! handle-updates ch-recv)
+                           :stop-routing-fn! (sente/start-chsk-router! ch-recv handle-updates)
                            :post ajax-post-fn
                            :ws-handshake ajax-get-or-ws-handshake-fn
                            :receive-channel ch-recv

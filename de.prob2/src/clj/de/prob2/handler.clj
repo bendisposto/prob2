@@ -14,11 +14,14 @@
             [cognitect.transit :as transit])
   (:import java.io.ByteArrayOutputStream))
 
+(def sessions (atom 0))
+(defn get-uid [] (let [s @sessions] (swap! sessions inc) s))
+
 
 (defn default-routes []
   (fn [{:keys [ws-handshake post]} prob]
     [(GET "/" [] (render-file "templates/index.html" {:dev (env :dev?)}))
-     (GET  "/updates" req (ws-handshake req))
+     (GET  "/updates" req (-> req (assoc-in [:session :uid] (get-uid)) ws-handshake))
      (GET "/stateview/:trace" [trace] (sv/create-state-view prob trace))
      (POST "/updates" req (post req))
      (resources "/")
