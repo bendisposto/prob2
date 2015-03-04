@@ -99,8 +99,9 @@ StateInspector = (function() {
     function clickFunction(e) {
         var path = []
         var componentS, headingS, formulaS
-        for (var i = 0; i < this.classList.length; i++) {
-            path.push(this.classList[i])
+        var classList = $(e.target).attr('class').split(' ').filter(function(e) { return e !== ""})
+        for (var i = 0; i < classList.length; i++) {
+            path.push(classList[i])
             if(i === 0) {
                 componentS = path[0] + "_"
             } else if(i === 1) {
