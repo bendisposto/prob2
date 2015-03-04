@@ -8,3 +8,4 @@ system.properties
 prob_log.txt
 ProB.log.*
 prob2preferences
+*-init.clj
