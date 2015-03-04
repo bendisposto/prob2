@@ -16,7 +16,7 @@
             [taoensso.encore :as enc    :refer (logf log logp)]
             [cljsjs.react :as react]
             [ajax.core :refer [GET POST]])
-  (:import goog.History)) 
+  (:import goog.History))
 
 ;; -------------------------
 ;; Views
@@ -24,7 +24,7 @@
 
 
 (def traces (atom {}))
-(def encoding (clojure.core/atom nil)) 
+(def encoding (clojure.core/atom nil))
 
 (let [{:keys [chsk ch-recv send-fn state]}
       (sente/make-channel-socket! "/updates" ; Note the same path as before
@@ -39,7 +39,7 @@
 (defn read-transit [msg]
   (if @encoding (let [r (transit/reader @encoding)]
                   (transit/read r msg))
-      msg))
+      (js/alert "No encoding transmitted from ProB")))
 
 
 (defn fix-names [{:keys [history] :as t}]
@@ -57,9 +57,6 @@
 (defmethod handle :de.prob2.kernel/trace-changed [[_ msgs]]
   (reset! traces (map fix-names msgs)))
 
-(defmethod handle :sente/encoding [[_ m]]
-  (logp "Received encoding" m)
-  (clojure.core/reset! encoding (keyword  m)))
 
 (defmethod handle :default [[t m]]
   (logp "Received Type: " t)
@@ -77,7 +74,9 @@
    (when (= (:id e) :chsk/recv)
      (let [[e-type raw-msg] (:?data e)]
        (logp raw-msg)
-       (handle [e-type (read-transit raw-msg)])))))
+       (if (= :sente/encoding e-type)
+         (clojure.core/reset! encoding (keyword raw-msg))
+         (handle [e-type (read-transit raw-msg)]))))))
 
 (defn null-component [] [:div "Not yet implemented"])
 
@@ -108,7 +107,7 @@
   (let [sort-order (atom identity)]
     (fn []
       (let [t (first @traces)
-            h (map-indexed (fn [index element] (assoc element :index index)) (:history t))] 
+            h (map-indexed (fn [index element] (assoc element :index index)) (:history t))]
         [:div {:class "history-view"}
          [:span {:class "glyphicon glyphicon-sort pull-right"
                  :id "sort-button"
@@ -178,4 +177,4 @@
 
 (defn init! []
   (hook-browser-navigation!)
-  (setup-components)) 
+  (setup-components))
