@@ -68,6 +68,10 @@
   (logp msg-map)
   (chsk-send! [msg-type msg-map]))
 
+(defn handshake [e]
+  (clojure.core/reset! encoding e)
+  (send! :prob2/handshake {}))
+
 (sente/start-chsk-router!
  ch-chsk
  (fn [e]
@@ -75,7 +79,7 @@
      (let [[e-type raw-msg] (:?data e)]
        (logp raw-msg)
        (if (= :sente/encoding e-type)
-         (clojure.core/reset! encoding (keyword raw-msg))
+         (handshake (keyword raw-msg))
          (handle [e-type (read-transit raw-msg)]))))))
 
 (defn null-component [] [:div "Not yet implemented"])
@@ -107,7 +111,7 @@
   (let [sort-order (atom identity)]
     (fn []
       (let [t @traces
-            h (cons {:name "-- root --" :return-values [] :parameters [] :id -1 :index -1} (map-indexed (fn [index element] (assoc element :index index)) (:history t)))]
+            h (cons {:name "-- uninitialized --" :return-values [] :parameters [] :id -1 :index -1} (map-indexed (fn [index element] (assoc element :index index)) (:history t)))]
         [:div {:class "history-view"}
          [:span {:class "glyphicon glyphicon-sort pull-right"
                  :id "sort-button"

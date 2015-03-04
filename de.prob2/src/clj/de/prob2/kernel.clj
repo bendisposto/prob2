@@ -110,7 +110,6 @@
 ;; FIXME We should only send information to clients who actually care
 (defn notify-trace-changed [{:keys [clients] :as sente} traces]
   (let [packet (mapv prepare-trace-packet traces)]
-    (println packet)
     (doseq [c (:any @clients)]
       (snt/send!
        sente c
@@ -137,6 +136,16 @@
     (.registerAnimationChangeListener animations listener)
     listener))
 
+(defmulti dispatch-kernel snt/extract-action)
+(defmethod dispatch-kernel :handshake [{:keys [animations sente]} a]
+  (let [traces (.getTraces animations)
+        packet (mapv prepare-trace-packet traces)
+        client (get-in a [:ring-req :session :uid])]
+     (snt/send!
+       sente client
+       ::trace-changed
+       packet)))
+
 (defrecord ProB [injector listener sente animations]
   component/Lifecycle
   (start [this]
@@ -148,8 +157,10 @@
                 animations (.getInstance injector de.prob.statespace.Animations)
                 _ (println " -> got Animations object")
                 listener (install-handlers sente animations)
-                _ (println " -> Installed Listeners")]
-            (assoc this :injector injector :listener listener :animations animations)))))
+                _ (println " -> Installed Listeners")
+                this' (assoc this :injector injector :listener listener :animations animations)]
+            (defmethod snt/handle-updates :prob2 [_ a] (dispatch-kernel this' a))
+            this'))))
   (stop [this]
     (if injector (do (println "Shutting down ProB 2.0")
                      (dissoc this :injector :listener))
