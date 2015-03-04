@@ -48,7 +48,7 @@
 
   :minify-assets
   {:assets
-    {"resources/public/css/site.min.css" "resources/public/css/site.css"}}
+    {"resources/public/css/prob2.min.css" "resources/public/css/prob2.css"}}
 
   :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
                              :compiler {:output-to     "resources/public/js/app.js"
@@ -61,7 +61,7 @@
   :profiles {:dev {:repl-options {:init-ns user
                                   :timeout 120000
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
-
+                   :jvm-opts ^:replace []
                    :dependencies [[ring-mock "0.1.5"]
                                   [ring/ring-devel "1.3.2"]
                                   [leiningen "2.5.1"]
@@ -95,6 +95,7 @@
              :uberjar {:hooks [leiningen.cljsbuild minify-assets.plugin/hooks]
                        :env {:production true}
                        :aot :all
+                       :dependencies [[de.prob2/de.prob2.kernel "2.0.0-milestone-24-SNAPSHOT"]]
                        :omit-source true
                        :cljsbuild {:jar true
                                    :builds {:app
