@@ -1,9 +1,9 @@
 package de.prob.check;
 
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.statespace.Transition;
 
 /**
  * Class created during constraint based invariant checking to represent an
@@ -36,16 +36,16 @@ public class InvariantCheckCounterExample implements ITraceDescription {
 	}
 
 	/**
-	 * @return the first {@link Transition} transition into a state for which the
-	 *         invariant holds.
+	 * @return the first {@link Transition} transition into a state for which
+	 *         the invariant holds.
 	 */
 	public Transition getStep1() {
 		return step1;
 	}
 
 	/**
-	 * @return the second {@link Transition} transition into a state for which the
-	 *         invariant does not hold.
+	 * @return the second {@link Transition} transition into a state for which
+	 *         the invariant does not hold.
 	 */
 	public Transition getStep2() {
 		return step2;
@@ -54,8 +54,8 @@ public class InvariantCheckCounterExample implements ITraceDescription {
 	@Override
 	public Trace getTrace(final StateSpace s) {
 		Trace t = new Trace(s);
-		t = t.add(step1.getId());
-		t = t.add(step2.getId());
+		t = t.add(step1);
+		t = t.add(step2);
 		return t;
 	}
 }

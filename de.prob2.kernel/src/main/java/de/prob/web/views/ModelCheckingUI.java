@@ -217,7 +217,9 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 		if (result instanceof ITraceDescription) {
 			Trace trace = currentStateSpace
 					.getTrace((ITraceDescription) result);
-			animations.addNewAnimation(trace);
+			if (trace != null) {
+				animations.addNewAnimation(trace);
+			}
 		}
 		return null;
 	}
