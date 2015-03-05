@@ -1,5 +1,6 @@
 package de.prob.animator.command;
 
+import de.prob.check.CheckInterrupted;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.ModelCheckingOptions;
 import de.prob.check.NotYetFinished;
@@ -15,23 +16,26 @@ public class ModelCheckingJob extends AbstractCommand {
 	private final String jobId;
 	private ModelCheckingOptions options;
 	private ModelCheckingStepCommand cmd;
-	private boolean completed = false;
 	private IModelCheckingResult res;
 	private StateSpaceStats stats;
 	private final ModelCheckingUI ui;
 
-	private final long time = -1;
+	private long time = -1;
 
 	public ModelCheckingJob(final ModelCheckingOptions options,
 			final String jobId, final ModelCheckingUI ui) {
 		this.options = options;
 		this.jobId = jobId;
 		this.ui = ui;
+		this.completed = false;
 		cmd = new ModelCheckingStepCommand(TIME, options);
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
+		if (time == -1) {
+			time = System.currentTimeMillis();
+		}
 		cmd.writeCommand(pto);
 	}
 
@@ -51,12 +55,7 @@ public class ModelCheckingJob extends AbstractCommand {
 	}
 
 	public IModelCheckingResult getResult() {
-		return res;
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return completed;
+		return res == null && interrupted ? new CheckInterrupted() : res;
 	}
 
 	@Override
@@ -66,14 +65,6 @@ public class ModelCheckingJob extends AbstractCommand {
 
 	public StateSpaceStats getStats() {
 		return stats;
-	}
-
-	@Override
-	public void processErrorResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings,
-			final String errormessages) {
-		// TODO Auto-generated method stub
-		super.processErrorResult(bindings, errormessages);
 	}
 
 }

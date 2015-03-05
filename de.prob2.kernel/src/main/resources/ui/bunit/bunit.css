@@ -1,13 +1,19 @@
+li {
+    cursor: default;
+}
+
 .test-ok {
     list-style-image: url(/images/tests/testok.gif);
 }
 
 .test-fail {
     list-style-image: url(/images/tests/testfail.gif);
+    cursor: pointer;
 }
 
 .test-error {
     list-style-image: url(/images/tests/testerr.gif);
+    cursor: pointer;
 }
 
 .test-suite-ok {

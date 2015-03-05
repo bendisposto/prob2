@@ -2,7 +2,6 @@ package de.prob.web.views;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -21,15 +20,7 @@ public class SignatureMerge extends AbstractAnimationBasedView {
 
 	@Inject
 	public SignatureMerge(final AnimationSelector animations) {
-		super(animations, null);
-		incrementalUpdate = false;
-		animations.registerAnimationChangeListener(this);
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public SignatureMerge(final AnimationSelector animations,
-			final UUID animationOfInterest) {
-		super(animations, animationOfInterest);
+		super(animations);
 		incrementalUpdate = false;
 		animations.registerAnimationChangeListener(this);
 	}

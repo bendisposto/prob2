@@ -72,6 +72,10 @@ public class CBCInvariantChecker implements IModelCheckJob {
 	@Override
 	public IModelCheckingResult call() throws Exception {
 		long time = System.currentTimeMillis();
+		if (ui != null) {
+			ui.updateStats(jobId, 0, new NotYetFinished(
+					"Deadlock check started", 0), null);
+		}
 		s.execute(command);
 		if (ui != null) {
 			ui.isFinished(jobId, System.currentTimeMillis() - time,
@@ -82,8 +86,10 @@ public class CBCInvariantChecker implements IModelCheckJob {
 
 	@Override
 	public IModelCheckingResult getResult() {
-		return command.getResult() == null ? new NotYetFinished(
-				"Invariant Checking Interrupted", -1) : command.getResult();
+		if (command.getResult() == null) {
+			return new NotYetFinished("No result was calculated", -1);
+		}
+		return command.getResult();
 	}
 
 	@Override

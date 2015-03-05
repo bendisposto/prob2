@@ -45,7 +45,6 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	private IModelCheckingResult result;
 	private final String RESULT = "Result";
 	private final String STATS = "Stats";
-	private boolean interrupted = false;
 
 	Logger logger = LoggerFactory.getLogger(ModelCheckingStepCommand.class);
 
@@ -64,23 +63,17 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
+		CompoundPrologTerm statsTerm = BindingGenerator.getCompoundTerm(
+				bindings.get(STATS), STATS_ARITY);
+		int numberNodes = BindingGenerator.getInteger(statsTerm.getArgument(1))
+				.getValue().intValue();
+		int numberTrans = BindingGenerator.getInteger(statsTerm.getArgument(2))
+				.getValue().intValue();
+		int numberProcessed = BindingGenerator
+				.getInteger(statsTerm.getArgument(3)).getValue().intValue();
 
-		if (!bindings.get(RESULT).getFunctor().equals("interrupted")) {
-			CompoundPrologTerm statsTerm = BindingGenerator.getCompoundTerm(
-					bindings.get(STATS), STATS_ARITY);
-			int numberNodes = BindingGenerator
-					.getInteger(statsTerm.getArgument(1)).getValue().intValue();
-			int numberTrans = BindingGenerator
-					.getInteger(statsTerm.getArgument(2)).getValue().intValue();
-			int numberProcessed = BindingGenerator
-					.getInteger(statsTerm.getArgument(3)).getValue().intValue();
-
-			stats = new StateSpaceStats(numberNodes, numberTrans,
-					numberProcessed);
-			result = extractResult(bindings.get(RESULT));
-		} else {
-			interrupted = true;
-		}
+		stats = new StateSpaceStats(numberNodes, numberTrans, numberProcessed);
+		result = extractResult(bindings.get(RESULT));
 	}
 
 	private IModelCheckingResult extractResult(final PrologTerm prologTerm) {
@@ -166,9 +159,5 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 
 	public StateSpaceStats getStats() {
 		return stats;
-	}
-
-	public boolean isInterrupted() {
-		return interrupted;
 	}
 }

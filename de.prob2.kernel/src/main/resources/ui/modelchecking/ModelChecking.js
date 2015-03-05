@@ -49,9 +49,9 @@ ModelChecking = (function() {
         $("#results").append(session.render("/ui/modelchecking/queued.html", data))
         selectJob(id)
         $("#"+id+"-cancel").click(function(e) {
-            session.sendCmd(session.sendCmd("cancel", {
+            session.sendCmd("cancel", {
                 "jobId" : id
-            }))
+            })
         })
         $("#"+id).click(function(e) {
             selectJob(id)

@@ -84,6 +84,15 @@ class StateSpaceCachingTest extends Specification {
 		thrown(IllegalArgumentException)
 	}
 
+	def "states can be accessed via integer via the getAt method"() {
+		when:
+		s.getRoot().explore()
+
+		then:
+		s.getAt(0).getId() == "0"
+		s.getAt(0) == s[0]
+	}
+
 	def "states that do not exist in the prolog kernel cannot be accessed via integer"() {
 		when:
 		s.getState(500) // we have not reached this during the exploration we have done so far in the tests

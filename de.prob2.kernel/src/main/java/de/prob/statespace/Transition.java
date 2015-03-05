@@ -54,20 +54,14 @@ public class Transition {
 	Logger logger = LoggerFactory.getLogger(Transition.class);
 
 	private Transition(final StateSpace stateSpace, final String id,
-			final String name, final State src, final State dest,
-			final boolean evaluated) {
+			final String name, final State src, final State dest) {
 		this.stateSpace = stateSpace;
 		this.id = id;
 		this.name = name;
 		this.src = src;
 		this.dest = dest;
-		this.evaluated = evaluated;
+		this.evaluated = false;
 		formalismType = stateSpace.getModel().getFormalismType();
-		if (evaluated) {
-			params = Collections.emptyList();
-			returnValues = Collections.emptyList();
-			rep = name;
-		}
 	}
 
 	/**
@@ -153,7 +147,9 @@ public class Transition {
 		if (predicateString != null) {
 			return predicateString;
 		}
-		predicateString = Joiner.on(" & ").join(getParameterPredicates());
+		List<String> params = getParameterPredicates();
+		predicateString = params.isEmpty() ? "TRUE=TRUE" : Joiner.on(" & ")
+				.join(params);
 		return predicateString;
 	}
 
@@ -162,6 +158,9 @@ public class Transition {
 	 *         parameters for this transition
 	 */
 	public List<String> getParameterPredicates() {
+		if (isArtificialTransition()) {
+			return Collections.emptyList();
+		}
 		evaluate();
 		List<String> predicates = new ArrayList<String>();
 		AbstractElement mainComponent = stateSpace.getModel()
@@ -193,7 +192,7 @@ public class Transition {
 	 * not yet evaluated (the values for name, parameters, and return values
 	 * have not yet been retrieved), this is done via {@link #evaluate()}.
 	 * 
-	 * @return a String represenation of the operation
+	 * @return a String representation of the operation
 	 */
 	private String generateRep() {
 		evaluate();
@@ -220,6 +219,11 @@ public class Transition {
 		return rep;
 	}
 
+	public boolean isArtificialTransition() {
+		return name.equals("$initialise_machine")
+				|| name.equals("$setup_constants");
+	}
+
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj == this) {
@@ -236,7 +240,8 @@ public class Transition {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(getId(), getSource().getId(), getDestination().getId());
+		return Objects.hashCode(getId(), getSource().getId(), getDestination()
+				.getId());
 	}
 
 	/**
@@ -327,7 +332,7 @@ public class Transition {
 			final String transId, final String description, final String srcId,
 			final String destId) {
 		return new Transition(s, transId, description, s.addState(srcId),
-				s.addState(destId), true);
+				s.addState(destId));
 	}
 
 	/**
@@ -348,7 +353,7 @@ public class Transition {
 		String srcId = Transition.getIdFromPrologTerm(cpt.getArgument(3));
 		String destId = Transition.getIdFromPrologTerm(cpt.getArgument(4));
 		return new Transition(s, opId, name, s.addState(srcId),
-				s.addState(destId), false);
+				s.addState(destId));
 	}
 
 	/**

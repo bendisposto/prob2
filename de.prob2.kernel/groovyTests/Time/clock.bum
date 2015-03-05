@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd;de.prob2.rodin.units.mchBase" version="5">
+<org.eventb.core.event name="'" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+<org.eventb.core.action name="'" org.eventb.core.assignment="time ≔ 0" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="(" org.eventb.core.assignment="variable ≔ 0" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.variable de.prob2.rodin.units.inferredUnitPragmaAttribute="" de.prob2.rodin.units.unitPragmaAttribute="" name="(" org.eventb.core.identifier="time"/>
+<org.eventb.core.invariant name=")" org.eventb.core.label="inv1" org.eventb.core.predicate="time ∈ ℕ"/>
+<org.eventb.core.variable de.prob2.rodin.units.inferredUnitPragmaAttribute="" de.prob2.rodin.units.unitPragmaAttribute="" name="*" org.eventb.core.identifier="variable"/>
+<org.eventb.core.invariant name="+" org.eventb.core.label="inv2" org.eventb.core.predicate="variable ∈ ℕ"/>
+<org.eventb.core.event name="," org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="tick">
+<org.eventb.core.parameter name="'" org.eventb.core.identifier="up"/>
+<org.eventb.core.guard name="(" org.eventb.core.label="grd1" org.eventb.core.predicate="up ∈ ℕ"/>
+<org.eventb.core.action name=")" org.eventb.core.assignment="variable ≔ variable + up" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="*" org.eventb.core.assignment="time ≔ time + 1" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="-" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="tock">
+<org.eventb.core.parameter name="'" org.eventb.core.identifier="down"/>
+<org.eventb.core.guard name="(" org.eventb.core.label="grd1" org.eventb.core.predicate="down ∈ ℕ"/>
+<org.eventb.core.action name=")" org.eventb.core.assignment="time ≔ time + 1" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="*" org.eventb.core.assignment="variable ≔ variable − down" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>

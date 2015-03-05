@@ -17,11 +17,10 @@ th {
 }
 
 .close-button {
-	color: #660000;
-	opacity: 0.5;
+	color: gray;
 	cursor: pointer;
 }
 
 .close-button:hover {
-	opacity: 1;
+	color: #660000;
 }

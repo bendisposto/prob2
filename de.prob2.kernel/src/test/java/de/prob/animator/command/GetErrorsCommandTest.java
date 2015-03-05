@@ -32,7 +32,7 @@ public class GetErrorsCommandTest {
 		assertTrue(next instanceof CompoundPrologTerm);
 		CompoundPrologTerm t = (CompoundPrologTerm) next;
 		assertEquals("get_error_messages", t.getFunctor());
-		assertEquals(1, t.getArity());
+		assertEquals(2, t.getArity());
 		PrologTerm argument = t.getArgument(1);
 		assertTrue(argument.isVariable());
 	}

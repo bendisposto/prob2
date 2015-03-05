@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -33,16 +32,7 @@ public class LtlFormula extends AbstractAnimationBasedView {
 	@Inject
 	public LtlFormula(final AnimationSelector animations)
 			throws LtlParseException {
-		super(animations, null);
-		incrementalUpdate = false;
-		animations.registerAnimationChangeListener(this);
-		addFormulas();
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public LtlFormula(final AnimationSelector animations,
-			final UUID animationOfInterest) throws LtlParseException {
-		super(animations, animationOfInterest);
+		super(animations);
 		incrementalUpdate = false;
 		animations.registerAnimationChangeListener(this);
 		addFormulas();

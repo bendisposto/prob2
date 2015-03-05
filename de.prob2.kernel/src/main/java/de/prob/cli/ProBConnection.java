@@ -22,6 +22,7 @@ public class ProBConnection {
 	private PrintStream outputStream;
 	private final Logger logger = LoggerFactory.getLogger(ProBConnection.class);
 	private volatile boolean shutingDown;
+	private volatile boolean busy;
 	private final String key;
 	private final int port;
 
@@ -79,6 +80,10 @@ public class ProBConnection {
 		return answer;
 	}
 
+	public boolean isBusy() {
+		return busy;
+	}
+
 	private String getAnswer() throws IOException {
 		String input = null;
 		input = readAnswer();
@@ -100,8 +105,11 @@ public class ProBConnection {
 			 * Or add some kind of timer to prevent the thread blocks forever.
 			 * See task#102
 			 */
+			busy = true;
 			int count = inputStream.read(buffer);
-
+			busy = false; // as soon as we read something, we know that the
+							// Prolog has been processed and we do not want to
+							// allow interruption
 			if (count > 0) {
 				final byte length = 1;
 

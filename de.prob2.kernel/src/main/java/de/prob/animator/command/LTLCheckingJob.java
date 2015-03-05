@@ -1,6 +1,7 @@
 package de.prob.animator.command;
 
 import de.prob.animator.domainobjects.LTL;
+import de.prob.check.CheckInterrupted;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.LTLNotYetFinished;
 import de.prob.parser.ISimplifiedROMap;
@@ -20,8 +21,7 @@ public class LTLCheckingJob extends AbstractCommand {
 
 	private IModelCheckingResult res;
 	private LtlCheckingCommand cmd;
-	private long time;
-	private boolean completed;
+	private long time = -1;
 
 	public LTLCheckingJob(final StateSpace s, final LTL formula,
 			final String jobId, final ModelCheckingUI ui) {
@@ -37,15 +37,6 @@ public class LTLCheckingJob extends AbstractCommand {
 		if (time == -1) {
 			time = System.currentTimeMillis();
 		}
-		if (Thread.interrupted()) {
-			completed = true;
-			if (ui != null) {
-				ui.isFinished(jobId, System.currentTimeMillis() - time, res,
-						null);
-			}
-			return;
-		}
-
 		cmd.writeCommand(pto);
 	}
 
@@ -63,12 +54,7 @@ public class LTLCheckingJob extends AbstractCommand {
 	}
 
 	public IModelCheckingResult getResult() {
-		return res;
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return completed;
+		return res == null && interrupted ? new CheckInterrupted() : res;
 	}
 
 	@Override

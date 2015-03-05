@@ -71,6 +71,10 @@ public class CBCDeadlockChecker implements IModelCheckJob {
 	@Override
 	public IModelCheckingResult call() throws Exception {
 		long time = System.currentTimeMillis();
+		if (ui != null) {
+			ui.updateStats(jobId, 0, new NotYetFinished(
+					"Deadlock check started", 0), null);
+		}
 		s.execute(job);
 		if (ui != null) {
 			ui.isFinished(jobId, System.currentTimeMillis() - time,
@@ -81,8 +85,10 @@ public class CBCDeadlockChecker implements IModelCheckJob {
 
 	@Override
 	public IModelCheckingResult getResult() {
-		return job.getResult() == null ? new NotYetFinished(
-				"Deadlock Checking Interrupted", -1) : job.getResult();
+		if (job.getResult() == null) {
+			return new NotYetFinished("No result was calculated", -1);
+		}
+		return job.getResult();
 	}
 
 	@Override

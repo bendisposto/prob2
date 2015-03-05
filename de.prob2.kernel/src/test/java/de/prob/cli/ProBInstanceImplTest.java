@@ -19,16 +19,18 @@ public class ProBInstanceImplTest extends AbstractUnitTest {
 	private BufferedReader reader;
 	private ProBInstance cli;
 	private ProBConnection connection;
+	private OsSpecificInfo osinfo;
 
 	@Test
 	public void testCliShutdown() throws Exception {
 		process = mock(Process.class);
 		reader = mock(BufferedReader.class);
 		connection = mock(ProBConnection.class);
+		osinfo = mock(OsSpecificInfo.class);
 		Long userInterruptRef = 1234L;
 		try {
 			cli = new ProBInstance(process, reader, userInterruptRef,
-					connection, "", null);
+					connection, "", osinfo);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

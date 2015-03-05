@@ -7,6 +7,7 @@ import spock.lang.Specification
 import de.prob.Main
 import de.prob.animator.command.CheckInitialisationStatusCommand
 import de.prob.animator.command.CheckInvariantStatusCommand
+import de.prob.animator.command.ExploreStateCommand
 import de.prob.scripting.ClassicalBFactory
 
 
@@ -24,8 +25,14 @@ class StateSpaceAsAnimatorTest extends Specification {
 		firstState = root.$initialise_machine()
 	}
 
-	def "it is possible to interrupt a command that is running"() {
-		// TODO: once the interrupt mechanism is set in stone
+	def "sending an interrupt while the animator is not doing anything will not disturb further commands"() {
+		when:
+		s.sendInterrupt()
+		def cmd = new ExploreStateCommand(s, "root", [])
+		s.execute(cmd)
+
+		then:
+		!cmd.isInterrupted()
 	}
 
 	def "it is possible to execute a single command"() {

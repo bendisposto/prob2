@@ -50,23 +50,9 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 
 	@Inject
 	public ValueOverTime(final AnimationSelector animations) {
-		super(animations, null);
+		super(animations);
 		this.incrementalUpdate = false;
 		currentTrace = animations.getCurrentTrace();
-		if (currentTrace == null) {
-			model = null;
-		} else {
-			model = currentTrace.getModel();
-			animations.registerAnimationChangeListener(this);
-		}
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public ValueOverTime(final AnimationSelector animations,
-			final UUID animationOfInterest) {
-		super(animations, animationOfInterest);
-		this.incrementalUpdate = false;
-		currentTrace = animations.getTrace(animationOfInterest);
 		if (currentTrace == null) {
 			model = null;
 		} else {
