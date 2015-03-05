@@ -23,7 +23,7 @@
                                         ;(sente/set-logging-level! :trace)
 
 
-(def state (atom {:traces {} :focused {}}))
+(def state (atom {:traces {}}))
 (def encoding (clojure.core/atom nil))
 
 (let [{:keys [chsk ch-recv send-fn state]}
@@ -54,11 +54,9 @@
 
 (defmulti handle first)
 
-(defmethod handle :de.prob2.kernel/trace-changed [[_ msgs]]
-  (swap! state assoc :focused (into {} (map fix-names msgs))))
-
-(defmethod handle :de.prob2.kernel/traces [[_ msgs]]
-  (swap! state assoc :traces msgs))
+(defmethod handle :de.prob2.kernel/ui-state [[_ msgs]]
+  (doseq [[uuid trace] (:traces msgs)]
+     (swap! state assoc-in [:traces uuid] trace )))
 
 (defmethod handle :default [[t m]]
   (logp "Received Type: " t)
@@ -112,7 +110,9 @@
 (defn history-view []
   (let [sort-order (atom identity)]
     (fn []
-      (let [t (:focused @state)
+      (let [id (session/get :focused-uuid)
+            _ (logp :id id)
+            t (get-in @state [:traces id])
             h (cons {:name "-- uninitialized --" :return-values [] :parameters [] :id -1 :index -1} (map-indexed (fn [index element] (assoc element :index index)) (:history t)))]
         [:div {:class "history-view"}
          [:div {:class "glyphicon glyphicon-sort pull-right"
@@ -123,12 +123,13 @@
           (map (partial mk-history-item (:trace-id t) (:current-index t)) (@sort-order h))]
          ]))))
 
-(defn mk-trace-item [{:keys [uuid]}]
-  [:li {:class "animator"} [:a {:href (str "#/trace/" uuid)} (str uuid)]])
+(defn mk-trace-item [{:keys [trace-id] :as p}]
+  ^{:key (str trace-id)}
+  [:li {:class "animator"} [:a {:href (str "#/trace/" trace-id)} (str trace-id)]])
 
 (defn mk-animator-sublist [[_ elems]]
-  (let [{:keys [main-component-name file]} (first elems)]
-    [:li {:class "animator-sublist"}
+  (let [{:keys [animator-id main-component-name file]} (:model (first elems))]
+     ^{:key (:animator-id (first elems))} [:li {:class "animator-sublist"}
      [:div {:class "model"} (str main-component-name " (" file ")")]
      [:ul {:class "animator-list"}
       (if (seq elems)
@@ -138,7 +139,7 @@
 
 (defn trace-selection-view []
   (let [raw-traces (:traces @state)
-        grouped (group-by :animator-id raw-traces)]
+        grouped (group-by :animator-id (vals raw-traces))]
     [:div {:class "trace-selector"}
      [:ul {:class "trace-list"}
       (if (seq grouped)

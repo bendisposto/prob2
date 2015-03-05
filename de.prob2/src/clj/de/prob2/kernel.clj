@@ -96,11 +96,14 @@
         uuid (.getUUID trace)
         cur-index (.getIndex te)
         model (extractE (.getModel trace))
-        model-id (.getId (.getStateSpace trace))
+        animator-id (.getId (.getStateSpace trace))
         ]
 
-    (assoc cur :trace-id uuid :history history :current-index cur-index :model {:data model :model-id model-id})))
+    [(str uuid) (assoc cur :trace-id uuid :history history :current-index cur-index :model model :animator-id animator-id)]))
 
+
+(defn prepare-ui-state-packet [traces]
+  {:traces (into {} (mapv prepare-trace-packet traces))})
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-model-changed [{:keys [clients] :as sente} state-space]
@@ -109,11 +112,11 @@
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-trace-changed [{:keys [clients] :as sente} traces]
-  (let [packet (mapv prepare-trace-packet traces)]
+  (let [packet (prepare-ui-state-packet traces)]
     (doseq [c (:any @clients)]
       (snt/send!
        sente c
-       ::trace-changed
+       ::ui-state
        packet))))
 
 ;; FIXME We should only send information to clients who actually care
@@ -136,20 +139,14 @@
     (.registerAnimationChangeListener animations listener)
     listener))
 
-(defn trace-list [trace]
-  (let [uuid (.getUUID trace)
-        model (transform (.getModel trace))
-        animator-id (.getId (.getStateSpace trace))]
-    (into model  {:uuid uuid :animator-id animator-id})))
-
 (defmulti dispatch-kernel snt/extract-action)
 (defmethod dispatch-kernel :handshake [{:keys [animations sente]} a]
   (let [traces (.getTraces animations)
-        packet (mapv trace-list traces)
+        packet (prepare-ui-state-packet traces)
         client (get-in a [:ring-req :session :uid])]
     (snt/send!
      sente client
-     ::traces
+     ::ui-state
      packet)))
 
 (defrecord ProB [injector listener sente animations]
