@@ -124,7 +124,6 @@
          ]))))
 
 (defn mk-trace-item [{:keys [uuid]}]
-  (logp :t trace)
   [:li {:class "animator"} [:a {:href (str "#/trace/" uuid)} (str uuid)]])
 
 (defn mk-animator-sublist [[_ elems]]
