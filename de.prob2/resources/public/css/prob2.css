@@ -1,3 +1,5 @@
+
+
 .history-view,.trace-selector li {
   list-style-type: none;
     cursor: pointer;
@@ -49,3 +51,11 @@
     filter: alpha(opacity=10);
     opacity: 0.1;
 }
+
+.animator-list .active {
+    font-weight: bold;
+    background-color: #dddddd;
+}
+
+.pp-trace-item {
+    margin-right: 8px;

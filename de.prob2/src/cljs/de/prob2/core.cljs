@@ -44,7 +44,7 @@
 
 (defn fix-names [name]
   (get {"$initialise_machine" "INITIALISATION"
-                         "$setup_constants" "SETUP CONSTANTS"} name name))
+        "$setup_constants" "SETUP CONSTANTS"} name name))
 
 (defmulti handle first)
 
@@ -117,12 +117,34 @@
           (map (partial mk-history-item (:trace-id t) (:current-index t)) (@sort-order h))]
          ]))))
 
-(defn mk-trace-item [{:keys [current-index trace-id history] :as p}]
-  (let [h (pp-transition  (get (into [] history) current-index))
-        sz (count history)]
 
-    ^{:key (str trace-id)}
-    [:li {:class "animator"} [:a {:href (str "#/trace/" trace-id)} (str "Trace length: " sz " Last event: " h)]]))
+(defn surrounding [v c n]
+  (let [[a v'] (split-at (- c n) v)
+        [b c] (split-at (inc (* n 2)) v')]
+    [(count a) b (count c)]))
+
+(defn p-fix [c]
+  (logp c)
+  (when (< 0 c) [{:active "" :pp (str "..(" c ")..")}]))
+
+(defn trace-excerpt [{:keys [history current-index] :as t}]
+  (let [[pre hv post] (surrounding (into [] (map-indexed vector history)) current-index 2)]
+    (concat
+     (p-fix pre)     
+     (map (fn [[i e]]
+            (let [a? (= i current-index)]
+              (assoc e
+                     :active (if a? "active" "")
+                     :pp (if a? (pp-transition e) (:name e))))) hv)
+     (p-fix post))))
+
+(defn pp-trace-excerpt [t]
+  [:span {:class (str "pp-trace-item " (:active t))} (:pp t)])
+
+(defn mk-trace-item [{:keys [current-index trace-id history] :as p}]
+  [:li {:class "animator"}
+   [:a {:href (str "#/trace/" trace-id)}
+    (let [t (trace-excerpt p)] (if (seq t) (map pp-trace-excerpt t) "empty trace"))]])
 
 (defn mk-animator-sublist [[_ elems]]
   (let [{:keys [animator-id main-component-name file]} (:model (first elems))]
@@ -145,9 +167,7 @@
         [:div])]]))
 
 (defn home-page []
-  [:div [:h2 "Welcome to ProB 2.0"]
-   [:div [:a {:href "#/about"} "go to about page"]]
-   [trace-selection-view]])
+  [trace-selection-view])
 
 (defn about-page []
   [:div [:h2 "About de.prob2"]
@@ -192,8 +212,8 @@
 ;; Components
 
 (def components {"state-view" state-view
-                 "history-view" history-view})
-
+                 "history-view" history-view
+                 "trace-selection-view" trace-selection-view})
 
 ;; -------------------------
 ;; Initialize app
