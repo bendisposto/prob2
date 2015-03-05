@@ -14,6 +14,13 @@ t = t.back()
 t = t.new('pp = PID2')
 assert t.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machine({},{},{})","new(PID2)"]
 
+// list underneath doesn't change
+t = m as Trace
+t1 = t.$initialise_machine()
+t2 = t.$initialise_machine()
+
+assert t1.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machine({},{},{})"]
+assert t2.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machine({},{},{})"]
 
 s.animator.cli.shutdown();
 "performing some animations, going back, different step results in a correct trace"

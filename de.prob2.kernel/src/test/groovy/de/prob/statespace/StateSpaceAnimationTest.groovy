@@ -120,7 +120,7 @@ class StateSpaceAnimationTest extends Specification {
 
 		then:
 		t != null
-		t.getTransitionList() == transitions
+		t.getTransitionList().collect { it } == transitions
 	}
 
 	class MyTraceDescriptor implements ITraceDescription {

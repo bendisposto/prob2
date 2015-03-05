@@ -37,3 +37,9 @@ ul {
 #sort {
     cursor: pointer;
 }
+
+.transparent {
+    zoom: 1;
+    filter: alpha(opacity=10);
+    opacity: 0.1;
+}

@@ -35,4 +35,18 @@ assert res instanceof ModelCheckOk
 assert res.message == "No Invariant violation was found"
 
 s.animator.cli.shutdown();
+
+m = api.eventb_load(dir + File.separator + "Time" + File.separator +"clock.bcm")
+s = m as StateSpace
+
+res = model_check(new CBCInvariantChecker(s))
+assert res instanceof CBCInvariantViolationFound
+t_inv = res.getTrace(s)
+ops = t_inv.getTransitionList(true)
+assert ops.size() == 2
+assert ops[0].getName() == "invariant_check_tock"
+assert ops[1].getName() == "tock"
+assert ops[1].getParams()[0].toInteger() >= 0
+
+s.animator.cli.shutdown();
 "constraint based deadlock and invariant checking works correctly"

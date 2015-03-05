@@ -13,6 +13,7 @@ import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.check.CBCDeadlockFound;
 import de.prob.check.CheckError;
+import de.prob.check.CheckInterrupted;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.ModelCheckOk;
 import de.prob.check.NotYetFinished;
@@ -22,8 +23,8 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Transition;
 
 /**
  * This command makes ProB search for a deadlock with an optional predicate to
@@ -60,7 +61,7 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 	}
 
 	public IModelCheckingResult getResult() {
-		return result;
+		return result == null && interrupted ? new CheckInterrupted() : result;
 	}
 
 	public String getDeadlockStateId() {
@@ -125,5 +126,10 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 	@Override
 	public List<Transition> getNewTransitions() {
 		return newOps;
+	}
+
+	@Override
+	public boolean blockAnimator() {
+		return true;
 	}
 }

@@ -1,7 +1,6 @@
 package de.prob.web.views;
 
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -19,15 +18,7 @@ public class StateVisualization extends AbstractAnimationBasedView {
 
 	@Inject
 	public StateVisualization(final AnimationSelector animations) {
-		super(animations, null);
-		animations.registerAnimationChangeListener(this);
-		incrementalUpdate = false;
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public StateVisualization(final AnimationSelector animations,
-			final UUID animationOfInterest) {
-		super(animations, animationOfInterest);
+		super(animations);
 		animations.registerAnimationChangeListener(this);
 		incrementalUpdate = false;
 	}

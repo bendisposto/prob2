@@ -3,6 +3,8 @@ package de.prob.statespace
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 
+import com.github.krukow.clj_lang.PersistentVector
+
 class AnimationSelectorTest extends Specification {
 
 	class MyListener implements IAnimationChangeListener {
@@ -29,7 +31,7 @@ class AnimationSelectorTest extends Specification {
 	def setup() {
 		def StateSpace ss = mock(StateSpace.class);
 		when(ss.isBusy()).thenReturn(false);
-		trace = new Trace(ss,null,[],UUID.randomUUID());
+		trace = new Trace(ss,null,PersistentVector.emptyVector(),UUID.randomUUID());
 		selector = new AnimationSelector();
 		listener = new MyListener()
 		selector.registerAnimationChangeListener(listener)

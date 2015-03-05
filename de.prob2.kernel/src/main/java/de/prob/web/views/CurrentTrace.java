@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -29,15 +28,7 @@ public class CurrentTrace extends AbstractAnimationBasedView {
 
 	@Inject
 	public CurrentTrace(final AnimationSelector animations) {
-		super(animations, null);
-		incrementalUpdate = false;
-		animations.registerAnimationChangeListener(this);
-	}
-
-	// Constructor instantiated via reflection in multianimation mode.
-	public CurrentTrace(final AnimationSelector animations,
-			final UUID animationOfInterest) {
-		super(animations, animationOfInterest);
+		super(animations);
 		incrementalUpdate = false;
 		animations.registerAnimationChangeListener(this);
 	}
@@ -89,23 +80,13 @@ public class CurrentTrace extends AbstractAnimationBasedView {
 
 	public Object gotoPos(final Map<String, String[]> params) {
 		logger.trace("Goto Position in Trace");
-		Trace trace = getCurrentTrace();
 		int id = Integer.parseInt(params.get("id")[0]);
-		int currentIndex = trace.getCurrent().getIndex();
-		if (id == currentIndex) {
-			return null;
-		} else if (id > currentIndex) {
-			while (!(id == trace.getCurrent().getIndex())) {
-				trace = trace.forward();
-			}
-		} else if (id < currentIndex) {
-			while (!(id == trace.getCurrent().getIndex())) {
-				trace = trace.back();
-			}
-		}
+		Trace trace = getCurrentTrace().gotoPosition(id);
 		animationsRegistry.traceChange(trace);
 		return null;
 	}
+
+
 
 	public Object changeSort(final Map<String, String[]> params) {
 		sortDown = Boolean.valueOf(params.get("sortDown")[0]);

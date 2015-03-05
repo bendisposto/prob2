@@ -21,5 +21,8 @@
   (start))
 
 (defn reset []
-  (stop)
   (refresh :after 'user/go))
+
+(defn restart []
+  (stop)
+  (reset))

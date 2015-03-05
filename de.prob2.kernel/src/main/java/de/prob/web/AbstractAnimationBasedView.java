@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.Main;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
@@ -18,17 +17,11 @@ public abstract class AbstractAnimationBasedView extends AbstractSession
 	Logger logger = LoggerFactory.getLogger(AbstractAnimationBasedView.class);
 	protected final AnimationSelector animationsRegistry;
 	boolean multianimation;
-	protected final UUID animationOfInterest;
+	protected UUID animationOfInterest;
 
 	@Inject
-	public AbstractAnimationBasedView(final AnimationSelector animations,
-			final UUID animationOfInterest) {
+	public AbstractAnimationBasedView(final AnimationSelector animations) {
 		this.animationsRegistry = animations;
-		if (Main.multianimation) {
-			this.animationOfInterest = animationOfInterest;
-		} else {
-			this.animationOfInterest = null;
-		}
 	}
 
 	@Override
@@ -47,5 +40,14 @@ public abstract class AbstractAnimationBasedView extends AbstractSession
 		return animationOfInterest == null ? animationsRegistry
 				.getCurrentTrace() : animationsRegistry
 				.getTrace(animationOfInterest);
+	}
+
+	public void setAnimationOfInterest(final UUID animationOfInterest) {
+		this.animationOfInterest = animationOfInterest;
+		performTraceChange(animationsRegistry.getTrace(animationOfInterest));
+	}
+
+	public UUID getAnimationOfInterest() {
+		return animationOfInterest;
 	}
 }

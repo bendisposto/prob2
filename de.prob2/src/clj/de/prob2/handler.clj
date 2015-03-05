@@ -7,55 +7,22 @@
             [clojure.core.async :as async :refer (<! <!! >! >!! put! chan go go-loop)]
             [prone.middleware :refer [wrap-exceptions]]
             [environ.core :refer [env]]
-            [taoensso.sente :as sente]))
+            [de.prob2.sente :as snt]
+            [de.prob2.stateview :as sv]
+            [de.prob2.views]
+            [de.prob2.kernel :as kernel]
+            [cognitect.transit :as transit])
+  (:import java.io.ByteArrayOutputStream))
 
-
-(defmulti handle-updates (fn [{:keys [event]} _] (first event)))
-(defmethod handle-updates :chsk/ws-ping [_ _]) ;; do nothing
-(defmethod handle-updates :de.prob2/hello [_ _] (println :hello))
-(defmethod handle-updates :default [e c] (println e))
-
-(defrecord Sente [post ws-handshake receive-channel send-fn! clients stop-routing-fn!]
-  component/Lifecycle
-  (start [this]
-    (if (:send-fn! this) this
-        (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
-                      connected-uids]}
-              (sente/make-channel-socket! {})
-              this' (assoc this
-                      :stop-routing-fn! (sente/start-chsk-router-loop! handle-updates ch-recv)
-                      :post ajax-post-fn
-                      :ws-handshake ajax-get-or-ws-handshake-fn
-                      :receive-channel ch-recv
-                      :send-fn! send-fn
-                      :clients connected-uids)]
-          (println "Initializing Websockets")
-          this')))
-  (stop [this]
-    (if send-fn!
-      (do (println "Stopping Message Handling")
-          (stop-routing-fn!)
-          (println "Destroying Websockets")
-          (assoc this
-            :stop-routing-fn! nil
-            :post nil
-            :ws-handshake nil
-            :receive-channel nil
-            :send-fn! nil
-            :clients nil))
-      this)))
-
-(defn send! [sente user-id event]
-  (let [sf (:send-fn! sente)]
-    (sf user-id event)))
-
-(defn mk-sente [] (map->Sente {}))
+(def sessions (atom 0))
+(defn get-uid [] (let [s @sessions] (swap! sessions inc) s))
 
 
 (defn default-routes []
-  (fn [{:keys [ws-handshake post]}]
+  (fn [{:keys [ws-handshake post]} prob]
     [(GET "/" [] (render-file "templates/index.html" {:dev (env :dev?)}))
-     (GET  "/updates" req (ws-handshake req))
+     (GET  "/updates" req (-> req (assoc-in [:session :uid] (get-uid)) ws-handshake))
+     (GET "/stateview/:trace" [trace] (sv/create-state-view prob trace))
      (POST "/updates" req (post req))
      (resources "/")
      (not-found "Not Found")]))
@@ -67,7 +34,7 @@
     (if route-fn
       this
       (do (println "Preparing Routes")
-          (assoc this :route-fn (apply compojure.core/routes (route-creator-fn sente))))))
+          (assoc this :route-fn (apply compojure.core/routes (route-creator-fn sente prob))))))
   (stop [this]
     (if route-fn
       (do (println "Destroying Routes")
@@ -84,18 +51,18 @@
       this
       (do (println "Creating Webapp")
           (assoc this
-            :handler
-            (let [handler
-                  (wrap-defaults
-                   (:route-fn routes)
-                   site-defaults)]
-              (if (env :dev?)
-                (wrap-exceptions handler)
-                handler))))))
+                 :handler
+                 (let [handler
+                       (wrap-defaults
+                        (:route-fn routes)
+                        site-defaults)]
+                   (if (env :dev?)
+                     (wrap-exceptions handler)
+                     handler))))))
   (stop [this]
     (if handler
       (do (println "Destroying Webapp")
-          (dissoc this :routes :hadler))
+          (dissoc this :routes :handler))
       this)))
 
 (defn mk-handler []

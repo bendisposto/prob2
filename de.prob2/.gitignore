@@ -10,3 +10,7 @@ pom.xml.asc
 /resources/public/js
 /out
 /.repl
+.#*
+*.clj#
+prob2preferences
+

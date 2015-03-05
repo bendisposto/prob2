@@ -68,6 +68,8 @@ StateInspector = (function() {
 
     function clearInput() {
         $("#content").replaceWith("<tbody id='content'></tbody>");
+        clearResults()
+        $(".CodeMirror").addClass("_empty")
     }
 
     function extractOfInterest(data) {
@@ -91,13 +93,15 @@ StateInspector = (function() {
             extractOfInterest(model[i])
         };
         $("input").click(clickFunction)
+        $(".CodeMirror").removeClass("_empty")
     }
 
     function clickFunction(e) {
         var path = []
         var componentS, headingS, formulaS
-        for (var i = 0; i < this.classList.length; i++) {
-            path.push(this.classList[i])
+        var classList = $(e.target).attr('class').split(' ').filter(function(e) { return e !== ""})
+        for (var i = 0; i < classList.length; i++) {
+            path.push(classList[i])
             if(i === 0) {
                 componentS = path[0] + "_"
             } else if(i === 1) {
@@ -193,14 +197,16 @@ StateInspector = (function() {
         $("#edit").click(function(e) {
             $("#edit-screen").modal('show')
         })
+
+        $(".CodeMirror").addClass("_empty")
     }
 
     function disable() {
-        $("body").append("<div class='modal-backdrop disabled'></div>")
+        $("body").append("<div class='modal-backdrop transparent'></div>")
     }
 
     function enable() {
-        $(".disabled").remove()
+        $(".transparent").remove()
     }
 
     function clearResults() {

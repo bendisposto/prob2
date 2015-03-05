@@ -2,6 +2,8 @@ package de.prob.statespace
 
 import org.parboiled.common.Tuple2
 
+import com.github.krukow.clj_lang.PersistentVector
+
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.EvaluationCommand
 import de.prob.animator.domainobjects.IEvalElement
@@ -31,7 +33,7 @@ public class Trace {
 	}
 
 	def Trace(final State startState) {
-		this(startState.getStateSpace(), new TraceElement(startState), [], java.util.UUID.randomUUID())
+		this(startState.getStateSpace(), new TraceElement(startState), PersistentVector.emptyVector(), java.util.UUID.randomUUID())
 	}
 
 	def Trace(final StateSpace s, final TraceElement head, List<Transition> transitionList, UUID uuid) {
@@ -52,6 +54,9 @@ public class Trace {
 		return getCurrentState().eval(formula)
 	}
 
+	def int size() {
+		return transitionList.size();
+	}
 
 	def List<Tuple2<String,IEvalResult>> eval(formula) {
 		def f = formula;
@@ -144,26 +149,22 @@ public class Trace {
 		return this
 	}
 
-	/**
-	 * Determines if a branching in the list is taking place
-	 * (i.e. the head of the list is not equal to the current element in the list).
-	 * If branching is taking place, the new trace element will need a sublist of the
-	 * list of transitions. Otherwise, the normal constructor will be used.
-	 * This is used internally in this class and is a bit of a hack for performance
-	 * reasons.
-	 * @param op to be added to the {@link TraceElement} list
-	 * @return the new {@link TraceElement}
-	 */
-	private List<Transition> branchTransitionListIfNecessary(Transition newOp) {
-		if (head == current) {
-			transitionList << newOp
-			return transitionList
-		} else {
-			// a new list of transitions is created when a branch takes place.
-			def transitionList = new ArrayList<Transition>(transitionList.subList(0, current.getIndex() + 1))
-			transitionList << newOp
-			return transitionList
+
+	def Trace gotoPosition(int pos) {
+		def trace = this;
+		int currentIndex = trace.getCurrent().getIndex();
+		if (pos == currentIndex) {
+			return trace;
+		} else if (pos > currentIndex && pos < size()) {
+			while (!(pos == trace.getCurrent().getIndex())) {
+				trace = trace.forward();
+			}
+		} else if (pos < currentIndex && pos >= -1) {
+			while (!(pos == trace.getCurrent().getIndex())) {
+				trace = trace.back();
+			}
 		}
+		return trace;
 	}
 
 	def boolean canGoForward() {
@@ -172,6 +173,15 @@ public class Trace {
 
 	def boolean canGoBack() {
 		return current.getPrevious() != null
+	}
+
+	private PersistentVector<Transition> branchTransitionListIfNecessary(Transition newOp) {
+		if (head == current) {
+			return transitionList.assocN(transitionList.size(), newOp)
+		} else {
+			def tList = PersistentVector.create(transitionList.subList(0, current.getIndex() + 1))
+			return tList.assocN(tList.size(), newOp)
+		}
 	}
 
 	@Override
@@ -194,16 +204,16 @@ public class Trace {
 		State currentState = this.current.getCurrentState()
 		Trace oldTrace = this
 		TraceElement current = this.current
-		List<Transition> transitionList = this.transitionList
+		PersistentVector<Transition> transitionList = this.transitionList
 		for (int i = 0; i < numOfSteps; i++) {
 			List<Transition> ops = currentState.getOutTransitions()
 			Collections.shuffle(ops)
 			Transition op = ops.get(0)
 			current = new TraceElement(op, current)
 			if (i == 0) {
-				transitionList = branchTransitionListIfNecessary(op) // Branch list if necessary
+				transitionList = branchTransitionListIfNecessary(op)
 			} else {
-				transitionList << op
+				transitionList = transitionList.assocN(transitionList.size(), op)
 			}
 			currentState = op.getDestination()
 		}
@@ -225,6 +235,9 @@ public class Trace {
 	 */
 	@Deprecated
 	def invokeMethod(String method, params) {
+		if(method.startsWith("\$") && !(method == "\$setup_constants" || method == "\$initialise_machine")) {
+			method = method.substring(1)
+		}
 		def transition = getCurrentState().findTransition(method, params as List)
 		if (transition == null) {
 			throw new IllegalArgumentException("Could not execute event with name "+method+" and parameters "+params.toString());
@@ -335,9 +348,6 @@ public class Trace {
 		if(className == stateSpace.model.getClass()) {
 			return (ClassicalBModel) stateSpace.model
 		}
-		if(className == ArrayList) {
-			return transitionList
-		}
 		throw new ClassCastException("Not able to convert Trace object to ${className}")
 	}
 
@@ -384,7 +394,7 @@ public class Trace {
 		def transitionList = branchTransitionListIfNecessary(first)
 		for (op in ops.tail()) {
 			h = new TraceElement(op, h)
-			transitionList << op
+			transitionList = transitionList.assocN(transitionList.size(), op)
 		}
 		return new Trace(stateSpace, h, transitionList, this.UUID)
 	}
@@ -394,6 +404,6 @@ public class Trace {
 	 * @return an identical Trace object with a different UUID
 	 */
 	def Trace copy() {
-		return new Trace(stateSpace, head, current, new ArrayList<Transition>(transitionList), java.util.UUID.randomUUID())
+		return new Trace(stateSpace, head, current, transitionList, java.util.UUID.randomUUID())
 	}
 }

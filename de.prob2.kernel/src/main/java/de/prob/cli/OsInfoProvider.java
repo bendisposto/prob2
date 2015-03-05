@@ -1,5 +1,7 @@
 package de.prob.cli;
 
+import java.io.File;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -35,11 +37,13 @@ class OsInfoProvider implements Provider<OsSpecificInfo> {
 		String os = osString.toLowerCase();
 		if (os.indexOf("win") >= 0) {
 			if (osArch.equals("amd64")) {
-				new OsSpecificInfo("probcli.exe", null,
-						"send_user_interrupt.exe", "Windows", osString, "win64");
+				new OsSpecificInfo("probcli.exe", null, "lib" + File.separator
+						+ "send_user_interrupt.exe", "Windows", osString,
+						"win64");
 			}
-			return new OsSpecificInfo("probcli.exe", null,
-					"send_user_interrupt.exe", "Windows", osString, "win32");
+			return new OsSpecificInfo("probcli.exe", null, "lib"
+					+ File.separator + "send_user_interrupt.exe", "Windows",
+					osString, "win32");
 		}
 		if (os.indexOf("mac") >= 0) {
 			return new OsSpecificInfo("probcli.sh", "sh",

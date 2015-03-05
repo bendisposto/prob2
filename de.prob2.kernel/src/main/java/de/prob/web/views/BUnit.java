@@ -14,6 +14,10 @@ import de.prob.web.WebUtils;
 @Singleton
 public class BUnit extends AbstractSession {
 
+	public BUnit() {
+		incrementalUpdate = false;
+	}
+
 	Set<String> suites = new HashSet<String>();
 
 	@Override
@@ -66,7 +70,8 @@ public class BUnit extends AbstractSession {
 	}
 
 	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
 		sendInitMessage(context);
 		reset();
 	}

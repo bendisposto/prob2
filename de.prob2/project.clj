@@ -14,7 +14,7 @@
                  [reagent-forms "0.4.3"]
                  [reagent-utils "0.1.2"]
                  [secretary "1.2.1"]
-                 [org.clojure/clojurescript "0.0-2814" :scope "provided"]
+                 [org.clojure/clojurescript "0.0-2843" :scope "provided"]
                  [com.stuartsierra/component "0.2.2"]
                  [ring/ring-core "1.3.2"]
                  [ring/ring-servlet "1.3.2"]
@@ -24,7 +24,10 @@
                  [prone "0.8.0"]
                  [compojure "1.3.1"]
                  [selmer "0.8.0"]
-                 [environ "1.0.0"]]
+                 [environ "1.0.0"]
+                 [com.cognitect/transit-clj "0.8.259"]
+                 [com.cognitect/transit-cljs "0.8.205"]
+                 [cljs-ajax "0.3.10"]]
 
   :plugins [
             [lein-cljsbuild "1.0.4"]
@@ -45,7 +48,7 @@
 
   :minify-assets
   {:assets
-    {"resources/public/css/site.min.css" "resources/public/css/site.css"}}
+    {"resources/public/css/prob2.min.css" "resources/public/css/prob2.css"}}
 
   :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
                              :compiler {:output-to     "resources/public/js/app.js"
@@ -56,18 +59,20 @@
                                         :pretty-print  true}}}}
 
   :profiles {:dev {:repl-options {:init-ns user
+                                  :timeout 120000
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
-
+                   :jvm-opts ^:replace []
                    :dependencies [[ring-mock "0.1.5"]
                                   [ring/ring-devel "1.3.2"]
                                   [leiningen "2.5.1"]
-                                  [figwheel "0.2.3-SNAPSHOT"]
+                                  [figwheel "0.2.5-SNAPSHOT"]
                                   [weasel "0.6.0-SNAPSHOT"]
+                                  [org.clojure/test.check "0.7.0"]
                                   [com.cemerick/piggieback "0.1.6-SNAPSHOT"]
                                   [pjstadig/humane-test-output "0.6.0"]]
                    :resource-paths ["kernel/build/libs/*.jar"]
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]
+                   :plugins [[lein-figwheel "0.2.5-SNAPSHOT"]
                              [lein-expand-resource-paths "0.0.1"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
@@ -90,6 +95,7 @@
              :uberjar {:hooks [leiningen.cljsbuild minify-assets.plugin/hooks]
                        :env {:production true}
                        :aot :all
+                       :dependencies [[de.prob2/de.prob2.kernel "2.0.0-milestone-24-SNAPSHOT"]]
                        :omit-source true
                        :cljsbuild {:jar true
                                    :builds {:app

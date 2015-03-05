@@ -127,11 +127,6 @@ class State {
 	 * @return a list of solutions found, or an empty list if no solutions were found
 	 */
 	def List<Transition> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
-
-		if (name.startsWith("\$") && !(name == "\$setup_constants" || name == "\$initialise_machine")) {
-			name = name.substring(1)
-		}
-
 		String predicate = predicates == []? "TRUE = TRUE" : predicates.join(" & ")
 		try {
 			def newOps = stateSpace.transitionFromPredicate(this, name, predicate, nrOfSolutions)
@@ -141,6 +136,32 @@ class State {
 			// Skip
 		}
 		return Collections.EMPTY_LIST
+	}
+
+	def State anyOperation(filter) {
+		List<Transition> ops = getOutTransitions(true)
+		if (filter != null && filter instanceof String) {
+			ops=ops.findAll {
+				it.getName().matches(filter);
+			}
+		}
+		if (filter != null && filter instanceof ArrayList) {
+			ops=ops.findAll {
+				filter.contains(it.getName())
+			}
+		}
+		if (!ops.isEmpty()) {
+			Collections.shuffle(ops)
+			def op = ops[0]
+			def newState = op.getDestination()
+			newState.explore()
+			return newState;
+		}
+		this
+	}
+
+	def State anyEvent(filter) {
+		anyOperation(filter);
 	}
 
 	/**
@@ -185,11 +206,7 @@ class State {
 		}
 
 		formulas.collect {
-			if (values.containsKey(it)) {
-				return values.get(it)
-			} else {
-				return results.get(it)
-			}
+			values.containsKey(it) ? values.get(it) : results.get(it)
 		}
 	}
 
@@ -203,6 +220,10 @@ class State {
 		return id;
 	}
 
+	def long numericalId() {
+		return id == "root" ? -1 : id as long;
+	}
+
 	def String getStateRep() {
 		if (stateSpace.getModel().getFormalismType() == FormalismType.B) {
 			GetBStateCommand cmd = new GetBStateCommand(this)
@@ -212,9 +233,7 @@ class State {
 		return StringUtil.generateString("unknown")
 	}
 
-	def long numericalId() {
-		return id == "root" ? -1 : id as long;
-	}
+
 
 
 	def boolean equals(Object that) {
@@ -229,28 +248,7 @@ class State {
 		return Objects.hashCode(id, stateSpace)
 	};
 
-	def State anyOperation(filter) {
-		List<Transition> ops = getOutTransitions(true)
-		if (filter != null && filter instanceof String) {
-			ops=ops.findAll {
-				it.getName().matches(filter);
-			}
-		}
-		if (filter != null && filter instanceof ArrayList) {
-			ops=ops.findAll {
-				filter.contains(it.getName())
-			}
-		}
-		Collections.shuffle(ops)
-		def op = ops[0]
-		def newState = op.getDestination()
-		newState.explore()
-		return newState;
-	}
 
-	def State anyEvent(filter) {
-		anyOperation(filter);
-	}
 
 	def boolean isInitialised() {
 		if (!explored) {

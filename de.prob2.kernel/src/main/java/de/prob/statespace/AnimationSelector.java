@@ -31,6 +31,13 @@ import de.prob.model.representation.AbstractElement;
 @Singleton
 public class AnimationSelector {
 
+	// private Animations animations;
+	//
+	// @Inject
+	// public AnimationSelector(Animations animations) {
+	// this.animations = animations;
+	// }
+
 	Logger logger = LoggerFactory.getLogger(AnimationSelector.class);
 
 	List<WeakReference<IAnimationChangeListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<IAnimationChangeListener>>();
@@ -340,6 +347,7 @@ public class AnimationSelector {
 			return;
 		}
 		traces.remove(trace.getUUID());
+		protectedTraces.remove(trace.getUUID());
 	}
 
 	public void notifyAnimatorStatus(final String animatorId, final boolean busy) {

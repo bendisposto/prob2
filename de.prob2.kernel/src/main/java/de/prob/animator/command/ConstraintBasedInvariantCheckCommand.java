@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.check.CBCInvariantViolationFound;
+import de.prob.check.CheckInterrupted;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.InvariantCheckCounterExample;
 import de.prob.check.ModelCheckOk;
@@ -23,8 +24,8 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Transition;
 
 /**
  * This command makes ProB search for a invariant violation with an optional
@@ -117,10 +118,16 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 			final CompoundPrologTerm term = (CompoundPrologTerm) t;
 			final String eventName = PrologTerm.atomicString(term
 					.getArgument(1));
-			final Transition step1 = Transition.createTransitionFromCompoundPrologTerm(s,
-					BindingGenerator.getCompoundTerm(term.getArgument(2), 4));
-			final Transition step2 = Transition.createTransitionFromCompoundPrologTerm(s,
-					BindingGenerator.getCompoundTerm(term.getArgument(3), 4));
+			final Transition step1 = Transition
+					.createTransitionFromCompoundPrologTerm(
+							s,
+							BindingGenerator.getCompoundTerm(
+									term.getArgument(2), 4));
+			final Transition step2 = Transition
+					.createTransitionFromCompoundPrologTerm(
+							s,
+							BindingGenerator.getCompoundTerm(
+									term.getArgument(3), 4));
 			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(
 					eventName, step1, step2);
 			newTransitions.add(step1);
@@ -131,11 +138,16 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 	}
 
 	public IModelCheckingResult getResult() {
-		return result;
+		return result == null && interrupted ? new CheckInterrupted() : result;
 	}
 
 	@Override
 	public List<Transition> getNewTransitions() {
 		return newTransitions;
+	}
+
+	@Override
+	public boolean blockAnimator() {
+		return true;
 	}
 }

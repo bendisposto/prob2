@@ -3,8 +3,6 @@ package de.prob.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -194,39 +192,13 @@ public class ReflectionServlet extends HttpServlet {
 
 		ISession obj = null;
 		if (!Main.restricted || publicSession) {
+			obj = Main.getInjector().getInstance(clazz);
 			if (Main.multianimation
-					&& AbstractAnimationBasedView.class.isAssignableFrom(clazz) // is
-																				// AbstractAnimationBasedView
-																				// a
-																				// subtype
-																				// of
-																				// my
-																				// class
-					&& uuid != null) {
-				try {
-					Constructor<ISession> constructor = clazz.getConstructor(
-							AnimationSelector.class, UUID.class);
-					obj = constructor.newInstance(animations, uuid);
-				} catch (NoSuchMethodException e) {
-					logger.error("Constructors for AbstractAnimationBasedViews"
-							+ " must have the correct arguments to instantiate by reflection.");
-				} catch (SecurityException e) {
-					logger.error("Constructing AbstractAnimationBasedView with parameters resulted in an error");
-				} catch (InstantiationException e) {
-					logger.error("Instantiating the AbstractAnimationBasedView resulted in an exception.");
-				} catch (IllegalAccessException e) {
-					logger.error("Instantiating the AbstractAnimationBasedView is not allowed.");
-				} catch (IllegalArgumentException e) {
-					logger.error("The AbstractAnimationBasedView cannot be created with the given parameters");
-				} catch (InvocationTargetException e) {
-					logger.error("Invoking the constructor of the AbstractAnimationBasedView resulted in an exception.");
-				} finally {
-					if (obj == null) {
-						obj = Main.getInjector().getInstance(clazz);
-					}
+					&& obj instanceof AbstractAnimationBasedView) {
+				if (uuid != null) {
+					((AbstractAnimationBasedView) obj)
+							.setAnimationOfInterest(uuid);
 				}
-			} else {
-				obj = Main.getInjector().getInstance(clazz);
 			}
 		}
 		return obj;
