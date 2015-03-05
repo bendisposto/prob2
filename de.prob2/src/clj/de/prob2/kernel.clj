@@ -80,7 +80,7 @@
      :return-values (into [] return-values)}))
 
 (defn prepare-trace-element [te]
-  
+
   (let [s (.getSrc te)
         src (transform-state s)
         d (.getDest te)
@@ -136,15 +136,21 @@
     (.registerAnimationChangeListener animations listener)
     listener))
 
+(defn trace-list [trace]
+  (let [uuid (.getUUID trace)
+        model (transform (.getModel trace))
+        animator-id (.getId (.getStateSpace trace))]
+    (into model  {:uuid uuid :animator-id animator-id})))
+
 (defmulti dispatch-kernel snt/extract-action)
 (defmethod dispatch-kernel :handshake [{:keys [animations sente]} a]
   (let [traces (.getTraces animations)
-        packet (mapv prepare-trace-packet traces)
+        packet (mapv trace-list traces)
         client (get-in a [:ring-req :session :uid])]
-     (snt/send!
-       sente client
-       ::trace-changed
-       packet)))
+    (snt/send!
+     sente client
+     ::traces
+     packet)))
 
 (defrecord ProB [injector listener sente animations]
   component/Lifecycle

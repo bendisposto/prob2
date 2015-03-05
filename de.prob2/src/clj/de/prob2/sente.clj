@@ -63,4 +63,4 @@
 (defn send! [{:keys [send-fn! encoding]} user-id event-id message]
   (send-fn! user-id [event-id (encode message encoding)]))
 
-(defn mk-sente [] (map->Sente {:encoding :json}))
+(defn mk-sente [] (map->Sente {:encoding :json-verbose}))

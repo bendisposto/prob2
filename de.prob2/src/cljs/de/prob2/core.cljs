@@ -23,7 +23,7 @@
                                         ;(sente/set-logging-level! :trace)
 
 
-(def traces (atom {}))
+(def state (atom {:traces {} :focused {}}))
 (def encoding (clojure.core/atom nil))
 
 (let [{:keys [chsk ch-recv send-fn state]}
@@ -55,8 +55,10 @@
 (defmulti handle first)
 
 (defmethod handle :de.prob2.kernel/trace-changed [[_ msgs]]
-  (reset! traces (into {} (map fix-names msgs))))
+  (swap! state assoc :focused (into {} (map fix-names msgs))))
 
+(defmethod handle :de.prob2.kernel/traces [[_ msgs]]
+  (swap! state assoc :traces msgs))
 
 (defmethod handle :default [[t m]]
   (logp "Received Type: " t)
@@ -88,7 +90,7 @@
   [:tr [:td name] [:td current-value] [:td previous-value]])
 
 (defn state-view []
-  (let [{:keys [trace-id current previous transition]} @traces
+  (let [{:keys [trace-id current previous transition]} (:focused @state)
         names (map first (:values current))
         cvals (map second (:values current))
         pvals (map second (:values previous))]
@@ -110,7 +112,7 @@
 (defn history-view []
   (let [sort-order (atom identity)]
     (fn []
-      (let [t @traces
+      (let [t (:focused @state)
             h (cons {:name "-- uninitialized --" :return-values [] :parameters [] :id -1 :index -1} (map-indexed (fn [index element] (assoc element :index index)) (:history t)))]
         [:div {:class "history-view"}
          [:div {:class "glyphicon glyphicon-sort pull-right"
@@ -121,14 +123,40 @@
           (map (partial mk-history-item (:trace-id t) (:current-index t)) (@sort-order h))]
          ]))))
 
+(defn mk-trace-item [{:keys [uuid]}]
+  (logp :t trace)
+  [:li {:class "animator"} [:a {:href (str "#/trace/" uuid)} (str uuid)]])
+
+(defn mk-animator-sublist [[_ elems]]
+  (let [{:keys [main-component-name file]} (first elems)]
+    [:li {:class "animator-sublist"}
+     [:div {:class "model"} (str main-component-name " (" file ")")]
+     [:ul {:class "animator-list"}
+      (if (seq elems)
+        (map mk-trace-item elems)
+        [:div]
+        )]]))
+
+(defn trace-selection-view []
+  (let [raw-traces (:traces @state)
+        grouped (group-by :animator-id raw-traces)]
+    [:div {:class "trace-selector"}
+     [:ul {:class "trace-list"}
+      (if (seq grouped)
+        (map mk-animator-sublist grouped)
+        [:div])]]))
 
 (defn home-page []
   [:div [:h2 "Welcome to ProB 2.0"]
-   [:div [:a {:href "#/about"} "go to about page"]]])
+   [:div [:a {:href "#/about"} "go to about page"]]
+   [trace-selection-view]])
 
 (defn about-page []
   [:div [:h2 "About de.prob2"]
    [:div [:a {:href "#/"} "go to the home page"]]])
+
+(defn animation-view []
+  [:div {:id "h1"} [history-view]])
 
 (defn current-page []
   [:div [(session/get :current-page)]])
@@ -142,6 +170,10 @@
 
 (secretary/defroute "/about" []
   (session/put! :current-page #'about-page))
+
+(secretary/defroute "/trace/:uuid" [uuid]
+  (session/put! :current-page #'animation-view)
+  (session/put! :focused-uuid uuid))
 
 (secretary/defroute "/stateview" []
   (session/put! :current-page #'state-view))
@@ -181,4 +213,5 @@
 
 (defn init! []
   (hook-browser-navigation!)
-  (setup-components))
+  (setup-components)
+  (reagent/render-component [current-page] (.getElementById js/document "app")))
