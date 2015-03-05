@@ -113,7 +113,7 @@
       (let [t @traces
             h (cons {:name "-- uninitialized --" :return-values [] :parameters [] :id -1 :index -1} (map-indexed (fn [index element] (assoc element :index index)) (:history t)))]
         [:div {:class "history-view"}
-         [:span {:class "glyphicon glyphicon-sort pull-right"
+         [:div {:class "glyphicon glyphicon-sort pull-right"
                  :id "sort-button"
                  :on-click (fn [_] (swap! sort-order
                                          (fn [f] (get {identity reverse} f identity))))}]
