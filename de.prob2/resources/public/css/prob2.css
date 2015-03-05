@@ -1,10 +1,14 @@
-.history-view li {
+.history-view,.trace-selector li {
   list-style-type: none;
     cursor: pointer;
 }
 
-.history-view li:nth-child(odd) {
-  background-color: white;
+.history-view a {
+   color: black;
+}
+
+.animator-list a {
+   color: black;
 }
 
 .history-view .future {
@@ -16,19 +20,21 @@
     font-weight: bold;
 }
 
-.history-view .start {
-    color: #bbb;
-    letter-spacing: 2px;
-    font-family: "Courier New", Courier, monospace;
-}
-
-.history-view .disabled {
-    opacity: 0.1;
-}
-
 .history-view li:nth-child(even) {
+  background-color: white;
+}
+
+.history-view li:nth-child(odd) { 
   background-color: #f3f6ff;
 }
+
+.animator-list li:nth-child(even) {
+  background-color: white;
+}
+
+.animator-list li:nth-child(odd) { 
+  background-color: #f3f6ff;
+} 
 
 .history-view ul {
     padding-left: 0px;

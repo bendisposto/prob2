@@ -42,21 +42,15 @@
       (js/alert "No encoding transmitted from ProB")))
 
 
-(defn fix-names [{:keys [history] :as t}]
-  (assoc
-   t
-   :history
-   (map
-    (fn [e]
-      (assoc e
-             :name (get {"$initialise_machine" "INITIALIZATION"
-                         "$setup_constants" "SETUP CONSTANTS"} (:name e) (:name e)))) history)))
+(defn fix-names [name]
+  (get {"$initialise_machine" "INITIALISATION"
+                         "$setup_constants" "SETUP CONSTANTS"} name name))
 
 (defmulti handle first)
 
 (defmethod handle :de.prob2.kernel/ui-state [[_ msgs]]
   (doseq [[uuid trace] (:traces msgs)]
-     (swap! state assoc-in [:traces uuid] trace )))
+    (swap! state assoc-in [:traces uuid] trace )))
 
 (defmethod handle :default [[t m]]
   (logp "Received Type: " t)
@@ -99,37 +93,41 @@
 
 (defn pp-transition [{:keys [name parameters return-values]}]
   (let [ppp (if (seq parameters) (str "(" (clojure.string/join "," parameters) ")") "")
-        pprv (if (seq return-values) (str (clojure.string/join "," return-values) \u21DC " ")  "")] (str pprv name ppp)))
+        pprv (if (seq return-values) (str (clojure.string/join "," return-values) \u21DC " ")  "")
+        fname (fix-names name)] (str pprv fname ppp)))
 
 (defn- mk-history-item [trace-id current {:keys [index] :as item}]
   ^{:key (str "h" index)}
-  [:li {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
-        :on-click (fn [_] (send! :history/goto {:trace-id trace-id :index index}))}
-   (pp-transition item)])
+  [:li [:a  {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
+             :on-click (fn [_] (send! :history/goto {:trace-id trace-id :index index}))}
+        (pp-transition item)]])
 
 (defn history-view []
   (let [sort-order (atom identity)]
     (fn []
       (let [id (session/get :focused-uuid)
-            _ (logp :id id)
             t (get-in @state [:traces id])
             h (cons {:name "-- uninitialized --" :return-values [] :parameters [] :id -1 :index -1} (map-indexed (fn [index element] (assoc element :index index)) (:history t)))]
         [:div {:class "history-view"}
          [:div {:class "glyphicon glyphicon-sort pull-right"
-                 :id "sort-button"
-                 :on-click (fn [_] (swap! sort-order
-                                         (fn [f] (get {identity reverse} f identity))))}]
+                :id "sort-button"
+                :on-click (fn [_] (swap! sort-order
+                                        (fn [f] (get {identity reverse} f identity))))}]
          [:ul {:class "history-list"}
           (map (partial mk-history-item (:trace-id t) (:current-index t)) (@sort-order h))]
          ]))))
 
-(defn mk-trace-item [{:keys [trace-id] :as p}]
-  ^{:key (str trace-id)}
-  [:li {:class "animator"} [:a {:href (str "#/trace/" trace-id)} (str trace-id)]])
+(defn mk-trace-item [{:keys [current-index trace-id history] :as p}]
+  (let [h (pp-transition  (get (into [] history) current-index))
+        sz (count history)]
+
+    ^{:key (str trace-id)}
+    [:li {:class "animator"} [:a {:href (str "#/trace/" trace-id)} (str "Trace length: " sz " Last event: " h)]]))
 
 (defn mk-animator-sublist [[_ elems]]
   (let [{:keys [animator-id main-component-name file]} (:model (first elems))]
-     ^{:key (:animator-id (first elems))} [:li {:class "animator-sublist"}
+    ^{:key (:animator-id (first elems))}
+    [:li {:class "animator-sublist"}
      [:div {:class "model"} (str main-component-name " (" file ")")]
      [:ul {:class "animator-list"}
       (if (seq elems)
