@@ -32,7 +32,7 @@ public class Animations {
 
 	Logger logger = LoggerFactory.getLogger(Animations.class);
 
-	List<WeakReference<ITraceChangesListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<ITraceChangesListener>>();
+	List<ITraceChangesListener> traceListeners = new CopyOnWriteArrayList<ITraceChangesListener>();
 
 	Map<UUID, Trace> traces = new LinkedHashMap<UUID, Trace>();
 
@@ -44,8 +44,13 @@ public class Animations {
 	 */
 	public void registerAnimationChangeListener(
 			final ITraceChangesListener listener) {
-		traceListeners.add(new WeakReference<ITraceChangesListener>(listener));
+		traceListeners.add(listener);
 		listener.changed(getTraces());
+	}
+
+	public void deregisterAnimationChangeListener(
+			final ITraceChangesListener listener) {
+		traceListeners.remove(listener);
 	}
 
 	/**
@@ -75,35 +80,31 @@ public class Animations {
 	 *            {@link Trace} representing the current animation
 	 */
 	private void notifyTraceChange(final Trace trace) {
-		for (WeakReference<ITraceChangesListener> ref : traceListeners) {
-			ITraceChangesListener listener = ref.get();
-			if (listener != null)
-				try {
-					listener.changed(java.util.Collections.singletonList(trace));
-				} catch (Exception e) {
-					logger.error("An exception of type "
-							+ e.getClass()
-							+ " was thrown while executing IAnimationChangeListener of class "
-							+ listener.getClass() + " with message "
-							+ e.getMessage());
-				}
+		for (ITraceChangesListener listener : traceListeners) {
+			try {
+				listener.changed(java.util.Collections.singletonList(trace));
+			} catch (Exception e) {
+				logger.error("An exception of type "
+						+ e.getClass()
+						+ " was thrown while executing IAnimationChangeListener of class "
+						+ listener.getClass() + " with message "
+						+ e.getMessage());
+			}
 		}
 	}
 
 	private void notifyTraceRemove(final Trace trace) {
-		for (WeakReference<ITraceChangesListener> ref : traceListeners) {
-			ITraceChangesListener listener = ref.get();
-			if (listener != null)
-				try {
-					listener.removed(java.util.Collections.singletonList(trace
-							.getUUID()));
-				} catch (Exception e) {
-					logger.error("An exception of type "
-							+ e.getClass()
-							+ " was thrown while executing IAnimationChangeListener of class "
-							+ listener.getClass() + " with message "
-							+ e.getMessage());
-				}
+		for (ITraceChangesListener listener : traceListeners) {
+			try {
+				listener.removed(java.util.Collections.singletonList(trace
+						.getUUID()));
+			} catch (Exception e) {
+				logger.error("An exception of type "
+						+ e.getClass()
+						+ " was thrown while executing IAnimationChangeListener of class "
+						+ listener.getClass() + " with message "
+						+ e.getMessage());
+			}
 		}
 	}
 
@@ -114,18 +115,16 @@ public class Animations {
 				busy.add(t.getUUID());
 		}
 
-		for (WeakReference<ITraceChangesListener> ref : traceListeners) {
-			ITraceChangesListener listener = ref.get();
-			if (listener != null)
-				try {
-					listener.animatorStatus(busy);
-				} catch (Exception e) {
-					logger.error("An exception of type "
-							+ e.getClass()
-							+ " was thrown while executing IAnimationChangeListener of class "
-							+ listener.getClass() + " with message "
-							+ e.getMessage());
-				}
+		for (ITraceChangesListener listener : traceListeners) {
+			try {
+				listener.animatorStatus(busy);
+			} catch (Exception e) {
+				logger.error("An exception of type "
+						+ e.getClass()
+						+ " was thrown while executing IAnimationChangeListener of class "
+						+ listener.getClass() + " with message "
+						+ e.getMessage());
+			}
 		}
 	}
 
