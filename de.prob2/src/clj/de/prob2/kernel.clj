@@ -167,9 +167,14 @@
                 this' (assoc this :injector injector :listener listener :animations animations)]
             (defmethod snt/handle-updates :prob2 [_ a] (dispatch-kernel this' a))
             this'))))
-  (stop [this]
+  (stop [{:keys [animations listener] :as this}]
     (if injector (do (println "Shutting down ProB 2.0")
-                     (dissoc this :injector :listener))
+                     (doseq [t (.getTraces animations)]
+                       (println "  * Removing " (str (.getProperty t "UUID")))
+                       (.removeTrace animations t))
+                     (println " * Deregistering Listener")
+                     (.deregisterAnimationChangeListener animations listener)
+                     (dissoc this :injector :listener :animations :sente))
         this)))
 
 (defn prob []
