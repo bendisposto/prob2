@@ -1,16 +1,16 @@
 
 
 .history-view,.trace-selector li {
-  list-style-type: none;
+    list-style-type: none;
     cursor: pointer;
 }
 
 .history-view a {
-   color: black;
+    color: black;
 }
 
 .animator-list a {
-   color: black;
+    color: black;
 }
 
 .history-view .future {
@@ -23,23 +23,31 @@
 }
 
 .history-view li:nth-child(even) {
-  background-color: white;
+    background-color: white;
 }
 
-.history-view li:nth-child(odd) { 
-  background-color: #f3f6ff;
+.history-view li:nth-child(odd) {
+    background-color: #f3f6ff;
 }
 
 .animator-list li:nth-child(even) {
-  background-color: white;
+    background-color: white;
 }
 
-.animator-list li:nth-child(odd) { 
-  background-color: #f3f6ff;
-} 
+.animator-list li:nth-child(odd) {
+    background-color: #f3f6ff;
+}
 
 .history-view ul {
     padding-left: 0px;
+}
+
+.trace-selector ul {
+    padding-left: 0px;
+}
+
+.animator-list li {
+    padding-left: 16px;
 }
 
 .history-view #sort {
@@ -57,5 +65,16 @@
     background-color: #dddddd;
 }
 
-.pp-trace-item {
-    margin-right: 8px;
+
+.animator-sublist {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.animator-sublist .model {
+    background-color: #666666;
+    padding: 4px;
+    padding-left: 18px;
+    border-radius: 6px;
+    color: white;
+}

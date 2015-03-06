@@ -135,7 +135,7 @@
             (let [a? (= i current-index)]
               (assoc e
                      :active (if a? "active" "")
-                     :pp (if a? (pp-transition e) (:name e))))) hv)
+                     :pp (if a? (pp-transition e) (fix-names (:name e)))))) hv)
      (p-fix post))))
 
 (defn pp-trace-excerpt [t]
@@ -144,7 +144,7 @@
 (defn mk-trace-item [{:keys [current-index trace-id history] :as p}]
   [:li {:class "animator"}
    [:a {:href (str "#/trace/" trace-id)}
-    (let [t (trace-excerpt p)] (if (seq t) (map pp-trace-excerpt t) "empty trace"))]])
+    (let [t (trace-excerpt p)] (if (seq t) (interpose [:span ", "] (map pp-trace-excerpt t)) "empty trace"))]])
 
 (defn mk-animator-sublist [[_ elems]]
   (let [{:keys [animator-id main-component-name file]} (:model (first elems))]
