@@ -107,10 +107,6 @@
 (defn prepare-ui-state-packet [traces]
   {:traces (into {} (mapv prepare-trace-packet traces))})
 
-;; FIXME We should only send information to clients who actually care
-(defn notify-model-changed [{:keys [clients] :as sente} state-space]
-  (doseq [c (:any @clients)]
-    (snt/send! sente c ::model-changed (extractE (.getModel state-space)))))
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-trace-changed [{:keys [clients] :as sente} traces]
@@ -121,11 +117,12 @@
        ::ui-state
        packet))))
 
-;; FIXME We should only send information to clients who actually care
-(defn notify-animator-busy [{:keys [clients] :as sente} busy?]
+(defn notify-trace-removed [{:keys [clients] :as sente} traces]
   (doseq [c (:any @clients)]
-    (snt/send! sente c (if busy? ::animator-is-busy ::animator-is-idle) {})))
-
+      (snt/send!
+       sente c
+       ::trace-removed
+       traces)))
 
 
 (defn instantiate [{inj :injector :as prob} cls]
@@ -136,7 +133,7 @@
         (reify
           ITraceChangesListener
           (changed [this traces] (notify-trace-changed sente traces))
-          (removed [this traces] (println "removed"))
+          (removed [this traces] (do (println :remove traces) (notify-trace-removed sente traces)))
           (animatorStatus [this busy] (println "animation status")))]
     (.registerAnimationChangeListener animations listener)
     listener))

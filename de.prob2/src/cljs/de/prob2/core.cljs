@@ -51,11 +51,24 @@
   (get {"$initialise_machine" "INITIALISATION"
         "$setup_constants" "SETUP CONSTANTS"} name name))
 
+(defn dissoc-in
+  [m [k & ks :as keys]]
+  (if ks
+    (if-let [nextmap (get m k)]
+      (let [newmap (dissoc-in nextmap ks)]
+        (assoc m k newmap))
+      m)
+    (dissoc m k)))
+
 (defmulti handle first)
 
 (defmethod handle :de.prob2.kernel/ui-state [[_ msgs]]
   (doseq [[uuid trace] (:traces msgs)]
     (swap! state assoc-in [:traces uuid] trace )))
+
+(defmethod handle :de.prob2.kernel/trace-removed [[_ msgs]]
+  (doseq [uuid msgs]
+    (swap! state dissoc-in [:traces (str uuid)])))
 
 (defmethod handle :default [[t m]]
   (logp "Received Type: " t)
@@ -63,8 +76,7 @@
 
 ;; (c/chsk-send! [:de.prob2/hello {:target :world}] 8000 (fn [x] (println x)))
 (defn send! [msg-type msg-map]
-  (logp msg-type)
-  (logp msg-map)
+  (logp :sent :type msg-type :content msg-map)
   (chsk-send! [msg-type msg-map]))
 
 (defn handshake [e]
