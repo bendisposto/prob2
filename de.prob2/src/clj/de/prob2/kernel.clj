@@ -176,9 +176,14 @@
             this'))))
   (stop [{:keys [animations listener] :as this}]
     (if injector (do (println "Shutting down ProB 2.0")
-                     (doseq [t (.getTraces animations)]
-                       (println "  * Removing " (str (.getProperty t "UUID")))
-                       (.removeTrace animations t))
+                     (let [traces (.getTraces animations)
+                           animators (into #{} (mapv #(.getStateSpace %) traces))]
+                       (doseq [t traces]
+                         (println "  * Removing " (str (.getProperty t "UUID")))
+                         (.removeTrace animations t))
+                       (doseq [a animators]
+                         (println "  * Killing " a)
+                         (.kill a)))
                      (println " * Deregistering Listener")
                      (.deregisterAnimationChangeListener animations listener)
                      (dissoc this :injector :listener :animations :sente))
