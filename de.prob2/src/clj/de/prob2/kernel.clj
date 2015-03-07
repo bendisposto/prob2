@@ -55,7 +55,9 @@
       tgt)))
 
 (defn transform-state-values [initialized? values]
-  (into {} (map (fn [x] [(.toString (.getKey x)) (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
+  (into {}
+        (map (fn [x] [(.toString (.getKey x))
+                     (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
 
 (defn transform-state [state]
   (println state)
@@ -148,6 +150,14 @@
      sente client
      ::ui-state
      packet)))
+
+(defmethod dispatch-kernel :kill! [{:keys [animations]} a]
+  (let [trace-ids (get-in a [:?data :trace-ids])
+        traces (mapv #(.getTrace animations %) trace-ids)
+        animators (into #{} (mapv #(.getStateSpace %) traces))]
+    (doseq [t traces] (.removeTrace animations t))
+    (doseq [a animators] (.kill a))))
+
 
 (defrecord ProB [injector listener sente animations]
   component/Lifecycle

@@ -102,10 +102,9 @@
         fname (fix-names name)] (str pprv fname ppp)))
 
 (defn- mk-history-item [trace-id current {:keys [index] :as item}]
-  ^{:key (str "h" index)}
-  [:li [:a  {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
-             :on-click (fn [_] (send! :history/goto {:trace-id trace-id :index index}))}
-        (pp-transition item)]])
+  ^{:key (str "h" index)} [:li [:a  {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
+                                     :on-click (fn [_] (send! :history/goto {:trace-id trace-id :index index}))}
+                                (pp-transition item)]])
 
 (defn history-view []
   (let [sort-order (atom identity)]
@@ -129,33 +128,39 @@
     [(count a) b (count c)]))
 
 (defn p-fix [c]
-  (logp c)
   (when (< 0 c) [{:active "" :pp (str "..(" c ")..")}]))
 
 (defn trace-excerpt [{:keys [history current-index] :as t}]
   (let [[pre hv post] (surrounding (into [] (map-indexed vector history)) current-index 2)]
-    (concat
-     (p-fix pre)     
-     (map (fn [[i e]]
-            (let [a? (= i current-index)]
-              (assoc e
-                     :active (if a? "active" "")
-                     :pp (if a? (pp-transition e) (fix-names (:name e)))))) hv)
-     (p-fix post))))
+    ^{:key (fresh-id)} (concat
+                        (p-fix pre)
+                        (map (fn [[i e]]
+                               (let [a? (= i current-index)]
+                                 (assoc e
+                                        :active (if a? "active" "")
+                                        :pp (if a? (pp-transition e) (fix-names (:name e)))))) hv)
+                        (p-fix post))))
 
 (defn pp-trace-excerpt [t]
-  [:span {:class (str "pp-trace-item " (:active t))} (:pp t)])
+  ^{:key (fresh-id)} [:span {:class (str "pp-trace-item " (:active t))} (:pp t)])
+
+(defn mk-span []
+  ^{:key (fresh-id)} [:span ", "])
 
 (defn mk-trace-item [{:keys [current-index trace-id history] :as p}]
-  [:li {:class "animator"}
-   [:a {:href (str "#/trace/" trace-id)}
-    (let [t (trace-excerpt p)] (if (seq t) (interpose [:span ", "] (map pp-trace-excerpt t)) "empty trace"))]])
+  ^{:key trace-id} [:li {:class "animator"}
+                    [:a {:href (str "#/trace/" trace-id)}
+                     (let [t (trace-excerpt p)] (if (seq t) (interpose [mk-span]
+                                                                       (map pp-trace-excerpt t)) "empty trace"))]])
 
-(defn mk-animator-sublist [[_ elems]]
-  (let [{:keys [animator-id main-component-name file]} (:model (first elems))]
-    ^{:key (:animator-id (first elems))}
+(defn mk-animator-sublist [[id elems]]
+  (let [trace-ids (map :trace-id elems)
+        {:keys [animator-id main-component-name file]} (:model (first elems))]
+    ^{:key (fresh-id)}
     [:li {:class "animator-sublist"}
-     [:div {:class "model"} (str main-component-name " (" file ")")]
+     [:div {:class "model"}
+      [:span {:class "glyphicon glyphicon-remove" :id "animator-remove-btn" :on-click (fn [_] (send! :prob2/kill! {:animator-id id :trace-ids trace-ids}))}]
+      [:span (str main-component-name " (" file ")")]]
      [:ul {:class "animator-list"}
       (if (seq elems)
         (map mk-trace-item elems)
@@ -170,6 +175,11 @@
       (if (seq grouped)
         (map mk-animator-sublist grouped)
         [:div])]]))
+
+(defn status-view []
+  (let [raw-traces (:traces @state)
+        grouped (group-by :animator-id (vals raw-traces))]
+    [:div "Running animators:" (count grouped)]))
 
 (defn home-page []
   [trace-selection-view])
