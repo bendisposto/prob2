@@ -2,23 +2,22 @@
   <head>
     <title>ProB 2.0</title>
     <meta charset="utf-8">
-    {% if dev %}
-    {% style "css/bootstrap.css" %}
+    {% style "css-libs/bootstrap.min.css" %}
+    {% style "css-libs/bootflat.css" %}
     {% style "css/prob2.css" %}
-    {% else %}
-    {% style "css/bootstrap.min.css" %}
-    {% style "css/prob2.css" %}
-    {% endif %}
   </head>
   <body>
 
     <div id="app"></div>
     <!-- <div id="ss" data-type="history-view"></div> -->
-    {% if dev %}
-    {% script "js-libs/bootstrap.js" %}
-    {% else %}
+
+    {% script "js-libs/jquery.min.js" %}
     {% style "js-libs/bootstrap.min.js" %}
-    {% endif %}
+    {% script "js-libs/icheck.min.js" %}
+    {% script "js-libs/jquery.fs.selecter.min.js" %}
+    {% script "js-libs/jquery.fs.stepper.min.js" %}
+
+
     <script src="js/app.js" type="text/javascript"></script>
   </body>
 </html>

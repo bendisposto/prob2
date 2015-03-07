@@ -26,6 +26,13 @@
     background-color: white;
 }
 
+#animator-remove-btn {
+    margin-top: 3px;
+    margin-right: 6px;
+    cursor: pointer;
+}
+
+
 .history-view li:nth-child(odd) {
     background-color: #f3f6ff;
 }
