@@ -26,6 +26,11 @@
 (def state (atom {:traces {}}))
 (def encoding (clojure.core/atom nil))
 
+(def id-store (clojure.core/atom 0))
+(defn fresh-id []
+  (let [x @id-store]
+    (swap! id-store inc) x))
+
 (let [{:keys [chsk ch-recv send-fn state]}
       (sente/make-channel-socket! "/updates" ; Note the same path as before
                                   {:type :auto ; e/o #{:auto :ajax :ws}
