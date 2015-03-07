@@ -23,7 +23,7 @@
                                         ;(sente/set-logging-level! :trace)
 
 
-(def state (atom {:traces {}}))
+(def state (atom {:traces {} :connected false}))
 (def encoding (clojure.core/atom nil))
 
 (def id-store (clojure.core/atom 0))
@@ -40,6 +40,16 @@
   (def chsk-send! send-fn) ; ChannelSocket's send API fn
   (def chsk-state state)   ; Watchable, read-only atom
   )
+
+(add-watch
+ chsk-state
+ :chsk-observer
+ (fn [_ _ {oo :open?} {no :open?}]
+   (cond (and no (not oo))
+         (do (chsk-send! [:chsk/encoding nil])
+             (swap! state assoc :connected no))
+         (and oo (not no)) (reset! state {:traces {} :connected no})
+         :otherwise nil)))
 
 (defn read-transit [msg]
   (if @encoding (let [r (transit/reader @encoding)]
@@ -88,7 +98,7 @@
  (fn [e]
    (when (= (:id e) :chsk/recv)
      (let [[e-type raw-msg] (:?data e)]
-       (logp raw-msg)
+      ; (logp raw-msg)
        (if (= :sente/encoding e-type)
          (handshake (keyword raw-msg))
          (handle [e-type (read-transit raw-msg)]))))))

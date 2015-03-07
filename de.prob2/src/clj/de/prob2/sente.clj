@@ -14,9 +14,10 @@
 
 (defmulti dispatch-ws extract-action)
 (defmethod dispatch-ws :ws-ping [_ _])
-
-(defmethod dispatch-ws :uidport-open [{:keys [send-fn! encoding]} x]
+(defmethod dispatch-ws :encoding  [{:keys [send-fn! encoding]} x]
   (let [c (get-uid x)] (send-fn! c [:sente/encoding encoding])))
+
+
 (defmethod dispatch-ws :default [_ a] (println (get-in a [:ring-req :session :uid]) (extract-action a)))
 
 
@@ -32,7 +33,7 @@
                       connected-uids]}
               (sente/make-channel-socket! {})
               this' (assoc this
-                          
+
                            :post ajax-post-fn
                            :ws-handshake ajax-get-or-ws-handshake-fn
                            :receive-channel ch-recv
