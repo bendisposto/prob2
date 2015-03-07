@@ -755,4 +755,9 @@ public class StateSpace implements IAnimator {
 		return result;
 	}
 
+	@Override
+	public void kill() {
+		animator.kill();
+	}
+
 }

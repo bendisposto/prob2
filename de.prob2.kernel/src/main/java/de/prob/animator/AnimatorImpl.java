@@ -139,4 +139,9 @@ class AnimatorImpl implements IAnimator {
 		return busy;
 	}
 
+	@Override
+	public void kill() {
+		cli.shutdown();
+	}
+
 }
