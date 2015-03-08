@@ -8,12 +8,11 @@
             [goog.dom.query]
             [goog.array]
             [goog.dom.dataset]
-            [cognitect.transit :as transit]
-            [goog.history.EventType :as EventType]
+                        [goog.history.EventType :as EventType]
             [cljs.core.async :as async :refer (<! >! put! chan)]
-            [taoensso.sente  :as sente :refer (cb-success?)]
+            [de.prob2.client :as client]
             [clojure.data]
-            [taoensso.encore :as enc    :refer (logf log logp)]
+            [taoensso.encore :as enc  :refer (logf log logp)]
             [cljsjs.react :as react]
             [ajax.core :refer [GET POST]])
   (:import goog.History))
@@ -25,25 +24,17 @@
 (declare home-page disconnected-page)
 
 (def state (atom {:traces {} :connected false}))
-(def encoding (clojure.core/atom nil))
+
 
 (def id-store (clojure.core/atom 0))
 (defn fresh-id []
   (let [x @id-store]
     (swap! id-store inc) x))
 
-(let [{:keys [chsk ch-recv send-fn state]}
-      (sente/make-channel-socket! "/updates" ; Note the same path as before
-                                  {:type :auto ; e/o #{:auto :ajax :ws}
-                                   })]
-  (def chsk       chsk)
-  (def ch-chsk    ch-recv) ; ChannelSocket's receive channel
-  (def chsk-send! send-fn) ; ChannelSocket's send API fn
-  (def chsk-state state)   ; Watchable, read-only atom
-  )
+
 
 (defn connect []
-  (chsk-send! [:chsk/encoding nil])
+  (client/chsk-send! [:chsk/encoding nil])
   (swap! state assoc :connected true)
   (session/put! :current-page #'home-page))
 
@@ -52,17 +43,12 @@
   (reset! state {:traces {} :connected false}))
 
 (add-watch
- chsk-state
+ client/chsk-state
  :chsk-observer
  (fn [_ _ {oo :open?} {no :open?}]
    (cond (and no (not oo)) (connect)
          (and oo (not no)) (disconnect) 
          :otherwise nil)))
-
-(defn read-transit [msg]
-  (if @encoding (let [r (transit/reader @encoding)]
-                  (transit/read r msg))
-      (js/alert "No encoding transmitted from ProB")))
 
 
 (defn fix-names [name]
@@ -95,21 +81,18 @@
 ;; (c/chsk-send! [:de.prob2/hello {:target :world}] 8000 (fn [x] (println x)))
 (defn send! [msg-type msg-map]
   (logp :sent :type msg-type :content msg-map)
-  (chsk-send! [msg-type msg-map]))
+  (client/chsk-send! [msg-type msg-map]))
 
-(defn handshake [e]
-  (clojure.core/reset! encoding e)
-  (send! :prob2/handshake {}))
 
 (sente/start-chsk-router!
- ch-chsk
+ client/ch-chsk
  (fn [e]
    (when (= (:id e) :chsk/recv)
      (let [[e-type raw-msg] (:?data e)]
       ; (logp raw-msg)
        (if (= :sente/encoding e-type)
-         (handshake (keyword raw-msg))
-         (handle [e-type (read-transit raw-msg)]))))))
+         (client/handshake (keyword raw-msg))
+         (handle [e-type (client/read-transit raw-msg)]))))))
 
 (defn null-component [] [:div "Not yet implemented"])
 
