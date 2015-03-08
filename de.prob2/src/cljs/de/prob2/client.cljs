@@ -41,3 +41,7 @@
        (if (= :sente/encoding e-type)
          (handshake (keyword raw-msg))
          (handle [e-type (read-transit raw-msg)]))))))
+
+(defn send! [msg-type msg-map]
+  (logp :sent :type msg-type :content msg-map)
+  (chsk-send! [msg-type msg-map]))

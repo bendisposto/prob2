@@ -8,7 +8,7 @@
             [goog.dom.query]
             [goog.array]
             [goog.dom.dataset]
-                        [goog.history.EventType :as EventType]
+            [goog.history.EventType :as EventType]
             [cljs.core.async :as async :refer (<! >! put! chan)]
             [de.prob2.client :as client]
             [clojure.data]
@@ -47,7 +47,7 @@
  :chsk-observer
  (fn [_ _ {oo :open?} {no :open?}]
    (cond (and no (not oo)) (connect)
-         (and oo (not no)) (disconnect) 
+         (and oo (not no)) (disconnect)
          :otherwise nil)))
 
 
@@ -64,35 +64,16 @@
       m)
     (dissoc m k)))
 
-(defmulti handle first)
 
-(defmethod handle :de.prob2.kernel/ui-state [[_ msgs]]
+(defmethod client/handle :de.prob2.kernel/ui-state [[_ msgs]]
   (doseq [[uuid trace] (:traces msgs)]
     (swap! state assoc-in [:traces uuid] trace )))
 
-(defmethod handle :de.prob2.kernel/trace-removed [[_ msgs]]
+(defmethod client/handle :de.prob2.kernel/trace-removed [[_ msgs]]
   (doseq [uuid msgs]
     (swap! state dissoc-in [:traces (str uuid)])))
 
-(defmethod handle :default [[t m]]
-  (logp "Received Type: " t)
-  (logp "Received Msg: " m))
 
-;; (c/chsk-send! [:de.prob2/hello {:target :world}] 8000 (fn [x] (println x)))
-(defn send! [msg-type msg-map]
-  (logp :sent :type msg-type :content msg-map)
-  (client/chsk-send! [msg-type msg-map]))
-
-
-(sente/start-chsk-router!
- client/ch-chsk
- (fn [e]
-   (when (= (:id e) :chsk/recv)
-     (let [[e-type raw-msg] (:?data e)]
-      ; (logp raw-msg)
-       (if (= :sente/encoding e-type)
-         (client/handshake (keyword raw-msg))
-         (handle [e-type (client/read-transit raw-msg)]))))))
 
 (defn null-component [] [:div "Not yet implemented"])
 
@@ -108,16 +89,19 @@
     (into [:table {:class "table"}] (map (fn [n c p] [state-row n c p]) names cvals pvals))
     ))
 
-
 (defn pp-transition [{:keys [name parameters return-values]}]
   (let [ppp (if (seq parameters) (str "(" (clojure.string/join "," parameters) ")") "")
         pprv (if (seq return-values) (str (clojure.string/join "," return-values) \u21DC " ")  "")
         fname (fix-names name)] (str pprv fname ppp)))
 
 (defn- mk-history-item [trace-id current {:keys [index] :as item}]
-  ^{:key (str "h" index)} [:li [:a  {:class (str "history-item" (cond (= current index) " current " (< current index) " future "  :default ""))
-                                     :on-click (fn [_] (send! :history/goto {:trace-id trace-id :index index}))}
-                                (pp-transition item)]])
+  ^{:key (str "h" index)}
+  [:li
+   [:a  {:class (str "history-item" (cond (= current index) " current "
+                                          (< current index) " future "
+                                          :default ""))
+         :on-click (fn [_] (client/send! :history/goto {:trace-id trace-id :index index}))}
+    (pp-transition item)]])
 
 (defn history-view []
   (let [sort-order (atom identity)]
@@ -172,7 +156,7 @@
     ^{:key (fresh-id)}
     [:li {:class "animator-sublist"}
      [:div {:class "model"}
-      [:span {:class "glyphicon glyphicon-remove" :id "animator-remove-btn" :on-click (fn [_] (send! :prob2/kill! {:animator-id id :trace-ids trace-ids}))}]
+      [:span {:class "glyphicon glyphicon-remove" :id "animator-remove-btn" :on-click (fn [_] (client/send! :prob2/kill! {:animator-id id :trace-ids trace-ids}))}]
       [:span (str main-component-name " (" file ")")]]
      [:ul {:class "animator-list"}
       (if (seq elems)
