@@ -222,7 +222,9 @@
   [:div {:id "h1"} [history-view]])
 
 (defn disconnected-page []
-  [:div [:h1 "Not connected to the server"]])
+  [:div {:class "alert alert-danger"}
+   [:h4 "Disconnected"]
+   [:p "The client has lost the connection to the server. You can try reloading this page, but maybe you need to check your connection or restart the server."]])
 
 (defn current-page []
   [:div [(session/get :current-page)]])
