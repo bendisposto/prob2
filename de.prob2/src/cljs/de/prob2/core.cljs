@@ -22,6 +22,7 @@
 ;; Views
                                         ;(sente/set-logging-level! :trace)
 
+(declare home-page disconnected-page)
 
 (def state (atom {:traces {} :connected false}))
 (def encoding (clojure.core/atom nil))
@@ -41,14 +42,21 @@
   (def chsk-state state)   ; Watchable, read-only atom
   )
 
+(defn connect []
+  (chsk-send! [:chsk/encoding nil])
+  (swap! state assoc :connected true)
+  (session/put! :current-page #'home-page))
+
+(defn disconnect []
+  (session/put! :current-page #'disconnected-page)
+  (reset! state {:traces {} :connected false}))
+
 (add-watch
  chsk-state
  :chsk-observer
  (fn [_ _ {oo :open?} {no :open?}]
-   (cond (and no (not oo))
-         (do (chsk-send! [:chsk/encoding nil])
-             (swap! state assoc :connected no))
-         (and oo (not no)) (reset! state {:traces {} :connected no})
+   (cond (and no (not oo)) (connect)
+         (and oo (not no)) (disconnect) 
          :otherwise nil)))
 
 (defn read-transit [msg]
@@ -212,6 +220,9 @@
 
 (defn animation-view []
   [:div {:id "h1"} [history-view]])
+
+(defn disconnected-page []
+  [:div [:h1 "Not connected to the server"]])
 
 (defn current-page []
   [:div [(session/get :current-page)]])
