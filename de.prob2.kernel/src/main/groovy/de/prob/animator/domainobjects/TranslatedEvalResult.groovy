@@ -7,12 +7,13 @@ import de.prob.prolog.term.CompoundPrologTerm
 import de.prob.prolog.term.ListPrologTerm
 import de.prob.prolog.term.PrologTerm
 
-public class TranslatedEvalResult implements IEvalResult {
+public class TranslatedEvalResult extends AbstractEvalResult {
 
 	def value
 	def Map<String,Object> solutions
 
 	def TranslatedEvalResult(value, Map<String,Object> solutions) {
+		super();
 		this.value = value
 		this.solutions = solutions
 	}
@@ -48,7 +49,7 @@ public class TranslatedEvalResult implements IEvalResult {
 		return value.toString();
 	}
 
-	def static IEvalResult getResult(PrologTerm pt) {
+	def static AbstractEvalResult getResult(PrologTerm pt) {
 		if (pt instanceof ListPrologTerm) {
 			/*
 			 * If the evaluation was not successful, the result should be a

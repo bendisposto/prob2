@@ -1,11 +1,11 @@
 package de.prob.animator.command;
 
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 
 public abstract class EvaluationCommand extends AbstractCommand {
 
-	protected IEvalResult value;
+	protected AbstractEvalResult value;
 	protected final String stateId;
 	protected final IEvalElement evalElement;
 
@@ -18,7 +18,7 @@ public abstract class EvaluationCommand extends AbstractCommand {
 		return evalElement;
 	}
 
-	public IEvalResult getValue() {
+	public AbstractEvalResult getValue() {
 		return value;
 	}
 

@@ -1,13 +1,14 @@
 package de.prob.check;
 
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.LTL;
 
-public class LTLOk implements IEvalResult, IModelCheckingResult {
+public class LTLOk extends AbstractEvalResult implements IModelCheckingResult {
 
 	private final LTL ltl;
 
 	public LTLOk(final LTL ltl) {
+		super();
 		this.ltl = ltl;
 	}
 

@@ -17,7 +17,7 @@ import de.prob.animator.domainobjects.EnumerationWarning;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationErrorResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.IdentifierNotInitialised;
 import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.EventBMachine;
@@ -166,10 +166,10 @@ public class StateInspector extends AbstractAnimationBasedView {
 		Transition currentTransition = t.getCurrentTransition();
 		State currentS = currentTransition == null ? t.getCurrentState()
 				: currentTransition.getDestination();
-		Map<IEvalElement, IEvalResult> current = s.valuesAt(currentS);
+		Map<IEvalElement, AbstractEvalResult> current = s.valuesAt(currentS);
 		State prevS = currentTransition == null ? null : currentTransition
 				.getSource();
-		Map<IEvalElement, IEvalResult> previous = prevS == null ? new HashMap<IEvalElement, IEvalResult>()
+		Map<IEvalElement, AbstractEvalResult> previous = prevS == null ? new HashMap<IEvalElement, AbstractEvalResult>()
 				: s.valuesAt(prevS);
 
 		for (IEvalElement e : formulasForEvaluating) {
@@ -183,7 +183,7 @@ public class StateInspector extends AbstractAnimationBasedView {
 		return extracted;
 	}
 
-	private String stringRep(final IEvalResult res) {
+	private String stringRep(final AbstractEvalResult res) {
 		if (res instanceof EvalResult) {
 			return unicode(((EvalResult) res).getValue());
 		}

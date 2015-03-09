@@ -4,12 +4,13 @@ import java.util.List;
 
 import com.google.common.base.Joiner;
 
-public abstract class EvaluationErrorResult implements IEvalResult {
+public abstract class EvaluationErrorResult extends AbstractEvalResult {
 
 	private final String result;
 	private final List<String> errors;
 
 	public EvaluationErrorResult(final String result, final List<String> errors) {
+		super();
 		this.result = result;
 		this.errors = errors;
 	}

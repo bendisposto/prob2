@@ -38,7 +38,7 @@ import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.annotations.MaxCacheSize;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
@@ -306,9 +306,9 @@ public class StateSpace implements IAnimator {
 	 *            for which the list of formulas should be evaluated
 	 * @param formulas
 	 *            to be evaluated
-	 * @return a list of {@link IEvalResult}s
+	 * @return a list of {@link AbstractEvalResult}s
 	 */
-	public List<IEvalResult> eval(final State state,
+	public List<AbstractEvalResult> eval(final State state,
 			final List<IEvalElement> formulas) {
 		return state.eval(formulas);
 	}
@@ -320,10 +320,10 @@ public class StateSpace implements IAnimator {
 	 * 
 	 * @param state
 	 *            for which the values are to be retrieved
-	 * @return map from {@link IEvalElement} object to {@link IEvalResult}
+	 * @return map from {@link IEvalElement} object to {@link AbstractEvalResult}
 	 *         objects
 	 */
-	public Map<IEvalElement, IEvalResult> valuesAt(final State state) {
+	public Map<IEvalElement, AbstractEvalResult> valuesAt(final State state) {
 		state.explore();
 		return state.getValues();
 	}
@@ -549,10 +549,10 @@ public class StateSpace implements IAnimator {
 
 		sb.append("STATE: " + state + "\n\n");
 		sb.append("VALUES:\n");
-		Map<IEvalElement, IEvalResult> currentState = state.getValues();
-		final Set<Entry<IEvalElement, IEvalResult>> entrySet = currentState
+		Map<IEvalElement, AbstractEvalResult> currentState = state.getValues();
+		final Set<Entry<IEvalElement, AbstractEvalResult>> entrySet = currentState
 				.entrySet();
-		for (final Entry<IEvalElement, IEvalResult> entry : entrySet) {
+		for (final Entry<IEvalElement, AbstractEvalResult> entry : entrySet) {
 			sb.append("  " + entry.getKey().getCode() + " -> "
 					+ entry.getValue().toString() + "\n");
 		}
@@ -721,18 +721,18 @@ public class StateSpace implements IAnimator {
 	 * @return a map of the formulas and their results for all of the specified
 	 *         states
 	 */
-	public Map<State, Map<IEvalElement, IEvalResult>> evaluateForGivenStates(
+	public Map<State, Map<IEvalElement, AbstractEvalResult>> evaluateForGivenStates(
 			final Collection<State> states, final List<IEvalElement> formulas) {
-		Map<State, Map<IEvalElement, IEvalResult>> result = new HashMap<State, Map<IEvalElement, IEvalResult>>();
+		Map<State, Map<IEvalElement, AbstractEvalResult>> result = new HashMap<State, Map<IEvalElement, AbstractEvalResult>>();
 		List<EvaluationCommand> cmds = new ArrayList<EvaluationCommand>();
 
 		for (State stateId : states) {
 			if (stateId.isInitialised()) {
-				Map<IEvalElement, IEvalResult> res = new HashMap<IEvalElement, IEvalResult>();
+				Map<IEvalElement, AbstractEvalResult> res = new HashMap<IEvalElement, AbstractEvalResult>();
 				result.put(stateId, res);
 
 				// Check for cached values
-				Map<IEvalElement, IEvalResult> map = stateId.getValues();
+				Map<IEvalElement, AbstractEvalResult> map = stateId.getValues();
 				for (IEvalElement f : formulas) {
 					if (map.containsKey(f)) {
 						res.put(f, map.get(f));
@@ -748,7 +748,7 @@ public class StateSpace implements IAnimator {
 
 		for (EvaluationCommand efCmd : cmds) {
 			IEvalElement formula = efCmd.getEvalElement();
-			IEvalResult value = efCmd.getValue();
+			AbstractEvalResult value = efCmd.getValue();
 			State id = addState(efCmd.getStateId());
 			result.get(id).put(formula, value);
 		}

@@ -8,7 +8,7 @@ import de.prob.Main
 import de.prob.animator.domainobjects.CSP
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.IEvalResult
+import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.model.representation.CSPModel
 import de.prob.scripting.ClassicalBFactory
 
@@ -285,7 +285,7 @@ class StateSpaceEvaluationTest extends Specification {
 			state4
 		]
 		s.subscribe("I'm a subscriber!",[ready])
-		Map<State, Map<IEvalElement, IEvalResult>> result = s.evaluateForGivenStates(states, [waiting, ready, active])
+		Map<State, Map<IEvalElement, AbstractEvalResult>> result = s.evaluateForGivenStates(states, [waiting, ready, active])
 
 		then:
 		result[root] == null // ignored because it is not initialised

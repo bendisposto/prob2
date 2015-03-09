@@ -10,12 +10,16 @@ import de.prob.prolog.term.PrologTerm
 import de.prob.unicode.UnicodeTranslator
 import de.prob.util.StringUtil
 
-public class EvalResult implements IEvalResult {
+public class EvalResult extends AbstractEvalResult {
+
+
 
 	public final static EvalResult TRUE = new EvalResult("TRUE", Collections.emptyMap())
 	public final static EvalResult FALSE = new EvalResult("FALSE", Collections.emptyMap())
 	final static HashMap<String, EvalResult> formulaCache = [:]
 
+
+	final long id;
 	final String value;
 	final Map<String, String> solutions;
 
@@ -25,6 +29,7 @@ public class EvalResult implements IEvalResult {
 
 	public EvalResult(final String value,
 	final Map<String, String> solutions) {
+		super();
 		this.value = value
 		this.solutions = solutions
 	}
@@ -74,7 +79,7 @@ public class EvalResult implements IEvalResult {
 	 * @param pt PrologTerm
 	 * @return IEvalResult translation of pt
 	 */
-	def static IEvalResult getEvalResult(PrologTerm pt) {
+	def static AbstractEvalResult getEvalResult(PrologTerm pt) {
 		if (pt instanceof ListPrologTerm) {
 			/*
 			 * If the evaluation was not successful, the result should be a

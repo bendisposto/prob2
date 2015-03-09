@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.prob.animator.command.LtlCheckingCommand.PathType;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.LTL;
 import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
 
-public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
+public class LTLCounterExample extends AbstractEvalResult implements IModelCheckingResult, 
 		ITraceDescription {
 
 	private final LTL formula;
@@ -24,6 +24,7 @@ public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 			final List<Transition> pathToCE,
 			final List<Transition> counterExample, final int loopEntry,
 			final PathType pathType) {
+		super();
 		this.formula = formula;
 		this.pathToCE = pathToCE;
 		this.counterExample = counterExample;

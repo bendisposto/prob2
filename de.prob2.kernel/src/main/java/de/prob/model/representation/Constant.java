@@ -1,14 +1,14 @@
 package de.prob.model.representation;
 
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.statespace.Trace;
 import de.prob.unicode.UnicodeTranslator;
 
 public abstract class Constant extends AbstractFormulaElement {
 
 	protected final IEvalElement expression;
-	protected IEvalResult result;
+	protected AbstractEvalResult result;
 
 	public Constant(final IEvalElement expression) {
 		this.expression = expression;
@@ -30,7 +30,7 @@ public abstract class Constant extends AbstractFormulaElement {
 
 	// Experimental. Would allow the user to calculate the value once and cache
 	// it.
-	public IEvalResult getValue(final Trace h) {
+	public AbstractEvalResult getValue(final Trace h) {
 		if (result == null) {
 			result = h.evalCurrent(getFormula());
 		}

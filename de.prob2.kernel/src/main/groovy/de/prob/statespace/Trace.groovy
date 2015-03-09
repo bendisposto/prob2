@@ -7,7 +7,7 @@ import com.github.krukow.clj_lang.PersistentVector
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.EvaluationCommand
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.IEvalResult
+import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.representation.AbstractModel
 
@@ -50,7 +50,7 @@ public class Trace {
 	}
 
 
-	def IEvalResult evalCurrent(formula) {
+	def AbstractEvalResult evalCurrent(formula) {
 		return getCurrentState().eval(formula)
 	}
 
@@ -58,7 +58,7 @@ public class Trace {
 		return transitionList.size();
 	}
 
-	def List<Tuple2<String,IEvalResult>> eval(formula) {
+	def List<Tuple2<String,AbstractEvalResult>> eval(formula) {
 		def f = formula;
 		if(!(formula instanceof IEvalElement)) {
 			f = stateSpace.getModel().parseFormula(f)
@@ -77,7 +77,7 @@ public class Trace {
 		def res = []
 
 		cmds.each {
-			res << new Tuple2<String,IEvalResult>(it.getStateId(),it.getValue())
+			res << new Tuple2<String,AbstractEvalResult>(it.getStateId(),it.getValue())
 		}
 		res
 	}

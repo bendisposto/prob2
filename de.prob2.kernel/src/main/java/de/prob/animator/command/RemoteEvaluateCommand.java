@@ -13,7 +13,7 @@ import com.google.common.base.Joiner;
 
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -51,7 +51,7 @@ public class RemoteEvaluateCommand extends AbstractCommand {
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
 	private final String formula;
-	private IEvalResult result;
+	private AbstractEvalResult result;
 	List<String> atomicStrings;
 	private boolean enumerationWarnings;
 	private String resultType;
@@ -112,7 +112,7 @@ public class RemoteEvaluateCommand extends AbstractCommand {
 		pout.closeTerm();
 	}
 	
-	public IEvalResult getResult() {
+	public AbstractEvalResult getResult() {
 		return result;
 	}
 	

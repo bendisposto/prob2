@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
@@ -126,7 +126,7 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 
 	private List<Object> calculateData() {
 		List<Object> result = new ArrayList<Object>();
-		List<Tuple2<String, IEvalResult>> timeRes = new ArrayList<Tuple2<String, IEvalResult>>();
+		List<Tuple2<String, AbstractEvalResult>> timeRes = new ArrayList<Tuple2<String, AbstractEvalResult>>();
 		if (time != null) {
 			timeRes = currentTrace.eval(time);
 		}
@@ -135,13 +135,13 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 			String id = pair.id;
 			IEvalElement formula = pair.formula;
 			if (!id.equals("time")) {
-				List<Tuple2<String, IEvalResult>> results = currentTrace
+				List<Tuple2<String, AbstractEvalResult>> results = currentTrace
 						.eval(formula);
 				List<Object> points = new ArrayList<Object>();
 
 				if (timeRes.isEmpty()) {
 					int c = 0;
-					for (Tuple2<String, IEvalResult> it : results) {
+					for (Tuple2<String, AbstractEvalResult> it : results) {
 						if (it.b instanceof EvalResult) {
 							String val = ((EvalResult) it.b).getValue();
 							points.add(wrapPoints(it.a, extractValue(val), c,
@@ -152,7 +152,7 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 						c++;
 					}
 				} else if (timeRes.size() == results.size()) {
-					for (Tuple2<String, IEvalResult> it : results) {
+					for (Tuple2<String, AbstractEvalResult> it : results) {
 						int index = results.indexOf(it);
 						if (it.b instanceof EvalResult) {
 							String val = ((EvalResult) it.b).getValue();
@@ -235,7 +235,7 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 		}
 
 		try {
-			IEvalResult res = currentTrace.evalCurrent(formula);
+			AbstractEvalResult res = currentTrace.evalCurrent(formula);
 			if (res == null) {
 				return sendError(
 						id,
@@ -312,7 +312,7 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 
 	}
 
-	private boolean correctType(final String id, final IEvalResult res) {
+	private boolean correctType(final String id, final AbstractEvalResult res) {
 		String value = ((EvalResult) res).getValue();
 		if ((value.equals("TRUE") || value.equals("FALSE"))
 				&& !"time".equals(id)) {

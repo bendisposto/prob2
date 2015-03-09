@@ -7,7 +7,7 @@ import de.prob.animator.command.EvaluateRegisteredFormulasCommand
 import de.prob.animator.command.ExploreStateCommand
 import de.prob.animator.command.GetBStateCommand
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.IEvalResult
+import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.animator.domainobjects.StateError
 import de.prob.util.StringUtil
 
@@ -32,7 +32,7 @@ class State {
 	def private Set<String> transitionsWithTimeout
 	def private boolean maxTransitionsCalculated
 	def private Collection<StateError> stateErrors
-	def Map<IEvalElement, IEvalResult> values = new HashMap<IEvalElement, IEvalResult>()
+	def Map<IEvalElement, AbstractEvalResult> values = new HashMap<IEvalElement, AbstractEvalResult>()
 
 	def State(String id, StateSpace space) {
 		this.id = id;
@@ -170,7 +170,7 @@ class State {
 	 * @param String representation of a formula
 	 * @return the {@link IEvalResult} calculated from ProB
 	 */
-	def IEvalResult eval(String formula) {
+	def AbstractEvalResult eval(String formula) {
 		return eval(stateSpace.getModel().parseFormula(formula))
 	}
 
@@ -179,11 +179,11 @@ class State {
 	 * @param formula as IEvalElement
 	 * @return the {@link IEvalResult} calculated by ProB
 	 */
-	def IEvalResult eval(IEvalElement formula) {
+	def AbstractEvalResult eval(IEvalElement formula) {
 		eval([formula])[0]
 	}
 
-	def List<IEvalResult> eval(IEvalElement... formulas) {
+	def List<AbstractEvalResult> eval(IEvalElement... formulas) {
 		return eval(formulas as List)
 	}
 
@@ -191,7 +191,7 @@ class State {
 	 * @param formulas to be evaluated
 	 * @return list of results calculated by ProB for a given formula
 	 */
-	def List<IEvalResult> eval(List<IEvalElement> formulas) {
+	def List<AbstractEvalResult> eval(List<IEvalElement> formulas) {
 		def cmds = formulas.findAll {
 			!values.containsKey(it)
 		}.collect { it.getCommand(this) }
@@ -331,7 +331,7 @@ class State {
 		this
 	}
 
-	def Map<IEvalElement, IEvalResult> getValues() {
+	def Map<IEvalElement, AbstractEvalResult> getValues() {
 		Set<IEvalElement> formulas = stateSpace.getSubscribedFormulas();
 		def toEvaluate = []
 		for (f in formulas) {

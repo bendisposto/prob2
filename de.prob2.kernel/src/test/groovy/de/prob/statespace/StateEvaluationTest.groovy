@@ -8,7 +8,7 @@ import de.prob.Main
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvalResult
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.IEvalResult
+import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.scripting.ClassicalBFactory
 
 
@@ -54,7 +54,7 @@ class StateEvaluationTest extends Specification {
 	def "if a result is cached, prolog doesn't necessarily have to be contacted"() {
 		when:
 		IEvalElement blah = "blah" as ClassicalB
-		IEvalResult blahres = new EvalResult("blah", [:])
+		AbstractEvalResult blahres = new EvalResult("blah", [:])
 		firstState.values[blah] = blahres
 
 		then:
