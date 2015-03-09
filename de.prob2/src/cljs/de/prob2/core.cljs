@@ -14,7 +14,9 @@
             [clojure.data]
             [taoensso.encore :as enc  :refer (logf log logp)]
             [cljsjs.react :as react]
-            [ajax.core :refer [GET POST]])
+            [ajax.core :refer [GET POST]]
+            [de.prob2.generated.schema :as schema]
+            [schema.core :as s])
   (:import goog.History))
 
 ;; -------------------------
