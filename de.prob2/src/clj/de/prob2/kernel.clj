@@ -101,7 +101,7 @@
         animator-id (.getId (.getStateSpace trace))
         ]
 
-    [(str uuid) (assoc cur :trace-id uuid :history history :current-index cur-index :model model :animator-id animator-id)]))
+    [uuid (assoc cur :trace-id uuid :history history :current-index cur-index :model model :animator-id animator-id)]))
 
 
 (defn prepare-ui-state-packet [traces]

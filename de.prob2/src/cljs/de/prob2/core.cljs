@@ -71,7 +71,7 @@
 
 (defmethod client/handle :de.prob2.kernel/trace-removed [[_ msgs]]
   (doseq [uuid msgs]
-    (swap! state dissoc-in [:traces (str uuid)])))
+    (swap! state dissoc-in [:traces uuid])))
 
 
 
