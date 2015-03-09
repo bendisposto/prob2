@@ -5,10 +5,10 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :repositories [["cobra" "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"]]
-  
+
   :source-paths ["src/clj" "src/cljs"]
 
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
                  [cljsjs/react "0.12.2-5"]
                  [reagent "0.5.0-alpha3"]
                  [reagent-forms "0.4.3"]
@@ -19,7 +19,7 @@
                  [ring/ring-core "1.3.2"]
                  [ring/ring-servlet "1.3.2"]
                  [ring/ring-defaults "0.1.3"]
-                 [com.taoensso/sente "1.3.0"]  
+                 [com.taoensso/sente "1.3.0"]
                  [http-kit "2.1.19"]
                  [prone "0.8.0"]
                  [compojure "1.3.1"]
@@ -27,16 +27,19 @@
                  [environ "1.0.0"]
                  [com.cognitect/transit-clj "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.205"]
-                 [cljs-ajax "0.3.10"]]
+                 [cljs-ajax "0.3.10"]
+                 [prismatic/schema "0.4.0"]]
 
   :plugins [
             [lein-cljsbuild "1.0.4"]
             [lein-environ "1.0.0"]
-          ;  [lein-ring "0.9.1"]
+            [com.keminglabs/cljx "0.6.0"] 
             [lein-asset-minifier "0.2.2"]]
 
-;;  :ring {:handler de.prob2.handler/app
-;;         :uberwar-name "de.prob2.war"}
+  ;;  :ring {:handler de.prob2.handler/app
+  ;;         :uberwar-name "de.prob2.war"}
+
+  :prep-tasks [["cljx" "once"] "javac" "compile"]
 
   :min-lein-version "2.5.0"
 
@@ -46,9 +49,19 @@
 
   :clean-targets ^{:protect false} ["resources/public/js"]
 
+
+  :cljx {:builds [{:source-paths ["src/cljx"]
+                   :output-path "src/clj"
+                   :rules :clj}
+
+                  {:source-paths ["src/cljx"]
+                   :output-path "src/cljs"
+                   :rules :cljs}]}
+
+
   :minify-assets
   {:assets
-    {"resources/public/css/prob2.min.css" "resources/public/css/prob2.css"}}
+   {"resources/public/css/prob2.min.css" "resources/public/css/prob2.css"}}
 
   :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
                              :compiler {:output-to     "resources/public/js/app.js"
@@ -64,6 +77,7 @@
                    :jvm-opts ^:replace []
                    :dependencies [[ring-mock "0.1.5"]
                                   [ring/ring-devel "1.3.2"]
+
                                   [leiningen "2.5.1"]
                                   [figwheel "0.2.5-SNAPSHOT"]
                                   [weasel "0.6.0-SNAPSHOT"]
@@ -73,7 +87,8 @@
                    :resource-paths ["kernel/build/libs/*.jar"]
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.2.5-SNAPSHOT"]
-                             [lein-expand-resource-paths "0.0.1"]]
+                             [lein-expand-resource-paths "0.0.1"]
+                             ]
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
@@ -81,16 +96,18 @@
                    :figwheel {:http-server-root "public"
                               :server-port 3449
                               :css-dirs ["resources/public/css"]
-                              ;:ring-handler de.prob2.handler/app
-                            }
+                                        ;:ring-handler de.prob2.handler/app
+                              }
 
                    :env {:dev? true}
+
+
 
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
                                               :compiler {   :main "de.prob2.dev"
                                                          :source-map true}}
-}
-}}
+                                        }
+                               }}
 
              :uberjar {:hooks [leiningen.cljsbuild minify-assets.plugin/hooks]
                        :env {:production true}
@@ -99,10 +116,10 @@
                        :omit-source true
                        :cljsbuild {:jar true
                                    :builds {:app
-                                             {:source-paths ["env/prod/cljs"]
-                                              :compiler
-                                              {:optimizations :advanced
-                                               :pretty-print false}}}}}
+                                            {:source-paths ["env/prod/cljs"]
+                                             :compiler
+                                             {:optimizations :advanced
+                                              :pretty-print false}}}}}
 
              :production {:ring {:open-browser? false
                                  :stacktraces?  false
