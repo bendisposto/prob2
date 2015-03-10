@@ -222,7 +222,7 @@
 
 (secretary/defroute "/trace/:uuid" [uuid]
   (session/put! :current-page #'animation-view)
-  (session/put! :focused-uuid uuid))
+  (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
 
 (secretary/defroute "/stateview" []
   (session/put! :current-page #'state-view))
