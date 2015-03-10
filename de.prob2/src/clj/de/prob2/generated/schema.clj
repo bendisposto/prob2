@@ -37,7 +37,7 @@
 
 (def EventB-Machine-Spec
   (merge B-Machine-Spec
-         {:variant (s/maybe Formula-Spec)
+         {:variant [Formula-Spec]
           :events [Event-Spec]}))
 
 (def ClassicalB-Machine-Spec
