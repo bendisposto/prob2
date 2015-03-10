@@ -25,7 +25,19 @@
 
 (declare home-page disconnected-page)
 
-(def state (atom {:traces {} :connected false}))
+(def *validation* false)
+
+(def state (atom {:traces {} :models {} :states {} :results {} :connected false}
+                 :validator
+                 (fn [new-state]
+                   (logp :new-state new-state)
+                   (if  *validation*
+                     (try
+                       (s/validate schema/UI-State new-state)
+                       (catch js/Object e
+                         (.log js/console e)
+                         (logp new-state)))
+                     new-state))))
 
 
 (def id-store (clojure.core/atom 0))
