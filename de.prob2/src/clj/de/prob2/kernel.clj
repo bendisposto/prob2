@@ -1,6 +1,7 @@
 (ns de.prob2.kernel
   (:require [com.stuartsierra.component :as component]
-            [de.prob2.sente :as snt])
+            [de.prob2.sente :as snt]
+            [clojure.reflect :as refl])
   (:import de.prob.Main
            (de.prob.statespace AnimationSelector Trace ITraceChangesListener StateSpace)))
 
@@ -8,56 +9,120 @@
 (defn kebap-case
   ([cls] (kebap-case cls ""))
   ([cls add]
-   (keyword
-    (str (clojure.string/join
-          "-"
-          (map (fn [s] (.toLowerCase s))
-               (map second (re-seq #"([A-Z][a-z]*)" (.getSimpleName cls))))) add))))
+     (keyword
+      (str (clojure.string/join
+            "-"
+            (map (fn [s] (.toLowerCase s))
+                 (map second (re-seq #"([A-Z][a-z]*)" (.getSimpleName cls))))) add))))
 
-(defn default-map [v m]
-  (into  {:type (kebap-case (class v)) :name (.toString v)} m))
+(defn methods [e]
+  (into #{} (map :name (:members (refl/reflect e)))))
 
+(defn default-map [v kids]
+  (merge {:name (.getName v)} kids))
 
-(defprotocol Transform (transform [this]))
+(defn formula-map [formula]
+  {:formula (.getCode formula)
+   :formula-id (.getUUID (.getFormulaId formula))})
+
+(defn formula-element [e]
+  (let [m (methods e)
+        mmap (if (m 'getName) {:label (.getName e)} {})
+        formula (.getFormula e)]
+    (into mmap (formula-map formula))))
+
+(defn theorem?-element [e theorem?]
+  (merge (formula-element e) {:theorem? theorem?}))
+
+(defn clean-up-machine [kids]
+  (let [invs (:invariants kids)
+        assertions (:assertions kids)
+        kids' (dissoc kids :assertions)]
+    (if assertions
+      (assoc kids' :invariants (concat assertions invs))
+      kids')))
+
+(defn clean-up-event [kids]
+  (let [events (:events kids)]
+    (assoc (dissoc kids :events) :refines (map :name events))))
+
+(defprotocol Transform (transform [this kids]))
 (extend-protocol Transform
-  de.prob.model.representation.AbstractModel
-  (transform [v] {:type (kebap-case (class v)) :dir (.getModelDirPath v) :file (.getAbsolutePath (.getModelFile v)) :main-component-name (.toString (.getMainComponent v))})
   de.prob.model.representation.Machine
-  (transform [v] (default-map v {}))
+  (transform [v kids] (default-map v (clean-up-machine kids)))
   de.prob.model.eventb.Context
-  (transform [v] (default-map v {}))
-  de.prob.model.representation.BSet
-  (transform [v] (default-map v {}))
+  (transform [v kids] (default-map v kids))
+  de.prob.model.eventb.EventBGuard
+  (transform [v _] (theorem?-element v (.isTheorem v)))
+  de.prob.model.representation.AbstractTheoremElement
+  (transform [v _] (theorem?-element v (.isTheorem v)))
   de.prob.model.representation.AbstractFormulaElement
-  (transform [v] (default-map v {:formula-id (.. v getFormula getFormulaId getUUID)}))
+  (transform [v _] (formula-element v))
   de.prob.model.classicalb.Operation
-  (transform [v] {:type (kebap-case (class v)) :name (.getName v) :output (.getProperty v "output") :parameter (.getProperty v "parameters")})
+  (transform [v kids] (merge kids {:name (.getName v) :return-values (.getProperty v "output") :parameters (.getProperty v "parameters")}))
   de.prob.model.eventb.Event
-  (transform [v] {:type (kebap-case (class v)) :name (.getName v)})
+  (transform [v kids] (merge (clean-up-event kids)
+                             {:name (.getName v)
+                              :kind (keyword (.toLowerCase (str (.getType v))))}))
   de.prob.model.representation.Action
-  (transform [v] (default-map v {}))
+  (transform [v _] (.getCode (.getCode v)))
+  de.prob.model.eventb.EventParameter
+  (transform [v _] (.getName v))
+  de.prob.model.eventb.Witness
+  (transform [v _] (.getCode (.getFormula v)))
   java.lang.Object
-  (transform [o] {:type :unknown :class (type o) :object (.toString o)}))
+  (transform [o k] {:type :unknown :class (type o) :object (.toString o) :kids k}))
 
-(def exclude #{de.prob.model.eventb.ProofObligation})
+(defn name-keys [cls]
+  (let [name (.. cls getSimpleName toLowerCase)]
+    (condp = name
+      "property" :properties
+      "bevent"   :events
+      "witness"  :witnesses
+      "eventparameter" :parameters
+      "variant"  :variant
+      name       (keyword (str name "s")))))
+
+(def exclude #{de.prob.model.eventb.ProofObligation
+               de.prob.model.eventb.Context
+               de.prob.model.representation.Machine})
 
 (declare extractE)
 
 (defn extractV [x]
   (let [c (.getKey x) lv (.getValue x)]
-    [(keyword (.. c getSimpleName toLowerCase)) (if (exclude c) [] (map extractE lv))]))
+    (if (exclude c)
+      []
+      [(name-keys c) (map extractE lv)])))
 
 (defn extractE [absel]
-  (let [chd (.getChildren absel)
-        tgt (transform absel)]
+  (let [chd (.getChildren absel)]
     (if (seq chd)
-      (do (->> chd (map extractV) (into tgt)))
-      tgt)))
+      (transform absel (into {} (remove empty? (map extractV chd))))
+      (transform absel nil))))
+
+(defn extract-edge [edge]
+  (let [from (.getElementName (.getFrom edge))
+        to   (.getElementName (.getTo edge))
+        type (keyword (.toLowerCase (str (.getRelationship edge))))]
+    {:from from :to to :type type}))
+
+(defn extract-dep-graph [model]
+  (let [graph (.getGraph model)]
+    (map extract-edge (.getEdges graph))))
+
+(defn extract-model [model]
+  {:dir (.getModelDirPath model)
+   :main-component-name (.getName (.getMainComponent model))
+   :filename (.getAbsolutePath (.getModelFile model))
+   :type (kebap-case (class model))
+   :dependency-graph (extract-dep-graph model)
+   :components (into {} (map (fn [e] [(.getKey e) (extractE (.getValue e))]) (.getComponents model)))})
 
 (defn transform-state-values [initialized? values]
   (into {}
         (map (fn [x] [(.toString (.getKey x))
-                     (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
+                      (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
 
 (defn transform-state [state]
   (println state)
@@ -97,7 +162,7 @@
         cur (prepare-trace-element te)
         uuid (.getUUID trace)
         cur-index (.getIndex te)
-        model (extractE (.getModel trace))
+        model (extract-model (.getModel trace))
         animator-id (.getId (.getStateSpace trace))
         ]
 
@@ -119,10 +184,10 @@
 
 (defn notify-trace-removed [{:keys [clients] :as sente} traces]
   (doseq [c (:any @clients)]
-      (snt/send!
-       sente c
-       ::trace-removed
-       traces)))
+    (snt/send!
+     sente c
+     ::trace-removed
+     traces)))
 
 
 (defn instantiate [{inj :injector :as prob} cls]
