@@ -1,10 +1,10 @@
 #Development Setup
 
 cljx autocompiler:
-lein with-profile +dev cljx auto
+`lein with-profile +dev cljx auto`
 
 figwheel:
-rlwarp lein figwheel
+rlwrap lein figwheel
 
 repl:
 lein repl 
