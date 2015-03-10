@@ -1,23 +1,10 @@
 (ns de.prob2.core
-  (:require-macros
-   [cljs.core.async.macros :as asyncm :refer (go go-loop)])
   (:require [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
-            [secretary.core :as secretary :include-macros true]
-            [goog.events :as events]
-            [goog.dom.query]
-            [goog.array]
-            [goog.dom.dataset]
-            [goog.history.EventType :as EventType]
-            [cljs.core.async :as async :refer (<! >! put! chan)]
             [de.prob2.client :as client]
-            [clojure.data]
             [taoensso.encore :as enc  :refer (logf log logp)]
-            [cljsjs.react :as react]
-            [ajax.core :refer [GET POST]]
             [de.prob2.generated.schema :as schema]
-            [schema.core :as s])
-  (:import goog.History))
+            [schema.core :as s]))
 
 ;; -------------------------
 ;; Views
@@ -89,7 +76,7 @@
 
 
 
-(defn null-component [] [:div "Not yet implemented"])
+
 
 (defn state-row [name current-value previous-value]
   [:tr [:td name] [:td current-value] [:td previous-value]])
@@ -206,61 +193,3 @@
   [:div {:class "alert alert-danger"}
    [:h4 "Disconnected"]
    [:p "The client has lost the connection to the server. You can try reloading this page, but maybe you need to check your connection or restart the server."]])
-
-(defn current-page []
-  [:div [(session/get :current-page)]])
-
-;; -------------------------
-;; Routes
-(secretary/set-config! :prefix "#")
-
-(secretary/defroute "/" []
-  (session/put! :current-page #'home-page))
-
-(secretary/defroute "/about" []
-  (session/put! :current-page #'about-page))
-
-(secretary/defroute "/trace/:uuid" [uuid]
-  (session/put! :current-page #'animation-view)
-  (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
-
-(secretary/defroute "/stateview" []
-  (session/put! :current-page #'state-view))
-
-;; -------------------------
-;; History
-;; must be called after routes have been defined
-(defn hook-browser-navigation! []
-  (doto (History.)
-    (events/listen
-     EventType/NAVIGATE
-     (fn [event]
-       (secretary/dispatch! (.-token event))))
-    (.setEnabled true)))
-
-
-;; -------------------------
-;; Components
-
-(def components {"state-view" state-view
-                 "history-view" history-view
-                 "trace-selection-view" trace-selection-view})
-
-;; -------------------------
-;; Initialize app
-
-(defn ^:export register
-  ([component-name gui-id settings]
-   (println settings)
-   (when-let [t (. js/document (getElementById gui-id))]
-     (reagent/render-component [(get components component-name null-component)] t))))
-
-(defn setup-components []
-  (let [cs (goog.dom.query "div[data-type]")]
-    (doseq [c (array-seq cs 0)]
-      (register (goog.dom.dataset/get c "type") (.-id c) (js->clj (goog.dom.dataset/getAll c))))))
-
-(defn init! []
-  (hook-browser-navigation!)
-  (setup-components)
-  (reagent/render-component [current-page] (.getElementById js/document "app")))
