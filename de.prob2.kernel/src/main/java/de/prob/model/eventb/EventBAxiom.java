@@ -23,6 +23,7 @@ public class EventBAxiom extends Axiom {
 		return name;
 	}
 
+	@Override
 	public boolean isTheorem() {
 		return theorem;
 	}

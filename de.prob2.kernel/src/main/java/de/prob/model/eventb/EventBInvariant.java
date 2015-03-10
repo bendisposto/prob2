@@ -23,6 +23,7 @@ public class EventBInvariant extends Invariant {
 		return name;
 	}
 
+	@Override
 	public boolean isTheorem() {
 		return theorem;
 	}
