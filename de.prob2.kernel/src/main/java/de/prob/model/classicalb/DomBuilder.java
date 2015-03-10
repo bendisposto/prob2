@@ -23,6 +23,7 @@ import de.be4.classicalb.core.parser.node.APreconditionSubstitution;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
 import de.be4.classicalb.core.parser.node.ASelectSubstitution;
+import de.be4.classicalb.core.parser.node.ASubstitutionParseUnit;
 import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
 import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
@@ -177,6 +178,9 @@ public class DomBuilder extends DepthFirstAdapter {
 			}
 			operation.addGuards(guards);
 		}
+		ModelElementList<ClassicalBAction> actions = new ModelElementList<ClassicalBAction>();
+		actions.add(new ClassicalBAction(createSubstitutionAST(body)));
+		operation.addActions(actions);
 
 		operations.add(operation);
 	}
@@ -233,6 +237,16 @@ public class DomBuilder extends DepthFirstAdapter {
 		start.setEOF(EOF);
 		node2.setPredicate((PPredicate) pPredicate.clone());
 		node2.getPredicate().apply(new RenameIdentifiers());
+		return start;
+	}
+
+	private Start createSubstitutionAST(final PSubstitution pSub) {
+		Start start = new Start();
+		ASubstitutionParseUnit node2 = new ASubstitutionParseUnit();
+		start.setPParseUnit(node2);
+		start.setEOF(EOF);
+		node2.setSubstitution((PSubstitution) pSub.clone());
+		node2.getSubstitution().apply(new RenameIdentifiers());
 		return start;
 	}
 
