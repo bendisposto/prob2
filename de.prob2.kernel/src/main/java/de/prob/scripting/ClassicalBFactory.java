@@ -55,7 +55,7 @@ public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
 			Start ast = parseFile(f, bparser);
 			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 
-			classicalBModel.initialize(ast, rml, f);
+			classicalBModel.initialize(ast, rml, f, bparser);
 			startAnimation(classicalBModel, rml,
 					getPreferences(classicalBModel, prefs), f);
 			subscriber.call(classicalBModel);

@@ -64,7 +64,7 @@ public class TLAFactory extends ModelFactory<ClassicalBModel> {
 		bparser.getDefinitions().addAll(translator.getBDefinitions());
 		try {
 			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
-			classicalBModel.initialize(ast, rml, f);
+			classicalBModel.initialize(ast, rml, f, bparser);
 			startAnimation(classicalBModel, rml,
 					getPreferences(classicalBModel, preferences), f);
 			loader.call(classicalBModel);
