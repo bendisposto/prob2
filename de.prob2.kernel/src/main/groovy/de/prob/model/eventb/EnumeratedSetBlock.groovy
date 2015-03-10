@@ -1,13 +1,13 @@
 package de.prob.model.eventb
 
-import de.prob.model.representation.BSet
+import de.prob.model.representation.Set
 
 class EnumeratedSetBlock {
-	BSet set
+	Set set
 	List<EventBConstant> constants
 	EventBAxiom typingAxiom
 
-	def EnumeratedSetBlock(BSet set, List<EventBConstant> constants, EventBAxiom typingAxiom) {
+	def EnumeratedSetBlock(Set set, List<EventBConstant> constants, EventBAxiom typingAxiom) {
 		this.set = set
 		this.constants = constants
 		this.typingAxiom = typingAxiom

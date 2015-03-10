@@ -31,7 +31,7 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
-import de.prob.model.representation.BSet;
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.model.representation.ModelElementList;
 
 public class DomBuilder extends DepthFirstAdapter {
@@ -44,7 +44,7 @@ public class DomBuilder extends DepthFirstAdapter {
 	private final ModelElementList<Property> properties = new ModelElementList<Property>();
 	private final ModelElementList<ClassicalBVariable> variables = new ModelElementList<ClassicalBVariable>();
 	private final ModelElementList<ClassicalBInvariant> invariants = new ModelElementList<ClassicalBInvariant>();
-	private final ModelElementList<BSet> sets = new ModelElementList<BSet>();
+	private final ModelElementList<de.prob.model.representation.Set> sets = new ModelElementList<de.prob.model.representation.Set>();
 	private final ModelElementList<Assertion> assertions = new ModelElementList<Assertion>();
 	private final ModelElementList<Operation> operations = new ModelElementList<Operation>();
 	private final boolean used;
@@ -133,12 +133,14 @@ public class DomBuilder extends DepthFirstAdapter {
 
 	@Override
 	public void outADeferredSetSet(final ADeferredSetSet node) {
-		sets.add(new BSet(extractIdentifierName(node.getIdentifier())));
+		sets.add(new de.prob.model.representation.Set(new ClassicalB(
+				extractIdentifierName(node.getIdentifier()))));
 	}
 
 	@Override
 	public void outAEnumeratedSetSet(final AEnumeratedSetSet node) {
-		sets.add(new BSet(extractIdentifierName(node.getIdentifier())));
+		sets.add(new de.prob.model.representation.Set(new ClassicalB(
+				extractIdentifierName(node.getIdentifier()))));
 	}
 
 	@Override

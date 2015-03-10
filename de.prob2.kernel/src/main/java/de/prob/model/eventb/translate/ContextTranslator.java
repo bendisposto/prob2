@@ -26,7 +26,7 @@ import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBConstant;
 import de.prob.model.representation.Axiom;
-import de.prob.model.representation.BSet;
+import de.prob.model.representation.Set;
 
 public class ContextTranslator {
 
@@ -109,7 +109,7 @@ public class ContextTranslator {
 	private ASetsContextClause processSets() {
 		List<PSet> sets = new ArrayList<PSet>();
 
-		for (BSet bSet : context.getSets()) {
+		for (Set bSet : context.getSets()) {
 			List<TIdentifierLiteral> names = new ArrayList<TIdentifierLiteral>();
 			names.add(new TIdentifierLiteral(bSet.getName()));
 			sets.add(new ADeferredSetSet(names));

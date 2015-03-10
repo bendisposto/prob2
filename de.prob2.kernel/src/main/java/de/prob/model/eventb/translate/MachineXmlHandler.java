@@ -17,6 +17,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Event.EventType;
@@ -32,7 +33,6 @@ import de.prob.model.eventb.EventParameter;
 import de.prob.model.eventb.Variant;
 import de.prob.model.eventb.Witness;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.BSet;
 import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.ModelElementList;
 
@@ -55,7 +55,7 @@ public class MachineXmlHandler extends DefaultHandler {
 	// For extracting internal contexts
 	private Context internalContext;
 	private ModelElementList<Context> Extends;
-	private ModelElementList<BSet> sets;
+	private ModelElementList<de.prob.model.representation.Set> sets;
 	private ModelElementList<EventBAxiom> axioms;
 	private ModelElementList<EventBAxiom> inheritedAxioms;
 	private ModelElementList<EventBConstant> constants;
@@ -307,7 +307,7 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	private void addSet(final Attributes attributes) {
 		String name = attributes.getValue("name");
-		sets.add(new BSet(name));
+		sets.add(new de.prob.model.representation.Set(new EventB(name)));
 	}
 
 	private void addConstant(final Attributes attributes) {
@@ -358,8 +358,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		String contextName = target.substring(target.lastIndexOf("/") + 1,
 				target.lastIndexOf("."));
 
-		model.addRelationship(machine.getName(), contextName, 
-				ERefType.SEES);
+		model.addRelationship(machine.getName(), contextName, ERefType.SEES);
 
 		seesNames.add(contextName);
 
@@ -388,7 +387,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		Extends = new ModelElementList<Context>();
 		axioms = new ModelElementList<EventBAxiom>();
 		inheritedAxioms = new ModelElementList<EventBAxiom>();
-		sets = new ModelElementList<BSet>();
+		sets = new ModelElementList<de.prob.model.representation.Set>();
 		constants = new ModelElementList<EventBConstant>();
 	}
 

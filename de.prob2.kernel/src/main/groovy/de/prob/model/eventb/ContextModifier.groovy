@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
-import de.prob.model.representation.BSet
+import de.prob.animator.domainobjects.EventB
+import de.prob.model.representation.Set
 
 class ContextModifier {
 	private UUID uuid = UUID.randomUUID()
@@ -18,7 +19,7 @@ class ContextModifier {
 	 * @return the {@link EnumeratedSetBlock} generated when creating the set
 	 */
 	def EnumeratedSetBlock addEnumeratedSet(String setName, String... elements) {
-		BSet set = new BSet(setName)
+		Set set = new Set(new EventB(setName))
 		context.sets << set
 		def constants = elements.collect {
 			new EventBConstant(it, false, null)
@@ -51,8 +52,8 @@ class ContextModifier {
 	 * @param set to be added
 	 * @return {@link BSet} added to the {@link Context}
 	 */
-	def BSet addSet(String set) {
-		def bset = new BSet(set)
+	def Set addSet(String set) {
+		def bset = new Set(new EventB(set))
 		context.sets << bset
 		bset
 	}
@@ -62,7 +63,7 @@ class ContextModifier {
 	 * @param set to be removed
 	 * @return whether or not the removal was successful
 	 */
-	def boolean removeSet(BSet set) {
+	def boolean removeSet(Set set) {
 		return context.sets.remove(set)
 	}
 
