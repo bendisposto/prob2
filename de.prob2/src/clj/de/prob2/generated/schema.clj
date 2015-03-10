@@ -21,7 +21,7 @@
 (def B-Event-Spec
   {:name s/Str
    :parameters [s/Str]
-   :actions [Formula-Spec]})
+   :actions [s/Str]})
 
 (def Event-Spec
   (merge B-Event-Spec
