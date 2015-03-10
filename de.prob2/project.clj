@@ -58,6 +58,8 @@
                    :output-path "src/cljs"
                    :rules :cljs}]}
 
+  :aliases {"autocjlx" ["with-profile", "+dev", "cljx", "auto"]}
+
 
   :minify-assets
   {:assets
@@ -75,15 +77,18 @@
                                   :timeout 120000
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
                    :jvm-opts ^:replace []
+
                    :dependencies [[ring-mock "0.1.5"]
                                   [ring/ring-devel "1.3.2"]
-
                                   [leiningen "2.5.1"]
                                   [figwheel "0.2.5-SNAPSHOT"]
                                   [weasel "0.6.0-SNAPSHOT"]
                                   [org.clojure/test.check "0.7.0"]
                                   [com.cemerick/piggieback "0.1.6-SNAPSHOT"]
-                                  [pjstadig/humane-test-output "0.6.0"]]
+                                  [pjstadig/humane-test-output "0.6.0"]
+                                  [org.clojure/test.check "0.7.0"]
+                 [com.gfredericks/test.chuck "0.1.16"]
+                 [schema-gen "0.1.4"]]
                    :resource-paths ["kernel/build/libs/*.jar"]
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.2.5-SNAPSHOT"]
