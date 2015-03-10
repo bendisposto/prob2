@@ -159,28 +159,26 @@ public class DomBuilder extends DepthFirstAdapter {
 		final List<String> output = extractIdentifiers(node.getReturnValues());
 		Operation operation = new Operation(name, params, output);
 		PSubstitution body = node.getOperationBody();
+		ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 		if (body instanceof ASelectSubstitution) {
-			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 			PPredicate condition = ((ASelectSubstitution) body).getCondition();
 			List<PPredicate> predicates = getPredicates(condition);
 			for (PPredicate pPredicate : predicates) {
 				guards.add(new ClassicalBGuard(createPredicateAST(pPredicate)));
 			}
-			operation.addGuards(guards);
 		}
 		if (body instanceof APreconditionSubstitution) {
-			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 			PPredicate condition = ((APreconditionSubstitution) body)
 					.getPredicate();
 			List<PPredicate> predicates = getPredicates(condition);
 			for (PPredicate pPredicate : predicates) {
 				guards.add(new ClassicalBGuard(createPredicateAST(pPredicate)));
 			}
-			operation.addGuards(guards);
 		}
 		ModelElementList<ClassicalBAction> actions = new ModelElementList<ClassicalBAction>();
 		actions.add(new ClassicalBAction(createSubstitutionAST(body)));
 		operation.addActions(actions);
+		operation.addGuards(guards);
 
 		operations.add(operation);
 	}
