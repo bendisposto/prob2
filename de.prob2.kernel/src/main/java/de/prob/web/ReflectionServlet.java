@@ -42,7 +42,6 @@ public class ReflectionServlet extends HttpServlet {
 	Logger logger = LoggerFactory.getLogger(ReflectionServlet.class);
 
 	private final Map<String, ISession> sessions;
-	private final AnimationSelector animations;
 	private final ExecutorService taskExecutor = Executors
 			.newFixedThreadPool(3);
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
@@ -54,7 +53,6 @@ public class ReflectionServlet extends HttpServlet {
 	public ReflectionServlet(@Sessions final Map<String, ISession> sessions,
 			final AnimationSelector animations) {
 		this.sessions = sessions;
-		this.animations = animations;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
