@@ -7,6 +7,7 @@
             [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
             [schema.core :as s]
             [de.prob2.components.trace-selection :refer [trace-selection-view]]
+            [de.prob2.components.state-inspector :refer [state-view]]
             [de.prob2.components.history :refer [history-view]]))
 
 ;; -------------------------
@@ -42,16 +43,15 @@
 
 
 (defn home-page []
-;  [:p "hi"]
-  [trace-selection-view]
-  )
+  [trace-selection-view])
 
 (defn about-page []
   [:div [:h2 "About de.prob2"]
    [:div [:a {:href "#/"} "go to the home page"]]])
 
 (defn animation-view []
-  [:div {:id "h1"} [history-view]])
+  [:div {:id "h1"} [history-view]
+   [state-view]])
 
 (defn disconnected-page []
   [:div {:class "alert alert-danger"}
