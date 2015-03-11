@@ -3,8 +3,6 @@ package de.prob;
 import static java.io.File.separator;
 
 import java.io.File;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
