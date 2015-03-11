@@ -8,6 +8,7 @@
 (defn init-websocket []
   (let [{:keys [chsk ch-recv send-fn state]}
         (sente/make-channel-socket! "/updates" {:type :auto})]
+    (add-watch state :connection-observer (fn [_ _ _ new] (dispatch [:connection-status (:open?  new)])))
     {:chsk chsk
      :ch-chsk ch-recv
      :send! send-fn
@@ -16,8 +17,10 @@
              ch-recv
              (fn [e]
                (when (= (:id e) :chsk/recv)
-                 ;(logp (:?data e))
                  (dispatch (vec (:?data e))))))}))
+
+
+
 
 
 (defn patch [sdb {traces :traces}]
@@ -33,6 +36,12 @@
  (fn [db [_ enc send!]]
    (send! [:prob2/handshake {}])
    (assoc db :encoding enc)))
+
+(register-handler
+ :connection-status
+ (comp  rf/debug)
+ (fn [db [_ connected?]]
+   (assoc db :connected? connected?)))
 
 
 (register-handler

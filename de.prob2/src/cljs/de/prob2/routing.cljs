@@ -50,15 +50,17 @@
 (defn current-page []
   [:div [(session/get :current-page)]])
 
-(defn top-panel    ;; this is new
-  []
+(defn top-panel []
   (let [init?  (rf/subscribe [:initialised?])
-        ready?  (rf/subscribe [:encoding-set?])]
+        ready?  (rf/subscribe [:encoding-set?])
+        connected? (rf/subscribe [:connected?])]
     (fn []
-      (when (and @init? (not @ready?)) (dispatch [:fetch-encoding]))
-      (if-not @ready?
-           [:h1 "Initialising ..."]
-            [current-page]))))
+      (logp @init? @ready? @connected?)
+      (if-not @connected? [:h1 "Waiting for connection"]
+              (do (when (and @init? (not @ready?)) (dispatch [:fetch-encoding]))
+                  (if-not @ready?
+                    [:h1 "Initialising ..."]
+                    [current-page]))))))
 
 (defn init! []
   (mk-routes)
