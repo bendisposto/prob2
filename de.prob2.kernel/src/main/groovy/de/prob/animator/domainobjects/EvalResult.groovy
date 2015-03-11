@@ -18,8 +18,6 @@ public class EvalResult extends AbstractEvalResult {
 	public final static EvalResult FALSE = new EvalResult("FALSE", Collections.emptyMap())
 	final static HashMap<String, EvalResult> formulaCache = [:]
 
-
-	final long id;
 	final String value;
 	final Map<String, String> solutions;
 
