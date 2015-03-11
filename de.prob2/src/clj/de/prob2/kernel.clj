@@ -117,7 +117,86 @@
    :filename (.getAbsolutePath (.getModelFile model))
    :type (kebap-case (class model))
    :dependency-graph (extract-dep-graph model)
-   :components (into {} (map (fn [e] [(.getKey e) (extractE (.getValue e))]) (.getComponents model)))})
+   :components (into {} (map (fn [e] [(.getKey e) (extractE (.getValue e))])
+                             (.getComponents model)))})
+
+(defn extract-transition [transition]
+  (let [name (.getName transition)
+        id (.getId transition)
+        parameters (.getParams transition)
+        return-values (.getReturnValues transition)
+        src (.getId (.getSource transition))
+        dest (.getId (.getDestination transition))
+        anim-id (.getId (.stateSpace transition))]
+    {:name name
+     :id id
+     :parameters parameters
+     :return-values (into [] return-values)
+     :src {:model anim-id :state src}
+     :dst {:model anim-id :state dest}}))
+
+(defn extract-trace [trace]
+  (let [trace-id (.getUUID trace)
+        t (.getTransitionList trace true)
+        transitions (map extract-transition t)
+        current-index (.getIndex (.getCurrent trace))
+        out-trans (map extract-transition (.getNextTransitions trace true))
+        back? (.canGoBack trace)
+        forward? (.canGoForward trace)
+        model (.getId (.getStateSpace trace))]
+    {:trace-id trace-id  :transitions transitions :current-index current-index
+     :out-transitions out-trans :back? back? :forward? forward? :model model}))
+
+(defn extract-state-error [se]
+  (let [event (.getEvent se)
+        short-desc (.getShortDescription se)
+        long-desc (.getLongDescription se)]
+    {:event event :short-desc short-desc :long-desc long-desc}))
+
+(defn extract-values [state]
+  (let [values (.getValues state)
+        value-map (into {} (map (fn [[x y]]
+                                  [(.getUUID (.getFormulaId x)) (.getId y)])
+                                values))
+        result-map (into {} (map (fn [[_ y]]
+                                   [(.getId y) (.toString y)])
+                                 values))]
+    {:values value-map :results result-map}))
+
+(defn extract-state [state]
+  (let [id           {(.getId (.getStateSpace state)) (.getId state)}
+        initialized? (.isInitialised state)
+        inv-ok?      (.isInvariantOk state)
+        timeout?     (.isTimeoutOccurred state)
+        max-transitions-reached? (.isMaxTransitionsCalculated state)
+        state-errors (map extract-state-error (.getStateErrors state))
+        events-with-timeout (.getTransitionsWithTimeout state)
+        vals (extract-values state)]
+    {:state {:values (:values vals)
+             :initialized? initialized?
+             :inv-ok? inv-ok?
+             :timeout? timeout?
+             :max-transitions-reached? max-transitions-reached?
+             :state-errors state-errors
+             :events-with-timeout events-with-timeout}
+     :results (:results vals)}))
+
+(defn find-and-extract [{:keys [state]} state-space]
+  (extract-state (.getState state-space state)))
+
+(defn prepare-trace [t]
+  (let [trace (extract-trace t)
+        transitions (concat (:transitions trace) (:out-transitions trace))
+        state-space (.getStateSpace t)
+        ss (into #{} (concat (map :src transitions) (map :dst transitions)))
+        extracted (map (fn [s] (find-and-extract s state-space)) ss)
+        states (map :state extracted)
+        results (map :results extracted)]
+    {:trace trace
+     :states states
+     :results (apply merge results)})) 
+
+
 
 (defn transform-state-values [initialized? values]
   (into {}
