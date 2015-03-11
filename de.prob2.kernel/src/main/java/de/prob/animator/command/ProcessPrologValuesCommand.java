@@ -20,11 +20,9 @@ public class ProcessPrologValuesCommand extends AbstractCommand {
 	private final String PROCESSED_VALUE = "NewValue";
 	private final String PROCESSED_SOLUTIONS = "NewSolutions";
 	TranslatedEvalResult evalResult;
-	private final String code;
 
-	public ProcessPrologValuesCommand(final String code,
-			final PrologTerm value, final Map<String, PrologTerm> solutions) {
-		this.code = code;
+	public ProcessPrologValuesCommand(final PrologTerm value,
+			final Map<String, PrologTerm> solutions) {
 		this.value = value;
 		this.solutions = solutions;
 	}
