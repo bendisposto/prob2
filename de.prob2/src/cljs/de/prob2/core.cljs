@@ -6,7 +6,8 @@
             [de.prob2.client :as client]
             [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
             [schema.core :as s]
-            [de.prob2.components.trace-selection :refer [trace-selection-view]]))
+            [de.prob2.components.trace-selection :refer [trace-selection-view]]
+            [de.prob2.components.history :refer [history-view]]))
 
 ;; -------------------------
 ;; Views

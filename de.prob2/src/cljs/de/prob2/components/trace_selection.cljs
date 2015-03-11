@@ -1,8 +1,7 @@
 (ns de.prob2.components.trace-selection
-  (:require-macros [reagent.ratom :refer [reaction]])
   (:require [taoensso.encore :as enc  :refer (logf log logp)]
             [re-frame.core :as rf :refer
-             [dispatch register-sub register-handler subscribe]]
+             [dispatch register-handler subscribe]]
             [de.prob2.helpers :refer [dissoc-in pp-transition fix-names fresh-id with-send decode]]))
 
 (defn surrounding [v c n]
@@ -86,5 +85,4 @@
  :de.prob2.kernel/trace-removed
  (comp rf/debug decode)
  (fn [sdb [_ traces]]
-   (logp traces)
    (reduce (fn [db uuid] (dissoc-in db [:traces uuid])) sdb traces)))
