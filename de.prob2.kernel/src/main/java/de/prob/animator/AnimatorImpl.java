@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.inject.Inject;
 
 import de.prob.animator.command.AbstractCommand;
@@ -98,7 +98,7 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(AnimatorImpl.class).addValue(cli)
+		return MoreObjects.toStringHelper(AnimatorImpl.class).addValue(cli)
 				.toString();
 	}
 

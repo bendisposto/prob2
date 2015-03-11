@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.inject.Inject;
 
 import de.prob.exception.CliError;
@@ -90,7 +90,7 @@ public class ProBInstance {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(ProBInstance.class).addValue(connection)
+		return MoreObjects.toStringHelper(ProBInstance.class).addValue(connection)
 				.toString();
 	}
 
