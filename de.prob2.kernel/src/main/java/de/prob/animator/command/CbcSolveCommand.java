@@ -28,6 +28,7 @@ public class CbcSolveCommand extends AbstractCommand {
 	private static final int BINDINGS = 1;
 
 	private static final int VAR_NAME = 1;
+	@SuppressWarnings("unused")
 	private static final int PROLOG_REP = 2;
 	private static final int PRETTY_PRINT = 3;
 

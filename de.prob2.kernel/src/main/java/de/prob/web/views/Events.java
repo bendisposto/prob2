@@ -78,7 +78,9 @@ public class Events extends AbstractAnimationBasedView {
 	}
 
 	private static class Error {
+		@SuppressWarnings("unused")
 		public final String shortMsg;
+		@SuppressWarnings("unused")
 		public final String longMsg;
 
 		public Error(final String shortMsg, final String longMsg) {

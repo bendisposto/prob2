@@ -20,13 +20,7 @@ public class ProBInstance {
 	final Logger logger = LoggerFactory.getLogger(ProBInstance.class);
 	private final Process process;
 
-	private final long userInterruptReference;
-
 	private final ProBConnection connection;
-
-	private final String home;
-
-	private final OsSpecificInfo osInfo;
 
 	private String[] interruptCommand;
 
@@ -36,12 +30,9 @@ public class ProBInstance {
 			final String home, final OsSpecificInfo osInfo) {
 		this.process = process;
 		this.connection = connection;
-		this.home = home;
-		this.osInfo = osInfo;
-		this.userInterruptReference = userInterruptReference.longValue();
 		final String command = home + osInfo.getUserInterruptCmd();
 		interruptCommand = new String[] { command,
-				Long.toString(userInterruptReference) };
+				Long.toString(userInterruptReference.longValue()) };
 		thread = makeOutputPublisher(stream);
 		thread.start();
 	}

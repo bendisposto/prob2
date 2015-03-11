@@ -13,9 +13,10 @@ public class OpInfoTest {
 		IntegerPrologTerm two = new IntegerPrologTerm(2);
 		IntegerPrologTerm three = new IntegerPrologTerm(3);
 
+		@SuppressWarnings("unused")
 		CompoundPrologTerm cpt = new CompoundPrologTerm("op", one, two, three);
 
-		// TODO: Fix failing test. Need to mock StateSpace object
+		// FIXME: Fix failing test. Need to mock StateSpace object
 		/*
 		 * OpInfo opInfo = OpInfo.createOpInfoFromCompoundPrologTerm(null, cpt);
 		 * assertEquals("1", opInfo.getId()); assertEquals("2",

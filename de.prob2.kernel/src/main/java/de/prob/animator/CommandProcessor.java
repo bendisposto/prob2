@@ -2,9 +2,6 @@ package de.prob.animator;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
 import de.prob.cli.ProBInstance;
@@ -22,8 +19,6 @@ import de.prob.prolog.term.PrologTerm;
 
 class CommandProcessor {
 
-	private final Logger logger = LoggerFactory
-			.getLogger(CommandProcessor.class);
 
 	private ProBInstance cli;
 

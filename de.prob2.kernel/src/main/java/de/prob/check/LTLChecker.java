@@ -11,7 +11,7 @@ public class LTLChecker implements IModelCheckJob {
 	private final ModelCheckingUI ui;
 	private final String jobId;
 	private final LTLCheckingJob job;
-	private final LTL formula;
+	private final LTL formula; //FIXME is this used? 
 
 	public LTLChecker(final StateSpace s, final LTL formula) {
 		this(s, formula, null);
