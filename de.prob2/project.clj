@@ -23,6 +23,7 @@
                  [http-kit "2.1.19"]
                  [prone "0.8.0"]
                  [compojure "1.3.1"]
+                 [re-frame "0.2.0"]
                  [selmer "0.8.0"]
                  [environ "1.0.0"]
                  [com.cognitect/transit-clj "0.8.259"]

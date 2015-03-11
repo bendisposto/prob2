@@ -1,30 +1,36 @@
 (ns de.prob2.routing
-  (:require [de.prob2.core :as core]
-            [reagent.core :as reagent :refer [atom]]
+  (:require [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
             [goog.events :as events]
             [goog.dom.dataset]
+            [taoensso.encore :as enc  :refer (logf log logp)]
             [goog.dom.query]
             [goog.history.EventType :as EventType]
-            [secretary.core :as secretary :include-macros true])
-   (:import goog.History))
+            [secretary.core :as secretary :include-macros true]
+            [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
+            [de.prob2.subs]
+            [de.prob2.core :as core])
+  (:import goog.History))
 
 ;; -------------------------
 ;; Routes
-(secretary/set-config! :prefix "#")
 
-(secretary/defroute "/" []
-  (session/put! :current-page #'core/home-page))
+(defn mk-routes []
 
-(secretary/defroute "/about" []
-  (session/put! :current-page #'core/about-page))
+  (secretary/set-config! :prefix "#")  
 
-(secretary/defroute "/trace/:uuid" [uuid]
-  (session/put! :current-page #'core/animation-view)
-  (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
+  (secretary/defroute "/" []
+    (session/put! :current-page #'core/home-page))
 
-(secretary/defroute "/stateview" []
-  (session/put! :current-page #'core/state-view))
+  (secretary/defroute "/about" []
+    (session/put! :current-page #'core/about-page))
+
+  (secretary/defroute "/trace/:uuid" [uuid]
+    (session/put! :current-page #'core/animation-view)
+    (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
+
+  #_(secretary/defroute "/stateview" []
+      (session/put! :current-page #'core/state-view)))
 
 ;; -------------------------
 ;; History
@@ -40,31 +46,22 @@
 ;; -------------------------
 ;; Components
 
-(def components {"state-view" core/state-view
-                 "history-view" core/history-view
-                 "trace-selection-view" core/trace-selection-view})
-
-(defn null-component [] [:div "Not yet implemented"])
-
-;; -------------------------
-;; Initialize app
-
-(defn ^:export register
-  ([component-name gui-id settings]
-   (println settings)
-   (when-let [t (. js/document (getElementById gui-id))]
-     (reagent/render-component [(get components component-name null-component)] t))))
-
-(defn setup-components []
-  (let [cs (goog.dom.query "div[data-type]")]
-    (doseq [c (array-seq cs 0)]
-      (register (goog.dom.dataset/get c "type") (.-id c) (js->clj (goog.dom.dataset/getAll c))))))
 
 (defn current-page []
   [:div [(session/get :current-page)]])
 
-(defn init! []
-  (hook-browser-navigation!)
-  (setup-components)
-  (reagent/render-component [current-page] (.getElementById js/document "app")))
+(defn top-panel    ;; this is new
+  []
+  (let [init?  (rf/subscribe [:initialised?])
+        ready?  (rf/subscribe [:encoding-set?])]
+    (fn []
+      (when (and @init? (not @ready?)) (dispatch [:fetch-encoding]))
+      (if-not @ready?
+           [:h1 "Initialising ..."]
+            [current-page]))))
 
+(defn init! []
+  (mk-routes)
+  (hook-browser-navigation!)
+  (dispatch [:initialise-db])
+  (reagent/render-component [top-panel] (.getElementById js/document "app")))

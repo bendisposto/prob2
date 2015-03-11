@@ -12,3 +12,4 @@ prob2preferences
 de.prob2/src/cljs/de/prob2/generated
 de.prob2/src/clj/de/prob2/generated
 ltl_graphdump.pl
+*.cljs#
