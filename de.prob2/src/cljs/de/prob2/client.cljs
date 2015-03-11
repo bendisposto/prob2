@@ -20,8 +20,11 @@
                  (dispatch (vec (:?data e))))))}))
 
 
-(defn patch [db traces]
-  (merge db traces))
+(defn patch [sdb {traces :traces}]
+  (reduce
+   (fn [db [uuid content]] (assoc-in db [:traces uuid] content))
+   sdb
+   traces))
 
 
 (register-handler
