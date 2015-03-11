@@ -8,6 +8,7 @@
             [goog.history.EventType :as EventType]
             [secretary.core :as secretary :include-macros true]
             [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
+            [de.prob2.subs]
             [de.prob2.core :as core])
   (:import goog.History))
 
@@ -16,7 +17,7 @@
 
 (defn mk-routes []
 
-  (secretary/set-config! :prefix "#")
+  (secretary/set-config! :prefix "#")  
 
   (secretary/defroute "/" []
     (session/put! :current-page #'core/home-page))

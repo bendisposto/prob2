@@ -1,12 +1,12 @@
 (ns de.prob2.core
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as reagent :refer [atom]]
-            [reagent.session :as session]
-            [de.prob2.client :as client]
             [taoensso.encore :as enc  :refer (logf log logp)]
             [de.prob2.generated.schema :as schema]
+            [de.prob2.client :as client]
             [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [de.prob2.components.trace-selection :refer [trace-selection-view]]))
 
 ;; -------------------------
 ;; Views
@@ -22,26 +22,14 @@
 
 
 (defn default-ui-state []
-  
+
   {:traces {} :models {} :states {} :results {} :websocket (client/init-websocket) :encoding nil})
-
-(register-sub
- :initialised?
- (fn  [db]
-   (reaction (not (empty? @db)))))
-
-(register-sub
- :encoding-set?
- (fn  [db]
-   (reaction (:encoding @db))))
 
 
 (register-handler
  :initialise-db
  rf/debug
- (fn
-   [_ _]                   ;; Ignore both params (db and v).
-   (default-ui-state)))
+ (fn [_ _] (default-ui-state)))
 
 (register-handler
  :fetch-encoding
@@ -53,8 +41,8 @@
 
 
 (defn home-page []
-                                        ;  [trace-selection-view]
-  [:h1 "Du Mieser!!!"]
+;  [:p "hi"]
+  [trace-selection-view]
   )
 
 (defn about-page []
