@@ -164,19 +164,21 @@
     {:values value-map :results result-map}))
 
 (defn extract-state [state]
-  (let [id           {(.getId (.getStateSpace state)) (.getId state)}
+  (let [id           {:model (.getId (.getStateSpace state))
+                      :state (.getId state)}
         initialized? (.isInitialised state)
         inv-ok?      (.isInvariantOk state)
         timeout?     (.isTimeoutOccurred state)
         max-transitions-reached? (.isMaxTransitionsCalculated state)
         state-errors (map extract-state-error (.getStateErrors state))
-        events-with-timeout (.getTransitionsWithTimeout state)
+        events-with-timeout (into [] (.getTransitionsWithTimeout state))
         vals (extract-values state)]
     {:state {:values (:values vals)
              :initialized? initialized?
              :inv-ok? inv-ok?
              :timeout? timeout?
              :max-transitions-reached? max-transitions-reached?
+             :id id
              :state-errors state-errors
              :events-with-timeout events-with-timeout}
      :results (:results vals)}))
@@ -193,10 +195,19 @@
         states (map :state extracted)
         results (map :results extracted)]
     {:trace trace
-     :states states
+     :states (into {} (map (fn [s] [(:id s) s]) states))
      :results (apply merge results)})) 
 
-
+(defn prepare-state-packet [trace-list]
+  (let [ms (into #{} (map (fn [t] (.getModel t))) trace-list)
+        models (into {} (map (fn [m]
+                               [(.getId (.getStateSpace m))
+                                (extract-model m)]) ms))
+        ts (map prepare-trace trace-list)
+        traces (into {} (map (fn [{:keys [trace]}] [(:trace-id trace) trace]) ts))
+        states (apply merge (map :states ts))
+        results (apply merge (map :results ts))]
+    {:traces traces :models models :states states :results results}))
 
 (defn transform-state-values [initialized? values]
   (into {}
