@@ -1,13 +1,15 @@
 (ns de.prob2.routing
-  (:require [de.prob2.core :as core]
-            [reagent.core :as reagent :refer [atom]]
+  (:require [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
             [goog.events :as events]
             [goog.dom.dataset]
             [goog.dom.query]
             [goog.history.EventType :as EventType]
-            [secretary.core :as secretary :include-macros true])
-   (:import goog.History))
+            [secretary.core :as secretary :include-macros true]
+            [de.prob2.core :as core]
+            [de.prob2.dataflow]
+            [de.prob2.event-handler])
+  (:import goog.History))
 
 ;; -------------------------
 ;; Routes
@@ -67,4 +69,3 @@
   (hook-browser-navigation!)
   (setup-components)
   (reagent/render-component [current-page] (.getElementById js/document "app")))
-
