@@ -3,7 +3,7 @@
   (:require [taoensso.encore :as enc  :refer (logf log logp)]
             [re-frame.core :as rf :refer
              [dispatch register-sub register-handler subscribe]]
-            [de.prob2.helpers :refer [pp-transition fix-names fresh-id]]))
+            [de.prob2.helpers :refer [dissoc-in pp-transition fix-names fresh-id with-send decode]]))
 
 (defn surrounding [v c n]
   (let [[a v'] (split-at (- c n) v)
@@ -56,9 +56,8 @@
       [:span {:class "glyphicon glyphicon-remove"
               :id "animator-remove-btn"
               :on-click
-              (fn [_]
-                (dispatch [:prob2/kill! {:animator-id id
-                                         :trace-ids trace-ids}]))}]
+              #(dispatch [:prob2/kill! {:animator-id id
+                                        :trace-ids trace-ids}])}]
       [:span (str main-component-name " (" filename ")")]]
      [:ul {:class "animator-list"}
       (if (seq elems)
@@ -74,3 +73,18 @@
       (if (seq grouped)
         (map mk-animator-sublist grouped)
         [:div])]]))
+
+
+(register-handler
+ :prob2/kill!
+ (comp rf/debug with-send)
+ (fn [db [t m send!]]
+   (send! [t m])
+   db))
+
+(register-handler
+ :de.prob2.kernel/trace-removed
+ (comp rf/debug decode)
+ (fn [sdb [_ traces]]
+   (logp traces)
+   (reduce (fn [db uuid] (dissoc-in db [:traces uuid])) sdb traces)))
