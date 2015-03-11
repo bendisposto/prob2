@@ -74,7 +74,6 @@ public class Main {
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
 			.getProperty("PROB_LOG_CONFIG");
 
-	private final static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
 	private final Downloader downloader;
 
 	/**
@@ -200,15 +199,6 @@ public class Main {
 	 */
 	public static void main(final String[] args) {
 		try {
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run() {
-					Set<Process> keySet = Main.processes.keySet();
-					for (Process process : keySet) {
-						process.destroy();
-					}
-				}
-			});
 			System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
 
 			Main main = getInjector().getInstance(Main.class);
@@ -221,23 +211,5 @@ public class Main {
 		System.exit(0);
 	}
 
-	/**
-	 * @param process
-	 *            - process is registered here so that it can be destroyed upon
-	 *            shutdown of the program.
-	 */
-	public static void registerPrologProcess(final Process process) {
-		processes.put(process, Boolean.TRUE);
-	}
-
-	/**
-	 * Destroy all processes associated with the program. This is called during
-	 * shutdown, or if the ServletContext changes.
-	 */
-	public static void destroyPrologProcesses() {
-		Set<Process> keySet = Main.processes.keySet();
-		for (Process process : keySet) {
-			process.destroy();
-		}
-	}
+	
 }

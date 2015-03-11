@@ -3,13 +3,11 @@ package de.prob.cli;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -25,7 +23,6 @@ import de.prob.exception.CliError;
 @Singleton
 public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
-	private final static List<WeakReference<ProBInstance>> refs = new ArrayList<WeakReference<ProBInstance>>();
 	private final Logger logger = LoggerFactory
 			.getLogger(ProBInstanceProvider.class);
 
@@ -47,11 +44,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 	}
 
 	public ProBInstance create() {
-		ProBInstance cli = startProlog();
-		final WeakReference<ProBInstance> ref = new WeakReference<ProBInstance>(
-				cli);
-		refs.add(ref);
-		return cli;
+		return startProlog();
 	}
 
 	private ProBInstance startProlog() {
@@ -134,8 +127,5 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		}
 	}
 
-	public static List<WeakReference<ProBInstance>> getClis() {
-		return refs;
-	}
 
 }
