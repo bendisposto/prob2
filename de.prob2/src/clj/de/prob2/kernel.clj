@@ -121,31 +121,34 @@
                              (.getComponents model)))})
 
 (defn extract-transition [transition]
-  (let [name (.getName transition)
-        id (.getId transition)
-        parameters (.getParams transition)
-        return-values (.getReturnValues transition)
-        src (.getId (.getSource transition))
-        dest (.getId (.getDestination transition))
-        anim-id (.getId (.stateSpace transition))]
-    {:name name
-     :id id
-     :parameters parameters
-     :return-values (into [] return-values)
-     :src {:model anim-id :state src}
-     :dst {:model anim-id :state dest}}))
+  (when transition
+    (let [name (.getName transition)
+          id (.getId transition)
+          parameters (.getParams transition)
+          return-values (.getReturnValues transition)
+          src (.getId (.getSource transition))
+          dest (.getId (.getDestination transition))
+          anim-id (.getId (.stateSpace transition))]
+      {:name name
+       :id id
+       :parameters parameters
+       :return-values (into [] return-values)
+       :src {:model anim-id :state src}
+       :dst {:model anim-id :state dest}})))
 
 (defn extract-trace [trace]
   (let [trace-id (.getUUID trace)
         t (.getTransitionList trace true)
         transitions (map extract-transition t)
         current-index (.getIndex (.getCurrent trace))
+        current-transition (extract-transition (.getCurrentTransition trace))
         out-trans (map extract-transition (.getNextTransitions trace true))
         back? (.canGoBack trace)
         forward? (.canGoForward trace)
-        model (.getId (.getStateSpace trace))]
+        model (.getId (.getStateSpace trace))
+        current-state {:model model :state (.getId (.getCurrentState trace))}]
     {:trace-id trace-id  :transitions transitions :current-index current-index
-     :out-transitions out-trans :back? back? :forward? forward? :model model}))
+     :out-transitions out-trans :back? back? :forward? forward? :model model :current-state current-state :current-transition current-transition}))
 
 (defn extract-state-error [se]
   (let [event (.getEvent se)
@@ -198,7 +201,7 @@
      :states (into {} (map (fn [s] [(:id s) s]) states))
      :results (apply merge results)}))
 
-(defn prepare-state-packet [trace-list]
+(defn prepare-ui-state-packet [trace-list]
   (let [ms (into #{} (map (fn [t] (.getModel t))) trace-list)
         models (into {} (map (fn [m]
                                [(.getId (.getStateSpace m))
@@ -209,61 +212,6 @@
         results (apply merge (map :results ts))]
     {:traces traces :models models :states states :results results}))
 
-(defn transform-state-values [initialized? values]
-  (into {}
-        (map (fn [x] [(.toString (.getKey x))
-                      (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
-
-(declare transform-transition)
-
-(defn transform-state [state evaluate?]
-  (println state)
-  {:initialized? (.isInitialised state)
-   :inv-ok? (.isInvariantOk state)
-   :timeout? (.isTimeoutOccurred state)
-   :max-trans? (.isMaxTransitionsCalculated state)
-   :id (.getId state)
-   :out-transitions (map transform-transition (.getOutTransitions state evaluate?))
-   :state-errors (into [] (.getStateErrors state))
-   :transitions-with-timeout (into #{} (.getTransitionsWithTimeout state))
-   :values (transform-state-values (.isInitialised state) (.getValues state))})
-
-
-(defn transform-transition [transition]
-  (let [name (.getName transition)
-        id (.getId transition)
-        parameters (.getParams transition)
-        return-values (.getReturnValues transition)]
-    {:name name
-     :id id
-     :parameters parameters
-     :return-values (into [] return-values)}))
-
-(defn prepare-trace-element [te]
-
-  (let [s (.getSrc te)
-        src (transform-state s false)
-        d (.getDest te)
-        dest (transform-state (if d d s) true)]
-    {:previous src :current dest}))
-
-
-(defn prepare-trace-packet [trace]
-  (let [h (.getTransitionList trace true)
-        history (map transform-transition h)
-        te (.getCurrent trace)
-        cur (prepare-trace-element te)
-        uuid (.getUUID trace)
-        cur-index (.getIndex te)
-        model (extract-model (.getModel trace))
-        animator-id (.getId (.getStateSpace trace))
-        ]
-
-    [uuid (assoc cur :trace-id uuid :history history :current-index cur-index :model model :animator-id animator-id)]))
-
-
-(defn prepare-ui-state-packet [traces]
-  {:traces (into {} (mapv prepare-trace-packet traces))})
 
 
 ;; FIXME We should only send information to clients who actually care

@@ -79,6 +79,8 @@
    :transitions [Transition-Spec]
    :current-index s/Int
    :out-transitions [Transition-Spec]
+   :current-state Animatorstate-Spec
+   :current-transition (s/maybe Transition-Spec)
    :back? s/Bool
    :forward? s/Bool
    :model s/Str

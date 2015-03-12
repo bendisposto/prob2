@@ -1,5 +1,6 @@
 (ns de.prob2.helpers
-  (:require [cognitect.transit :as transit]))
+  (:require [cognitect.transit :as transit]
+            [clojure.string]))
 
 (def id-store (clojure.core/atom 0))
 (defn fresh-id []
@@ -34,6 +35,16 @@
     (keyword msg)))
 
 
+(defn deep-merge
+  "Like merge, but merges maps recursively."
+  {:added "1.7"}
+  [& maps]
+  (if (every? map? maps)
+    (apply merge-with deep-merge maps)
+    (last maps)))
+
+
+
 (defn decode
   "Takes a handler of 2 arguments, where the second argument is a vector of a message type and a message. The message is read through transit if the encoding has been set. Otherwise it create a ketword from the message (only used when fetching the encoding from the server). This middleware should be applied before the with-send middleware."
   [handler]
@@ -45,3 +56,22 @@
   [handler]
   (fn [{{send! :send!} :websocket :as db} [type msg]]
     (handler db [type msg send!])))
+
+(def relay
+  (fn [{{send! :send!} :websocket :as db} [t m]]
+    (send! [t m])
+    db))
+
+
+(defn fixedpoint [F guess eps?]
+  ((fn [x]
+     (let [x' (F x)]
+       (if (eps? x x') x (recur x')))) guess))
+
+
+(defn tc-step [x]
+  (set (clojure.set/union x (for [[a b] x [c d] x :when (= b c)] [a d]))))
+
+(defn tc [g] (let [e (:edges g)
+                   ne (fixedpoint tc-step e =)]
+               {:nodes (:nodes g) :edges ne}))

@@ -1,5 +1,5 @@
 (ns de.prob2.routing
-  (:require [reagent.core :as reagent :refer [atom]]
+  (:require [reagent.core :as r]
             [reagent.session :as session]
             [goog.events :as events]
             [goog.dom.dataset]
@@ -7,7 +7,7 @@
             [goog.dom.query]
             [goog.history.EventType :as EventType]
             [secretary.core :as secretary :include-macros true]
-            [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
+            [re-frame.core :as rf]
             [de.prob2.subs]
             [de.prob2.core :as core])
   (:import goog.History))
@@ -57,7 +57,7 @@
     (fn []
       (logp @init? @ready? @connected?)
       (if-not @connected? [:h1 "Waiting for connection"]
-              (do (when (and @init? (not @ready?)) (dispatch [:fetch-encoding]))
+              (do (when (and @init? (not @ready?)) (rf/dispatch [:chsk/encoding nil]))
                   (if-not @ready?
                     [:h1 "Initialising ..."]
                     [current-page]))))))
@@ -65,5 +65,5 @@
 (defn init! []
   (mk-routes)
   (hook-browser-navigation!)
-  (dispatch [:initialise-db])
-  (reagent/render-component [top-panel] (.getElementById js/document "app")))
+  (rf/dispatch [:initialise-db])
+  (r/render-component [top-panel] (.getElementById js/document "app")))

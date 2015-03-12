@@ -1,10 +1,9 @@
 (ns de.prob2.components.history
-  (:require [reagent.core :as reagent :refer [atom]]
+  (:require [reagent.core :as r]
             [taoensso.encore :as enc  :refer (logf log logp)]
             [reagent.session :as session]
-            [re-frame.core :as rf :refer
-             [dispatch register-handler subscribe]]
-            [de.prob2.helpers :refer [dissoc-in pp-transition fix-names fresh-id with-send decode]]))
+            [re-frame.core :as rf]
+            [de.prob2.helpers :as h]))
 
 (defn- mk-history-item [trace-id current {:keys [index] :as item}]
   ^{:key (str "h" index)}
@@ -13,15 +12,14 @@
                                           (< current index) " future "
                                           :default ""))
          :on-click
-         #(dispatch [:history/goto {:trace-id trace-id :index index}])}
-    (pp-transition item)]])
+         #(rf/dispatch [:history/goto {:trace-id trace-id :index index}])}
+    (h/pp-transition item)]])
 
 (defn history-view []
-  (let [sort-order (atom identity)]
+  (let [sort-order (r/atom identity)]
     (fn []
       (let [id (session/get :focused-uuid)
-            traces (subscribe [:traces])
-            t (get @traces id)
+            t (rf/subscribe [:trace id])
             h (cons {:name "-- uninitialized --"
                      :return-values []
                      :parameters []
@@ -29,7 +27,7 @@
                      :index -1}
                     (map-indexed
                      (fn [index element] (assoc element :index index))
-                     (:history t)))]
+                     (:transitions @t)))]
         [:div {:class "history-view"}
          [:div {:class "glyphicon glyphicon-sort pull-right"
                 :id "sort-button"
@@ -39,12 +37,7 @@
                   (fn [f]
                     (get {identity reverse} f identity)))}]
          [:ul {:class "history-list"}
-          (map (partial mk-history-item (:trace-id t) (:current-index t)) (@sort-order h))]
+          (map (partial mk-history-item (:trace-id @t) (:current-index @t)) (@sort-order h))]
          ]))))
 
-(register-handler
- :history/goto
- (comp rf/debug with-send)
- (fn [db [t m send!]]
-   (send! [t m])
-   db))
+(rf/register-handler :history/goto h/relay)

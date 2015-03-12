@@ -1,5 +1,5 @@
 (ns de.prob2.client
-  (:require [de.prob2.helpers :refer [decode with-send]]
+  (:require [de.prob2.helpers :as h]
             [taoensso.sente  :as sente :refer (cb-success?)]
             [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
             [taoensso.encore :as enc  :refer (logf log logp)]))
@@ -20,19 +20,20 @@
                  (dispatch (vec (:?data e))))))}))
 
 
+(defn reset-ui-state [ws]
+   {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil})
+
+(defn default-ui-state []
+  (reset-ui-state (init-websocket)))
 
 
-
-(defn patch [sdb {traces :traces}]
-  (reduce
-   (fn [db [uuid content]] (assoc-in db [:traces uuid] content))
-   sdb
-   traces))
+(defn patch [sdb deltas]
+  (h/deep-merge sdb deltas))
 
 
 (register-handler
  :sente/encoding
- (comp  rf/debug decode with-send)
+ (comp  rf/debug h/decode h/with-send)
  (fn [db [_ enc send!]]
    (send! [:prob2/handshake {}])
    (assoc db :encoding enc)))
@@ -40,12 +41,14 @@
 (register-handler
  :connection-status
  (comp  rf/debug)
- (fn [db [_ connected?]]
-   (assoc db :connected? connected?)))
+ (fn [{ws :websocket :as db} [_ connected?]]
+   (if connected? 
+     (assoc db :connected? connected?)
+     (reset-ui-state ws))))
 
 
 (register-handler
  :de.prob2.kernel/ui-state
- (comp  decode)
+ (comp  h/decode)
  (fn [db [_ deltas]]
    (patch db deltas)))

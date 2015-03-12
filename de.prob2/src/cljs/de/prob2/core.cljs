@@ -1,15 +1,15 @@
 (ns de.prob2.core
-  (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [reagent.core :as reagent :refer [atom]]
+  (:require [reagent.core :as r]
             [taoensso.encore :as enc  :refer (logf log logp)]
             [de.prob2.generated.schema :as schema]
             [de.prob2.client :as client]
-            [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
+            [re-frame.core :as rf]
             [schema.core :as s]
+            [de.prob2.helpers :as h]
             [de.prob2.components.trace-selection :refer [trace-selection-view]]
             [de.prob2.components.state-inspector :refer [state-view]]
             [de.prob2.components.history :refer [history-view]]
-             [de.prob2.components.events :refer [events-view]]))
+            [de.prob2.components.events :refer [events-view]]))
 
 ;; -------------------------
 ;; Views
@@ -24,23 +24,14 @@
       (logp new-state))))
 
 
-(defn default-ui-state []
-
-  {:traces {} :models {} :states {} :results {} :websocket (client/init-websocket) :encoding nil})
 
 
-(register-handler
+(rf/register-handler
  :initialise-db
  rf/debug
- (fn [_ _] (default-ui-state)))
+ (fn [_ _] (client/default-ui-state)))
 
-(register-handler
- :fetch-encoding
- rf/debug
- (fn
-   [{{send! :send!} :websocket :as db} _]
-   (send! [:chsk/encoding nil])
-   db))
+(rf/register-handler :chsk/encoding h/relay)
 
 
 (defn home-page []
