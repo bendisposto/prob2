@@ -9,11 +9,11 @@
 (defn kebap-case
   ([cls] (kebap-case cls ""))
   ([cls add]
-     (keyword
-      (str (clojure.string/join
-            "-"
-            (map (fn [s] (.toLowerCase s))
-                 (map second (re-seq #"([A-Z][a-z]*)" (.getSimpleName cls))))) add))))
+   (keyword
+    (str (clojure.string/join
+          "-"
+          (map (fn [s] (.toLowerCase s))
+               (map second (re-seq #"([A-Z][a-z]*)" (.getSimpleName cls))))) add))))
 
 (defn methods [e]
   (into #{} (map :name (:members (refl/reflect e)))))
@@ -196,7 +196,7 @@
         results (map :results extracted)]
     {:trace trace
      :states (into {} (map (fn [s] [(:id s) s]) states))
-     :results (apply merge results)})) 
+     :results (apply merge results)}))
 
 (defn prepare-state-packet [trace-list]
   (let [ms (into #{} (map (fn [t] (.getModel t))) trace-list)
@@ -214,13 +214,16 @@
         (map (fn [x] [(.toString (.getKey x))
                       (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
 
-(defn transform-state [state]
+(declare transform-transition)
+
+(defn transform-state [state evaluate?]
   (println state)
   {:initialized? (.isInitialised state)
    :inv-ok? (.isInvariantOk state)
    :timeout? (.isTimeoutOccurred state)
    :max-trans? (.isMaxTransitionsCalculated state)
    :id (.getId state)
+   :out-transitions (map transform-transition (.getOutTransitions state evaluate?))
    :state-errors (into [] (.getStateErrors state))
    :transitions-with-timeout (into #{} (.getTransitionsWithTimeout state))
    :values (transform-state-values (.isInitialised state) (.getValues state))})
@@ -239,9 +242,9 @@
 (defn prepare-trace-element [te]
 
   (let [s (.getSrc te)
-        src (transform-state s)
+        src (transform-state s false)
         d (.getDest te)
-        dest (transform-state (if d d s))]
+        dest (transform-state (if d d s) true)]
     {:previous src :current dest}))
 
 

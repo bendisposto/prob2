@@ -8,7 +8,8 @@
             [schema.core :as s]
             [de.prob2.components.trace-selection :refer [trace-selection-view]]
             [de.prob2.components.state-inspector :refer [state-view]]
-            [de.prob2.components.history :refer [history-view]]))
+            [de.prob2.components.history :refer [history-view]]
+             [de.prob2.components.events :refer [events-view]]))
 
 ;; -------------------------
 ;; Views
@@ -50,8 +51,11 @@
    [:div [:a {:href "#/"} "go to the home page"]]])
 
 (defn animation-view []
-  [:div {:id "h1"} [history-view]
-   [state-view]])
+  [:div {:id "h1"}
+   [history-view]
+   [state-view]
+   [events-view]
+   ])
 
 (defn disconnected-page []
   [:div {:class "alert alert-danger"}
