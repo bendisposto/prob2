@@ -15,7 +15,7 @@
           (map (fn [s] (.toLowerCase s))
                (map second (re-seq #"([A-Z][a-z]*)" (.getSimpleName cls))))) add))))
 
-(defn methods [e]
+(defn retrieve-methods [e]
   (into #{} (map :name (:members (refl/reflect e)))))
 
 (defn default-map [v kids]
@@ -26,7 +26,7 @@
    :formula-id (.getUUID (.getFormulaId formula))})
 
 (defn formula-element [e]
-  (let [m (methods e)
+  (let [m (retrieve-methods e)
         mmap (if (m 'getName) {:label (.getName e)} {})
         formula (.getFormula e)]
     (into mmap (formula-map formula))))
