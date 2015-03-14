@@ -55,7 +55,6 @@
         ready?  (rf/subscribe [:encoding-set?])
         connected? (rf/subscribe [:connected?])]
     (fn []
-      (logp @init? @ready? @connected?)
       (if-not @connected? [:h1 "Waiting for connection"]
               (do (when (and @init? (not @ready?)) (rf/dispatch [:chsk/encoding nil]))
                   (if-not @ready?
