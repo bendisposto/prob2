@@ -8,6 +8,7 @@
             [goog.history.EventType :as EventType]
             [secretary.core :as secretary :include-macros true]
             [re-frame.core :as rf]
+            [de.prob2.jsapi]
             [de.prob2.subs]
             [de.prob2.core :as core])
   (:import goog.History))
