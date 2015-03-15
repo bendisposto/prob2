@@ -46,7 +46,39 @@
    (reaction (get-in @db [:states state-spec]))))
 
 
-(defn ^extern subscribe-js-callback
+(defn ^extern subs-js-handler
+  "Forwards changes to a subscription to a handler. First argument
+  is the handler id that should be triggered. The second argument
+  is a subscription pattern. All following arguments are added to
+  the handler dispatch call. All arguments are preprocessed by the
+  Clojurescript reader. The handler is called with the complete
+  subscription specification and the changes. Registration of the
+  handler must be done separately.
+
+  For instance: We have a handler registered that uses the key :foo
+  and we want to trigger :foo each time the trace with id
+  09b2fdfa-f49b-4c5f-be64-ea5e63f0d628 changes. 
+
+  de.prob2.subs.subs_js_handler(':foo', '[:trace #uuid \"09b2fdfa-f49b-4c5f-be64-ea5e63f0d628\"])
+
+  Important: A handler should not take longer than 16ms to run. Long
+  running handlers are supposed to split up the work into chunks and
+  call themselfs after 16 ms. Information for splitting up the work
+  can be encoded in the optional arguments.
+  "
+  [handler hook & args]
+  (let [real-handler (cljs.reader/read-string handler)
+        real-hook (cljs.reader/read-string hook)
+        real-args (map cljs.reader/read-string args)
+        x (rf/subscribe real-hook)]
+    (ra/run! (rf/dispatch
+              (into [real-handler
+                     (clj->js real-hook)
+                     (clj->js @x)]
+                    (clj->js real-args))))))
+
+
+(comment  (defn ^extern subscribe-js-callback
   "Subscribes a Javascript callback function to a normal subscription
   hook. First argument is a JS function of one argument that should
   be called each time the subscription changes. The second argument is
@@ -54,8 +86,11 @@
   using the Clojurescript reader.
 
   Example:
-  de.prob2.subs.register_js_callback(function(x) { console.log(\"changed\" x},'[:trace #uuid \"09b2fdfa-f49b-4c5f-be64-ea5e63f0d628\"]')"
+  de.prob2.subs.register_js_callback(function(x) { console.log(\"changed\" x},'[:trace #uuid \"09b2fdfa-f49b-4c5f-be64-ea5e63f0d628\"]')
+
+  Warning:
+  Be careful what you put into the callback. The UI can become unresponsive if the callback is taking too long."
 
   [callback hook]
   (let [x (rf/subscribe (cljs.reader/read-string hook))]
-    (ra/run! (callback (clj->js @x)))))
+    (ra/run! (callback (clj->js @x))))))
