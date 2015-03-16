@@ -3,7 +3,7 @@
   (:require [re-frame.core :as rf]))
 
 
-(defn ^:extern js-subs-handler
+(defn ^:extern subs-handler
   "Forwards changes to a subscription to a handler. First argument
   is the handler id that should be triggered. The second argument
   is a subscription pattern. All following arguments are added to
@@ -40,7 +40,7 @@
                     args)))))
 
 
-(defn ^:extern js-register-handler
+(defn ^:extern register-handler
   "Registers a handler function. The first argument is the handler key,
   the second argument is a function of at least two arguments.
   The first argument is the changed part of the state. The second argument
@@ -61,3 +61,4 @@
              jsx (clj->js x)
              res (apply f jsx jsdb args)]
          db)))))
+
