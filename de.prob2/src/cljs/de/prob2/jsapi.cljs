@@ -1,4 +1,5 @@
 (ns de.prob2.jsapi
+  (:require-macros [reagent.ratom :as ra])
   (:require [re-frame.core :as rf]))
 
 
