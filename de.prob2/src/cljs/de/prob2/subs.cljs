@@ -46,5 +46,14 @@
    (reaction (get-in @db [:states state-spec]))))
 
 
+(register-sub
+ :state-path
+ (fn [db [_ path-spec]]
+   (reaction (get-in @db path-spec))))
+
+(register-sub
+ :state-paths
+ (fn [db [_ & path-specs]]
+   (reaction (mapv (partial get-in @db) path-specs))))
 
 
