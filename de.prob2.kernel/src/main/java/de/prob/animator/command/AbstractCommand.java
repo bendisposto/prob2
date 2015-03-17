@@ -133,7 +133,7 @@ public abstract class AbstractCommand {
 			final List<String> errormessages) {
 		if (result instanceof NoResult) {
 			String message = "Prolog said no.";
-			if (errormessages != null) {
+			if (!errormessages.isEmpty()) {
 				message += " Error messages were: "
 						+ Joiner.on("\n").join(errormessages);
 			} else {
