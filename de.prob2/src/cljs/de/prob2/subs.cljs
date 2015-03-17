@@ -45,6 +45,13 @@
  (fn [db [_ state-spec]]
    (reaction (get-in @db [:states state-spec]))))
 
+(register-sub
+ :hierarchy
+ (fn [db [_ trace-id]]
+   (let [model-id (reaction (get-in @db [:traces trace-id :model]))
+         model (reaction (get-in @db [:models @model-id]))]
+     (reaction (:dependency-graph @model)))))
+
 
 ;; Watch out! If you use this subscription you tie your implementation
 ;; to a specific layout of the ui state tree. If possible, use a
