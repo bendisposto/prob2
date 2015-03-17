@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.eventb.Event;
@@ -48,7 +49,7 @@ public class Transition {
 	private List<String> returnValues;
 	private String rep;
 	private boolean evaluated;
-	private boolean truncated;
+	private FormulaExpand formulaExpansion;
 	private final FormalismType formalismType;
 	private String predicateString;
 
@@ -256,22 +257,23 @@ public class Transition {
 	 * @return
 	 */
 	public Transition evaluate() {
-		return evaluate(true);
+		return evaluate(FormulaExpand.truncate);
 	}
 
-	public boolean canBeEvaluated(final boolean truncate) {
+	public boolean canBeEvaluated(final FormulaExpand expansion) {
 		if (!evaluated) {
 			return true;
 		}
-		if (this.truncated == true && truncate == false) {
+		if (this.formulaExpansion == FormulaExpand.truncate
+				&& expansion == FormulaExpand.expand) {
 			return true;
 		}
 		return false;
 	}
 
-	public Transition evaluate(final boolean truncate) {
-		if (canBeEvaluated(truncate)) {
-			GetOpFromId command = new GetOpFromId(this, truncate);
+	public Transition evaluate(final FormulaExpand expansion) {
+		if (canBeEvaluated(expansion)) {
+			GetOpFromId command = new GetOpFromId(this, expansion);
 			stateSpace.execute(command);
 			return this;
 		}
@@ -287,7 +289,7 @@ public class Transition {
 	}
 
 	public boolean isTruncated() {
-		return truncated;
+		return formulaExpansion == FormulaExpand.truncate;
 	}
 
 	/**
@@ -314,9 +316,9 @@ public class Transition {
 	 * @param returnValues
 	 *            - {@link List} of {@link String} return values
 	 */
-	void setInfo(final boolean truncated, final List<String> params,
+	void setInfo(final FormulaExpand expansion, final List<String> params,
 			final List<String> returnValues) {
-		this.truncated = truncated;
+		this.formulaExpansion = expansion;
 		this.params = params;
 		this.returnValues = returnValues;
 		this.rep = createRep(name, params, returnValues);

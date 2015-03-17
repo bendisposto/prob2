@@ -38,6 +38,7 @@ import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.annotations.MaxCacheSize;
 import de.prob.model.classicalb.ClassicalBModel;
@@ -702,8 +703,9 @@ public class StateSpace implements IAnimator {
 	 * @return a set containing all of the evaluated transitions
 	 */
 	public Set<Transition> evaluateTransitions(
-			final Collection<Transition> transitions, final boolean truncate) {
-		GetOpsFromIds cmd = new GetOpsFromIds(transitions, truncate);
+			final Collection<Transition> transitions,
+			final FormulaExpand expansion) {
+		GetOpsFromIds cmd = new GetOpsFromIds(transitions, expansion);
 		execute(cmd);
 		return new LinkedHashSet<Transition>(transitions);
 	}

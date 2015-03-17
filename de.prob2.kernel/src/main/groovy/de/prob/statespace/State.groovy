@@ -7,6 +7,7 @@ import de.prob.animator.command.EvaluateRegisteredFormulasCommand
 import de.prob.animator.command.ExploreStateCommand
 import de.prob.animator.command.GetBStateCommand
 import de.prob.animator.domainobjects.AbstractEvalResult
+import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.StateError
 import de.prob.util.StringUtil
@@ -306,12 +307,12 @@ class State {
 	 * 		be evaluated. By default this is set to false.
 	 * @return the outgoing transitions from this state
 	 */
-	def List<Transition> getOutTransitions(boolean evaluate=false, boolean truncate=true) {
+	def List<Transition> getOutTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.truncate) {
 		if (!explored) {
 			explore()
 		}
 		if(evaluate) {
-			stateSpace.evaluateTransitions(transitions, truncate)
+			stateSpace.evaluateTransitions(transitions, expansion)
 		}
 		transitions
 	}

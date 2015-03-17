@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -15,10 +16,10 @@ public class GetOpsFromIds extends AbstractCommand {
 	ComposedCommand allCommands;
 
 	public GetOpsFromIds(final Collection<Transition> edges,
-			final boolean truncate) {
+			final FormulaExpand expansion) {
 		for (Transition opInfo : edges) {
-			if (opInfo.canBeEvaluated(truncate)) {
-				cmds.add(new GetOpFromId(opInfo, truncate));
+			if (opInfo.canBeEvaluated(expansion)) {
+				cmds.add(new GetOpFromId(opInfo, expansion));
 			}
 		}
 		List<AbstractCommand> cs = new ArrayList<AbstractCommand>(cmds);

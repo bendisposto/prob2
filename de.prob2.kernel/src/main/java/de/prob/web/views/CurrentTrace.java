@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.annotations.PublicSession;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
@@ -54,7 +55,7 @@ public class CurrentTrace extends AbstractAnimationBasedView {
 					"start"));
 		}
 		trace.getStateSpace().evaluateTransitions(
-				opList.subList(startpos, endpos), false);
+				opList.subList(startpos, endpos), FormulaExpand.truncate);
 		String group = "past";
 		for (int i = startpos; i < endpos; i++) {
 			String rep = opList.get(i).getPrettyRep();
