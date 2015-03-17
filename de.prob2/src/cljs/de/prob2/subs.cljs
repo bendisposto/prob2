@@ -46,11 +46,17 @@
    (reaction (get-in @db [:states state-spec]))))
 
 
+;; Watch out! If you use this subscription you tie your implementation
+;; to a specific layout of the ui state tree. If possible, use a
+;; specific subscription instead
 (register-sub
  :state-path
  (fn [db [_ path-spec]]
    (reaction (get-in @db path-spec))))
 
+;; Watch out! If you use this subscription you tie your implementation
+;; to a specific layout of the ui state tree. If possible, use a
+;; specific subscription instead
 (register-sub
  :state-paths
  (fn [db [_ & path-specs]]
