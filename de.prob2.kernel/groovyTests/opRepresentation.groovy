@@ -2,7 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // Test for b models
-m = api.b_load(dir+"/machines/MultipleExample.mch")
+m = api.b_load(dir+File.separator +"machines"+File.separator+"MultipleExample.mch")
 s = m as StateSpace
 t = new Trace(s)
 t = t.anyEvent()

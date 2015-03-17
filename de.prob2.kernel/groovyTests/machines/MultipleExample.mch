@@ -10,7 +10,7 @@ OPERATIONS
   		b := p + 4
   	END;
 
-  a,b,c <-- Crazy2(p1,  p2) =
+  a,b,c <-- Crazy2(p1, p2) =
   	SELECT
   		p1 : INTEGER &
   		p2 : POW(INTEGER)
