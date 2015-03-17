@@ -46,8 +46,9 @@ public class Transition {
 	private final State dest;
 	private List<String> params;
 	private List<String> returnValues;
-	private String rep = null;
+	private String rep;
 	private boolean evaluated;
+	private boolean truncated;
 	private final FormalismType formalismType;
 	private String predicateString;
 
@@ -61,6 +62,7 @@ public class Transition {
 		this.src = src;
 		this.dest = dest;
 		this.evaluated = false;
+		this.rep = name;
 		formalismType = stateSpace.getModel().getFormalismType();
 	}
 
@@ -130,9 +132,6 @@ public class Transition {
 	 * @return the String representation of the operation.
 	 */
 	public String getRep() {
-		if (rep == null) {
-			rep = generateRep();
-		}
 		return rep;
 	}
 
@@ -185,27 +184,18 @@ public class Transition {
 		return predicates;
 	}
 
-	/**
-	 * The string representation of the operation is calculated based on the
-	 * name, parameters, return values, and the formalism type in question
-	 * {@link FormalismType#CSP} or {@link FormalismType#B}. If the operation is
-	 * not yet evaluated (the values for name, parameters, and return values
-	 * have not yet been retrieved), this is done via {@link #evaluate()}.
-	 * 
-	 * @return a String representation of the operation
-	 */
-	private String generateRep() {
-		evaluate();
-
+	private String createRep(final String name, final List<String> params,
+			final List<String> returnVals) {
 		if (formalismType.equals(FormalismType.CSP)) {
 			if (params.isEmpty()) {
 				return name;
 			}
-			return name + "." + Joiner.on(".").join(getParams());
+			return name + "." + Joiner.on(".").join(params);
 		}
-		String retVals = getReturnValues().isEmpty() ? "" : Joiner.on(",")
-				.join(getReturnValues()) + " <-- ";
-		return retVals + name + "(" + Joiner.on(",").join(getParams()) + ")";
+		String retVals = returnVals.isEmpty() ? "" : Joiner.on(",").join(
+				returnVals)
+				+ " <-- ";
+		return retVals + name + "(" + Joiner.on(",").join(params) + ")";
 	}
 
 	public String getPrettyRep() {
@@ -266,11 +256,25 @@ public class Transition {
 	 * @return
 	 */
 	public Transition evaluate() {
-		if (evaluated) {
+		return evaluate(true);
+	}
+
+	public boolean canBeEvaluated(final boolean truncate) {
+		if (!evaluated) {
+			return true;
+		}
+		if (this.truncated == true && truncate == false) {
+			return true;
+		}
+		return false;
+	}
+
+	public Transition evaluate(final boolean truncate) {
+		if (canBeEvaluated(truncate)) {
+			GetOpFromId command = new GetOpFromId(this, truncate);
+			stateSpace.execute(command);
 			return this;
 		}
-		GetOpFromId command = new GetOpFromId(this);
-		stateSpace.execute(command);
 		return this;
 	}
 
@@ -280,6 +284,10 @@ public class Transition {
 	 */
 	public boolean isEvaluated() {
 		return evaluated;
+	}
+
+	public boolean isTruncated() {
+		return truncated;
 	}
 
 	/**
@@ -306,9 +314,12 @@ public class Transition {
 	 * @param returnValues
 	 *            - {@link List} of {@link String} return values
 	 */
-	void setInfo(final List<String> params, final List<String> returnValues) {
+	void setInfo(final boolean truncated, final List<String> params,
+			final List<String> returnValues) {
+		this.truncated = truncated;
 		this.params = params;
 		this.returnValues = returnValues;
+		this.rep = createRep(name, params, returnValues);
 		evaluated = true;
 	}
 

@@ -19,15 +19,22 @@ public class GetOpFromId extends AbstractCommand {
 	private final String RETVALS = "RetVals";
 	private List<String> params;
 	private List<String> returnValues;
+	private final boolean truncate;
 
-	public GetOpFromId(final Transition opInfo) {
+	public GetOpFromId(final Transition opInfo, final boolean truncate) {
 		op = opInfo;
+		this.truncate = truncate;
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("get_op_from_id").printAtomOrNumber(op.getId())
-				.printVariable(PARAMS).printVariable(RETVALS).closeTerm();
+				.printAtom(getTruncateAtom()).printVariable(PARAMS)
+				.printVariable(RETVALS).closeTerm();
+	}
+
+	private String getTruncateAtom() {
+		return truncate ? "truncate" : "expand";
 	}
 
 	@Override
@@ -51,7 +58,7 @@ public class GetOpFromId extends AbstractCommand {
 			returnValues.add(StringUtil.generateString(r.getFunctor()));
 		}
 
-		op.setInfo(params, returnValues);
+		op.setInfo(truncate, params, returnValues);
 	}
 
 	public List<String> getParams() {

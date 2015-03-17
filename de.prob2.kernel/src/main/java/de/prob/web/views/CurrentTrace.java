@@ -54,7 +54,7 @@ public class CurrentTrace extends AbstractAnimationBasedView {
 					"start"));
 		}
 		trace.getStateSpace().evaluateTransitions(
-				opList.subList(startpos, endpos));
+				opList.subList(startpos, endpos), false);
 		String group = "past";
 		for (int i = startpos; i < endpos; i++) {
 			String rep = opList.get(i).getPrettyRep();
@@ -85,8 +85,6 @@ public class CurrentTrace extends AbstractAnimationBasedView {
 		animationsRegistry.traceChange(trace);
 		return null;
 	}
-
-
 
 	public Object changeSort(final Map<String, String[]> params) {
 		sortDown = Boolean.valueOf(params.get("sortDown")[0]);

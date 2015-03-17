@@ -35,10 +35,10 @@ import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;
 import de.prob.animator.command.GetStatesFromPredicate;
 import de.prob.animator.command.RegisterFormulaCommand;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.annotations.MaxCacheSize;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
@@ -320,8 +320,8 @@ public class StateSpace implements IAnimator {
 	 * 
 	 * @param state
 	 *            for which the values are to be retrieved
-	 * @return map from {@link IEvalElement} object to {@link AbstractEvalResult}
-	 *         objects
+	 * @return map from {@link IEvalElement} object to
+	 *         {@link AbstractEvalResult} objects
 	 */
 	public Map<IEvalElement, AbstractEvalResult> valuesAt(final State state) {
 		state.explore();
@@ -702,8 +702,8 @@ public class StateSpace implements IAnimator {
 	 * @return a set containing all of the evaluated transitions
 	 */
 	public Set<Transition> evaluateTransitions(
-			final Collection<Transition> transitions) {
-		GetOpsFromIds cmd = new GetOpsFromIds(transitions);
+			final Collection<Transition> transitions, final boolean truncate) {
+		GetOpsFromIds cmd = new GetOpsFromIds(transitions, truncate);
 		execute(cmd);
 		return new LinkedHashSet<Transition>(transitions);
 	}

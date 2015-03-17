@@ -14,10 +14,11 @@ public class GetOpsFromIds extends AbstractCommand {
 	List<GetOpFromId> cmds = new ArrayList<GetOpFromId>();
 	ComposedCommand allCommands;
 
-	public GetOpsFromIds(final Collection<Transition> edges) {
+	public GetOpsFromIds(final Collection<Transition> edges,
+			final boolean truncate) {
 		for (Transition opInfo : edges) {
-			if (!opInfo.isEvaluated()) {
-				cmds.add(new GetOpFromId(opInfo));
+			if (opInfo.canBeEvaluated(truncate)) {
+				cmds.add(new GetOpFromId(opInfo, truncate));
 			}
 		}
 		List<AbstractCommand> cs = new ArrayList<AbstractCommand>(cmds);
