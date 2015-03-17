@@ -42,20 +42,23 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 * @throws EvaluationException
 	 */
 	public ClassicalB(final String code) {
-		// this.code = code;
+		this(code, FormulaExpand.truncate);
+	}
+
+	public ClassicalB(final String code, final FormulaExpand expansion) {
 		Start ast;
 		try {
 			ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
-			this.code = prettyprint(ast);
 		} catch (BException e) {
 			try {
 				ast = BParser.parse(BParser.SUBSTITUTION_PREFIX + " " + code);
-				this.code = prettyprint(ast);
 			} catch (BException f) {
 				throw new EvaluationException(f.getMessage(), f);
 			}
 		}
 		this.ast = ast;
+		this.code = prettyprint(ast);
+		this.expansion = expansion;
 	}
 
 	/**
@@ -64,7 +67,12 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 *            and saved
 	 */
 	public ClassicalB(final Start ast) {
+		this(ast, FormulaExpand.truncate);
+	}
+
+	public ClassicalB(final Start ast, final FormulaExpand expansion) {
 		this.ast = ast;
+		this.expansion = expansion;
 		code = prettyprint(ast);
 	}
 

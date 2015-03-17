@@ -44,6 +44,7 @@ public class EvaluateFormulaCommand extends EvaluationCommand {
 		evalElement.printProlog(pout);
 		pout.printAtom(evalElement.getKind().toString());
 		pout.printAtom(evalElement.getCode());
+		pout.printAtom(evalElement.expansion().name());
 		pout.closeTerm();
 
 		pout.printVariable(EVALUATE_RESULT_VARIABLE);
