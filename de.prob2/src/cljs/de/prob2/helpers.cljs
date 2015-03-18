@@ -1,6 +1,9 @@
 (ns de.prob2.helpers
+  (:require-macros [reagent.ratom :as ra])
   (:require [cognitect.transit :as transit]
-            [clojure.string]))
+            [clojure.string]
+            [re-frame.core :as rf]
+            ))
 
 (def id-store (clojure.core/atom 0))
 (defn fresh-id []
@@ -55,6 +58,9 @@
                   (assoc a e (deep-merge v v'))
                   (if (= v v') a (assoc a e v'))))) left' kmerge)))
 
+(defn subs->handler [handler hook & args]
+  (let [x (rf/subscribe hook)]
+    (ra/run! (rf/dispatch (into [handler @x] args)))))
 
 (defn decode
   "Takes a handler of 2 arguments, where the second argument is a vector of a message type and a message. The message is read through transit if the encoding has been set. Otherwise it create a ketword from the message (only used when fetching the encoding from the server). This middleware should be applied before the with-send middleware."
