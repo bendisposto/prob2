@@ -51,13 +51,18 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	 *            formula
 	 */
 	public EventB(final String code) {
-		this.code = UnicodeTranslator.toAscii(code);
-		types = Collections.emptySet();
+		this(code, Collections.<IFormulaExtension> emptySet());
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types) {
+		this(code, types, FormulaExpand.truncate);
+	}
+
+	public EventB(final String code, final Set<IFormulaExtension> types,
+			final FormulaExpand expansion) {
 		this.code = UnicodeTranslator.toAscii(code);
 		this.types = types;
+		this.expansion = expansion;
 	}
 
 	private void ensureParsed() {

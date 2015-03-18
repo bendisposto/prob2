@@ -20,6 +20,7 @@ public class RegisterFormulaCommand extends AbstractCommand {
 		pto.openTerm("eval");
 		formula.printProlog(pto);
 		pto.printAtom(formula.getKind().toString());
+		pto.printAtom(formula.expansion().name());
 		pto.closeTerm();
 
 		pto.closeTerm();

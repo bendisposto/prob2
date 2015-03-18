@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.eventb.Event;
@@ -46,8 +47,9 @@ public class Transition {
 	private final State dest;
 	private List<String> params;
 	private List<String> returnValues;
-	private String rep = null;
+	private String rep;
 	private boolean evaluated;
+	private FormulaExpand formulaExpansion;
 	private final FormalismType formalismType;
 	private String predicateString;
 
@@ -61,6 +63,7 @@ public class Transition {
 		this.src = src;
 		this.dest = dest;
 		this.evaluated = false;
+		this.rep = name;
 		formalismType = stateSpace.getModel().getFormalismType();
 	}
 
@@ -130,9 +133,6 @@ public class Transition {
 	 * @return the String representation of the operation.
 	 */
 	public String getRep() {
-		if (rep == null) {
-			rep = generateRep();
-		}
 		return rep;
 	}
 
@@ -185,27 +185,18 @@ public class Transition {
 		return predicates;
 	}
 
-	/**
-	 * The string representation of the operation is calculated based on the
-	 * name, parameters, return values, and the formalism type in question
-	 * {@link FormalismType#CSP} or {@link FormalismType#B}. If the operation is
-	 * not yet evaluated (the values for name, parameters, and return values
-	 * have not yet been retrieved), this is done via {@link #evaluate()}.
-	 * 
-	 * @return a String representation of the operation
-	 */
-	private String generateRep() {
-		evaluate();
-
+	private String createRep(final String name, final List<String> params,
+			final List<String> returnVals) {
 		if (formalismType.equals(FormalismType.CSP)) {
 			if (params.isEmpty()) {
 				return name;
 			}
-			return name + "." + Joiner.on(".").join(getParams());
+			return name + "." + Joiner.on(".").join(params);
 		}
-		String retVals = getReturnValues().isEmpty() ? "" : Joiner.on(",")
-				.join(getReturnValues()) + " <-- ";
-		return retVals + name + "(" + Joiner.on(",").join(getParams()) + ")";
+		String retVals = returnVals.isEmpty() ? "" : Joiner.on(",").join(
+				returnVals)
+				+ " <-- ";
+		return retVals + name + "(" + Joiner.on(",").join(params) + ")";
 	}
 
 	public String getPrettyRep() {
@@ -266,11 +257,26 @@ public class Transition {
 	 * @return
 	 */
 	public Transition evaluate() {
-		if (evaluated) {
+		return evaluate(FormulaExpand.truncate);
+	}
+
+	public boolean canBeEvaluated(final FormulaExpand expansion) {
+		if (!evaluated) {
+			return true;
+		}
+		if (this.formulaExpansion == FormulaExpand.truncate
+				&& expansion == FormulaExpand.expand) {
+			return true;
+		}
+		return false;
+	}
+
+	public Transition evaluate(final FormulaExpand expansion) {
+		if (canBeEvaluated(expansion)) {
+			GetOpFromId command = new GetOpFromId(this, expansion);
+			stateSpace.execute(command);
 			return this;
 		}
-		GetOpFromId command = new GetOpFromId(this);
-		stateSpace.execute(command);
 		return this;
 	}
 
@@ -280,6 +286,10 @@ public class Transition {
 	 */
 	public boolean isEvaluated() {
 		return evaluated;
+	}
+
+	public boolean isTruncated() {
+		return formulaExpansion == FormulaExpand.truncate;
 	}
 
 	/**
@@ -306,9 +316,12 @@ public class Transition {
 	 * @param returnValues
 	 *            - {@link List} of {@link String} return values
 	 */
-	void setInfo(final List<String> params, final List<String> returnValues) {
+	void setInfo(final FormulaExpand expansion, final List<String> params,
+			final List<String> returnValues) {
+		this.formulaExpansion = expansion;
 		this.params = params;
 		this.returnValues = returnValues;
+		this.rep = createRep(name, params, returnValues);
 		evaluated = true;
 	}
 

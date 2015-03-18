@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.prob.animator.command.AbstractCommand;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -19,15 +20,18 @@ public class GetOpFromId extends AbstractCommand {
 	private final String RETVALS = "RetVals";
 	private List<String> params;
 	private List<String> returnValues;
+	private final FormulaExpand expansion;
 
-	public GetOpFromId(final Transition opInfo) {
+	public GetOpFromId(final Transition opInfo, final FormulaExpand expansion) {
 		op = opInfo;
+		this.expansion = expansion;
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("get_op_from_id").printAtomOrNumber(op.getId())
-				.printVariable(PARAMS).printVariable(RETVALS).closeTerm();
+				.printAtom(expansion.name()).printVariable(PARAMS)
+				.printVariable(RETVALS).closeTerm();
 	}
 
 	@Override
@@ -51,7 +55,7 @@ public class GetOpFromId extends AbstractCommand {
 			returnValues.add(StringUtil.generateString(r.getFunctor()));
 		}
 
-		op.setInfo(params, returnValues);
+		op.setInfo(expansion, params, returnValues);
 	}
 
 	public List<String> getParams() {

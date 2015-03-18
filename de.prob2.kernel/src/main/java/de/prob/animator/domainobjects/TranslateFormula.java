@@ -55,4 +55,9 @@ public class TranslateFormula implements IEvalElement {
 	public String toString() {
 		return getCode();
 	}
+
+	@Override
+	public FormulaExpand expansion() {
+		return FormulaExpand.truncate;
+	}
 }

@@ -6,8 +6,9 @@ import com.github.krukow.clj_lang.PersistentVector
 
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.EvaluationCommand
-import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.AbstractEvalResult
+import de.prob.animator.domainobjects.FormulaExpand
+import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.representation.AbstractModel
 
@@ -193,7 +194,7 @@ public class Trace {
 		if(current.getTransition() == null) {
 			return "";
 		}
-		return "${current.getIndex()} previous transitions. Last executed transition: ${current.getTransition().getRep()}"
+		return "${current.getIndex()} previous transitions. Last executed transition: ${current.getTransition().evaluate(FormulaExpand.truncate).getRep()}"
 	}
 
 	def Trace randomAnimation(final int numOfSteps) {
@@ -318,8 +319,8 @@ public class Trace {
 		return stateSpace
 	}
 
-	def Set<Transition> getNextTransitions(boolean evaluate=false) {
-		return getCurrentState().getOutTransitions(evaluate)
+	def Set<Transition> getNextTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.truncate) {
+		return getCurrentState().getOutTransitions(evaluate, expansion)
 	}
 
 	def State getCurrentState() {
@@ -351,10 +352,10 @@ public class Trace {
 		throw new ClassCastException("Not able to convert Trace object to ${className}")
 	}
 
-	def List<Transition> getTransitionList(boolean evaluate=false) {
+	def List<Transition> getTransitionList(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.truncate) {
 		List<Transition> ops = transitionList
 		if (evaluate) {
-			stateSpace.evaluateTransitions(ops)
+			stateSpace.evaluateTransitions(ops, expansion)
 		}
 		return ops
 	}
