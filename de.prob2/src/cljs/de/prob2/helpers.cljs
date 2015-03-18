@@ -35,14 +35,25 @@
     (keyword msg)))
 
 
-(defn deep-merge
+(defn odeep-merge
   "Like merge, but merges maps recursively."
   {:added "1.7"}
   [& maps]
   (if (every? map? maps)
-    (apply merge-with deep-merge maps)
+    (apply merge-with odeep-merge maps)
     (last maps)))
 
+(defn deep-merge [left right]
+  (let [k (keys right)
+        knew (remove #(contains? left %) k)
+        kmerge (filter #(contains? left %) k)
+        left' (reduce (fn [a e] (assoc a e (get right e))) left knew)]
+    (reduce (fn [a e]
+              (let [v (get left e)
+                    v' (get right e)]
+                (if (and (map? v) (map? v'))
+                  (assoc a e (deep-merge v v'))
+                  (if (= v v') a (assoc a e v'))))) left' kmerge)))
 
 
 (defn decode
