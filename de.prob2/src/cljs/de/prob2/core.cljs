@@ -6,6 +6,7 @@
             [re-frame.core :as rf]
             [schema.core :as s]
             [de.prob2.helpers :as h]
+             [reagent.session :as session]
             [de.prob2.components.trace-selection :refer [trace-selection-view]]
             [de.prob2.components.state-inspector :refer [state-view]]
             [de.prob2.components.history :refer [history-view]]
@@ -24,8 +25,6 @@
       (logp new-state))))
 
 
-
-
 (rf/register-handler
  :initialise-db
  rf/debug
@@ -33,42 +32,60 @@
 
 (rf/register-handler :chsk/encoding h/relay)
 
-(defn home-did-mount []
-  (.addGraph js/nv (fn []
-                     (let [chart (.. js/nv -models lineChart
-                                     (margin #js {:left 100})
-                                     (useInteractiveGuideline true)
-                                     (transitionDuration 350)
-                                     (showLegend true)
-                                     (showYAxis true)
-                                     (showXAxis true))]
-                       (.. chart -xAxis 
-                           (axisLabel "x-axis") 
-                           (tickFormat (.format js/d3 ",r")))
-                       (.. chart -yAxis 
-                           (axisLabel "y-axis") 
-                           (tickFormat (.format js/d3 ",r")))
+#_(defn home-did-mount []
+    (.addGraph js/nv (fn []
+                       (let [chart (.. js/nv -models lineChart
+                                       (margin #js {:left 100})
+                                       (useInteractiveGuideline true)
+                                       (transitionDuration 350)
+                                       (showLegend true)
+                                       (showYAxis true)
+                                       (showXAxis true))]
+                         (.. chart -xAxis
+                             (axisLabel "x-axis")
+                             (tickFormat (.format js/d3 ",r")))
+                         (.. chart -yAxis
+                             (axisLabel "y-axis")
+                             (tickFormat (.format js/d3 ",r")))
 
-                       (let [my-data [{:x 1 :y 5} {:x 2 :y 3} {:x 3 :y 4} {:x 4 :y 1} {:x 5 :y 2}]]
+                         (let [my-data [{:x 1 :y 5} {:x 2 :y 3} {:x 3 :y 4} {:x 4 :y 1} {:x 5 :y 2}]]
 
-                         (.. js/d3 (select "#d3-node svg")
-                             (datum (clj->js [{:values my-data
-                                               :key "my-red-line"
-                                               :color "red"
-                                               }]))
-                             (call chart)))))))
-
-
+                           (.. js/d3 (select "#d3-node svg")
+                               (datum (clj->js [{:values my-data
+                                                 :key "my-red-line"
+                                                 :color "red"
+                                                 }]))
+                               (call chart)))))))
 
 
+(rf/register-handler
+ :hierarchy-update
+ (fn [db [_ dep-graph elem]]
+   (logp dep-graph)
+   (log elem)
+   db))
 
-(defn grx []
+
+(defn hierarchy-view []
   (r/create-class
-   {:component-did-mount home-did-mount
-    :reagent-render
-    (fn [] [:div
-           [:h3 "Hallo d3"]
-           [:div {:id "d3-node" :style {:height 150}} [:svg]]])}))
+   { :component-did-mount
+    (fn [c]
+      (let [id (session/get :focused-uuid)
+            elem (.getDOMNode c)]
+        (h/subs->handler :hierarchy-update [:hierarchy id] elem)))
+    :display-name  "hierarchy-view"
+    :reagent-render (fn [] [:div {:id "hierarchy-view"}])}))
+
+
+
+
+#_(defn grx []
+    (r/create-class
+     {:component-did-mount home-did-mount
+      :reagent-render
+      (fn [] [:div
+             [:h3 "Hallo d3"]
+             [:div {:id "d3-node" :style {:height 150}} [:svg]]])}))
 
 (defn home-page []
   [trace-selection-view])
@@ -79,7 +96,7 @@
 
 (defn animation-view []
   [:div {:id "h1"}
-   [grx]
+   [hierarchy-view]
    [history-view]
    [events-view]
    ])

@@ -85,3 +85,10 @@
     border-radius: 6px;
     color: white;
 }
+
+#hierarchy-view {
+    height: 300;
+    width: 300;
+    left: 0;
+    top: 0;
+}
