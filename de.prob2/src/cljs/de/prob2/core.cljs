@@ -6,7 +6,7 @@
             [re-frame.core :as rf]
             [schema.core :as s]
             [de.prob2.helpers :as h]
-             [reagent.session :as session]
+            [reagent.session :as session]
             [de.prob2.components.trace-selection :refer [trace-selection-view]]
             [de.prob2.components.state-inspector :refer [state-view]]
             [de.prob2.components.history :refer [history-view]]
@@ -76,8 +76,35 @@
     :display-name  "hierarchy-view"
     :reagent-render (fn [] [:div {:id "hierarchy-view"}])}))
 
+(defn title-string [kw]
+  (let [s (name kw)
+        [[f] l] (split-at 1 s)]
+   (apply str (.toUpperCase (str f)) l)))
 
+(defn mk-entry [[k v]]
+  [:li
+   [:div (title-string k)
+    [:ul
+     (map (fn [e] [:li (:label e)])
+          (remove (fn [e] (= "INITIALISATION" (:label e))) v))
+     ]]])
 
+(defn mody-component [[n c]]
+  (let [kind (if (contains? c :events) "Machine" "Context")
+        c' (into {} (remove (fn [[k v]] (empty? v)) c))
+        elems (dissoc c' :invariants :name :variant :axioms)]
+    (logp n elems)
+    [:div
+     [:div (str kind " " n)]
+     [:ul
+      (map mk-entry elems)]]))
+
+(defn mody []
+  (let [id (session/get :focused-uuid)
+        model (rf/subscribe [:model id])
+        formalism (:type @model)
+        cs (:components @model)]
+    [:div  (map mody-component cs)]))
 
 #_(defn grx []
     (r/create-class
@@ -96,6 +123,7 @@
 
 (defn animation-view []
   [:div {:id "h1"}
+   [mody]
    [hierarchy-view]
    [history-view]
    [events-view]
