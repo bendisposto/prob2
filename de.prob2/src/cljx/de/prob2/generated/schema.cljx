@@ -20,6 +20,7 @@
  
 (def B-Event-Spec
   {:name s/Str
+   :label s/Str
    :parameters [s/Str]
    :actions [s/Str]})
 

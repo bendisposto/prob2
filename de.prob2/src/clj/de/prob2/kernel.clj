@@ -59,10 +59,11 @@
   de.prob.model.representation.AbstractFormulaElement
   (transform [v _] (formula-element v))
   de.prob.model.classicalb.Operation
-  (transform [v kids] (merge kids {:name (.getName v) :return-values (.getProperty v "output") :parameters (.getProperty v "parameters")}))
+  (transform [v kids] (merge kids {:name (.getName v) :label (.getName v) :return-values (.getProperty v "output") :parameters (.getProperty v "parameters")}))
   de.prob.model.eventb.Event
   (transform [v kids] (merge (clean-up-event kids)
                              {:name (.getName v)
+                              :label (.getName v)
                               :kind (keyword (.toLowerCase (str (.getType v))))}))
   de.prob.model.representation.Action
   (transform [v _] (.getCode (.getCode v)))
