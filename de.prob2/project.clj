@@ -28,13 +28,14 @@
                  [environ "1.0.0"]
                  [com.cognitect/transit-clj "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.205"]
+                 [hiccups "0.3.0"]
                  [cljs-ajax "0.3.10"]
                  [prismatic/schema "0.4.0"]]
 
   :plugins [
             [lein-cljsbuild "1.0.4"]
             [lein-environ "1.0.0"]
-            [com.keminglabs/cljx "0.6.0"] 
+            [com.keminglabs/cljx "0.6.0"]
             [lein-asset-minifier "0.2.2"]]
 
   ;;  :ring {:handler de.prob2.handler/app
@@ -88,8 +89,8 @@
                                   [com.cemerick/piggieback "0.1.6-SNAPSHOT"]
                                   [pjstadig/humane-test-output "0.6.0"]
                                   [org.clojure/test.check "0.7.0"]
-                 [com.gfredericks/test.chuck "0.1.16"]
-                 [schema-gen "0.1.4"]]
+                                  [com.gfredericks/test.chuck "0.1.16"]
+                                  [schema-gen "0.1.4"]]
                    :resource-paths ["kernel/build/libs/*.jar"]
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.2.5-SNAPSHOT"]
