@@ -38,10 +38,27 @@
 (rf/register-handler
  :hierarchy-update
  (fn [db [_ dep-graph elem]]
-   (logp dep-graph)
-   (log elem)
-   db))
-
+   (let [nodes (into #{} (concat (map :from dep-graph) (map :to dep-graph)))
+         vnodes (map (fn [e] {:data {:id e :label (str "<h1>" e "</h1>")}}) nodes)
+         vedges (map (fn [{:keys [from to type]}] {:data {:source from :target to :label (name type)}}) dep-graph)
+         config {:container elem
+                 :elements {:nodes vnodes
+                            :edges vedges}
+                 :renderer {:name "css"}
+                 :style [{:selector "node"
+                          :css {:shape "rectangle"
+                                :content "data(label)"}}
+                         {:selector "edge"
+                          :css {:content "data(label)"
+                                :target-arrow-shape "triangle"
+                                :line-color  "black"
+                                :target-arrow-color "black"
+                                :width "2px";
+                                }}]}]
+     (js/cytoscape (clj->js config))
+     (log (clj->js config))
+     (logp dep-graph)
+     db)))
 
 (defn hierarchy-view [id]
   (r/create-class
@@ -65,8 +82,8 @@
 (defn animation-view []
   (let [id (session/get :focused-uuid)]
     [:div {:id "h1"}
-  ;  [mody id]
-  ;   [hierarchy-view id]
+                                        ;  [mody id]
+     [hierarchy-view id]
      [history-view id]
      [events-view id]
      ]))
