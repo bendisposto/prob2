@@ -9,9 +9,8 @@
 (defn state-row [name current-value previous-value]
   [:tr [:td name] [:td current-value] [:td previous-value]])
 
-(defn state-view []
-  (let [id (session/get :focused-uuid)
-        traces (rf/subscribe [:traces])
+(defn state-view [id]
+  (let [traces (rf/subscribe [:traces])
         {:keys [trace-id current previous transition]} (get @traces id)
         names (map first (:values current))
         cvals (map second (:values current))

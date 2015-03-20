@@ -14,11 +14,10 @@
         :on-click #(rf/dispatch [:events/execute {:state-id state :trace-id trace-id :event-id id}])}
     (h/pp-transition item)]])
 
-(defn events-view []
+(defn events-view [id]
   (let [filtered? (r/atom true)]
     (fn []
-      (let [id (session/get :focused-uuid)
-            trace (rf/subscribe [:trace id])
+      (let [trace (rf/subscribe [:trace id])
             {{sid :state} :current-state ts :out-transitions} @trace
             ]
         [:div {:class "events-view"}

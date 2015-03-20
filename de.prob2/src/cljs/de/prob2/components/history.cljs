@@ -15,11 +15,10 @@
          #(rf/dispatch [:history/goto {:trace-id trace-id :index index}])}
     (h/pp-transition item)]])
 
-(defn history-view []
+(defn history-view [id]
   (let [sort-order (r/atom identity)]
     (fn []
-      (let [id (session/get :focused-uuid)
-            t (rf/subscribe [:trace id])
+      (let [t (rf/subscribe [:trace id])
             h (cons {:name "-- uninitialized --"
                      :return-values []
                      :parameters []
