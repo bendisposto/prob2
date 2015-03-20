@@ -50,7 +50,7 @@
  (fn [db [_ trace-id]]
    (let [model-id (reaction (get-in @db [:traces trace-id :model]))
          model (reaction (get-in @db [:models @model-id]))]
-     (reaction (:dependency-graph @model)))))
+     (reaction  [(:dependency-graph @model) (:components @model)]))))
 
 
 ;; Watch out! If you use this subscription you tie your implementation

@@ -30,6 +30,10 @@
     (session/put! :current-page #'core/animation-view)
     (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
 
+  (secretary/defroute "/hierarchy/:uuid" [uuid]
+    (session/put! :current-page #'core/machine-hierarchy)
+    (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
+
   #_(secretary/defroute "/stateview" []
       (session/put! :current-page #'core/state-view)))
 

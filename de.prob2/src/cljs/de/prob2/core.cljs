@@ -5,6 +5,7 @@
             [de.prob2.generated.schema :as schema]
             [de.prob2.client :as client]
             [re-frame.core :as rf]
+            [hiccups.runtime :as hiccupsrt]
             [schema.core :as s]
             [de.prob2.helpers :as h]
             [reagent.session :as session]
@@ -35,29 +36,57 @@
 (rf/register-handler :chsk/encoding h/relay)
 
 
+(defn title-string [kw]
+  (let [s (name kw)
+        [[f] l] (split-at 1 s)]
+    (apply str (.toUpperCase (str f)) l)))
+
+(defn render-line [[k c]]
+  (let [e (map :label c)]
+    [[:tr {:style "background-color: lightblue;"} [:td (title-string k)]]
+     [:tr [:td (clojure.string/join " " e)]]]))
+
+(defn render-box [n c]
+  (let [kind (if (contains? c :events) "Machine" "Context")
+        c' (into {} (remove (fn [[k v]] (empty? v)) c))
+        elems (dissoc c' :invariants :name :variant :axioms)]
+    (hic/html
+     `[:div {:style "background-color: white;width:100px;top:-40px;right:-50px;position:relative;"}
+       [:table {:style "width:100px;" :border 1}
+        [:tr [:td ~(str kind " " n)]]
+        ~@(mapcat render-line elems)
+        ]])))
+
+
 (rf/register-handler
  :hierarchy-update
- (fn [db [_ dep-graph elem]]
-   (let [nodes (into #{} (concat (map :from dep-graph) (map :to dep-graph)))
-         vnodes (map (fn [e] {:data {:id e :label (str "<h1>" e "</h1>")}}) nodes)
-         vedges (map (fn [{:keys [from to type]}] {:data {:source from :target to :label (name type)}}) dep-graph)
+ (fn [db [_ [dep-graph components] elem]]
+   (let [nodes (map (fn [e] {:data {:id e :label (render-box e (get components e))}}) (keys  components))
+         edges (map (fn [{:keys [from to type]}] {:data {:source from :target to :label (name type)}}) dep-graph)
          config {:container elem
-                 :elements {:nodes vnodes
-                            :edges vedges}
+                 :elements {:nodes nodes
+                            :edges edges}
                  :renderer {:name "css"}
+                 :layout {:name "breadthfirst"}
                  :style [{:selector "node"
                           :css {:shape "rectangle"
+                                :width "100px"
+                                :text-valign "center"
+                                :text-halign "center"
+                                :height "100px"
+                                :background-color "white"
                                 :content "data(label)"}}
                          {:selector "edge"
                           :css {:content "data(label)"
                                 :target-arrow-shape "triangle"
-                                :line-color  "black"
-                                :target-arrow-color "black"
                                 :width "2px";
+                                :text-outline-color "white"
+                                :text-outline-opacity 1
+                                :text-outline-width 3
+                                :line-color "black"
                                 }}]}]
      (js/cytoscape (clj->js config))
      (log (clj->js config))
-     (logp dep-graph)
      db)))
 
 (defn hierarchy-view [id]
@@ -78,15 +107,19 @@
   [:div [:h2 "About de.prob2"]
    [:div [:a {:href "#/"} "go to the home page"]]])
 
-
 (defn animation-view []
   (let [id (session/get :focused-uuid)]
     [:div {:id "h1"}
                                         ;  [mody id]
-     [hierarchy-view id]
+
      [history-view id]
      [events-view id]
      ]))
+
+(defn machine-hierarchy []
+  (let [id (session/get :focused-uuid)]
+    [hierarchy-view id]))
+
 
 (defn disconnected-page []
   [:div {:class "alert alert-danger"}
