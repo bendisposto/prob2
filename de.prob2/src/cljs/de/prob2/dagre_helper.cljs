@@ -1,19 +1,29 @@
 (ns de.prob2.dagre-helper)
 
-(defn create-graph []
-  (let [graph (js/dagre.graphlib.Graph.)]
-    (.setGraph graph #js{})
-    graph))
-
 (defn add-node
-  ([g name] (add-node g name {:label name :width 100 :height 50}))
-  ([g name traits]
-     (do (.setNode g name (clj->js traits)) g)))
+ ([g node]
+  (do (.setNode g
+                (:name node)
+                (clj->js (dissoc node :name))) g)))
 
 (defn add-edge
-  ([g from to] (add-edge g from to {}))
-  ([g from to traits]
-     (do (.setEdge g from to (clj->js traits)) g)))
+  ([g edge]
+   (do (.setEdge g
+                 (:from edge)
+                 (:to edge)
+                 (clj->js (dissoc edge :from :to))) g)))
+
+(defn create-graph
+  ([{:keys [nodes edges]}]
+   (let [g0 (create-graph)
+         g1 (reduce add-node g0 nodes)]
+     (reduce add-edge g1 edges)))
+
+  ([]
+   (let [graph (js/dagre.graphlib.Graph.)]
+     (.setGraph graph #js{})
+     graph)))
+
 
 (defn render [g] (do (.layout js/dagre g) g))
 
@@ -30,7 +40,7 @@
                    :x (node "x")
                    :y (node "y")
                    :style {:fill :white :stroke :black}}]
-        [:text {:x (node "x") :y (node "y") :dx 30 :dy 25} (node "label") 
+        [:text {:x (node "x") :y (node "y") :dx 30 :dy 25} (node "label")
          ]]))
    (for [e (edges g)]
      (let [edge (js->clj e)
@@ -44,6 +54,6 @@
 
 
 (defn example []
-  (let [g (-> (create-graph) (add-node "me") (add-node "you")
-              (add-edge "me" "you" {:label "us"}) (render))]
+  (let [g (-> (create-graph) (add-node {:name "me"}) (add-node (:name "you"))
+              (add-edge {:from "me" :to "you" :label "us"}) (render))]
     (toSvg g)))
