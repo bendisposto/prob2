@@ -5,7 +5,7 @@
             [de.prob2.generated.schema :as schema]
             [de.prob2.client :as client]
             [re-frame.core :as rf]
-            [hiccups.runtime :as hiccupsrt]
+            
             [schema.core :as s]
             [de.prob2.helpers :as h]
             [reagent.session :as session]
@@ -14,7 +14,7 @@
             [de.prob2.components.history :refer [history-view]]
             [de.prob2.components.hierarchy :refer [hierarchy-view]]
             [de.prob2.components.events :refer [events-view]]
-            [de.prob2.dagre-helper]))
+            [de.prob2.components.dot-view :refer [dot-view]]))
 
 ;; -------------------------
 ;; Views
@@ -47,6 +47,7 @@
 (defn animation-view []
   (let [id (session/get :focused-uuid)]
     [:div {:id "h1"}
+     [dot-view "digraph simple { A->B }"]
      [history-view id]
      [events-view id]
      ]))
