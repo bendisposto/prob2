@@ -24,6 +24,10 @@
   (get {"$initialise_machine" "INITIALISATION"
         "$setup_constants" "SETUP CONSTANTS"} name name))
 
+(defn title-case [kw]
+  (let [s (name kw)
+        [[f] l] (split-at 1 s)]
+    (apply str (.toUpperCase (str f)) l)))
 
 (defn pp-transition [{:keys [name parameters return-values]}]
   (let [ppp (if (seq parameters) (str "(" (clojure.string/join "," parameters) ")") "")
