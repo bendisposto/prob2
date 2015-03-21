@@ -1,6 +1,7 @@
 (ns de.prob2.components.hierarchy
   (:require-macros [hiccups.core :as hic])
-  (:require [reagent.core :as r]
+  (:require [hiccups.runtime :as hiccupsrt]
+            [reagent.core :as r]
             [taoensso.encore :as enc  :refer (logf log logp)]
             [re-frame.core :as rf]
             [de.prob2.helpers :as h]))

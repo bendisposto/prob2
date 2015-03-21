@@ -13,7 +13,8 @@
             [de.prob2.components.state-inspector :refer [state-view]]
             [de.prob2.components.history :refer [history-view]]
             [de.prob2.components.hierarchy :refer [hierarchy-view]]
-            [de.prob2.components.events :refer [events-view]]))
+            [de.prob2.components.events :refer [events-view]]
+            [de.prob2.dagre-helper]))
 
 ;; -------------------------
 ;; Views
