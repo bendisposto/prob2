@@ -1,4 +1,5 @@
-(ns de.prob2.dagre-helper)
+(ns de.prob2.dagre-helper
+  (:require [taoensso.encore :as enc  :refer (logf log logp)]))
 
 (defn add-node
  ([g node]
@@ -29,31 +30,32 @@
 
 (defn nodes [g] (map #(.node g %) (.nodes g)))
 
-(defn edges [g] (map #(.edge g %) (.edges g)))
-
-(defn toSvg [g]
+(defn edges [g] (map #(.edge g %) (.edges g))) 
+ 
+(defn to-svg [g]
   [:svg {:width 500 :height 500}
    (for [n (nodes g)]
-     (let [node (js->clj n)]
-       [:g [:rect {:width (node "width")
-                   :height (node "height")
-                   :x (node "x")
-                   :y (node "y")
-                   :style {:fill :white :stroke :black}}]
-        [:text {:x (node "x") :y (node "y") :dx 30 :dy 25} (node "label")
-         ]]))
+     (do  (log "n" n)
+          (let [node (js->clj n)]
+            [:g [:rect {:width (or (node "width") 100)
+                        :height (or (node "height") 100)
+                        :x (node "x")
+                        :y (node "y")
+                        :style {:fill :white :stroke :black}}]
+             [:text {:x (node "x") :y (node "y") :dx 30 :dy 25} (or (node "label") "")]])))
    (for [e (edges g)]
-     (let [edge (js->clj e)
-           start (first (edge "points"))
-           middle (second (edge "points"))
-           end   (last  (edge "points"))]
-       [:g [:line {:x1 (+ 50 (start "x")) :y1 (+ 25 (start "y"))
-                   :x2 (+ 50 (end   "x")) :y2 (+ 25 (end   "y"))
-                   :style {:stroke :black}}]
-        [:text {:x (middle "x") :y (middle "y") :dx 55 :dy 25} (edge "label")]]))])
+     (do (log "e"  e)
+       (let [edge (js->clj e)
+             start (first (edge "points"))
+             middle (second (edge "points"))
+             end   (last  (edge "points"))]
+         [:g [:line {:x1 (+ 50 (start "x")) :y1 (+ 25 (start "y"))
+                     :x2 (+ 50 (end   "x")) :y2 (+ 25 (end   "y"))
+                     :style {:stroke :black}}]
+          [:text {:x (middle "x") :y (middle "y") :dx 55 :dy 25} (or (edge "label") "")]])))])
 
 
 (defn example []
   (let [g (-> (create-graph) (add-node {:name "me"}) (add-node (:name "you"))
               (add-edge {:from "me" :to "you" :label "us"}) (render))]
-    (toSvg g)))
+    (to-svg g)))
