@@ -262,6 +262,17 @@
     (doseq [t traces] (.removeTrace animations t))
     (doseq [a animators] (.kill a))))
 
+(defmethod dispatch-kernel
+  :call [{:keys [sente animations]}
+         request]
+  (let [client (get-in request [:ring-req :session :uid])
+        data (:?data request)
+        {:keys [caller-id method args]} data
+        result :fake-response]
+    (snt/send!
+     sente client
+     ::response
+     {:result result :caller-id caller-id})))
 
 (defrecord ProB [injector listener sente animations]
   component/Lifecycle

@@ -1,11 +1,11 @@
 (ns de.prob2.core
- 
-  (:require [reagent.core :as r]
+ (:require-macros [cljs.core.async.macros :refer [go]])
+ (:require [reagent.core :as r]
+            [cljs.core.async :as async]
             [taoensso.encore :as enc  :refer (logf log logp)]
             [de.prob2.generated.schema :as schema]
             [de.prob2.client :as client]
             [re-frame.core :as rf]
-            
             [schema.core :as s]
             [de.prob2.helpers :as h]
             [reagent.session :as session]
@@ -36,7 +36,6 @@
 
 (rf/register-handler :chsk/encoding h/relay)
 
-
 (defn home-page []
   [trace-selection-view])
 
@@ -46,11 +45,17 @@
 
 (defn animation-view []
   (let [id (session/get :focused-uuid)]
+    (go (let [c (async/chan)]
+          (rf/dispatch [:prob2/call c "ololo" 42 id])
+          (println :muha (async/<! c))))
+    (println :haha)
+    (rf/dispatch [:prob2/call (fn [e] (println :ding e)) "trololo" id 7])
     [:div {:id "h1"}
-     [dot-view "digraph simple { A->B }"]
+     #_[dot-view "digraph simple { A->B }"]
      [history-view id]
      [events-view id]
      ]))
+
 
 (defn machine-hierarchy []
   (let [id (session/get :focused-uuid)]

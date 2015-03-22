@@ -12,10 +12,15 @@
 
 (defn get-uid [a] (get-in a [:ring-req :session :uid]))
 
+(defn reply [send-fn! req msg]
+  (let [c (get-uid req)] (send-fn! c msg)))
+
+
 (defmulti dispatch-ws extract-action)
 (defmethod dispatch-ws :ws-ping [_ _])
 (defmethod dispatch-ws :encoding  [{:keys [send-fn! encoding]} x]
-  (let [c (get-uid x)] (send-fn! c [:sente/encoding encoding])))
+  (reply send-fn! x  [:sente/encoding encoding]))
+
 
 
 (defmethod dispatch-ws :default [_ a] (println (get-in a [:ring-req :session :uid]) (extract-action a)))

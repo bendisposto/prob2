@@ -1,8 +1,15 @@
 (ns de.prob2.client
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [de.prob2.helpers :as h]
+            [cljs.core.async :as async]
+            [cljs.core.async.impl.channels :refer [ManyToManyChannel]]
             [taoensso.sente  :as sente :refer (cb-success?)]
             [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
             [taoensso.encore :as enc  :refer (logf log logp)]))
+
+
+(def callback-id (atom 0))
+(defn fresh-id [] (swap! callback-id inc))
 
 
 (defn init-websocket []
@@ -21,7 +28,7 @@
 
 
 (defn reset-ui-state [ws]
-   {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil})
+  {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil})
 
 (defn default-ui-state []
   (reset-ui-state (init-websocket)))
@@ -42,13 +49,42 @@
  :connection-status
  (comp  rf/debug)
  (fn [{ws :websocket :as db} [_ connected?]]
-   (if connected? 
+   (if connected?
      (assoc db :connected? connected?)
      (reset-ui-state ws))))
-
 
 (register-handler
  :de.prob2.kernel/ui-state
  (comp  h/decode)
  (fn [db [_ deltas]]
    (patch db deltas)))
+
+(register-handler
+ :sente/reply
+ (fn [db [_ & x]]
+   (logp x)
+   db))
+
+(rf/register-handler
+ :prob2/call
+ (fn [{{send! :send!} :websocket :as db}
+     [t continuation method & args]]
+   (let [caller-id (fresh-id)
+         db' (assoc-in db
+                       [:callbacks caller-id]
+                       continuation)]
+     (send! [t {:method method :args args :caller-id caller-id}])
+     db')))
+
+
+(rf/register-handler
+ :de.prob2.kernel/response
+ h/decode
+ (fn [db [_ {:keys [caller-id result] :as resp}]]
+   (let [callback (get-in db [:callbacks caller-id])
+         db' (h/dissoc-in db [:callbacks caller-id])]
+     (cond
+       (fn? callback) (callback result)
+       (instance? ManyToManyChannel callback) (go (async/>! callback result) (async/close! callback))
+       :otherwise (logp "Unknown callback type " (type callback) result))
+     db')))
