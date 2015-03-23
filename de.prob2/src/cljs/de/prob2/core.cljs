@@ -47,10 +47,6 @@
 (defn animation-view []
 
   (let [id (session/get :focused-uuid)]
-    (remote-let [res (xxx 1 2 3)]
-                (println :received res))
-    (println :continued)
-                                        ;  (rf/dispatch [:prob2/call (fn [e] (println :ding e)) "trololo" id 7])
     [:div {:id "h1"}
      #_[dot-view "digraph simple { A->B }"]
      [history-view id]
