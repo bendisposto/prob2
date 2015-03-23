@@ -255,7 +255,9 @@
      ::ui-state
      packet)))
 
-(defmethod dispatch-kernel :kill! [{:keys [animations]} a]
+(defmethod dispatch-kernel
+  :kill!
+  [{:keys [animations]} a]
   (let [trace-ids (get-in a [:?data :trace-ids])
         traces (mapv #(.getTrace animations %) trace-ids)
         animators (into #{} (mapv #(.getStateSpace %) traces))]
@@ -263,12 +265,12 @@
     (doseq [a animators] (.kill a))))
 
 (defmethod dispatch-kernel
-  :call [{:keys [sente animations]}
-         request]
+  :call
+  [{:keys [sente animations]} request]
   (let [client (get-in request [:ring-req :session :uid])
         data (:?data request)
-        {:keys [caller-id method args]} data
-        result :fake-response]
+        {:keys [caller-id command args]} data
+        result (str "response for " command " with arguments " args)]
     (snt/send!
      sente client
      ::response
