@@ -3,7 +3,7 @@
   (:require [cognitect.transit :as transit]
             [clojure.string]
             [re-frame.core :as rf]
-            ))
+            [taoensso.encore :as enc  :refer (logf log logp)]))
 
 (def id-store (clojure.core/atom 0))
 (defn fresh-id []
