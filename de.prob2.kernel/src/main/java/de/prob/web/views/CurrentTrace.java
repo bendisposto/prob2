@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.annotations.OneToOne;
 import de.prob.annotations.PublicSession;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
@@ -21,6 +22,7 @@ import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
 @PublicSession
+@OneToOne
 public class CurrentTrace extends AbstractAnimationBasedView {
 
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);

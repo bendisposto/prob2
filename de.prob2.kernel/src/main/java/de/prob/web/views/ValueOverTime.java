@@ -16,16 +16,18 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.AbstractEvalResult;
+import de.prob.annotations.OneToOne;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
+@OneToOne
 public class ValueOverTime extends AbstractAnimationBasedView {
 
 	private class FormulaElement {

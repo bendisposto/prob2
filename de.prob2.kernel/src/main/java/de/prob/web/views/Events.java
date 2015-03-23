@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.prob.animator.domainobjects.StateError;
+import de.prob.annotations.OneToOne;
 import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventParameter;
@@ -36,6 +37,7 @@ import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
 @PublicSession
+@OneToOne
 public class Events extends AbstractAnimationBasedView {
 
 	Logger logger = LoggerFactory.getLogger(Events.class);
