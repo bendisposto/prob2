@@ -1,14 +1,15 @@
 (ns de.prob2.core
- (:require-macros [cljs.core.async.macros :refer [go]])
- (:require [reagent.core :as r]
-            [cljs.core.async :as async]
-            [taoensso.encore :as enc  :refer (logf log logp)]
+  (:require-macros [de.prob2.macros :refer [remote-let]]
+                   [cljs.core.async.macros :refer [go]])
+  (:require [cljs.core.async :as async]
+            [reagent.core :as r]
             [de.prob2.generated.schema :as schema]
             [de.prob2.client :as client]
             [re-frame.core :as rf]
             [schema.core :as s]
             [de.prob2.helpers :as h]
             [reagent.session :as session]
+            [taoensso.sente  :as sente :refer (cb-success?)]
             [de.prob2.components.trace-selection :refer [trace-selection-view]]
             [de.prob2.components.state-inspector :refer [state-view]]
             [de.prob2.components.history :refer [history-view]]
@@ -44,12 +45,12 @@
    [:div [:a {:href "#/"} "go to the home page"]]])
 
 (defn animation-view []
+
   (let [id (session/get :focused-uuid)]
-    (go (let [c (async/chan)]
-          (rf/dispatch [:prob2/call c "ololo" 42 id])
-          (println :muha (async/<! c))))
-    (println :haha)
-    (rf/dispatch [:prob2/call (fn [e] (println :ding e)) "trololo" id 7])
+    (remote-let [res (xxx 1 2 3)]
+                (println :received res))
+    (println :continued)
+                                        ;  (rf/dispatch [:prob2/call (fn [e] (println :ding e)) "trololo" id 7])
     [:div {:id "h1"}
      #_[dot-view "digraph simple { A->B }"]
      [history-view id]
