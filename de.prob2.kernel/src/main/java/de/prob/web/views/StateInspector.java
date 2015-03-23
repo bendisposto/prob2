@@ -13,12 +13,13 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import com.google.inject.Inject;
 
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.EnumerationWarning;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationErrorResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.IdentifierNotInitialised;
+import de.prob.annotations.OneToOne;
 import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.representation.AbstractElement;
@@ -37,6 +38,7 @@ import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
 @PublicSession
+@OneToOne
 public class StateInspector extends AbstractAnimationBasedView {
 
 	List<IEvalElement> formulasForEvaluating = new ArrayList<IEvalElement>();
