@@ -40,7 +40,7 @@ class AnimationSelectorTest extends Specification {
 	def "It is possible to register a listener"() {
 		expect:
 		selector.traceListeners.size() == 1
-		selector.traceListeners.get(0).get() == listener
+		selector.traceListeners.get(0) == listener
 	}
 
 	def "It is possible to notify the listener"() {
