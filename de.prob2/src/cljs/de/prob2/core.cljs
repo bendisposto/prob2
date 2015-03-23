@@ -7,6 +7,7 @@
             [de.prob2.client :as client]
             [re-frame.core :as rf]
             [schema.core :as s]
+            [taoensso.sente  :as sente :refer (cb-success?)]
             [de.prob2.helpers :as h]
             [reagent.session :as session]
             [taoensso.sente  :as sente :refer (cb-success?)]
