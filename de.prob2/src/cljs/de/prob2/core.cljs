@@ -7,10 +7,11 @@
             [de.prob2.client :as client]
             [re-frame.core :as rf]
             [schema.core :as s]
-            [taoensso.sente  :as sente :refer (cb-success?)]
+             [taoensso.encore :as enc  :refer (logf log logp)]
+
             [de.prob2.helpers :as h]
             [reagent.session :as session]
-            [taoensso.sente  :as sente :refer (cb-success?)]
+
             [de.prob2.components.trace-selection :refer [trace-selection-view]]
             [de.prob2.components.state-inspector :refer [state-view]]
             [de.prob2.components.history :refer [history-view]]
