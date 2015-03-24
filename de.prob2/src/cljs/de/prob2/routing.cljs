@@ -52,6 +52,16 @@
 ;; Components
 
 
+(defn preloader-waiting []
+  [:div {:id "disconnected-screen"}
+   [:h1 {:id "disconnected-msg"} "Waiting for connection"]
+   [:img {:id "disconnected-img" :src "/img/disconnected.svg"}]])
+
+(defn preloader-initializing []
+  [:h1 "Initialising ..."])
+
+
+
 (defn current-page []
   [:div [(session/get :current-page)]])
 
@@ -60,10 +70,10 @@
         ready?  (rf/subscribe [:encoding-set?])
         connected? (rf/subscribe [:connected?])]
     (fn []
-      (if-not @connected? [:h1 "Waiting for connection"]
+      (if-not @connected? (preloader-waiting)
               (do (when (and @init? (not @ready?)) (rf/dispatch [:chsk/encoding nil]))
                   (if-not @ready?
-                    [:h1 "Initialising ..."]
+                    (preloader-initializing)
                     [current-page]))))))
 
 (defn init! []

@@ -93,3 +93,18 @@
     left: 0;
     top: 0;
 }
+
+#disconnected-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70%;
+    height: 70%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.4;
+}
+
+#disconnected-msg {
+    text-align: center;
+}
