@@ -36,15 +36,17 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 			"import de.prob.animator.command.*;",
 			"import de.prob.visualization.*", "import de.prob.bmotion.*" };
 	private final TestRunner tests;
+	private UiFunctionRegistry functionRegistry;
 
 	@Inject
 	public ScriptEngineProvider(final Api api,
 			final AnimationSelector animations, final Downloader downloader,
-			final TestRunner tests) {
+			final TestRunner tests, UiFunctionRegistry functionRegistry) {
 		this.api = api;
 		this.animations = animations;
 		this.downloader = downloader;
 		this.tests = tests;
+		this.functionRegistry = functionRegistry;
 		manager = new ScriptEngineManager(this.getClass().getClassLoader());
 		tests.setExecutor(get());
 	}
@@ -56,6 +58,7 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 		bindings.put("api", api);
 		bindings.put("animations", animations);
 		bindings.put("downloader", downloader);
+		bindings.put("ui_functions", functionRegistry);
 		bindings.put("tests", tests);
 		bindings.put("engine", engine);
 		URL url = Resources.getResource("initscript");

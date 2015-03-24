@@ -3,7 +3,7 @@
             [de.prob2.sente :as snt]
             [clojure.reflect :as refl])
   (:import de.prob.Main
-           (de.prob.statespace AnimationSelector Trace ITraceChangesListener StateSpace)))
+           (de.prob.statespace  Trace ITraceChangesListener StateSpace )))
 
 
 (defn kebap-case
@@ -266,17 +266,17 @@
 
 (defmethod dispatch-kernel
   :call
-  [{:keys [sente animations]} request]
+  [{:keys [sente animations ui-functions]} request]
   (let [client (get-in request [:ring-req :session :uid])
         data (:?data request)
         {:keys [caller-id command args]} data
-        result (str "response for " command " with arguments " args)]
+        result (.call ui-functions command args)]
     (snt/send!
      sente client
      ::response
      {:result result :caller-id caller-id})))
 
-(defrecord ProB [injector listener sente animations]
+(defrecord ProB [injector listener sente animations ui-functions]
   component/Lifecycle
   (start [this]
     (if injector
@@ -286,9 +286,11 @@
                 _ (println " -> Got the injector")
                 animations (.getInstance injector de.prob.statespace.Animations)
                 _ (println " -> got Animations object")
+                ui-functions (.getInstance injector de.prob.scripting.UiFunctionRegistry)
+                _ (println " -> got Ui Function registry")
                 listener (install-handlers sente animations)
                 _ (println " -> Installed Listeners")
-                this' (assoc this :injector injector :listener listener :animations animations)]
+                this' (assoc this :injector injector :listener listener :animations animations :ui-functions ui-functions)]
             (defmethod snt/handle-updates :prob2 [_ a] (dispatch-kernel this' a))
             this'))))
   (stop [{:keys [animations listener] :as this}]
@@ -303,7 +305,7 @@
                          (.kill a)))
                      (println " * Deregistering Listener")
                      (.deregisterAnimationChangeListener animations listener)
-                     (dissoc this :injector :listener :animations :sente))
+                     (dissoc this :injector :listener :animations :ui-functions :sente))
         this)))
 
 (defn prob []
