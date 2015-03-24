@@ -10,6 +10,7 @@
             [re-frame.core :as rf]
             [de.prob2.jsapi]
             [de.prob2.subs]
+            [de.prob2.components.logo :refer [prob-logo]]
             [de.prob2.core :as core])
   (:import goog.History))
 
@@ -18,7 +19,7 @@
 
 (defn mk-routes []
 
-  (secretary/set-config! :prefix "#")  
+  (secretary/set-config! :prefix "#")
 
   (secretary/defroute "/" []
     (session/put! :current-page #'core/home-page))
@@ -58,7 +59,10 @@
    [:img {:id "disconnected-img" :src "/img/disconnected.svg"}]])
 
 (defn preloader-initializing []
-  [:h1 "Initialising ..."])
+  [:div
+   [:h1 "Initialising ..."]
+    [prob-logo]
+])
 
 
 

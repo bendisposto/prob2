@@ -7,7 +7,7 @@
             [de.prob2.client :as client]
             [re-frame.core :as rf]
             [schema.core :as s]
-             [taoensso.encore :as enc  :refer (logf log logp)]
+            [taoensso.encore :as enc  :refer (logf log logp)]
 
             [de.prob2.helpers :as h]
             [reagent.session :as session]
