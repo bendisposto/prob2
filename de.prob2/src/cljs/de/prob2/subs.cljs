@@ -70,3 +70,7 @@
    (reaction (mapv (partial get-in @db) path-specs))))
 
 
+(register-sub
+ :constantly
+ (fn [_ [_ v]]
+   (reaction v)))
