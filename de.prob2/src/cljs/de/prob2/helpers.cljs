@@ -96,3 +96,7 @@
 (defn tc [g] (let [e (:edges g)
                    ne (fixedpoint tc-step e =)]
                {:nodes (:nodes g) :edges ne}))
+
+
+(defn remote-call [callback command & args]
+  (rf/dispatch (into [:prob2/call callback identity command] args)))
