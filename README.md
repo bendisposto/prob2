@@ -9,7 +9,7 @@ The project is intended for internal usage, do not rely on any of the features o
 The source code of the current ProB release is located at http://github.com/bendisposto/prob
 
 # Bugs
-Please report bugs and feature requests at http://jira.cobra.cs.uni-duesseldorf.de/
+Please report bugs and feature requests at https://probjira.atlassian.net
 
 # Setting up a development environment
 
