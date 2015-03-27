@@ -93,13 +93,19 @@ class CSP extends AbstractEvalElement {
 		executeCmd(process, pout)
 
 	}
+	
+	private boolean executeCmd(Process process) {
+		process.waitFor()
+		return	process.exitValue() == 0;
+	}
 
 	private void executeCmd(Process process, IPrologTermOutput pout) {
-		process.waitFor()
-		if (process.exitValue() != 0) {
+		if (executeCmd(process)) {
+			pout.printString(process.getText());
+		}
+		else  {
 			throw new EvaluationException("Error parsing CSP "+process.err.text);
 		}
-		pout.printString(process.getText());
 	}
 
 	/**

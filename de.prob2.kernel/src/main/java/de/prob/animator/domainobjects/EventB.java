@@ -65,7 +65,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		this.expansion = expansion;
 	}
 
-	private void ensureParsed() {
+	public void ensureParsed() {
 		final String unicode = UnicodeTranslator.toUnicode(code);
 		kind = PREDICATE.toString();
 		IParseResult parseResult = FormulaFactory.getInstance(types)

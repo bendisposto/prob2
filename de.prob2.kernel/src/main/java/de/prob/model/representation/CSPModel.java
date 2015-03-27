@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.animator.domainobjects.CSP;
+import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
@@ -56,6 +57,18 @@ public class CSPModel extends AbstractModel {
 	@Override
 	public FormalismType getFormalismType() {
 		return FormalismType.CSP;
+	}
+
+	@Override
+	public boolean checkSyntax(String formula) {
+		try {
+			CSP element = (CSP) parseFormula(formula);
+			element.printProlog(null);
+			;
+			return true;
+		} catch (EvaluationException e) {
+			return false;
+		}
 	}
 
 }

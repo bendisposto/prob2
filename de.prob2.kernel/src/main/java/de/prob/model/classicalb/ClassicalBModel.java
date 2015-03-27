@@ -102,4 +102,14 @@ public class ClassicalBModel extends AbstractModel {
 	public FormalismType getFormalismType() {
 		return FormalismType.B;
 	}
+
+	@Override
+	public boolean checkSyntax(String formula) {
+		try {
+			parseFormula(formula);
+			return true;
+		} catch (EvaluationException e) {
+			return false;
+		}
+	}
 }
