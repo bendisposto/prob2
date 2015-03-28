@@ -109,6 +109,13 @@
     text-align: center;
 }
 
+.formula-ok {
+}
+
+.formula-error {
+    background-color: red;
+}
+
 /* entire container, keeps perspective */
 .flip-container {
 	  perspective: 1000;
