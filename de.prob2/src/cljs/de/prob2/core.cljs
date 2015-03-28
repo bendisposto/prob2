@@ -17,6 +17,7 @@
             [de.prob2.components.history :refer [history-view]]
             [de.prob2.components.hierarchy :refer [hierarchy-view]]
             [de.prob2.components.events :refer [events-view]]
+            [de.prob2.components.formulabox :refer [formulabox]]
             [de.prob2.components.dot-view :refer [dot-view]]))
 
 ;; -------------------------
@@ -47,10 +48,10 @@
    [:div [:a {:href "#/"} "go to the home page"]]])
 
 (defn animation-view []
-
   (let [id (session/get :focused-uuid)]
     [:div {:id "h1"}
      #_[dot-view "digraph simple { A->B }"]
+     [formulabox id]
      [history-view id]
      [events-view id]
      ]))
