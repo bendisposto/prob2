@@ -52,6 +52,7 @@
     [:div {:id "h1"}
      #_[dot-view "digraph simple { A->B }"]
      [formulabox id]
+     [formulabox id "zuck"[:label {:class "control-label" :for "zuck"} "Input:" ] nil]
      [history-view id]
      [events-view id]
      ]))
