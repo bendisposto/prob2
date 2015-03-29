@@ -6,6 +6,14 @@
             [taoensso.encore :as enc  :refer (logf log logp)]))
 
 
+(defn parse [trace-id formula ratom]
+  (h/remote-call
+   (fn [res]
+     (let [cls ({true "formula-ok" false "has-error"} res)]
+       (swap! ratom (fn [x] (logp :old x) cls))))
+   "parse"
+   trace-id
+   formula))
 
 (defn formulabox
   ([trace-id] (formulabox trace-id (gensym) nil nil))
@@ -19,15 +27,9 @@
            (do (a/close! t)
                (recur v last-formula))
            (do (when-not (= formula last-formula)
-                 (h/remote-call
-                  (fn [res]
-                    (let [cls ({true "formula-ok" false "has-error"} res)]
-                      (logp :new-class cls)
-                      (swap! error (fn [x] (logp :old x) cls))
-                      (logp @error)))
-                  "parse"
-                  trace-id
-                  formula))
+                 (if (empty? formula)
+                   (reset! error "formula-ok")
+                   (parse trace-id formula error)))
                (recur formula formula)))))
      (fn []
        [:div {:class (str "form-group " @error)}
