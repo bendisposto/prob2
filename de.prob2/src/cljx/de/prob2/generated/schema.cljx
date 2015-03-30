@@ -106,5 +106,5 @@
 
 (def UI-State
   (merge Transmitted-State-Spec
-         {:connected s/Bool}))
+         {:connected s/Bool :local-state {s/Uuid {s/Keyword s/Any}}}))
 
