@@ -17,7 +17,7 @@ class UiFunctionRegistry {
 		addFunction("echo", {a -> "echo:"+a});
 		addFunction("parse", {traceId, formula-> 
 			["status":animations.getTrace(traceId).model.checkSyntax(formula), 
-			 "unicode":UnicodeTranslator.toUnicode(formula), 
+			 "unicode":UnicodeTranslator.toUnicode(UnicodeTranslator.toAscii(formula)), 
 			 "ascii":UnicodeTranslator.toAscii(formula)];})
 	}
 
