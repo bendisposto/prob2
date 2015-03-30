@@ -11,9 +11,10 @@
 
 (defn parse [trace-id ratom]
   (m/remote-let [res (parse trace-id (:ascii @ratom))]
+                (logp :parse-result res)
                 (swap! ratom (fn [s]
-                               (let [{status "status" unicode "unicode" ascii "ascii"} res]
-                                 (if-not (= ascii (:ascii s))
+                               (let [{status "status" unicode "unicode" input "input" ascii "ascii"} res]
+                                 (if-not (= input (:ascii s))
                                    (assoc s :unicode nil)
                                    (assoc s
                                           :status ({true "" false "has-error"} status)

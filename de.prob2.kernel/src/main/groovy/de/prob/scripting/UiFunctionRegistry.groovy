@@ -14,11 +14,13 @@ class UiFunctionRegistry {
 	@Inject
 	def UiFunctionRegistry(Animations animations) {
 		this.animations = animations;
-		addFunction("echo", {a -> "echo:"+a});
-		addFunction("parse", {traceId, formula-> 
-			["status":animations.getTrace(traceId).model.checkSyntax(formula), 
-			 "unicode":UnicodeTranslator.toUnicode(formula), 
-			 "ascii":UnicodeTranslator.toAscii(formula)];})
+		addFunction("echo", { a -> "echo:"+a });
+		addFunction("parse", { traceId, formula->
+			["status":animations.getTrace(traceId).model.checkSyntax(UnicodeTranslator.toAscii(formula)),
+				"input": formula,
+				"unicode":UnicodeTranslator.toUnicode(formula),
+				"ascii":UnicodeTranslator.toAscii(formula)];
+		})
 	}
 
 	def Map<String,Closure> registry = [:];
