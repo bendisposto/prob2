@@ -18,7 +18,7 @@ class UiFunctionRegistry {
 		addFunction("parse", { traceId, formula->
 			["status":animations.getTrace(traceId).model.checkSyntax(UnicodeTranslator.toAscii(formula)),
 				"input": formula,
-				"unicode":UnicodeTranslator.toUnicode(formula),
+				"unicode":UnicodeTranslator.toUnicode(UnicodeTranslator.toAscii(formula)),
 				"ascii":UnicodeTranslator.toAscii(formula)];
 		})
 	}
