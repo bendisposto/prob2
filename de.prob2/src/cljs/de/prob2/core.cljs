@@ -1,6 +1,5 @@
 (ns de.prob2.core
-  (:require-macros [de.prob2.macros :refer [remote-let]]
-                   [cljs.core.async.macros :refer [go]])
+  (:require-macros [de.prob2.macros :as m])
   (:require [cljs.core.async :as async]
             [reagent.core :as r]
             [de.prob2.generated.schema :as schema]
@@ -50,9 +49,18 @@
 (defn animation-view []
   (let [id (session/get :focused-uuid)]
     [:div {:id "h1"}
+     [:div "remote-call:"
+
+    
+      #_(m/remote-let [x (parse id "x")]
+                    (logp :rly x)
+                    [:h1 x])]
+
+
      #_[dot-view "digraph simple { A->B }"]
-     [formulabox id]
-     [formulabox id "zuck"[:label {:class "control-label" :for "zuck"} "Input:" ] nil]
+     ;[formulabox1 id]
+     [formulabox id "le-box"]
+    ; [formulabox id "zuck"[:label {:class "control-label" :for "zuck"} "Input:" ] nil]
      [history-view id]
      [events-view id]
      ]))
