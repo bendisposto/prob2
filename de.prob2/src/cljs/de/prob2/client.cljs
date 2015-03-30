@@ -69,11 +69,12 @@
  :prob2/call
  (fn [{{send! :send!} :websocket :as db}
      [t continuation result-transform command & args]]
+   (logp :call command args)
    (let [caller-id (fresh-id)
          db' (assoc-in db
                        [:callbacks caller-id]
                        {:result-transform result-transform :code continuation})]
-     (send! [t {:command command :args args  :caller-id caller-id}])
+     (send! [t {:command command :args args :caller-id caller-id}])
      db')))
 
 
@@ -81,12 +82,15 @@
  :de.prob2.kernel/response
  h/decode
  (fn [db [_ {:keys [caller-id result] :as resp}]]
+   ;(logp resp (get db :callbacks))
    (let [callback (get-in db [:callbacks caller-id :code])
          transform (get-in db [:callbacks caller-id :result-transform])
          db' (h/dissoc-in db [:callbacks caller-id])
          res (transform result)]
-     (cond
-       (fn? callback) (callback res)
-       (instance? ManyToManyChannel callback) (go (async/>! callback res) (async/close! callback))
-       :otherwise (logp "Unknown callback type " (type callback) res))
-     db')))
+     (let
+         [db'' (cond
+                 (fn? callback) (do (callback res) nil)
+                 (vector? callback) (assoc-in db' callback res)
+                 (instance? ManyToManyChannel callback) (go (async/>! callback res) (async/close! callback) nil)
+                 :otherwise (logp "Unknown callback type " (type callback) res))]
+       (if db'' db'' db')))))
