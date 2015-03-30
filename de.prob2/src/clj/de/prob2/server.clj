@@ -4,16 +4,17 @@
   (:gen-class))
 
 
-(defrecord WebServer [handler port stop-fn]
+(defrecord WebServer [handler ip port stop-fn]
   component/Lifecycle
   (start [this]
     (if stop-fn this
-        (let [stop-fn (http-kit/run-server (:handler handler) {:port port})
+        (let [stop-fn (http-kit/run-server (:handler handler) {:ip ip :port port})
               port' (-> stop-fn meta :local-port)
               this' (assoc this
+                      :ip ip     
                       :port port'
                       :stop-fn (fn [] (stop-fn :timeout 100)))]
-          (println "Started server on port " port')
+          (println "Started server on " (str ip ":" port'))
           this')))
   (stop [this]
     (if stop-fn
@@ -23,5 +24,6 @@
         (dissoc this :stop-fn))
       this)))
 
-(defn server [port]
-  (component/using (map->WebServer {:port port}) [:handler]))
+(defn server [ip port]
+  (let [ip (or ip "127.0.0.1")]
+    (component/using (map->WebServer {:ip ip :port port}) [:handler])))

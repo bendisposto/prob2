@@ -13,9 +13,9 @@
         (concat [(compojure.core/GET "/barfoo/:id" [id] id)] routes))))
 
 (defn mk-system [config-options]
-  (let [{:keys [port]} config-options]
+  (let [{:keys [port ip]} config-options]
     (component/system-map
-     :server (server/server port)
+     :server (server/server ip port)
      :sente (sente/mk-sente)
      :handler (handler/mk-handler)
      :routes (handler/mk-routes (handler/default-routes))
