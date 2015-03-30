@@ -30,6 +30,8 @@
                  [com.cognitect/transit-cljs "0.8.205"]
                  [hiccups "0.3.0"]
                  [cljs-ajax "0.3.10"]
+                 [cljs-uuid "0.0.4"]
+                 [reagent-forms "0.4.7"]
                  [prismatic/schema "0.4.0"]]
 
   :plugins [
