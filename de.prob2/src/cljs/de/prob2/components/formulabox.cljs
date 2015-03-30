@@ -47,9 +47,7 @@
            [:input {:id id
                     :class "form-control"
                     :value formula
-                                        ;  :on-key-up (fn [e] (log e) (logp (.-keyCode e)))
                     :on-change
                     (fn [e] (let [v (-> e .-target .-value)]
-                                        ;(swap! ratom assoc :ascii v :unicode nil)
                              (ma/go (a/>! c v))))}]
            (if aftr aftr "")]])))))
