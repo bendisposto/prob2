@@ -10,30 +10,31 @@
 
 
 (defn parse [trace-id ratom]
-  (m/remote-let [res (parse trace-id (:ascii @ratom))]
+  (m/remote-let [res (parse trace-id (:input @ratom))]
                 (swap! ratom (fn [s]
                                (let [{status "status" unicode "unicode" ascii "ascii" input "input"} res]
-                                 (if-not (= input (:ascii s))
+                                 (if-not (= input (:input s))
                                    (assoc s :unicode nil)
                                    (assoc s
+                                          :ascii ascii
                                           :status ({true "" false "has-error"} status)
                                           :unicode unicode)))))))
 
 (defn formulabox
   ([trace-id] (formulabox trace-id (gensym) nil nil))
   ([trace-id id bfor aftr]
-   (let [ratom (r/atom {:status "" :ascii "" :unicode ""})
+   (let [ratom (r/atom {:status "" :ascii "" :input "" :unicode ""})
          c (a/chan)]
      (ma/go-loop [formula "" last-formula ""]
        (let [t (a/timeout 500)
              [[v ss se] port] (a/alts! [c t] {:priority true})]
          (if (= port c)
            (do (a/close! t)
-               (swap! ratom assoc :ascii v :ss ss :se se :unicode nil)
+               (swap! ratom assoc :input v :ss ss :se se :unicode nil)
                (recur v last-formula))
            (do (when-not (= formula last-formula)
                  (if (empty? formula)
-                   (reset! ratom {:status "" :ascii "" :unicode ""})
+                   (reset! ratom {:status "" :ascii "" :input "" :unicode ""})
                    (do (parse trace-id ratom))))
                (recur formula formula)))))
      (r/create-class
@@ -47,7 +48,7 @@
        (fn []
          (let [s (:status @ratom)
                f0 (:unicode @ratom)
-               f1 (get @ratom :ascii "")
+               f1 (get @ratom :input "")
                formula (if f0 f0 f1)]
            [:div
             [:div {:class (str "form-group " s)}
