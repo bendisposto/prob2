@@ -80,8 +80,12 @@
                     (preloader-initializing)
                     [current-page]))))))
 
+(defn init-keybindings []
+  (js/key "ctrl+space" #(rf/dispatch [:modeline])))
+
 (defn init! []
   (mk-routes)
   (hook-browser-navigation!)
+  (init-keybindings)
   (rf/dispatch [:initialise-db])
   (r/render-component [top-panel] (.getElementById js/document "app")))
