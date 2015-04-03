@@ -11,6 +11,7 @@
             [de.prob2.jsapi]
             [de.prob2.subs]
             [de.prob2.components.logo :refer [prob-logo]]
+            [de.prob2.components.navbar :refer [navigation]]
             [de.prob2.core :as core])
   (:import goog.History))
 
@@ -88,4 +89,5 @@
   (hook-browser-navigation!)
   (init-keybindings)
   (rf/dispatch [:initialise-db])
+  (r/render-component [navigation] (.getElementById js/document "nav"))
   (r/render-component [top-panel] (.getElementById js/document "app")))
