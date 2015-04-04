@@ -16,7 +16,7 @@
         (surrounding
          (into [] (map-indexed vector transitions))
          current-index 2)]
-    ^{:key (fresh-id)}
+    ^{:key (h/fresh-id)}
     (concat
      (p-fix pre)
      (map (fn [[i e]]
@@ -37,7 +37,7 @@
   ^{:key (h/fresh-id)} [:span ", "])
 
 (defn mk-trace-item [{:keys [trace-id] :as p}]
-  ^{:key trace-id}
+  ^{:key (h/fresh-id)}
   [:li {:class "animator"}
    [:a {:href (str "#/trace/" trace-id)}
     (let [t (trace-excerpt p)]
