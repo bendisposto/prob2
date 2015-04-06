@@ -50,6 +50,7 @@
                f0 (:unicode @ratom)
                f1 (get @ratom :input "")
                formula (if f0 f0 f1)]
+           ^{:key (h/fresh-id)}
            [:div
             [:div {:class (str "form-group " s)}
              (if bfor bfor "")
