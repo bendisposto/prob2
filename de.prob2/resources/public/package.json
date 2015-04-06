@@ -1,0 +1,7 @@
+{
+    "name": "ProB 2.0",
+    "main": "preloader.html",
+    "window": {
+        "title": "ProB 2.0"
+    }
+}
