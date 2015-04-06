@@ -11,7 +11,6 @@
             [de.prob2.jsapi]
             [de.prob2.subs]
             [de.prob2.components.logo :refer [prob-logo]]
-            [de.prob2.components.navbar :refer [navigation]]
             [de.prob2.core :as core])
   (:import goog.History))
 
