@@ -89,5 +89,4 @@
   (hook-browser-navigation!)
   (init-keybindings)
   (rf/dispatch [:initialise-db])
-  (r/render-component [navigation] (.getElementById js/document "nav"))
   (r/render-component [top-panel] (.getElementById js/document "app")))

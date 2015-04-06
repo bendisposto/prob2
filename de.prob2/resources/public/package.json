@@ -2,6 +2,8 @@
     "name": "ProB 2.0",
     "main": "preloader.html",
     "window": {
-        "title": "ProB 2.0"
+        "title": "ProB 2.0",
+        "width": 1200,
+        "height": 900
     }
 }
