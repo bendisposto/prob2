@@ -14,6 +14,7 @@
                  [reagent-forms "0.4.3"]
                  [reagent-utils "0.1.2"]
                  [secretary "1.2.1"]
+                 [ring/ring-json "0.3.1"]
                  [org.clojure/clojurescript "0.0-2843" :scope "provided"]
                  [com.stuartsierra/component "0.2.2"]
                  [ring/ring-core "1.3.2"]
