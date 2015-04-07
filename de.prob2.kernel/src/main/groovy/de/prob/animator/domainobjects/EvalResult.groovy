@@ -7,6 +7,7 @@ import de.prob.parser.BindingGenerator
 import de.prob.prolog.term.CompoundPrologTerm
 import de.prob.prolog.term.ListPrologTerm
 import de.prob.prolog.term.PrologTerm
+import de.prob.translator.Translator
 import de.prob.unicode.UnicodeTranslator
 import de.prob.util.StringUtil
 
@@ -67,6 +68,16 @@ public class EvalResult extends AbstractEvalResult {
 	 */
 	def String getSolution(String name) {
 		return solutions[name]
+	}
+
+	def TranslatedEvalResult translate() {
+		def val = Translator.translate(value);
+		def sols = solutions.collectEntries {k,v ->
+			[
+				k,
+				Translator.translate(v)
+			]}
+		return new TranslatedEvalResult(val, sols)
 	}
 
 	/**

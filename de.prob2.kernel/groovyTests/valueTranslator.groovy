@@ -1,54 +1,35 @@
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import de.be4.classicalb.core.parser.node.TRestrictHeadSequence;
 import de.prob.animator.domainobjects.*
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.*
-
-// You can change the model you are testing here.
-
-def wrap(String formula) {
-	return new TranslateFormula(new ClassicalB(formula))
-}
-
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
-t = new Trace(s)
-t = t.anyEvent()
+import de.prob.translator.Translator;
+import de.prob.translator.types.Atom;
+import de.prob.translator.types.String;
+import de.prob.translator.types.Record;
+import de.prob.translator.types.Set;
+import de.prob.translator.types.Number;
+import static de.prob.translator.Translator.translate;
 
 
-res = t.evalCurrent(wrap("1"))
-assert res.value == 1
+assert translate("1") == 1
 
-res = t.evalCurrent(wrap("TRUE = TRUE"))
-assert res.value == true
+assert translate("TRUE") == true
 
-res = t.evalCurrent(wrap("TRUE = FALSE"))
-assert res.value == false
+assert translate("FALSE") == false
 
-res = t.evalCurrent(wrap("{1,2,3}"))
-expected = new HashSet([1,2,3])
-assert res.value == expected
+expected = new Set(new HashSet([Number.build(1),Number.build(2),Number.build(3)]))
+assert translate("{1,2,3}") == expected
 
-res = t.evalCurrent(wrap("1 |-> 2"))
-expected = new Tuple(1,2)
-assert res.value == expected
+expected = new Tuple(Number.build(1),Number.build(2))
+assert translate("1 |-> 2") == expected
 
-res = t.evalCurrent(wrap("PID1"))
-assert res.value == "PID1"
+assert translate("PID1") == new Atom("PID1")
 
-res = t.evalCurrent(wrap('"BLAH"'))
-assert res.value == new BString("BLAH")
+assert translate('"BLAH"') == new String("BLAH")
 
-res = t.evalCurrent(wrap("rec(PID1:1,PID2:2,PID3:3)"))
-expected = new LinkedHashMap(["PID1":1,"PID2":2,"PID3":3])
-assert res.value == expected
+expected = new Record(new LinkedHashMap(["PID1":Number.build(1),"PID2":Number.build(2),"PID3":Number.build(3)]))
+assert translate("rec(PID1:1,PID2:2,PID3:3)") == expected
 
-// Symbolic sets
-res = t.evalCurrent(wrap("{x|x : NATURAL & x mod 2 = 1}"))
-assert res.value instanceof PrologTerm // Symbolic Sets are translated as the Prolog Representation
-
-
-assert t.evalCurrent(wrap("1 + b")) instanceof ComputationNotCompletedResult
-// TODO: Need test case for PossiblyTrue
-
-s.animator.cli.shutdown();
 "values are translated correctly"

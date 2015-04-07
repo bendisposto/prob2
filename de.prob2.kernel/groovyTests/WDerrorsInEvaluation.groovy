@@ -19,19 +19,5 @@ assert wderror instanceof EvaluationErrorResult
 assert wderror.getResult() == "NOT-WELL-DEFINED"
 assert wderror.getErrors() == ["division by zero 3/0;;"]
 
-// expression
-f = new TranslateFormula(new ClassicalB("4 / 0"))
-wderror2 = t.evalCurrent(f)
-assert wderror2 instanceof EvaluationErrorResult
-assert wderror2.getResult() == "NOT-WELL-DEFINED"
-assert wderror2.getErrors() == ["division by zero 4/0;;", "division by zero 4/0;;", "division by zero 4/0;;"]
-
-// predicate
-f = new TranslateFormula(new ClassicalB("5 / 0 = 1"))
-wderror2 = t.evalCurrent(f)
-assert wderror2 instanceof EvaluationErrorResult
-assert wderror2.getResult() == "NOT-WELL-DEFINED"
-assert wderror2.getErrors() == ["division by zero 5/0;;"]
-
 s.animator.cli.shutdown();
 "Evaluation errors can be caught and handled simply"

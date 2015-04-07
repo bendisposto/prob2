@@ -79,6 +79,7 @@ dependencies {
 	compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
 	compile group: "de.prob", name: "unicode", version: parser_version , changing: true
 	compile group: "de.prob", name: "theorymapping", version: parser_version, changing: true
+	compile group: "de.prob", name: "translator", version: parser_version, changing: true
 
 	compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT', changing: true
 

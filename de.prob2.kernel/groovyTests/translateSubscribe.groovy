@@ -11,14 +11,10 @@ current = t.getCurrentState()
 
 f = "1 + 3" as ClassicalB
 s.subscribe(m, f)
-t = new TranslateFormula(f)
-s.subscribe(m, t)
 current.explore()
 
 assert current.values[f] instanceof EvalResult
-assert current.values[t] instanceof TranslatedEvalResult
 assert current.values[f].value == "4"
-assert current.values[t].value == 4
 
 s.animator.cli.shutdown();
 "a translate formula object can be subscribed"

@@ -24,6 +24,8 @@ import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
+import de.prob.translator.TranslatingVisitor;
+import de.prob.translator.types.BObject;
 
 /**
  * Representation of a ClassicalB formula.
@@ -136,5 +138,15 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	@Override
 	public EvaluationCommand getCommand(final State stateId) {
 		return new EvaluateFormulaCommand(this, stateId.getId());
+	}
+
+	@Override
+	public BObject translate() {
+		if (!getKind().equals(EXPRESSION.toString())) {
+			throw new IllegalArgumentException();
+		}
+		TranslatingVisitor v = new TranslatingVisitor();
+		getAst().apply(v);
+		return v.getResult();
 	}
 }
