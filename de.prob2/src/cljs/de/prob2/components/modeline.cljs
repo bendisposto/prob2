@@ -36,7 +36,7 @@
 (defn modeline []
   (let [items (r/atom {:elems (get-commands "") :index 0})]
     (fn []
-      [:div {:id "sidebar-wrapper" :on-click #((.focus (js/jQuery "#modeline-search")))}
+      [:div {:id "sidebar-wrapper" :on-click (fn [e] (.focus (js/jQuery "#modeline-search")))}
        [:div {:class "container-fluid"}
         [:div {:class "row"}
          [:div {:class "col-lg-12"}
