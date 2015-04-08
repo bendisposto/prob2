@@ -239,6 +239,13 @@
     }
 }
 
-.selected-modeline-entry {
-  background-color: blue;
+#modeline-search {
+  margin-bottom: 10px;
+}
+
+
+
+.list-group-item u {
+  text-decoration: underline;
+  color:orange;
 }
