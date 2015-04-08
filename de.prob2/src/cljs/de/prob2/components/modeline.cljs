@@ -13,10 +13,10 @@
       (if-not (empty? nt) (assoc e :display nt) e))))
 
 (defn get-commands
-  ([] [{:name "Open File" :desc "Opens a "}
-       {:name "Shutdown Server" :action :kill :desc "Kills the ProB server. All running animations are killed and all unsaved data is discarded."}
-       {:name "Foo" :desc "Foo ... obviously"}
-       {:name "Bar"}])
+  ([] (into  [{:name "Open File" :desc "Opens a "}
+              {:name "Shutdown Server" :action :kill :desc "Kills the ProB server. All running animations are killed and all unsaved data is discarded."}
+              {:name "Foo" :desc "Foo ... obviously"}
+              {:name "Bar"}] (for [e (range 10)] {:name (str "Some Command " e)})))
   ([filter-string]
    (let [s (clojure.string/split filter-string #"\s+")
          re (str "(?i)(.*)" (clojure.string/join "(.*)" (map #(str "(" % ")") s)) "(.*)")
@@ -30,8 +30,7 @@
     (let [name (get entry :name)
           action (get entry :action (keyword (h/kebap-case name)))
           selected (if (= selected index) "active" "")]
-      ^{:key name}
-      (into [:a {:class (str "list-group-item " selected) :on-click #(rf/dispatch [action])}] (:display entry)))))
+      (into [:a {:key name :class (str "list-group-item " selected) :on-click #(rf/dispatch [action])}] (:display entry)))))
 
 (defn modeline []
   (let [items (r/atom {:elems (get-commands "") :index 0})]
