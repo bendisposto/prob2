@@ -10,6 +10,12 @@
   (let [x @id-store]
     (swap! id-store inc) x))
 
+(defn kebap-case
+  [text]
+  (clojure.string/join
+   "-"
+   (map (fn [s] (.toLowerCase s))
+        (map second (re-seq #"([A-Z][a-z]*)" text)))))
 
 (defn dissoc-in
   [m [k & ks :as keys]]
