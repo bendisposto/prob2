@@ -24,8 +24,7 @@
        [:a {:on-click #(rf/dispatch [action])} name]])))
 
 (defn modeline []
-  (let [items (r/atom (get-commands))
-        selected (r/atom 0)]
+  (let [items (r/atom {:elems (get-commands) :index 0})]
     (fn []
       [:div {:class "sidebar-nav"}
        [:input {:type "text"
@@ -33,23 +32,24 @@
                 :class "form-control"
                 :placeholder "Search..."
                 :role "search"
-                :on-change (fn [e] (reset! items (get-commands (.-value (.-target e)))))
+                :on-change (fn [e] (reset! items {:index 0 :elems (get-commands (.-value (.-target e)))}))
                 :on-key-down (fn [e]
                                (let [k ({13 :enter 38 :up 40 :down} (.-which e))]
-                                 (when k (rf/dispatch [:modeline :key k selected items])
+                                 (when k (rf/dispatch [:modeline :key k items])
                                        (.preventDefault e))))}]
        [:ul
-        (map-indexed (make-cmd-entry @selected) @items)]])))
+        (let [{selected :index elems :elems} @items]
+          (map-indexed (make-cmd-entry selected) elems))]])))
 
-(defn modeline-key [kind index items]
-  (let [cur-index @index
-        items @items
+(defn modeline-key [kind ratom]
+  (let [cur-index (:index @ratom)
+        items (:elems @ratom)
         selected (get (vec items) cur-index)]
     (condp = kind
       :enter (let [action (get selected :action (keyword (h/kebap-case (:name selected))))]
-               (rf/dispatch [action]))
-      :up (when (< 0 cur-index) (swap! index dec))
-      :down (when (< cur-index (dec (count items))) (swap! index inc)))
+               (rf/dispatch [action])) 
+      :up (when (< 0 cur-index) (swap! ratom update-in [:index] dec))
+      :down (when (< cur-index (dec (count items))) (swap! ratom update-in [:index] inc)))
     (logp :keyboard-event kind :index cur-index :items items)))
 
 (defn modeline-toggle []
