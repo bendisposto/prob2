@@ -83,7 +83,7 @@
                      [current-page]]))))))
 
 (defn init-keybindings []
-  (.add js/shortcut "Ctrl+Space" #(rf/dispatch [:modeline])))
+  (.add js/shortcut "Ctrl+Space" #(rf/dispatch [:modeline :toggle])))
 
 
 (defn init! []

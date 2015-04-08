@@ -239,3 +239,6 @@
     }
 }
 
+.selected-modeline-entry {
+  background-color: blue;
+}
