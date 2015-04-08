@@ -17,7 +17,8 @@
   ([] (into  [{:name "Open File" :desc "Opens a "}
               {:name "Shutdown Server" :action :kill :desc "Kills the ProB server. All running animations are killed and all unsaved data is discarded."}
               {:name "Foo" :desc "Foo ... obviously"}
-              {:name "Bar"}] (for [e (range 10)] {:name (str "Some Command " e)})))
+              {:name "Bar"}]
+             (for [e (range 10)] {:name (str "Some Command " e)})))
   ([filter-string]
    (let [s (clojure.string/split filter-string #"\s+")
          re (str "(?i)(.*)" (clojure.string/join "(.*)" (map #(str "(" % ")") s)) "(.*)")
@@ -31,7 +32,10 @@
     (let [name (get entry :name)
           action (get entry :action (keyword (h/kebap-case name)))
           selected (if (= selected index) "active" "")]
-      (into [:a {:key name :id (str "modeline-entry" index) :class (str "list-group-item " selected) :on-click #(rf/dispatch [action])}] (:display entry)))))
+      (into [:a {:key name
+                 :id (str "modeline-entry" index)
+                 :class (str "list-group-item " selected)
+                 :on-click #(rf/dispatch [action])}] (:display entry)))))
 
 (defn modeline []
   (let [items (r/atom {:elems (get-commands "") :index 0})]
@@ -41,6 +45,7 @@
         [:div {:class "row"}
          [:div {:class "col-lg-12"}
           [:div {:class "sidebar-nav"}
+           [:div {:id "scroll-anchor"}]
            [:input {:type "text"
                     :id "modeline-search"
                     :class "form-control"
@@ -55,27 +60,37 @@
             (let [{selected :index elems :elems} @items]
               (map-indexed (make-cmd-entry selected) elems))]]]]]])))
 
-(defn modeline-key [kind ratom]
-  (let [cur-index (:index @ratom)
-        items (:elems @ratom)
-        selected (get (vec items) cur-index)]
-    (condp = kind
-      :enter (let [action (get selected :action (keyword (h/kebap-case (:name selected))))]
-               (rf/dispatch [action]))
-      :up (if (< 0 cur-index) (do 
-                                (style/scrollIntoContainerView (.getElementById js/document (str "modeline-entry" (dec cur-index))) (.getElementById js/document "sidebar-wrapper")  )
-                                (swap! ratom update-in [:index] dec))
-              (style/scrollIntoContainerView (.getElementById js/document "modeline-search") (.getElementById js/document "sidebar-wrapper")  ))
-      :down (when (< cur-index (dec (count items)))
-              (style/scrollIntoContainerView (.getElementById js/document (str "modeline-entry" (inc cur-index))) (.getElementById js/document "sidebar-wrapper")  )
-              (swap! ratom update-in [:index] inc)))))
-
 (defn modeline-toggle []
   (let [wrapper (js/jQuery "#wrapper")
         visible? (.hasClass wrapper "toggled")
         searchbox (js/jQuery "#modeline-search")]
     (.toggleClass wrapper "toggled")
     (when visible? (.focus searchbox))))
+
+(defn modeline-key [kind ratom]
+  (let [cur-index (:index @ratom)
+        items (:elems @ratom)
+        selected (get (vec items) cur-index)]
+    (condp = kind
+      :enter (let [action (get selected :action (keyword (h/kebap-case (:name selected))))]
+               (rf/dispatch [action])
+               (modeline-toggle))
+      :up (if (< 0 cur-index)
+            (do
+              (style/scrollIntoContainerView
+               (.getElementById js/document (str "modeline-entry" (dec cur-index)))
+               (.getElementById js/document "sidebar-wrapper"))
+              (swap! ratom update-in [:index] dec))
+            (style/scrollIntoContainerView
+             (.getElementById js/document "scroll-anchor")
+             (.getElementById js/document "sidebar-wrapper")))
+      :down (when (< cur-index (dec (count items)))
+              (style/scrollIntoContainerView
+               (.getElementById js/document (str "modeline-entry" (inc cur-index)))
+               (.getElementById js/document "sidebar-wrapper"))
+              (swap! ratom update-in [:index] inc)))))
+
+
 
 
 (rf/register-handler
