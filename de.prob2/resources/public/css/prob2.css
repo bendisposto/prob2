@@ -239,7 +239,7 @@
     }
 }
 
-#modeline-search {
+#modeline-search,#scroll-anchor {
   margin-bottom: 10px;
 }
 
