@@ -15,7 +15,7 @@
   (clojure.string/join
    "-"
    (map (fn [s] (.toLowerCase s))
-        (map second (re-seq #"([A-Z][a-z]*)" text)))))
+        (map second (re-seq #"([A-Z][a-z]*|[0-9])" text)))))
 
 (defn dissoc-in
   [m [k & ks :as keys]]
