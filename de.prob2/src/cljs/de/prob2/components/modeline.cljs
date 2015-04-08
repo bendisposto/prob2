@@ -2,7 +2,8 @@
   (:require  [taoensso.encore :as enc  :refer (logf log logp)]
              [reagent.core :as r]
              [re-frame.core :as rf]
-             [de.prob2.helpers :as h]))
+             [de.prob2.helpers :as h]
+             [goog.style :as style]))
 
 
 (defn pattern-match [regex]
@@ -30,7 +31,7 @@
     (let [name (get entry :name)
           action (get entry :action (keyword (h/kebap-case name)))
           selected (if (= selected index) "active" "")]
-      (into [:a {:key name :class (str "list-group-item " selected) :on-click #(rf/dispatch [action])}] (:display entry)))))
+      (into [:a {:key name :id (str "modeline-entry" index) :class (str "list-group-item " selected) :on-click #(rf/dispatch [action])}] (:display entry)))))
 
 (defn modeline []
   (let [items (r/atom {:elems (get-commands "") :index 0})]
@@ -61,8 +62,13 @@
     (condp = kind
       :enter (let [action (get selected :action (keyword (h/kebap-case (:name selected))))]
                (rf/dispatch [action]))
-      :up (when (< 0 cur-index) (swap! ratom update-in [:index] dec))
-      :down (when (< cur-index (dec (count items))) (swap! ratom update-in [:index] inc)))))
+      :up (if (< 0 cur-index) (do 
+                                (style/scrollIntoContainerView (.getElementById js/document (str "modeline-entry" (dec cur-index))) (.getElementById js/document "sidebar-wrapper")  )
+                                (swap! ratom update-in [:index] dec))
+              (style/scrollIntoContainerView (.getElementById js/document "modeline-search") (.getElementById js/document "sidebar-wrapper")  ))
+      :down (when (< cur-index (dec (count items)))
+              (style/scrollIntoContainerView (.getElementById js/document (str "modeline-entry" (inc cur-index))) (.getElementById js/document "sidebar-wrapper")  )
+              (swap! ratom update-in [:index] inc)))))
 
 (defn modeline-toggle []
   (let [wrapper (js/jQuery "#wrapper")
