@@ -105,4 +105,7 @@
 
 
 (defn remote-call [callback command & args]
-  (rf/dispatch (into [:prob2/call callback identity command] args)))
+  (rf/dispatch (into [:prob2/call callback :groovy identity command] args)))
+
+(defn remote-clojure-call [callback command & args]
+  (rf/dispatch (into [:prob2/call callback :clojure identity command] args)))

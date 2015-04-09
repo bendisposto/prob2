@@ -15,9 +15,9 @@
   becomes available, but the remote-let itself immediately terminates.
 
   "
-  [[v [command & args]] & body]
+  [[v [type command & args]] & body]
   `(cljs.core.async.macros/go
      (let [c# (cljs.core.async/chan)
-           x# (re-frame.core/dispatch [:prob2/call c# identity ~(str command) ~@args])
+           x# (re-frame.core/dispatch [:prob2/call c# ~(keyword type) identity ~(str command) ~@args])
            ~v (cljs.core.async/<! c#)]
        ~@body)))
