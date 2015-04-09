@@ -10,9 +10,9 @@
 
 
 (defn parse [trace-id ratom]
-  (m/remote-let [res (parse trace-id (:input @ratom))]
+  (m/remote-let [res (clojure parse trace-id (:input @ratom))]
                 (swap! ratom (fn [s]
-                               (let [{status "status" unicode "unicode" ascii "ascii" input "input"} res]
+                               (let [{:keys [status ascii unicode input]} res]
                                  (if-not (= input (:input s))
                                    (assoc s :unicode nil)
                                    (assoc s
@@ -43,7 +43,8 @@
                     se (:se @ratom)
                     elem (.getElementById js/document id)]
                 (set! (.-selectionStart elem) ss)
-                (set! (.-selectionEnd elem) se)))
+                (set! (.-selectionEnd elem) se)
+                (.focus elem)))
        :reagent-render
        (fn []
          (let [s (:status @ratom)
@@ -57,6 +58,15 @@
              [:input {:id id
                       :class "form-control"
                       :value formula
+                      :on-key-down
+                      (fn [e]
+                        (let [k ({8 :backspace} (.-which e))
+                              elem (.getElementById js/document id)
+                              ss (.-selectionStart elem)
+                              se (.-selectionEnd elem)
+                              v (apply str (butlast (:ascii @ratom)))]
+                          (when k (ma/go (a/>! c [v ss se]))
+                            (.preventDefault e))))
                       :on-change
                       (fn [e] (let [v [(-> e .-target .-value)
                                       (-> e .-target .-selectionStart)
