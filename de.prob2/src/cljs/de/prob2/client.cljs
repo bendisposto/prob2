@@ -14,7 +14,7 @@
 
 (defn init-websocket []
   (let [{:keys [chsk ch-recv send-fn state]}
-        (sente/make-channel-socket! "/updates" {:type :auto})]
+        (sente/make-channel-socket! (str h/host ":" h/port "/updates") {:type :auto})]
     (add-watch state :connection-observer (fn [_ _ _ new] (dispatch [:connection-status (:open?  new)])))
     {:chsk chsk
      :ch-chsk ch-recv

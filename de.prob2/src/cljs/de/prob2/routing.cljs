@@ -12,6 +12,7 @@
             [de.prob2.subs]
             [de.prob2.components.logo :refer [prob-logo]]
             [de.prob2.core :as core]
+            [de.prob2.helpers :refer [mk-url]]
             [de.prob2.components.modeline :refer [modeline]])
   (:import goog.History))
 
@@ -57,7 +58,7 @@
 (defn preloader-waiting []
   [:div {:id "disconnected-screen"}
    [:h1 {:id "disconnected-msg"} "Waiting for connection"]
-   [:img {:id "disconnected-img" :src "/img/disconnected.svg"}]])
+   [:img {:id "disconnected-img" :src (mk-url "img/disconnected.svg")}]])
 
 (defn preloader-initializing []
   [:div

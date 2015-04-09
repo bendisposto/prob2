@@ -2,6 +2,7 @@
   (:require-macros [hiccups.core :as hic])
   (:require [hiccups.runtime :as hiccupsrt]
             [reagent.core :as r]
+            [de.prob2.helpers :refer [mk-url]]
             [ajax.core :refer [GET]]
             [taoensso.encore :as enc  :refer (logf log logp)]))
 
@@ -12,20 +13,20 @@
   (r/create-class
    { :component-did-mount
     (fn [c]
-      (GET "/img/logo_left.svg"
+      (GET (mk-url "img/logo_left.svg")
            {:handler
             (fn [resp] (put-picture "logo-left" resp))})
-      (GET "/img/logo_center.svg"
+      (GET (mk-url "img/logo_center.svg")
            {:handler
             (fn [resp]
               (put-picture "logo-center" resp)
               )})
-      (GET "/img/logo_right.svg"
+      (GET (mk-url "img/logo_right.svg")
            {:handler
             (fn [resp]
               (put-picture "logo-right" resp)
               )})
-      (GET "/img/logo_empty.svg"
+      (GET (mk-url "img/logo_empty.svg")
            {:handler
             (fn [resp]
               (put-picture "logo-leftb" resp)

@@ -5,6 +5,12 @@
             [re-frame.core :as rf]
             [taoensso.encore :as enc  :refer (logf log logp)]))
 
+
+(def host "localhost")
+(def port 3000)
+
+(defn mk-url [n] (str "http://" host ":" port "/" n))
+
 (def id-store (clojure.core/atom 0))
 (defn fresh-id []
   (let [x @id-store]
