@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.Operation;
@@ -24,6 +25,8 @@ import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.translator.Translator;
+import de.prob.translator.types.BObject;
 import de.prob.util.StringUtil;
 
 /**
@@ -47,6 +50,8 @@ public class Transition {
 	private final State dest;
 	private List<String> params;
 	private List<String> returnValues;
+	private List<BObject> translatedParams;
+	private List<BObject> translatedRetV;
 	private String rep;
 	private boolean evaluated;
 	private FormulaExpand formulaExpansion;
@@ -110,6 +115,28 @@ public class Transition {
 		return params;
 	}
 
+	public List<BObject> getTranslatedParams() throws BException {
+		if (translatedParams != null) {
+			return translatedParams;
+		}
+		translateParamsAndRetVals();
+		return translatedParams;
+	}
+
+	private void translateParamsAndRetVals() throws BException {
+		if (!evaluated || formulaExpansion != FormulaExpand.expand) {
+			evaluate(FormulaExpand.expand);
+		}
+		translatedParams = new ArrayList<BObject>();
+		for (String str : params) {
+			translatedParams.add(Translator.translate(str));
+		}
+		translatedRetV = new ArrayList<BObject>();
+		for (String str : returnValues) {
+			translatedRetV.add(Translator.translate(str));
+		}
+	}
+
 	/**
 	 * The list of return values is not filled by default. If the return value
 	 * list has not yet been filled, ProB will be contacted to lazily fill the
@@ -122,6 +149,14 @@ public class Transition {
 			evaluate();
 		}
 		return returnValues;
+	}
+
+	public List<BObject> getTranslatedReturnValues() throws BException {
+		if (translatedRetV != null) {
+			return translatedRetV;
+		}
+		translateParamsAndRetVals();
+		return translatedRetV;
 	}
 
 	@Override

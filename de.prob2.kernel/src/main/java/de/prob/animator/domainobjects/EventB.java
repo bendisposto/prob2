@@ -27,6 +27,8 @@ import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
+import de.prob.translator.TranslatingVisitor;
+import de.prob.translator.types.BObject;
 import de.prob.unicode.UnicodeTranslator;
 
 /**
@@ -222,5 +224,15 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 					toUnicode(), null);
 		}
 		return null;
+	}
+
+	@Override
+	public BObject translate() {
+		if (!getKind().equals(EXPRESSION.toString())) {
+			throw new IllegalArgumentException();
+		}
+		TranslatingVisitor v = new TranslatingVisitor();
+		getAst().apply(v);
+		return v.getResult();
 	}
 }
