@@ -68,12 +68,16 @@
 (rf/register-handler
  :prob2/call
  (fn [{{send! :send!} :websocket :as db}
-     [t continuation result-transform command & args]]
+     [t continuation type result-transform command & args]]
    (let [caller-id (fresh-id)
          db' (assoc-in db
                        [:callbacks caller-id]
-                       {:result-transform result-transform :code continuation})]
-     (send! [t {:command command :args args  :caller-id caller-id}])
+                       {:result-transform result-transform
+                        :code continuation})]
+     (send! [t {:command command
+                :type type
+                :args args
+                :caller-id caller-id}])
      db')))
 
 
@@ -81,6 +85,7 @@
  :de.prob2.kernel/response
  h/decode
  (fn [db [_ {:keys [caller-id result] :as resp}]]
+   (logp resp)
    (let [callback (get-in db [:callbacks caller-id :code])
          transform (get-in db [:callbacks caller-id :result-transform])
          db' (h/dissoc-in db [:callbacks caller-id])

@@ -62,6 +62,6 @@
              res (apply f jsx jsdb args)]
          db)))))
 
-(defn ^:extern remote-call [callback command & args]
-  (rf/dispatch (into [:prob2/call callback clj->js command] args)))
-
+(defn ^:extern remote-call
+  [callback type command & args]
+  (rf/dispatch (into [:prob2/call callback type clj->js command] args)))

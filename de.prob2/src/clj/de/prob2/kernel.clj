@@ -3,7 +3,8 @@
             [de.prob2.sente :as snt]
             [clojure.reflect :as refl])
   (:import de.prob.Main
-           (de.prob.statespace  Trace ITraceChangesListener StateSpace )))
+           de.prob.unicode.UnicodeTranslator
+           (de.prob.statespace Trace ITraceChangesListener StateSpace )))
 
 
 (defn kebap-case
@@ -264,13 +265,28 @@
     (doseq [t traces] (.removeTrace animations t))
     (doseq [a animators] (.kill a))))
 
+(def clojure-ui-functions
+  {"parse" (fn [{:keys [animations]} [trace-id formula]]
+             (let [trace (.getTrace animations trace-id)
+                   model (.getModel trace)
+                   ascii (UnicodeTranslator/toAscii formula)
+                   unicode (UnicodeTranslator/toUnicode ascii)
+                   status? (.checkSyntax model formula) 
+                   ]
+               {:status status?
+                :ascii ascii
+                :unicode unicode
+                :input formula}))})
+
 (defmethod dispatch-kernel
   :call
-  [{:keys [sente animations ui-functions]} request]
+  [{:keys [sente animations ui-functions] :as prob} request]
   (let [client (get-in request [:ring-req :session :uid])
         data (:?data request)
-        {:keys [caller-id command args]} data
-        result (.call ui-functions command args)]
+        {:keys [caller-id type command args]} data
+        result (if (= type :clojure)
+                 ((get clojure-ui-functions command) prob args)
+                 (.call ui-functions command args))]
     (snt/send!
      sente client
      ::response

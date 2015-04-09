@@ -11,7 +11,8 @@
             [de.prob2.jsapi]
             [de.prob2.subs]
             [de.prob2.components.logo :refer [prob-logo]]
-            [de.prob2.core :as core])
+            [de.prob2.core :as core]
+            [de.prob2.components.modeline :refer [modeline]])
   (:import goog.History))
 
 ;; -------------------------
@@ -78,14 +79,18 @@
               (do (when (and @init? (not @ready?)) (rf/dispatch [:chsk/encoding nil]))
                   (if-not @ready?
                     (preloader-initializing)
-                    [current-page]))))))
+                    [:div
+                     [current-page]]))))))
 
 (defn init-keybindings []
-  (js/key "ctrl+space" #(rf/dispatch [:modeline])))
+  (.add js/shortcut "Ctrl+Space" #(rf/dispatch [:modeline :toggle])))
+
 
 (defn init! []
+  #_(events/listen (.getElementById js/document "wrapper") "keydown" (fn [e] (log e)) true)
   (mk-routes)
   (hook-browser-navigation!)
   (init-keybindings)
   (rf/dispatch [:initialise-db])
+  (r/render-component [modeline] (.getElementById js/document "minibuffer"))
   (r/render-component [top-panel] (.getElementById js/document "app")))

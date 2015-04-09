@@ -14,6 +14,7 @@
                  [reagent-forms "0.4.3"]
                  [reagent-utils "0.1.2"]
                  [secretary "1.2.1"]
+                 [ring/ring-json "0.3.1"]
                  [org.clojure/clojurescript "0.0-2843" :scope "provided"]
                  [com.stuartsierra/component "0.2.2"]
                  [ring/ring-core "1.3.2"]
@@ -121,17 +122,21 @@
              :uberjar {:hooks [leiningen.cljsbuild minify-assets.plugin/hooks]
                        :env {:production true}
                        :aot :all
-                       :dependencies [[de.prob2/de.prob2.kernel "2.0.0-milestone-24-SNAPSHOT"]]
+                       :dependencies [[de.prob2/de.prob2.kernel "2.0.0-milestone-25-SNAPSHOT"]]
                        :omit-source true
                        :cljsbuild {:jar true
                                    :builds {:app
                                             {:source-paths ["env/prod/cljs"]
                                              :compiler
-                                             {:optimizations :advanced
+                                             {:optimizations :simple
                                               :pretty-print false}}}}}
 
-             :production {:ring {:open-browser? false
+             :production {:hooks [leiningen.cljsbuild minify-assets.plugin/hooks]
+                          :ring {:open-browser? false
                                  :stacktraces?  false
                                  :auto-reload?  false}
-                          :cljsbuild {:builds {:app {:compiler {:main "de.prob2.prod"}}}}
+                          :cljsbuild {:builds {:app {:source-paths ["env/prod/cljs"]
+                                             :compiler
+                                             {:optimizations :simple
+                                              :pretty-print false}}}}
                           }})
