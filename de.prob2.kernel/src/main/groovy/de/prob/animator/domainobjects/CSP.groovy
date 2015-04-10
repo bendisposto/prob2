@@ -45,6 +45,7 @@ class CSP extends AbstractEvalElement {
 		if(osInfo.dirName == "win32")
 			this.target = ".exe"
 		this.procname = home+"lib"+File.separator+"cspmf" + target
+		this.expansion = FormulaExpand.truncate // this doesn't matter
 	}
 
 	public String getCode() {
@@ -93,7 +94,7 @@ class CSP extends AbstractEvalElement {
 		executeCmd(process, pout)
 
 	}
-	
+
 	private boolean executeCmd(Process process) {
 		process.waitFor()
 		return	process.exitValue() == 0;

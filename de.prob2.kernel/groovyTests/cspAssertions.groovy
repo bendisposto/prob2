@@ -21,6 +21,9 @@ traces = command.getResultTraces() // getting the list of possible counter examp
 assert !traces.isEmpty()
 traces.each { assert it instanceof ListPrologTerm; assert !it.isEmpty() }
 
+// csp evaluation
+res = t.evalCurrent(new CSP("NDet", m))
+assert res.value == "(a.1->STOP) [] (a.1->NDet)"
 
 s.animator.cli.shutdown();
 "csp assertions tested correctly"
