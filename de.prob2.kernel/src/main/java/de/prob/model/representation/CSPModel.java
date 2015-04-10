@@ -10,6 +10,7 @@ import com.google.inject.Provider;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -64,7 +65,7 @@ public class CSPModel extends AbstractModel {
 	public boolean checkSyntax(final String formula) {
 		try {
 			CSP element = (CSP) parseFormula(formula);
-			element.printProlog(null);
+			element.printProlog(new PrologTermStringOutput());
 			;
 			return true;
 		} catch (EvaluationException e) {
