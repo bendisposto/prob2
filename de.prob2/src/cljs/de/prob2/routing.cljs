@@ -62,10 +62,8 @@
    [:img {:id "disconnected-img" :src (mk-url "img/disconnected.svg")}]])
 
 (defn preloader-initializing []
-  [:div
-   [:h1 "Initialising ..."]
-   [prob-logo]
-   ])
+  (set! (-> (.getElementById js/document "bg") .-style .-webkitAnimationPlayState) "running")
+  [:div])
 
 (defn file-dialog []
   [:input {:style {:display "none"}

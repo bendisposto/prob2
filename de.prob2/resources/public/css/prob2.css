@@ -1,12 +1,19 @@
+@-webkit-keyframes fade-ani {
+  from {opacity: 1;}
+  to {opacity: 0.05;}
+}
+
 #bg {
   position:absolute;
   width:100%;
   height:100%;
   background: url(../img/bg.png) no-repeat center center fixed;
-  //-webkit-background-size: cover; /* For WebKit*/
   -webkit-background-size: 100% auto;
-  opacity:0.05;
   z-index: -1;
+  -webkit-animation-name: fade-ani;
+  -webkit-animation-duration: 3s;
+  -webkit-animation-play-state: paused;
+  opacity: 0.05;
 }
 
 .history-view,.trace-selector li {
