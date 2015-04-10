@@ -45,8 +45,11 @@ public class CSPModel extends AbstractModel {
 
 	@Override
 	public AbstractElement getMainComponent() {
-		// TODO Auto-generated method stub
-		return null;
+		return new AbstractElement() {
+			public String getName() {
+				return modelFile.getName();
+			}
+		};
 	}
 
 	@Override
@@ -60,7 +63,7 @@ public class CSPModel extends AbstractModel {
 	}
 
 	@Override
-	public boolean checkSyntax(String formula) {
+	public boolean checkSyntax(final String formula) {
 		try {
 			CSP element = (CSP) parseFormula(formula);
 			element.printProlog(null);
