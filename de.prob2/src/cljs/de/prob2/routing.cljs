@@ -71,7 +71,7 @@
   [:input {:style {:display "none"}
            :id "fileDialog"
            :type "file"
-           :accept ".mch,.ref,.imp,.bum,.buc,.bcc,.bcm,.tla"
+           :accept ".mch,.ref,.imp,.bum,.buc,.bcc,.bcm,.tla,.csp"
            :on-change (fn [e] (rf/dispatch [:open-file (-> e .-target .-value)]))}])
 
 (rf/register-handler
