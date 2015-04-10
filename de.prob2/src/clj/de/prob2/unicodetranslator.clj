@@ -4,7 +4,9 @@
 (defmulti lex (first s))
 
 (defmethod lex \: [s] (cond
-						(.startsWith s ":!") "x"))
+						(.startsWith s ":!") :bcmsuch
+            (.startsWith s ":=") :bcmeq
+            :else                :in))
 
 (def tokens
 [{:token :in          :ascii ":"      :latex "\in"            :unicode "\u2208"}
