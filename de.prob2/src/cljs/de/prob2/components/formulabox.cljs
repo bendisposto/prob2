@@ -10,9 +10,10 @@
 
 
 (defn parse [trace-id ratom]
-  (m/remote-let [res (parse trace-id (:input @ratom))]
+  (m/remote-let [res (clojure parse trace-id (:input @ratom))]
                 (swap! ratom (fn [s]
-                               (let [{status "status" unicode "unicode" ascii "ascii" input "input"} res]
+                               (logp s)
+                               (let [{:keys [status  unicode  ascii  input]} res]
                                  (if-not (= input (:input s))
                                    (assoc s :unicode nil)
                                    (assoc s

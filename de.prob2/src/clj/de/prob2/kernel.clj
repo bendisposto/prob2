@@ -292,7 +292,23 @@
      ::response
      {:result result :caller-id caller-id})))
 
-(defrecord ProB [injector listener sente animations ui-functions]
+(defmethod dispatch-kernel
+  :start-animation
+  [{:keys [animations api]} {[file extension] :?data :as request}]
+  (println :file file :ext extension (contains? #{"csp"} extension))
+  (let [model (condp contains? extension
+                  #{"mch" "ref" "imp"} (.b_load api file)
+                  #{"bum" "buc" "bcc" "bcm"} (.eventb_load api file)
+                  #{"csp"} (.csp_load api file)
+                  #{"tla"} (.tla_load api file)
+                  :otherwise (throw (Exception. "Unknown file type")))
+        _ (println :model model)
+        trace (Trace. model)
+        _ (println trace)]
+    (.addNewAnimation animations trace)
+    (println :animations animations)))
+
+(defrecord ProB [injector listener sente animations api ui-functions]
   component/Lifecycle
   (start [this]
     (if injector
@@ -306,7 +322,9 @@
                 _ (println " -> got Ui Function registry")
                 listener (install-handlers sente animations)
                 _ (println " -> Installed Listeners")
-                this' (assoc this :injector injector :listener listener :animations animations :ui-functions ui-functions)]
+                api (.getInstance injector de.prob.scripting.Api)
+                _ (println " -> Got Api object")
+                this' (assoc this :api api :injector injector :listener listener :animations animations :ui-functions ui-functions)]
             (defmethod snt/handle-updates :prob2 [_ a] (dispatch-kernel this' a))
             this'))))
   (stop [{:keys [animations listener] :as this}]
@@ -321,7 +339,7 @@
                          (.kill a)))
                      (println " * Deregistering Listener")
                      (.deregisterAnimationChangeListener animations listener)
-                     (dissoc this :injector :listener :animations :ui-functions :sente))
+                     (dissoc this :injector :listener :api :animations :ui-functions :sente))
         this)))
 
 (defn prob []

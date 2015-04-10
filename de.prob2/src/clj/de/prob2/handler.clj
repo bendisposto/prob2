@@ -22,8 +22,7 @@
 
 (defn default-routes []
   (fn [{:keys [ws-handshake post]} prob]
-    [(GET "/" [] (render-file "templates/index.html" {:dev (env :dev?)}))
-     (GET  "/updates" req (-> req (assoc-in [:session :uid] (get-uid)) ws-handshake))
+    [(GET  "/updates" req (println "Shake it baby")(-> req (assoc-in [:session :uid] (get-uid)) ws-handshake))
      (GET "/stateview/:trace" [trace] (sv/create-state-view prob trace))
      (GET "/version" []
           (let [cv (.getVersion (kernel/instantiate prob de.prob.scripting.Api))

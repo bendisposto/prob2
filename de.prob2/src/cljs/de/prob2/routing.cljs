@@ -12,6 +12,8 @@
             [de.prob2.subs]
             [de.prob2.components.logo :refer [prob-logo]]
             [de.prob2.core :as core]
+            [de.prob2.actions]
+            [de.prob2.helpers :as h :refer [mk-url]]
             [de.prob2.components.modeline :refer [modeline]])
   (:import goog.History))
 
@@ -57,13 +59,32 @@
 (defn preloader-waiting []
   [:div {:id "disconnected-screen"}
    [:h1 {:id "disconnected-msg"} "Waiting for connection"]
-   [:img {:id "disconnected-img" :src "/img/disconnected.svg"}]])
+   [:img {:id "disconnected-img" :src (mk-url "img/disconnected.svg")}]])
 
 (defn preloader-initializing []
   [:div
    [:h1 "Initialising ..."]
-    [prob-logo]
-])
+   [prob-logo]
+   ])
+
+(defn file-dialog []
+  [:input {:style {:display "none"}
+           :id "fileDialog"
+           :type "file"
+           :accept ".mch,.ref,.imp,.bum,.buc,.bcc,.bcm,.tla"
+           :on-change (fn [e] (rf/dispatch [:open-file (-> e .-target .-value)]))}])
+
+(rf/register-handler
+ :open-file
+ (fn [db [_ & file]]
+   (if-not (seq file)
+     (.click (.getElementById js/document "fileDialog"))
+     (let [filename (first file)
+           extension (last (re-find #".*\.(.*)" filename))]
+       (logp :fn filename :ext extension)
+       (rf/dispatch [:prob2/start-animation [filename extension]])))))
+
+(rf/register-handler :prob2/start-animation h/relay)
 
 
 
@@ -75,12 +96,14 @@
         ready?  (rf/subscribe [:encoding-set?])
         connected? (rf/subscribe [:connected?])]
     (fn []
-      (if-not @connected? (preloader-waiting)
-              (do (when (and @init? (not @ready?)) (rf/dispatch [:chsk/encoding nil]))
-                  (if-not @ready?
-                    (preloader-initializing)
-                    [:div
-                     [current-page]]))))))
+      [:div
+       [file-dialog]
+       (if-not @connected? (preloader-waiting)
+               (do (when (and @init? (not @ready?)) (rf/dispatch [:chsk/encoding nil]))
+                   (if-not @ready?
+                     (preloader-initializing)
+                     [:div
+                      [current-page]])))])))
 
 (defn init-keybindings []
   (.add js/shortcut "Ctrl+Space" #(rf/dispatch [:modeline :toggle])))
