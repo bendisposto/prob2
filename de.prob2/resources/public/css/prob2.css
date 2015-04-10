@@ -1,242 +1,251 @@
-
+#bg {
+  position:absolute;
+  width:100%;
+  height:100%;
+  background: url(../img/bg.png) no-repeat center center fixed;
+  //-webkit-background-size: cover; /* For WebKit*/
+  -webkit-background-size: 100% auto;
+  opacity:0.05;
+  z-index: -1;
+}
 
 .history-view,.trace-selector li {
-    list-style-type: none;
-    cursor: pointer;
+  list-style-type: none;
+  cursor: pointer;
 }
 
 .history-view a {
-    color: black;
+  color: black;
 }
 
 .animator-list a {
-    color: black;
+  color: black;
 }
 
 .history-view .future {
-    font-style: italic;
-    color: #888;
+  font-style: italic;
+  color: #888;
 }
 
 .history-view .current {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .history-view li:nth-child(even) {
-    background-color: white;
+  background-color: white;
 }
 
 #animator-remove-btn {
-    margin-top: 3px;
-    margin-right: 6px;
-    cursor: pointer;
+  margin-top: 3px;
+  margin-right: 6px;
+  cursor: pointer;
 }
 
 
 .history-view li:nth-child(odd) {
-    background-color: #f3f6ff;
+  background-color: #f3f6ff;
 }
 
 .animator-list li:nth-child(even) {
-    background-color: white;
+  background-color: white;
 }
 
 .animator-list li:nth-child(odd) {
-    background-color: #f3f6ff;
+  background-color: #f3f6ff;
 }
 
 .history-view ul {
-    padding-left: 0px;
+  padding-left: 0px;
 }
 
 .trace-selector ul {
-    padding-left: 0px;
+  padding-left: 0px;
 }
 
 .animator-list li {
-    padding-left: 16px;
+  padding-left: 16px;
 }
 
 .history-view #sort {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .history-view .transparent {
-    zoom: 1;
-    filter: alpha(opacity=10);
-    opacity: 0.1;
+  zoom: 1;
+  filter: alpha(opacity=10);
+  opacity: 0.1;
 }
 
 .animator-list .active {
-    font-weight: bold;
-    background-color: #c3c6df;
+  font-weight: bold;
+  background-color: #c3c6df;
 }
 
 
 .animator-sublist {
-    margin-top: 8px;
-    margin-bottom: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .animator-sublist .model {
-    background-color: #666666;
-    padding: 4px;
-    padding-left: 18px;
-    border-radius: 6px;
-    color: white;
+  background-color: #666666;
+  padding: 4px;
+  padding-left: 18px;
+  border-radius: 6px;
+  color: white;
 }
 
 #hierarchy-view {
-    height: 100%;
-    width: 100%;
-    position:absolute;
-    left: 0;
-    top: 0;
+  height: 100%;
+  width: 100%;
+  position:absolute;
+  left: 0;
+  top: 0;
 }
 
 #disconnected-img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 70%;
-    height: 70%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
-    opacity: 0.4;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  height: 70%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.4;
 }
 
 #disconnected-msg {
-    text-align: center;
+  text-align: center;
 }
 
 
 
 /* entire container, keeps perspective */
 .flip-container {
-	  perspective: 1000;
-    float:left;
+  perspective: 1000;
+  float:left;
 }
-	/* flip the pane when hovered */
-	.flip-container:hover .flipper, .flip-container.hover .flipper {
-		transform: rotateY(180deg);
-	}
+/* flip the pane when hovered */
+.flip-container:hover .flipper, .flip-container.hover .flipper {
+  transform: rotateY(180deg);
+}
 
 .flip-container, .front, .back {
-	width: 240px;
-	height: 240px;
+  width: 240px;
+  height: 240px;
 }
 
 /* flip speed goes here */
 .flipper {
-	transition: 0.6s;
-	transform-style: preserve-3d;
+  transition: 0.6s;
+  transform-style: preserve-3d;
 
-	position: relative;
+  position: relative;
 }
 
 /* hide back of pane during swap */
 .front, .back {
-	backface-visibility: hidden;
+  backface-visibility: hidden;
 
-	position: absolute;
-	top: 0;
-	left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* front pane, placed above back */
 .front {
-	z-index: 2;
-	/* for firefox 31 */
-	transform: rotateY(0deg);
+  z-index: 2;
+  /* for firefox 31 */
+  transform: rotateY(0deg);
 }
 
 /* back, initially hidden pane */
 .back {
-	transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
 
 
- 
+
 #wrapper {
-    padding-right: 0;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
+  padding-right: 0;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 #wrapper.toggled {
-    padding-right: -400px;
+  padding-right: -400px;
 }
 
 #sidebar-wrapper {
-    z-index: 1000;
-    position: fixed;
-    right: 400px;
-    width: 0;
-    height: 100%;
-    margin-right: -400px;
-    overflow-y: auto;
-    background: #3c506d;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
+  z-index: 1000;
+  position: fixed;
+  right: 400px;
+  width: 0;
+  height: 100%;
+  margin-right: -400px;
+  overflow-y: auto;
+  background: #3c506d;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 #wrapper.toggled #sidebar-wrapper {
-    width: 400px;
+  width: 400px;
 }
 
 #page-content-wrapper {
-    width: 100%;
-    position: absolute;
-    padding: 15px;
+  width: 100%;
+  position: absolute;
+  padding: 15px;
 }
 
 #wrapper.toggled #page-content-wrapper {
-    position: absolute;
-    margin-right: -400px;
+  position: absolute;
+  margin-right: -400px;
 }
 
 /* Sidebar Styles */
 
 .sidebar-nav {
-    position: absolute;
-    top: 15;
-    width: 360px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  position: absolute;
+  top: 15;
+  width: 360px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 
 @media(min-width:768px) {
-    #wrapper {
-        padding-right: 400px;
-    }
+  #wrapper {
+    padding-right: 400px;
+  }
 
-    #wrapper.toggled {
-        padding-right: 0;
-    }
+  #wrapper.toggled {
+    padding-right: 0;
+  }
 
-    #sidebar-wrapper {
-        width: 400px;
-    }
+  #sidebar-wrapper {
+    width: 400px;
+  }
 
-    #wrapper.toggled #sidebar-wrapper {
-        width: 0;
-    }
+  #wrapper.toggled #sidebar-wrapper {
+    width: 0;
+  }
 
-    #page-content-wrapper {
-        padding: 20px;
-        position: relative;
-    }
+  #page-content-wrapper {
+    padding: 20px;
+    position: relative;
+  }
 
-    #wrapper.toggled #page-content-wrapper {
-        position: relative;
-        margin-right: 0;
-    }
+  #wrapper.toggled #page-content-wrapper {
+    position: relative;
+    margin-right: 0;
+  }
 }
 
 #modeline-search,#scroll-anchor {
