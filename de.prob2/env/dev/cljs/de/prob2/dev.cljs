@@ -12,6 +12,4 @@
 
 (weasel/connect "ws://localhost:9001" :verbose true)
 
-(println "pop goes the weasel")
-
 (core/init!)
