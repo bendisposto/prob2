@@ -15,8 +15,8 @@
       (if-not (empty? nt) (assoc e :display nt) e))))
 
 (defn get-commands
-  ([] (into  [{:name (i18n :open-file) :desc "Opens a "}
-              {:name "Shutdown Server" :action :kill :desc "Kills the ProB server. All running animations are killed and all unsaved data is discarded."} 
+  ([] (into  [{:name (i18n :open-file) :action :open-file :desc "Opens a "}
+              {:name "Shutdown Server" :action :kill :desc "Kills the ProB server. All running animations are killed and all unsaved data is discarded."}
               {:name "Foo" :desc "Foo ... obviously"}
               {:name "Bar"}]
              (for [e (range 10)] {:name (str "Some Command " e)})))
@@ -73,7 +73,7 @@
         items (:elems @ratom)
         selected (get (vec items) cur-index)]
     (condp = kind
-      :enter (let [action (get selected :action (keyword (h/kebap-case (:name selected))))]
+      :enter (let [action (get selected :action ::missing-action)]
                (rf/dispatch [action])
                (modeline-toggle))
       :up (if (< 0 cur-index)
@@ -92,6 +92,9 @@
               (swap! ratom update-in [:index] inc)))))
 
 
+(rf/register-handler
+ ::missing-action
+ (fn [db _] (js/alert "Missing action") db))
 
 
 (rf/register-handler

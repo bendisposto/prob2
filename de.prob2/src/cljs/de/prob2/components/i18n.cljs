@@ -13,23 +13,22 @@
     data))
 
 (defn init-messages []
-  (let [fs (js/require "fs")]
-    (.readdir
-     fs "./i18n"
-     (fn [err content]
-       (logp :reset)
-       (reset! messages
-               (into {}
-                     (for [c (array-seq content)]
-                       (do  (logp :loadlanguage c)
-                            {(keyword (second (re-find #"(.*)\.lang" c)))
-                             (read-language fs (str "./i18n/" c))}))))
-       (logp :lang @messages)))))
+  (let [fs (js/require "fs")
+        files (.readdirSync fs "./i18n")]
+    (into {}
+          (for [c (array-seq files)]
+            {(keyword (second (re-find #"(.*)\.lang" c)))
+             (read-language fs (str "./i18n/" c))}))))
 
-(init-messages)
 
 (defn set-language [l]
   (reset! language l))
 
 (defn i18n [key]
-  (get-in @messages [@language key] "missing message"))
+  (logp :resolbe key)
+  (when-not @messages
+    (logp :loading-languages)
+    (reset! messages (init-messages)))
+  (let [msg (get-in @messages [@language key] "missing message")]
+(logp :resolved key :in @messages :yielding msg)
+    msg))
