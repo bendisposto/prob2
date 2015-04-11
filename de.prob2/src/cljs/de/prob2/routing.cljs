@@ -60,8 +60,7 @@
    [:img {:id "disconnected-img" :src "./img/disconnected.svg"}]])
 
 (defn preloader-initializing []
-  (set! (-> (.getElementById js/document "bg") .-style .-webkitAnimationPlayState) "running")
-  (.toggleClass (js/jQuery "#footer") "toggled")
+  (.toggleClass (js/jQuery "#footer,#bg") "toggled")
   [:div])
 
 (defn file-dialog []
