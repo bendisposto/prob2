@@ -83,9 +83,11 @@
 (rf/register-handler :prob2/start-animation h/relay)
 
 (defn footer []
-  [:div
-   [:span (i18n :hint-modeline)]
-   [:span {:class "pull-right"} "(c) 2015"]])
+  (let [mc (rf/subscribe [:animator-count])]
+    [:div
+     [:span (i18n :hint-modeline)]
+     [:span (str " -  R: " @mc " ")]
+     [:span {:class "pull-right"} "(c) 2015"]]))
 
 
 (defn current-page []
