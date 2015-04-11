@@ -3,7 +3,8 @@
             [taoensso.encore :as enc  :refer (logf log logp)]
             [reagent.session :as session]
             [re-frame.core :as rf]
-            [de.prob2.helpers :as h]))
+            [de.prob2.helpers :as h]
+            [de.prob2.i18n :refer [i18n]]))
 
 (defn- mk-history-item [trace-id current {:keys [index] :as item}]
   ^{:key (str "h" index)}
@@ -19,7 +20,7 @@
   (let [sort-order (r/atom identity)]
     (fn []
       (let [t (rf/subscribe [:trace id])
-            h (cons {:name "-- uninitialized --"
+            h (cons {:name (i18n :not-initialized)
                      :return-values []
                      :parameters []
                      :id -1

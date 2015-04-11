@@ -14,7 +14,8 @@
             [de.prob2.core :as core]
             [de.prob2.actions]
             [de.prob2.helpers :as h :refer [mk-url]]
-            [de.prob2.components.modeline :refer [modeline]])
+            [de.prob2.components.modeline :refer [modeline]]
+            [de.prob2.i18n :refer [i18n]])
   (:import goog.History))
 
 ;; -------------------------
@@ -58,8 +59,8 @@
 
 (defn preloader-waiting []
   [:div {:id "disconnected-screen"}
-   [:h1 {:id "disconnected-msg"} "Waiting for connection"]
-   [:img {:id "disconnected-img" :src (mk-url "img/disconnected.svg")}]])
+   [:h1 {:id "disconnected-msg"} (i18n :connecting)]
+   [:img {:id "disconnected-img" :src "./img/disconnected.svg"}]])
 
 (defn preloader-initializing []
   (set! (-> (.getElementById js/document "bg") .-style .-webkitAnimationPlayState) "running")
@@ -87,7 +88,7 @@
 
 (defn footer []
   [:div
-   [:span "Press CTRL-SPACE for Fast-Menu"]
+   [:span (i18n :hint-modeline)]
    [:span {:class "pull-right"} "(c) 2015"]])
 
 

@@ -1,0 +1,5 @@
+:open-file  "Open file"
+:search     "Search ..."
+:connecting "Connecting to server ..."
+:hint-modeline "Press Ctrl+Space for the quick menu"
+:not-initialized "-- not initialized --"

@@ -3,6 +3,7 @@
              [reagent.core :as r]
              [re-frame.core :as rf]
              [de.prob2.helpers :as h]
+             [de.prob2.i18n :refer [i18n]]
              [goog.style :as style]))
 
 
@@ -14,8 +15,8 @@
       (if-not (empty? nt) (assoc e :display nt) e))))
 
 (defn get-commands
-  ([] (into  [{:name "Open File" :desc "Opens a "}
-              {:name "Shutdown Server" :action :kill :desc "Kills the ProB server. All running animations are killed and all unsaved data is discarded."}
+  ([] (into  [{:name (i18n :open-file) :desc "Opens a "}
+              {:name "Shutdown Server" :action :kill :desc "Kills the ProB server. All running animations are killed and all unsaved data is discarded."} 
               {:name "Foo" :desc "Foo ... obviously"}
               {:name "Bar"}]
              (for [e (range 10)] {:name (str "Some Command " e)})))
@@ -49,7 +50,7 @@
            [:input {:type "text"
                     :id "modeline-search"
                     :class "form-control"
-                    :placeholder "Search..."
+                    :placeholder (i18n :search)
                     :role "search"
                     :on-change (fn [e] (reset! items {:index 0 :elems (get-commands (.-value (.-target e)))}))
                     :on-key-down (fn [e]
