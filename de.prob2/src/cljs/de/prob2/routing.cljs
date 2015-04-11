@@ -63,6 +63,7 @@
 
 (defn preloader-initializing []
   (set! (-> (.getElementById js/document "bg") .-style .-webkitAnimationPlayState) "running")
+  (.toggleClass (js/jQuery "#footer") "toggled")
   [:div])
 
 (defn file-dialog []
@@ -84,6 +85,10 @@
 
 (rf/register-handler :prob2/start-animation h/relay)
 
+(defn footer []
+  [:div
+   [:span "Press CTRL-SPACE for Fast-Menu"]
+   [:span {:class "pull-right"} "(c) 2015"]])
 
 
 (defn current-page []
@@ -114,4 +119,6 @@
   (init-keybindings)
   (rf/dispatch [:initialise-db])
   (r/render-component [modeline] (.getElementById js/document "minibuffer"))
-  (r/render-component [top-panel] (.getElementById js/document "app")))
+  (r/render-component [top-panel] (.getElementById js/document "app"))
+  (r/render-component [footer] (.getElementById js/document "footer-content"))
+  )

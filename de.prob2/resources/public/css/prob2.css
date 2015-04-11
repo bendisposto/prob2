@@ -1,6 +1,6 @@
 @-webkit-keyframes fade-ani {
   from {opacity: 1; -webkit-filter: blur(0px);}
-  to {opacity: 0.05; -webkit-filter: blur(8px);}
+  to {opacity: 0.05; -webkit-filter: blur(5px) saturate(0.2);}
 }
 
 #bg {
@@ -14,7 +14,7 @@
   -webkit-animation-duration: 3s;
   -webkit-animation-play-state: paused;
   opacity: 0.05;
-  -webkit-filter: blur(8px);
+  -webkit-filter:  blur(5px) saturate(0.2);
 }
 
 .history-view,.trace-selector li {
@@ -260,9 +260,30 @@
   margin-bottom: 10px;
 }
 
+#wrapper {
+  padding-bottom: 60px;
+}
 
 
 .list-group-item u {
   text-decoration: underline;
   color:orange;
 }
+
+#footer.toggled {
+  bottom: -60;  
+}
+
+.footer {
+  opacity: 1;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f4efdc;
+  -webkit-transition: bottom 3s ease;
+  padding-top: 15px;
+}
+
+
