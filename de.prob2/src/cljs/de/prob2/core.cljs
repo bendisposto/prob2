@@ -43,10 +43,6 @@
 (defn home-page []
   [trace-selection-view])
 
-(defn about-page []
-  [:div [:h2 "About de.prob2"]
-   [:div [:a {:href "#/"} "go to the home page"]]])
-
 (defn animation-view []
   (let [id (session/get :focused-uuid)]
     [:div {:id "h1"}
@@ -63,7 +59,3 @@
     [hierarchy-view id]))
 
 
-(defn disconnected-page []
-  [:div {:class "alert alert-danger"}
-   [:h4 "Disconnected"]
-   [:p "The client has lost the connection to the server. You can try reloading this page, but maybe you need to check your connection or restart the server."]])
