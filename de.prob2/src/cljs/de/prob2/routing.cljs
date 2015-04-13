@@ -14,7 +14,8 @@
             [de.prob2.core :as core]
             [de.prob2.actions]
             [de.prob2.helpers :as h :refer [mk-url]]
-            [de.prob2.components.modeline :refer [modeline]])
+            [de.prob2.components.modeline :refer [modeline]]
+            [de.prob2.i18n :refer [i18n]])
   (:import goog.History))
 
 ;; -------------------------
@@ -27,9 +28,7 @@
   (secretary/defroute "/" []
     (session/put! :current-page #'core/home-page))
 
-  (secretary/defroute "/about" []
-    (session/put! :current-page #'core/about-page))
-
+  
   (secretary/defroute "/trace/:uuid" [uuid]
     (session/put! :current-page #'core/animation-view)
     (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
@@ -38,8 +37,7 @@
     (session/put! :current-page #'core/machine-hierarchy)
     (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
 
-  #_(secretary/defroute "/stateview" []
-      (session/put! :current-page #'core/state-view)))
+  )
 
 ;; -------------------------
 ;; History
@@ -58,14 +56,12 @@
 
 (defn preloader-waiting []
   [:div {:id "disconnected-screen"}
-   [:h1 {:id "disconnected-msg"} "Waiting for connection"]
-   [:img {:id "disconnected-img" :src (mk-url "img/disconnected.svg")}]])
+   [:h1 {:id "disconnected-msg"} (i18n :connecting)]
+   [:img {:id "disconnected-img" :src "./img/disconnected.svg"}]])
 
 (defn preloader-initializing []
-  [:div
-   [:h1 "Initialising ..."]
-   [prob-logo]
-   ])
+  (.toggleClass (js/jQuery "#footer,#bg") "toggled")
+  [:div])
 
 (defn file-dialog []
   [:input {:style {:display "none"}
@@ -86,6 +82,12 @@
 
 (rf/register-handler :prob2/start-animation h/relay)
 
+(defn footer []
+  (let [mc (rf/subscribe [:animator-count])]
+    [:div
+     [:span (i18n :hint-modeline)]
+     [:span (str " -  R: " @mc " ")]
+     [:span {:class "pull-right"} "(c) 2015"]]))
 
 
 (defn current-page []
@@ -116,4 +118,6 @@
   (init-keybindings)
   (rf/dispatch [:initialise-db])
   (r/render-component [modeline] (.getElementById js/document "minibuffer"))
-  (r/render-component [top-panel] (.getElementById js/document "app")))
+  (r/render-component [top-panel] (.getElementById js/document "app"))
+  (r/render-component [footer] (.getElementById js/document "footer-content"))
+  )

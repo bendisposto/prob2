@@ -1,6 +1,6 @@
 (ns de.prob2.subs
   (:require-macros [reagent.ratom :as ra :refer [reaction]])
-  (:require [re-frame.core :as rf :refer [register-sub]]
+  (:require [re-frame.core :as rf :refer [register-sub subscribe]]
             [taoensso.encore :as enc  :refer (logf log logp)]))
 
 
@@ -52,6 +52,12 @@
          model (reaction (get-in @db [:models @model-id]))]
      (reaction  [(:dependency-graph @model) (:components @model)]))))
 
+(register-sub
+ :animator-count
+ (fn [db _]
+   (let [traces (subscribe [:traces])
+         grouped (reaction (group-by :model (vals @traces)))]
+     (reaction (count @grouped)))))
 
 ;; Watch out! If you use this subscription you tie your implementation
 ;; to a specific layout of the ui state tree. If possible, use a
