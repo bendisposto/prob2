@@ -78,10 +78,20 @@
 
 (def whitespace #{\newline \space \tab \formfeed \backspace \return})
 (def digit #{\0 \1 \2 \3 \4 \5 \6 \7 \8 \9})
+(def symbols #{\! \# \% \&  \* \+ \- \. \/ \:  \{ \< \> \\  \|  \=  \~ \⤀ \ \↠ \∀ \≠ \ \◁ 
+\ \⦂ \⊂ \⋂ \ \↣ \∃ \∣ \⋃ \ℤ \≤ \⩤ \⊄ \⊤ \‥ \∅ \∥ \≥ \⩥ \⊥ \↦ \⊆ \∧ \∈ 
+\∨ \⊈ \∉ \∩ \∪ \¬ \→ \⇒ \− \⤔ \↔ \⇔ \≔ \⤖ \∖ \· \× \÷ \▷ \∗ \⊗ \⇸ \∘ \; 
+\λ \∼ \^ \ℙ \ℕ })
+
+(defn identifier-symbol? [c]
+    (cond 
+        (symbols c)    false
+        (whitespace c) false
+        :else          true))
 
 (defn extract-identifier [s]
-    (let [[h t] (split-with #(Character/isUnicodeIdentifierPart %) s)]
-        [(apply str h) t]))
+  (let [[h t] (split-with identifier-symbol? s)]
+    [(apply str h) t]))
 
 (defn match? 
     "checks to see if the pattern is a prefix to the sequence. However, after the sequence there needs to be a whitespace, a parenthesis, or end of stream"
@@ -252,12 +262,9 @@
 (defmethod lex \ℕ [s] (cond 
                         (starts-with? s "ℕ1") [:nat1 (drop 2 s)]
                         \ℕ                    [:nat  (rest s)]))
-(defmethod lex \_ [s] (extract-identifier s))
-(defmethod lex :default [s] (let [c (first s)] 
-                                (cond 
-                                    (Character/isUnicodeIdentifierStart c) (extract-identifier s)
-                                    (digit c) (extract-identifier s)
-                                    :else  [(str c) (rest s)])))
+(defmethod lex :default [s] (cond 
+                                 (whitespace (first s)) [(str (first s)) (rest s)]
+                                 :else              (extract-identifier s)))
 
 (defn tokenize ([s] (tokenize s []))
     ([s tokens] (if (empty? s) (reverse tokens)
