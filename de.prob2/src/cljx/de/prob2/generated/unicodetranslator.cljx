@@ -81,7 +81,7 @@
 (def symbols #{\! \# \% \&  \* \+ \- \. \/ \:  \{ \< \> \\  \|  \=  \~ \⤀ \ \↠ \∀ \≠ \ \◁ 
 \ \⦂ \⊂ \⋂ \ \↣ \∃ \∣ \⋃ \ℤ \≤ \⩤ \⊄ \⊤ \‥ \∅ \∥ \≥ \⩥ \⊥ \↦ \⊆ \∧ \∈ 
 \∨ \⊈ \∉ \∩ \∪ \¬ \→ \⇒ \− \⤔ \↔ \⇔ \≔ \⤖ \∖ \· \× \÷ \▷ \∗ \⊗ \⇸ \∘ \; 
-\λ \∼ \^ \ℙ \ℕ })
+\λ \∼ \^ \ℙ \ℕ \(})
 
 (defn identifier-symbol? [c]
     (cond 
@@ -262,6 +262,7 @@
 (defmethod lex \ℕ [s] (cond 
                         (starts-with? s "ℕ1") [:nat1 (drop 2 s)]
                         \ℕ                    [:nat  (rest s)]))
+(defmethod lex \( [s] ["(" (rest s)])
 (defmethod lex :default [s] (cond 
                                  (whitespace (first s)) [(str (first s)) (rest s)]
                                  :else              (extract-identifier s)))
@@ -274,14 +275,13 @@
 (defn add-space-if-necessary [[element look-ahead]]
     (let [l (last element)
           f (first look-ahead)]
-        (if (and (or (Character/isLetter l) (= l \') (digit l)) 
-                (Character/isLetter f))
+        (if (and (identifier-symbol? l) (identifier-symbol? f))
             (str element " ") element)))
 
 (defn ascii [s] 
     (let [token-stream (tokenize s)
           ascii-list   (map #(:ascii (get token-map % {:ascii %})) token-stream)
-          partitioned  (partition 2 1 ["1"] ascii-list)] ; padding is a string for which the first element Character/isLetter returns false
+          partitioned  (partition 2 1 [":"] ascii-list)] ; padding is a string for which the first element identifier-symbol? returns false
         (apply str (map add-space-if-necessary partitioned))))
 
 (defn unicode [s] 
