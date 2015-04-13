@@ -149,6 +149,8 @@
                         (starts-with? s ":|")  [:bcmsuch  (drop 2 s)]
                         (starts-with? s ":=")  [:bcmeq    (drop 2 s)]
                         (starts-with? s "::")  [:bcmin    (drop 2 s)]
+                        (starts-with? s ":\u2223") [:bcmsuch (drop 2 s)]
+                        (starts-with? s ":\u2208") [:bcmin (drop 2 s)]
                         ":"                    [:in       (rest s)])) 
 (defmethod lex \{ [s] (cond
                         (starts-with? s "{}")  [:emptyset (drop 2 s)]
@@ -189,9 +191,88 @@
                         (starts-with? s ">->")      [:tinj  (drop 3 s)]
                         (starts-with? s ">=")       [:geq   (drop 2 s)]
                         \>                          [\>     (rest s)]))
-(defmethod lex \~ [s] [:conv  (rest s)])
 
-(defn tokenize ([s] (tokenize s [])
+(defmethod lex \~ [s]  [:conv  (rest s)])
+(defmethod lex \⤀ [s] [:psur (rest s)])
+(defmethod lex \ [s]  [:trel (rest s)])
+(defmethod lex \↠ [s]  [:tsur (rest s)])
+(defmethod lex \∀ [s] [:forall (rest s)])
+(defmethod lex \≠ [s] [:neq (rest s)])
+(defmethod lex \ [s] [:srel (rest s)])
+(defmethod lex \◁ [s] [:domres (rest s)])
+(defmethod lex \ [s] [:strel (rest s)])
+(defmethod lex \⦂ [s] [:oftype (rest s)])
+(defmethod lex \⊂ [s] [:subset (rest s)])
+(defmethod lex \⋂ [s] [:inter (rest s)])
+(defmethod lex \ [s] [:ovl (rest s)])
+(defmethod lex \↣ [s] [:tinj (rest s)])
+(defmethod lex \∃ [s] [:exists (rest s)])
+(defmethod lex \∣ [s] [:mid (rest s)])
+(defmethod lex \⋃ [s] [:union (rest s)])
+(defmethod lex \ℤ [s] [:intg (rest s)])
+(defmethod lex \≤ [s] [:leq (rest s)])
+(defmethod lex \⩤ [s] [:domsub (rest s)])
+(defmethod lex \⊄ [s] [:notsubset (rest s)])
+(defmethod lex \⊤ [s] [:btrue (rest s)])
+(defmethod lex \‥ [s] [:dotdot (rest s)])
+(defmethod lex \∅ [s] [:emptyset (rest s)])
+(defmethod lex \∥ [s] [:pprod (rest s)])
+(defmethod lex \≥ [s] [:geq (rest s)])
+(defmethod lex \⩥ [s] [:ransub (rest s)])
+(defmethod lex \⊥ [s] [:bfalse (rest s)])
+(defmethod lex \↦ [s] [:mapsto (rest s)])
+(defmethod lex \⊆ [s] [:subseteq (rest s)])
+(defmethod lex \∧ [s] [:land (rest s)])
+(defmethod lex \∈ [s] [:in (rest s)])
+(defmethod lex \∨ [s] [:lor (rest s)])
+(defmethod lex \⊈ [s] [:notsubseteq (rest s)])
+(defmethod lex \∉ [s] [:notin (rest s)])
+(defmethod lex \∩ [s] [:binter (rest s)])
+(defmethod lex \∪ [s] [:bunion (rest s)])
+(defmethod lex \¬ [s] [:lnot (rest s)])
+(defmethod lex \→ [s] [:tfun (rest s)])
+(defmethod lex \⇒ [s] [:limp (rest s)])
+(defmethod lex \− [s] [:minus (rest s)])
+(defmethod lex \⤔ [s] [:pinj (rest s)])
+(defmethod lex \↔ [s] [:rel (rest s)])
+(defmethod lex \⇔ [s] [:leqv (rest s)])
+(defmethod lex \≔ [s] [:bcmeq (rest s)])
+(defmethod lex \⤖ [s] [:tbij (rest s)])
+(defmethod lex \∖ [s] [:setminus (rest s)])
+(defmethod lex \· [s] [:qdot (rest s)])
+(defmethod lex \× [s] [:cprod (rest s)])
+(defmethod lex \÷ [s] [:div (rest s)])
+(defmethod lex \▷ [s] [:ranres (rest s)])
+(defmethod lex \∗ [s] [:mult (rest s)])
+(defmethod lex \⊗ [s] [:dprod (rest s)])
+(defmethod lex \⇸ [s] [:pfun (rest s)])
+(defmethod lex \∘ [s] [:bcomp (rest s)])
+(defmethod lex \; [s] [:fcomp (rest s)])
+(defmethod lex \λ [s] [:lambda (rest s)])
+(defmethod lex \∼ [s] [:conv (rest s)])
+(defmethod lex \^ [s] [:token :expn, (rest s)])
+(defmethod lex \ℙ [s] (cond
+                        (starts-with? s "ℙ1") [:pow1 (drop 2 s)]
+                        \ℙ                    [:pow  (rest s)]))
+(defmethod lex \ℕ [s] (cond 
+                        (starts-with? s "ℕ1") [:nat1 (drop 2 s)]
+                        \ℕ                    [:nat  (rest s)]))
+(defmethod lex \_ [s] (extract-identifier s))
+(defmethod lex :default [s] (let [c (first s)] 
+                                (cond 
+                                    (Character/isUnicodeIdentifierStart c) (extract-identifier s)
+                                    (digit c) (extract-identifier s)
+                                    :else  [c (rest s)])))
+
+(defn tokenize ([s] (tokenize s []))
     ([s tokens] (if (empty? s) (reverse tokens)
                     (let [[token r] (lex s)]
-                        (recur r (cons t tokens)))))))
+                        (recur r (cons token tokens))))))
+
+(defn ascii [s] 
+    (let [token-stream (tokenize s)]
+        (apply str (map #(:ascii (get token-map % {:ascii %})) token-stream))))
+
+(defn unicode [s] 
+    (let [token-stream (tokenize s)]
+        (apply str (map #(:unicode (get token-map % {:unicode %})) token-stream))))
