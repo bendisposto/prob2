@@ -1,5 +1,5 @@
 (ns de.prob2.unicode-toascii
-	(:require [de.prob2.unicodetranslator :refer (ascii)])
+	(:require [de.prob2.generated.unicodetranslator :refer (ascii)])
 	(:use clojure.test))
 
 (deftest TIn

@@ -1,5 +1,5 @@
 (ns de.prob2.other-unicode-tests
-	(:require [de.prob2.unicodetranslator :refer (ascii,unicode)])
+	(:require [de.prob2.generated.unicodetranslator :refer (ascii,unicode)])
 	(:use clojure.test))
 
 (deftest empty-from-ascii (is (= "" (ascii ""))))

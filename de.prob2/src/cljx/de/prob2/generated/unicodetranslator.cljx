@@ -1,4 +1,4 @@
-(ns de.prob2.unicodetranslator
+(ns de.prob2.generated.unicodetranslator
   (:require [clojure.string :as string]))
 
 (def token-map
