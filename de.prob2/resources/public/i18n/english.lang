@@ -3,3 +3,4 @@
 :connecting "Connecting to server ..."
 :hint-modeline "Press Ctrl+Space for the quick menu"
 :not-initialized "-- not initialized --"
+:animations "Animations"
