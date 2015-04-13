@@ -76,23 +76,19 @@
         false
         (=  (take (count prefix) l) (seq prefix))))
 
-(def whitespace-or-sep #{\newline \space \tab \formfeed \backspace \return \(})
+(def whitespace #{\newline \space \tab \formfeed \backspace \return})
 (def digit #{\0 \1 \2 \3 \4 \5 \6 \7 \8 \9})
 
 (defn extract-identifier [s]
     (let [[h t] (split-with #(Character/isUnicodeIdentifierPart %) s)]
         [(apply str h) t]))
 
-(defn extract-number [s]
-    (let [[h t] (split-with digit s)]
-        [(apply str h) t]))
-
 (defn match? 
-    "checks to see if the pattern is a prefix to the sequence. However, after the sequence there needs to be either a whitespace or the end"
+    "checks to see if the pattern is a prefix to the sequence. However, after the sequence there needs to be a whitespace, a parenthesis, or end of stream"
     [s pattern]
     (let [p      (seq pattern)
           pcount (count p)]
-        (when (starts-with? s p) (or (= (count s) pcount) (whitespace-or-sep (nth s pcount))))))
+        (when (starts-with? s p) (or (= pcount (count s)) (whitespace (nth s pcount)) (= \( (nth s pcount))))))
 
 (defn handle-letters [s pattern token]
     (if (match? s pattern) [token (drop (count pattern) s)] (extract-identifier s)))
@@ -114,7 +110,7 @@
 (defmethod lex \+ [s] (cond 
                         (starts-with? s "+->")   [:pfun  (drop 3 s)]
                         (starts-with? s "+>>")   [:psur  (drop 3 s)]
-                        :else                    [\+     (rest s)]))
+                        :else                    ["+"     (rest s)]))
 (defmethod lex \- [s] (cond 
                         (starts-with? s "-->")   [:tfun  (drop 3 s)]
                         (starts-with? s "->>")   [:tsur  (drop 3 s)]
@@ -154,7 +150,7 @@
                         ":"                    [:in       (rest s)])) 
 (defmethod lex \{ [s] (cond
                         (starts-with? s "{}")  [:emptyset (drop 2 s)]
-                        "{"                     [\{        (rest s)]))
+                        "{"                     ["{"        (rest s)]))
 (defmethod lex \< [s] (cond
                         (starts-with? s "<<->>") [:strel  (drop 5 s)]
                         (starts-with? s "<->>")  [:srel   (drop 4 s)]
@@ -167,7 +163,7 @@
                         (starts-with? s "<+")    [:ovl    (drop 2 s)]
                         (starts-with? s "<|")    [:domres (drop 2 s)]
                         (starts-with? s "<:")    [:subseteq (drop 2 s)]
-                        \<                       [\<      (rest s)]))
+                        \<                       ["<"      (rest s)]))
 (defmethod lex \\ [s] (cond
                         (starts-with? s "\\/")      [:bunion   (drop 2 s)]
                         (starts-with? s "\\fcomp")  [:fcomp    (drop 5 s)]
@@ -183,14 +179,14 @@
                         \|                          [:mid (rest s)]))
 (defmethod lex \= [s] (cond 
                         (starts-with? s "=>")       [:limp  (drop 2 s)]
-                        "="                         [\=     (rest s)]))
+                        "="                         ["="     (rest s)]))
 (defmethod lex \> [s] (cond
                         (starts-with? s "><")       [:dprod (drop 2 s)]
                         (starts-with? s ">+>")      [:pinj  (drop 3 s)]
                         (starts-with? s ">->>")     [:tbij  (drop 4 s)]
                         (starts-with? s ">->")      [:tinj  (drop 3 s)]
                         (starts-with? s ">=")       [:geq   (drop 2 s)]
-                        \>                          [\>     (rest s)]))
+                        \>                          [">"     (rest s)]))
 (defmethod lex \~ [s]  [:conv  (rest s)])
 (defmethod lex \⤀ [s] [:psur (rest s)])
 (defmethod lex \ [s]  [:trel (rest s)])
@@ -261,16 +257,25 @@
                                 (cond 
                                     (Character/isUnicodeIdentifierStart c) (extract-identifier s)
                                     (digit c) (extract-identifier s)
-                                    :else  [c (rest s)])))
+                                    :else  [(str c) (rest s)])))
 
 (defn tokenize ([s] (tokenize s []))
     ([s tokens] (if (empty? s) (reverse tokens)
                     (let [[token r] (lex s)]
                         (recur r (cons token tokens))))))
 
+(defn add-space-if-necessary [[element look-ahead]]
+    (let [l (last element)
+          f (first look-ahead)]
+        (if (and (or (Character/isLetter l) (= l \') (digit l)) 
+                (Character/isLetter f))
+            (str element " ") element)))
+
 (defn ascii [s] 
-    (let [token-stream (tokenize s)]
-        (apply str (map #(:ascii (get token-map % {:ascii %})) token-stream))))
+    (let [token-stream (tokenize s)
+          ascii-list   (map #(:ascii (get token-map % {:ascii %})) token-stream)
+          partitioned  (partition 2 1 ["1"] ascii-list)] ; padding is a string for which the first element Character/isLetter returns false
+        (apply str (map add-space-if-necessary partitioned))))
 
 (defn unicode [s] 
     (let [token-stream (tokenize s)]
