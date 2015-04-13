@@ -1,88 +1,73 @@
 (ns de.prob2.unicodetranslator
   (:require [clojure.string :as string]))
 
-#_(defmulti lex [s] (first s))
-
-#_(defmethod lex \: [s] (cond
-						(starts-with? s ":!") :bcmsuch
-            (starts-with? s ":=") :bcmeq
-            :else                :in))
-
-(def tokens
-[{:token :in          :ascii ":"     :unicode "\u2208"}
-{:token :notsubseteq :ascii "/<:"    :unicode "\u2288"}
-{:token :notsubset   :ascii "/<<:"   :unicode "\u2284"}
-{:token :subseteq    :ascii "<:"     :unicode "\u2286"}
-{:token :setminus    :ascii "\\"     :unicode "\u2216"}
-{:token :dotdot      :ascii ".."     :unicode "\u2025"}
-{:token :nat1        :ascii "NAT1"   :unicode "\u2115\u0031"}
-{:token :nat         :ascii "NAT"    :unicode "\u2115"}
-{:token :emptyset    :ascii "{}"     :unicode "\u2205"}
-{:token :bcmsuch     :ascii ":|"     :unicode "\u2223"}
-{:token :bfalse      :ascii "false"  :unicode "\u22a5"}
-{:token :forall      :ascii "!"      :unicode "\u2200"}
-{:token :exists      :ascii "#"      :unicode "\u2203"}
-{:token :mapsto      :ascii "|->"    :unicode "\u21a6"}
-{:token :btrue       :ascii "true"   :unicode "\u22a4"}
-{:token :subset      :ascii "<<:"    :unicode "\u2282"}
-{:token :bunion      :ascii "\\/"    :unicode "\u222a"}
-{:token :binter      :ascii "/\\"    :unicode "\u2229"}
-{:token :domres      :ascii "<|"     :unicode "\u25c1"}
-{:token :ranres      :ascii "|>"     :unicode "\u25b7"}
-{:token :domsub      :ascii "<<|"    :unicode "\u2a64"}
-{:token :ransub      :ascii "|>>"    :unicode "\u2a65"}
-{:token :lambda      :ascii "%"      :unicode "\u03bb"}
-{:token :oftype      :ascii "oftype" :unicode "\u2982"}
-{:token :notin       :ascii "/:"     :unicode "\u2209"}
-{:token :cprod       :ascii "**"     :unicode "\u00d7"}
-{:token :union       :ascii "UNION"  :unicode "\u22c3"}
-{:token :inter       :ascii "INTER"  :unicode "\u22c2"}
-{:token :fcomp       :ascii "\\fcomp" :unicode "\u003b"}
-{:token :bcomp       :ascii "circ"   :unicode "\u2218"}
-{:token :strel       :ascii "<<->>"  :unicode "\ue102"}
-{:token :dprod       :ascii "><"     :unicode "\u2297"}
-{:token :pprod       :ascii "||"     :unicode "\u2225"}
-{:token :bcmeq       :ascii ":="     :unicode "\u2254"}
-{:token :bcmin       :ascii "::"     :unicode "\u2208"}
-{:token :intg        :ascii "INT"    :unicode "\u2124"}
-{:token :land        :ascii "&"      :unicode "\u2227"}
-{:token :limp        :ascii "=>"     :unicode "\u21d2"}
-{:token :leqv        :ascii "<=>"    :unicode "\u21d4"}
-{:token :lnot        :ascii "not"    :unicode "\u00ac"}
-{:token :qdot        :ascii "."      :unicode "\u00b7"}
-{:token :conv        :ascii "~"      :unicode "\u223c"}
-{:token :trel        :ascii "<<->"   :unicode "\ue100"}
-{:token :srel        :ascii "<->>"   :unicode "\ue101"}
-{:token :pfun        :ascii "+->"    :unicode "\u21f8"}
-{:token :tfun        :ascii "-->"    :unicode "\u2192"}
-{:token :pinj        :ascii ">+>"    :unicode "\u2914"}
-{:token :tinj        :ascii ">->"    :unicode "\u21a3"}
-{:token :psur        :ascii "+>>"    :unicode "\u2900"}
-{:token :tsur        :ascii "->>"    :unicode "\u21a0"}
-{:token :tbij        :ascii ">->>"   :unicode "\u2916"}
-{:token :expn        :ascii "\\expn" :unicode "\u005e"}
-{:token :lor         :ascii "or"     :unicode "\u2228"}
-{:token :pow1        :ascii "POW1"   :unicode "\u2119\u0031"}
-{:token :pow         :ascii "POW"    :unicode "\u2119"}
-{:token :mid         :ascii "\\mid"  :unicode "\u2223"}
-{:token :neq         :ascii "/="     :unicode "\u2260"}
-{:token :rel         :ascii "<->"    :unicode "\u2194"}
-{:token :ovl         :ascii "<+"     :unicode "\ue103"}
-{:token :leq         :ascii "<="     :unicode "\u2264"}
-{:token :geq         :ascii ">="     :unicode "\u2265"}
-{:token :div         :ascii "/"      :unicode "\u00f7"}
-{:token :mult        :ascii "*"      :unicode "\u2217"}
-{:token :minus       :ascii "-"      :unicode "\u2212"}
-{:token :take        :ascii "/|\\"   :unicode "/|\\"}
-{:token :drop        :ascii "\\|/"   :unicode "\\|/"}])
-
-
-(defn ascii [s] s)
-
-(defn unicode [s] s)
-
-(defn tokenize [s]
-  (let [sp (string/split s #"\s+")]))
+(def token-map
+{:in         {:token :in          :ascii ":"      :unicode "\u2208"}
+:notsubseteq {:token :notsubseteq :ascii "/<:"    :unicode "\u2288"}
+:notsubset   {:token :notsubset   :ascii "/<<:"   :unicode "\u2284"}
+:subseteq    {:token :subseteq    :ascii "<:"     :unicode "\u2286"}
+:setminus    {:token :setminus    :ascii "\\"     :unicode "\u2216"}
+:dotdot      {:token :dotdot      :ascii ".."     :unicode "\u2025"}
+:nat1        {:token :nat1        :ascii "NAT1"   :unicode "\u2115\u0031"}
+:nat         {:token :nat         :ascii "NAT"    :unicode "\u2115"}
+:emptyset    {:token :emptyset    :ascii "{}"     :unicode "\u2205"}
+:bcmsuch     {:token :bcmsuch     :ascii ":|"     :unicode ":\u2223"}
+:bfalse      {:token :bfalse      :ascii "false"  :unicode "\u22a5"}
+:forall      {:token :forall      :ascii "!"      :unicode "\u2200"}
+:exists      {:token :exists      :ascii "#"      :unicode "\u2203"}
+:mapsto      {:token :mapsto      :ascii "|->"    :unicode "\u21a6"}
+:btrue       {:token :btrue       :ascii "true"   :unicode "\u22a4"}
+:subset      {:token :subset      :ascii "<<:"    :unicode "\u2282"}
+:bunion      {:token :bunion      :ascii "\\/"    :unicode "\u222a"}
+:binter      {:token :binter      :ascii "/\\"    :unicode "\u2229"}
+:domres      {:token :domres      :ascii "<|"     :unicode "\u25c1"}
+:ranres      {:token :ranres      :ascii "|>"     :unicode "\u25b7"}
+:domsub      {:token :domsub      :ascii "<<|"    :unicode "\u2a64"}
+:ransub      {:token :ransub      :ascii "|>>"    :unicode "\u2a65"}
+:lambda      {:token :lambda      :ascii "%"      :unicode "\u03bb"}
+:oftype      {:token :oftype      :ascii "oftype" :unicode "\u2982"}
+:notin       {:token :notin       :ascii "/:"     :unicode "\u2209"}
+:cprod       {:token :cprod       :ascii "**"     :unicode "\u00d7"}
+:union       {:token :union       :ascii "UNION"  :unicode "\u22c3"}
+:inter       {:token :inter       :ascii "INTER"  :unicode "\u22c2"}
+:fcomp       {:token :fcomp       :ascii "\\fcomp" :unicode "\u003b"}
+:bcomp       {:token :bcomp       :ascii "circ"   :unicode "\u2218"}
+:strel       {:token :strel       :ascii "<<->>"  :unicode "\ue102"}
+:dprod       {:token :dprod       :ascii "><"     :unicode "\u2297"}
+:pprod       {:token :pprod       :ascii "||"     :unicode "\u2225"}
+:bcmeq       {:token :bcmeq       :ascii ":="     :unicode "\u2254"}
+:bcmin       {:token :bcmin       :ascii "::"     :unicode ":\u2208"}
+:intg        {:token :intg        :ascii "INT"    :unicode "\u2124"}
+:land        {:token :land        :ascii "&"      :unicode "\u2227"}
+:limp        {:token :limp        :ascii "=>"     :unicode "\u21d2"}
+:leqv        {:token :leqv        :ascii "<=>"    :unicode "\u21d4"}
+:lnot        {:token :lnot        :ascii "not"    :unicode "\u00ac"}
+:qdot        {:token :qdot        :ascii "."      :unicode "\u00b7"}
+:conv        {:token :conv        :ascii "~"      :unicode "\u223c"}
+:trel        {:token :trel        :ascii "<<->"   :unicode "\ue100"}
+:srel        {:token :srel        :ascii "<->>"   :unicode "\ue101"}
+:pfun        {:token :pfun        :ascii "+->"    :unicode "\u21f8"}
+:tfun        {:token :tfun        :ascii "-->"    :unicode "\u2192"}
+:pinj        {:token :pinj        :ascii ">+>"    :unicode "\u2914"}
+:tinj        {:token :tinj        :ascii ">->"    :unicode "\u21a3"}
+:psur        {:token :psur        :ascii "+>>"    :unicode "\u2900"}
+:tsur        {:token :tsur        :ascii "->>"    :unicode "\u21a0"}
+:tbij        {:token :tbij        :ascii ">->>"   :unicode "\u2916"}
+:expn        {:token :expn        :ascii "\\expn" :unicode "\u005e"}
+:lor         {:token :lor         :ascii "or"     :unicode "\u2228"}
+:pow1        {:token :pow1        :ascii "POW1"   :unicode "\u2119\u0031"}
+:pow         {:token :pow         :ascii "POW"    :unicode "\u2119"}
+:mid         {:token :mid         :ascii "\\mid"  :unicode "\u2223"}
+:neq         {:token :neq         :ascii "/="     :unicode "\u2260"}
+:rel         {:token :rel         :ascii "<->"    :unicode "\u2194"}
+:ovl         {:token :ovl         :ascii "<+"     :unicode "\ue103"}
+:leq         {:token :leq         :ascii "<="     :unicode "\u2264"}
+:geq         {:token :geq         :ascii ">="     :unicode "\u2265"}
+:div         {:token :div         :ascii "/"      :unicode "\u00f7"}
+:mult        {:token :mult        :ascii "*"      :unicode "\u2217"}
+:minus       {:token :minus       :ascii "-"      :unicode "\u2212"}
+:take        {:token :take        :ascii "/|\\"   :unicode "/|\\"}
+:drop        {:token :drop        :ascii "\\|/"   :unicode "\\|/"}})
 
 (defn starts-with? 
     "tests a sequence and a prefix to see if the sequence starts with the prefix"
@@ -91,15 +76,23 @@
         false
         (=  (take (count prefix) l) (seq prefix))))
 
-(defn extract-identifier [s])
-(def whitespace #{\newline \space \tab \formfeed \backspace \return})
+(def whitespace-or-sep #{\newline \space \tab \formfeed \backspace \return \(})
+(def digit #{\0 \1 \2 \3 \4 \5 \6 \7 \8 \9})
+
+(defn extract-identifier [s]
+    (let [[h t] (split-with #(Character/isUnicodeIdentifierPart %) s)]
+        [(apply str h) t]))
+
+(defn extract-number [s]
+    (let [[h t] (split-with digit s)]
+        [(apply str h) t]))
 
 (defn match? 
     "checks to see if the pattern is a prefix to the sequence. However, after the sequence there needs to be either a whitespace or the end"
     [s pattern]
     (let [p      (seq pattern)
           pcount (count p)]
-        (when (starts-with? s p) (or (= (count s) pcount) (whitespace (nth s pcount))))))
+        (when (starts-with? s p) (or (= (count s) pcount) (whitespace-or-sep (nth s pcount))))))
 
 (defn handle-letters [s pattern token]
     (if (match? s pattern) [token (drop (count pattern) s)] (extract-identifier s)))
@@ -110,7 +103,7 @@
 (defmethod lex \c [s] (handle-letters s "circ" :bcomp))
 (defmethod lex \% [s] [:lambda (rest s)])
 (defmethod lex \& [s] [:land   (rest s)])
-(defmethod lex \f [s] (handle-letters s "false" :false))
+(defmethod lex \f [s] (handle-letters s "false" :bfalse))
 (defmethod lex \I [s] (cond
                         (match? s "INTER") [:inter (drop 5 s)] 
                         (match? s "INT")   [:intg  (drop 3 s)]
@@ -185,7 +178,7 @@
                         (starts-with? s "|>>")      [:ransub   (drop 3 s)]
                         (starts-with? s "||")       [:pprod    (drop 2 s)]
                         (starts-with? s "|>")       [:ranres   (drop 2 s)]
-                        \|                          [\|        (rest s)]))
+                        \|                          [:mid (rest s)]))
 (defmethod lex \= [s] (cond 
                         (starts-with? s "=>")       [:limp  (drop 2 s)]
                         "="                         [\=     (rest s)]))
