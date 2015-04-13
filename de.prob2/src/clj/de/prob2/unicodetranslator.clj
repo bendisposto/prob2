@@ -30,7 +30,7 @@
 :cprod       {:token :cprod       :ascii "**"     :unicode "\u00d7"}
 :union       {:token :union       :ascii "UNION"  :unicode "\u22c3"}
 :inter       {:token :inter       :ascii "INTER"  :unicode "\u22c2"}
-:fcomp       {:token :fcomp       :ascii "\\fcomp" :unicode "\u003b"}
+:fcomp       {:token :fcomp       :ascii ";"      :unicode "\u003b"} ; \\fcomp
 :bcomp       {:token :bcomp       :ascii "circ"   :unicode "\u2218"}
 :strel       {:token :strel       :ascii "<<->>"  :unicode "\ue102"}
 :dprod       {:token :dprod       :ascii "><"     :unicode "\u2297"}
@@ -53,11 +53,11 @@
 :psur        {:token :psur        :ascii "+>>"    :unicode "\u2900"}
 :tsur        {:token :tsur        :ascii "->>"    :unicode "\u21a0"}
 :tbij        {:token :tbij        :ascii ">->>"   :unicode "\u2916"}
-:expn        {:token :expn        :ascii "\\expn" :unicode "\u005e"}
+:expn        {:token :expn        :ascii "^"      :unicode "\u005e"} ; \\expn
 :lor         {:token :lor         :ascii "or"     :unicode "\u2228"}
 :pow1        {:token :pow1        :ascii "POW1"   :unicode "\u2119\u0031"}
 :pow         {:token :pow         :ascii "POW"    :unicode "\u2119"}
-:mid         {:token :mid         :ascii "\\mid"  :unicode "\u2223"}
+:mid         {:token :mid         :ascii "|"      :unicode "\u2223"} ; \\mid
 :neq         {:token :neq         :ascii "/="     :unicode "\u2260"}
 :rel         {:token :rel         :ascii "<->"    :unicode "\u2194"}
 :ovl         {:token :ovl         :ascii "<+"     :unicode "\ue103"}
@@ -191,7 +191,6 @@
                         (starts-with? s ">->")      [:tinj  (drop 3 s)]
                         (starts-with? s ">=")       [:geq   (drop 2 s)]
                         \>                          [\>     (rest s)]))
-
 (defmethod lex \~ [s]  [:conv  (rest s)])
 (defmethod lex \⤀ [s] [:psur (rest s)])
 (defmethod lex \ [s]  [:trel (rest s)])
@@ -250,7 +249,7 @@
 (defmethod lex \; [s] [:fcomp (rest s)])
 (defmethod lex \λ [s] [:lambda (rest s)])
 (defmethod lex \∼ [s] [:conv (rest s)])
-(defmethod lex \^ [s] [:token :expn, (rest s)])
+(defmethod lex \^ [s] [:expn (rest s)])
 (defmethod lex \ℙ [s] (cond
                         (starts-with? s "ℙ1") [:pow1 (drop 2 s)]
                         \ℙ                    [:pow  (rest s)]))
