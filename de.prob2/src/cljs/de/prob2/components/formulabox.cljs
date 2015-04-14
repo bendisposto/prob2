@@ -55,8 +55,15 @@
                       :class "form-control"
                       :value formula
                       :on-change
-                      (fn [e] (let [v [(-> e .-target .-value)
-                                      (-> e .-target .-selectionStart)
-                                      (-> e .-target .-selectionEnd)]]
-                               (ma/go (a/>! c v))))}]
+                      (fn [e] (let [value     (-> e .-target .-value)
+                                    selstart  (-> e .-target .-selectionStart)
+                                    selend    (-> e .-target .-selectionEnd)
+                                    diff      (- selend selstart)
+                                    v         (ut/do-translate value selstart)]
+                                (ma/go (a/>! c [(:translation v) (:pos v) (+ diff (:pos v))]))))
+                      :on-key-down
+                      (fn [e] (let [k (.-which e)]
+                                (.log js/console k)
+                                (when (= k 13) (.preventDefault e))))
+                      }]
              (if aftr aftr "")]]))}))))
