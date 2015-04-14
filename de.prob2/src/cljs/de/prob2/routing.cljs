@@ -15,7 +15,10 @@
             [de.prob2.actions]
             [de.prob2.helpers :as h :refer [mk-url]]
             [de.prob2.components.modeline :refer [modeline]]
-            [de.prob2.i18n :refer [i18n]])
+            [de.prob2.actions.open-file :refer [file-dialog]]
+            [de.prob2.i18n :refer [i18n]]
+            [de.prob2.menu])
+
   (:import goog.History))
 
 ;; -------------------------
@@ -28,7 +31,7 @@
   (secretary/defroute "/" []
     (session/put! :current-page #'core/home-page))
 
-  
+
   (secretary/defroute "/trace/:uuid" [uuid]
     (session/put! :current-page #'core/animation-view)
     (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
@@ -63,22 +66,7 @@
   (.toggleClass (js/jQuery "#footer,#bg") "toggled")
   [:div])
 
-(defn file-dialog []
-  [:input {:style {:display "none"}
-           :id "fileDialog"
-           :type "file"
-           :accept ".mch,.ref,.imp,.bum,.buc,.bcc,.bcm,.tla,.csp"
-           :on-change (fn [e] (rf/dispatch [:open-file (-> e .-target .-value)]))}])
 
-(rf/register-handler
- :open-file
- (fn [db [_ & file]]
-   (if-not (seq file)
-     (.click (.getElementById js/document "fileDialog"))
-     (let [filename (first file)
-           extension (last (re-find #".*\.(.*)" filename))]
-       (logp :fn filename :ext extension)
-       (rf/dispatch [:prob2/start-animation [filename extension]])))))
 
 (rf/register-handler :prob2/start-animation h/relay)
 
