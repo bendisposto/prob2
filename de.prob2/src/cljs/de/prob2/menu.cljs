@@ -62,57 +62,52 @@
      (item :bugreport)])])
 
 (defn create-menu
-    ([] (create-menu nil))
-    ([type]
-     (let [m (.-Menu nw/gui)]
-       (if type
-         (m. (js-obj "type" type))
-         (m.)))))
+  ([] (create-menu nil))
+  ([type]
+   (let [m (.-Menu nw/gui)]
+     (if type
+       (m. (js-obj "type" type))
+       (m.)))))
 
 (defn mac-specialcase [opts]
-    (let [this-os (nw/os-name)
-          mac? (= "darwin" this-os)
-          mac-options (:mac opts)]
-      (when (or
-             (and mac? (= mac-options :only))
-             (and (not mac?) (= mac-options :exclude))
-             (not mac-options))
-        opts)))
+  (let [this-os (nw/os-name)
+        mac? (= "darwin" this-os)
+        mac-options (:mac opts)]
+    (when (or
+           (and mac? (= mac-options :only))
+           (and (not mac?) (= mac-options :exclude))
+           (not mac-options))
+      opts)))
 
 (defn expand-action [opts]
+  (when opts
     (let [action (get opts :action ::missing-action)
           opts (if (:label opts)
                  opts
                  (assoc opts :label (i18n action)))
           opts (assoc opts :click (fn [] (rf/dispatch [action])))]
-      opts))
+      opts)))
 
 (declare submenu)
 
 (defn menu-item [opts]
-    #_(logp :entry opts)
-    (let [mi (.-MenuItem nw/gui)
-          opts (mac-specialcase opts)
-          opts (expand-action opts)
-          opts (if-not (:submenu opts)
-                 opts
-                 (assoc opts :submenu (submenu (:submenu opts))))]
-      (when opts
-        (-> opts (assoc :element mi) clj->js (mi.)))))
+  #_(logp :entry opts)
+  (let [mi (.-MenuItem nw/gui)
+        opts (if-not (:submenu opts)
+               opts
+               (assoc opts :submenu (submenu (:submenu opts))))]
+    (logp :mk opts)
+    (when opts
+      (-> opts (assoc :element mi) clj->js (mi.)))))
 
 
 (defn submenu [items]
   (let [menu (create-menu)]
-      (doseq [i items
-              :when i]
-        (.append menu (menu-item i)))
-      menu))
+    (doseq [i (map (fn [e] (some-> e mac-specialcase expand-action)) items)
+            :when i]
+      (.append menu (menu-item i)))
+    menu))
 
-(defn mk-menu [menu-instance items]
-  (doseq [i items
-          :when i]
-    (.append menu-instance (menu-item i)))
-  menu-instance)
 
 (defn set-menubar [menubar items]
   #_(logp items)
