@@ -6,36 +6,34 @@
             [re-frame.core :as rf]
             [cljs-uuid.core :as uuid]
             [de.prob2.helpers :as h]
-            [taoensso.encore :as enc  :refer (logf log logp)]))
+            [taoensso.encore :as enc  :refer (logf log logp)]
+            [de.prob2.generated.unicodetranslator :as ut]))
 
 
 (defn parse [trace-id ratom]
   (m/remote-let [res (clojure parse trace-id (:input @ratom))]
                 (swap! ratom (fn [s]
                                (logp s)
-                               (let [{:keys [status  unicode  ascii  input]} res]
+                               (let [{:keys [status input]} res]
                                  (if-not (= input (:input s))
-                                   (assoc s :unicode nil)
-                                   (assoc s
-                                          :ascii ascii
-                                          :status ({true "" false "has-error"} status)
-                                          :unicode unicode)))))))
+                                   s
+                                   (assoc s :status ({true "" false "has-error"} status))))))))
 
 (defn formulabox
   ([trace-id] (formulabox trace-id (gensym) nil nil))
   ([trace-id id bfor aftr]
-   (let [ratom (r/atom {:status "" :ascii "" :input "" :unicode ""})
+   (let [ratom (r/atom {:status "" :input ""})
          c (a/chan)]
      (ma/go-loop [formula "" last-formula ""]
        (let [t (a/timeout 500)
              [[v ss se] port] (a/alts! [c t] {:priority true})]
          (if (= port c)
            (do (a/close! t)
-               (swap! ratom assoc :input v :ss ss :se se :unicode nil)
+               (swap! ratom assoc :input v :ss ss :se se)
                (recur v last-formula))
            (do (when-not (= formula last-formula)
                  (if (empty? formula)
-                   (reset! ratom {:status "" :ascii "" :input "" :unicode ""})
+                   (reset! ratom {:status "" :input ""})
                    (do (parse trace-id ratom))))
                (recur formula formula)))))
      (r/create-class
@@ -48,9 +46,7 @@
        :reagent-render
        (fn []
          (let [s (:status @ratom)
-               f0 (:unicode @ratom)
-               f1 (get @ratom :input "")
-               formula (if f0 f0 f1)]
+               formula (get @ratom :input "")]
            ^{:key (h/fresh-id)}
            [:div
             [:div {:class (str "form-group " s)}
