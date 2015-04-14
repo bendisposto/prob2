@@ -12,7 +12,7 @@
             [de.prob2.subs]
             [de.prob2.components.logo :refer [prob-logo]]
             [de.prob2.core :as core]
-            [de.prob2.actions]
+            
             [de.prob2.helpers :as h :refer [mk-url]]
             [de.prob2.components.modeline :refer [modeline]]
             [de.prob2.actions.open-file :refer [file-dialog]]
