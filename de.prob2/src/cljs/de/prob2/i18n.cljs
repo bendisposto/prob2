@@ -1,15 +1,18 @@
 (ns de.prob2.i18n
-  (:require [taoensso.encore :as enc  :refer (logf log logp)]))
+  (:require
+   [de.prob2.nw :as nw]
+   [taoensso.encore :as enc  :refer (logf log logp)]))
 
 (def language (atom :english))
 
 (def messages (atom nil))
 
 
-(defn read-language [fs file]
-  (let [c (.readFileSync fs file "utf8")
+(defn read-language [file]
+  (logp :language file)
+  (let [c (nw/slurp file)
         dss (str "{ " c " }")
-        data (cljs.reader/read-string dss)]
+        data (nw/read-string dss)]
     data))
 
 (defn init-messages []
@@ -20,7 +23,7 @@
     (into {}
           (for [lang languages]
             {(keyword (second (re-find #"(.*)\.lang" lang)))
-             (read-language fs (str "./i18n/" lang))}))))
+             (read-language (str "./i18n/" lang))}))))
 
 
 (defn set-language [l]
@@ -30,6 +33,8 @@
   (when-not @messages
     (logp :loading-languages)
     (reset! messages (init-messages))
-    (logp :installed (keys @messages)))
+    (logp :installed (keys @messages))
+    (logp @messages))
   (let [msg (get-in @messages [@language key] "missing message")]
+    (if (= "missing message" msg) (logp :missing-message key))
     msg))
