@@ -27,7 +27,7 @@
                  (dispatch (vec (:?data e))))))}))
 
 
-(defn reset-ui-state [ws]
+(defn- reset-ui-state [ws]
   {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil})
 
 (defn default-ui-state []

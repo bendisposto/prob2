@@ -13,9 +13,8 @@
 
 (def id-store (clojure.core/atom 0))
 (defn fresh-id []
-  (let [x @id-store]
-    (swap! id-store inc) x))
-
+  (swap! id-store inc))
+ 
 (defn kebap-case
   [text]
   (clojure.string/join
@@ -43,7 +42,7 @@
 
 (defn pp-transition [{:keys [name parameters return-values]}]
   (let [ppp (if (seq parameters) (str "(" (clojure.string/join "," parameters) ")") "")
-        pprv (if (seq return-values) (str (clojure.string/join "," return-values) \u21DC " ")  "")
+        pprv (if (seq return-values) (str (clojure.string/join "," return-values) " " \u21DC " ")  "")
         fname (fix-names name)] (str pprv fname ppp)))
 
 

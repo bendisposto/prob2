@@ -100,7 +100,7 @@
 (rf/register-handler
  :modeline
  (fn [db [_ cmd & args]]
-   (condp = cmd
-     :toggle (modeline-toggle)
-     :key    (apply modeline-key args))
+   (cond 
+     (or (not args) (= :toggle cmd)) (modeline-toggle)
+     (= cmd :key) (apply modeline-key args))
    db))
