@@ -28,6 +28,8 @@
     :prob
     [(item :about-prob)
      separator
+     (item :preferences {:key ","})
+     separator
      (item :hide-prob {:key "h" :selector "hide:"})
      (item :hide-others {:key "h" :modifiers "cmd-alt" :selector "hideOtherApplications"})
      separator
@@ -47,19 +49,6 @@
      (item :paste {:selector "paste:" :key "v"})
      (item :select-all {:selector "selectAll:" :key "a"})
      ]
-    {:mac :only}
-    )
-   (menu
-    :edit-menu
-    [(item :undo )
-     (item :redo )
-     separator
-     (item :cut )
-     (item :copy )
-     (item :paste )
-     (item :select-all )
-     ]
-    {:mac :exclude}
     )
    (menu
     :view-menu
@@ -69,7 +58,8 @@
     [])
    (menu
     :help-menu
-    [(item :bugreport)])])
+    [(item :about-prob {:mac :exclude})
+     (item :bugreport)])])
 
 (defn create-menu
     ([] (create-menu nil))
