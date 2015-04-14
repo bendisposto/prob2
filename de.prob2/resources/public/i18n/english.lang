@@ -20,3 +20,6 @@
 :copy "Copy"
 :paste "Paste"
 :select-all "Select All"
+:help-menu "Help"
+:window-menu "Window"
+:bugreport "Report an issue"

@@ -63,7 +63,13 @@
     )
    (menu
     :view-menu
-    [(item :modeline {:key " " :modifiers "ctrl"})])])
+    [(item :modeline {:key " " :modifiers "ctrl"})])
+   (menu
+    :window-menu
+    [])
+   (menu
+    :help-menu
+    [(item :bugreport)])])
 
 (defn create-menu
     ([] (create-menu nil))
