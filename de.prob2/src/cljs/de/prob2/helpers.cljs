@@ -13,9 +13,8 @@
 
 (def id-store (clojure.core/atom 0))
 (defn fresh-id []
-  (let [x @id-store]
-    (swap! id-store inc) x))
-
+  (swap! id-store inc) x)
+ 
 (defn kebap-case
   [text]
   (clojure.string/join
