@@ -104,11 +104,15 @@
                (do (when (and @init? (not @ready?)) (rf/dispatch [:chsk/encoding nil]))
                    (if-not @ready?
                      (preloader-initializing)
-                     [:div
-                      [current-page]])))])))
+                     (do  (rf/dispatch [:populate-menus])
+                          [:div
+                           [current-page]]))))])))
+
+
 
 (defn init-keybindings []
-  (.add js/shortcut "Ctrl+Space" #(rf/dispatch [:modeline :toggle])))
+                                        ;  (.add js/shortcut "Ctrl+Space" #(rf/dispatch [:modeline :toggle]))
+  )
 
 
 (defn init! []
