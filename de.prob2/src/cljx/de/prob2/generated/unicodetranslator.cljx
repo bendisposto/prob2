@@ -278,12 +278,23 @@
         (if (and (identifier-symbol? l) (identifier-symbol? f))
             (str element " ") element)))
 
+(defn get-ascii [token]
+  (if (token-map token) (:ascii (token-map token)) token))
+
 (defn ascii [s] 
     (let [token-stream (tokenize s)
-          ascii-list   (map #(:ascii (get token-map % {:ascii %})) token-stream)
+          ascii-list   (map get-ascii token-stream)
           partitioned  (partition 2 1 [":"] ascii-list)] ; padding is a string for which the first element identifier-symbol? returns false
         (apply str (map add-space-if-necessary partitioned))))
 
+(defn get-unicode [token]
+  (if (token-map token) (:unicode (token-map token)) token))
+
 (defn unicode [s] 
     (let [token-stream (tokenize s)]
-        (apply str (map #(:unicode (get token-map % {:unicode %})) token-stream))))
+      (apply str (map get-unicode token-stream))))
+
+(defn do-translate [s pos]
+  (let [[left right] (split-at pos s)
+        translated   (unicode (ascii left))]
+    {:pos (count translated) :translation (str translated (apply str right))}))
