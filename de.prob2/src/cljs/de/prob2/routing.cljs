@@ -12,7 +12,7 @@
             [de.prob2.subs]
             [de.prob2.components.logo :refer [prob-logo]]
             [de.prob2.core :as core]
-            
+            [de.prob2.nw :as nw]
             [de.prob2.helpers :as h :refer [mk-url]]
             [de.prob2.components.modeline :refer [modeline]]
             [de.prob2.actions.open-file :refer [file-dialog]]
@@ -99,8 +99,9 @@
 
 
 (defn init-keybindings []
-                                        ;  (.add js/shortcut "Ctrl+Space" #(rf/dispatch [:modeline :toggle]))
-  )
+  (let [bs (partition 2 (nw/read-string (nw/slurp (str "./keybindings/" (nw/os-name) ".edn"))))]
+    (doseq [[sc b] bs]
+      (.add js/shortcut sc #(rf/dispatch [b])))))
 
 
 (defn init! []

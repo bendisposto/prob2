@@ -22,44 +22,47 @@
   ([name options]
    (assoc options :label (i18n name) :action name)))
 
+(defn listen [path callback]
+  (let [state (rf/subscribe [:state-path path])]
+    (run! (callback @state))))
+
 (defn menu-data []
   [
    (menu
     :prob
-    [(item :about-prob)
-     separator
-     (item :preferences {:key ","})
-     separator
-     (item :hide-prob {:key "h" :selector "hide:"})
-     (item :hide-others {:key "h" :modifiers "cmd-alt" :selector "hideOtherApplications"})
-     separator
-     (item :quit-prob {:key "q" :selector "quit:"})]
+    [(item :hide-prob {:key "h" :selector "hide:"})
+     (item :hide-others {:key "h" :modifiers "cmd-alt" :selector "hideOtherApplications"})]
     {:mac :only})
    (menu
     :file-menu
-    [(item :open-file {:key "o"})
-     (item :reload {:context :animation :key "r"})])
+    [(item :open-file)
+     (item :reload {:context-fn (listen [:context] (fn [ctx] (= ctx :animation)))})
+     (item :close-animation {:context #{:animation}})
+     separator
+     (item :quit)])
    (menu
     :edit-menu
-    [(item :undo {:selector "undo:" :key "z"})
-     (item :redo {:selector "redo:" :key "z" :modifiers "cmd-shift"})
+    [(item :undo)
+     (item :redo)
      separator
-     (item :cut  {:selector "cut:" :key "x"})
-     (item :copy {:selector "copy:" :key "c"})
-     (item :paste {:selector "paste:" :key "v"})
-     (item :select-all {:selector "selectAll:" :key "a"})
-     ]
-    )
+     (item :cut)
+     (item :copy)
+     (item :paste)
+     (item :select-all)
+     ])
    (menu
     :view-menu
-    [(item :modeline {:key " " :modifiers "ctrl"})])
+    [(item :modeline)])
    (menu
     :window-menu
-    [])
+    [(item :preferences)])
    (menu
     :help-menu
-    [(item :about-prob {:mac :exclude})
+    [(item :about-prob)
      (item :bugreport)])])
+
+
+
 
 (defn create-menu
   ([] (create-menu nil))
@@ -120,17 +123,3 @@
 (rf/register-handler
  :populate-menus
  (fn [db _] (set-menubar (create-menu "menubar") (menu-data)) db))
-
-
-(comment
-
-  (defn create-menu-abstraction [data]
-    (for [e data]
-      (let [label (:label e)
-            element (:element e)
-            menu? (:submenu e)]
-        [label (merge {:label label :element element} (when menu? {:submenu (into {} (map create-menu-abstaction (:submenu e)))}))])
-      ))
-
-
-  )
