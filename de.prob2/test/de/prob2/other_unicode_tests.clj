@@ -1,5 +1,5 @@
 (ns de.prob2.other-unicode-tests
-	(:require [de.prob2.generated.unicodetranslator :refer (ascii,unicode)])
+	(:require [de.prob2.generated.unicodetranslator :refer (ascii,unicode,do-translate)])
 	(:use clojure.test))
 
 (deftest empty-from-ascii (is (= "" (ascii ""))))
@@ -79,3 +79,13 @@
 		  asciii "!i,s.(s:open & i:INVARIANTS\\invs_to_verify[{s}] => s |-> i : truth)"]
 		(is (= asciii (ascii unicodee)))
 		(is (= unicodee (unicode asciii)))))
+
+(deftest cursor-pos
+  (is (= (do-translate "x or y" 4) {:pos 3 :translation "x \u2228 y"}))
+  (is (= (do-translate "UNION(x)" 4) {:pos 4 :translation "UNION(x)"}))
+  (is (= (do-translate "UNION(x)" 5) {:pos 1 :translation "\u22c3(x)"}))
+  (is (= (do-translate "UNION(x)" 7) {:pos 3 :translation "\u22c3(x)"}))
+  (is (= (do-translate "x |-> y" 3) {:pos 3 :translation "x \u2223-> y"}))
+  (is (= (do-translate "x \u2223-> y" 4) {:pos 4 :translation "x \u2223\u2212> y"}))
+  (is (= (do-translate "x \u2223\u2212> y" 5) {:pos 3 :translation "x \u21a6 y"}))
+  (is (= (do-translate "x |-> y" 5) {:pos 3 :translation "x \u21a6 y"})))
