@@ -60,7 +60,6 @@
                                     selstart  (-> e .-target .-selectionStart)
                                     selend    (-> e .-target .-selectionEnd)
                                     diff      (- selend selstart)
-                                    _         (logp :value value)
                                     [l r]     (split-at selstart value)
                                     to-trans  (ut/ascii (if (butlast l) (concat (ut/ascii (butlast l)) [(last l)]) l))
                                     p         (ut/unicode to-trans)
@@ -68,8 +67,17 @@
                                     pos       (count p)]
                                 (ma/go (a/>! c [v pos (+ diff pos)]))))
                       :on-key-down
-                      (fn [e] (let [k (.-which e)]
-                                (.log js/console k)
-                                (when (= k 13) (.preventDefault e))))
+                      (fn [e] (let [k (.-which e)
+                                    value (-> e .-target .-value)
+                                    selstart (-> e .-target .-selectionStart)
+                                    selend (-> e .-target .-selectionEnd)]
+                                (if (and (= k 8) (< 0 selstart) (= selstart selend))
+                                  (let [_ (.preventDefault e)
+                                        [l r]  (split-at selstart value)
+                                        prefix (ut/unicode (butlast (ut/ascii l)))
+                                        v      (str prefix (apply str r))
+                                        pos    (count prefix)]
+                                    (ma/go (a/>! c [v pos pos]))) 
+                                  )))
                       }]
              (if aftr aftr "")]]))}))))
