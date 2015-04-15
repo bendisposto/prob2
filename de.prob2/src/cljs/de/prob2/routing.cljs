@@ -66,6 +66,10 @@
   (.toggleClass (js/jQuery "#footer,#bg") "toggled")
   [:div])
 
+(rf/register-handler :copy (fn [db _] (.execCommand js/document "copy") db))
+(rf/register-handler :cut (fn [db _] (.execCommand js/document "cut") db))
+(rf/register-handler :paste (fn [db _] (.execCommand js/document "paste") db))
+(rf/register-handler :select-all (fn [db _] (.execCommand js/document "selectAll") db))
 
 
 (rf/register-handler :prob2/start-animation h/relay)

@@ -7,7 +7,7 @@
 :about-prob         "About ProB"
 :hide-prob          "Hide ProB"
 :hide-others        "Hide Others"
-:quit-prob          "Quit ProB"
+:quit               "Quit ProB"
 :reload             "Reload Animation"
 :prob "ProB"
 :file-menu "File" 
@@ -24,3 +24,4 @@
 :window-menu "Window"
 :bugreport "Report an issue"
 :preferences "Preferences..."
+:close-animation "Stop animation"
