@@ -5,7 +5,9 @@
             [cljs.core.async.impl.channels :refer [ManyToManyChannel]]
             [taoensso.sente  :as sente :refer (cb-success?)]
             [re-frame.core :as rf :refer [dispatch register-sub register-handler]]
-            [taoensso.encore :as enc  :refer (logf log logp)]))
+            [taoensso.encore :as enc  :refer (logf log logp)]
+            [schema.core :as s]
+            [de.prob2.generated.schema :as schema]))
 
 
 (def callback-id (atom 0))
@@ -95,3 +97,20 @@
        (instance? ManyToManyChannel callback) (go (async/>! callback res) (async/close! callback))
        :otherwise (logp "Unknown callback type " (type callback) res))
      db')))
+
+(defn validate-db
+  [new-state]
+  (try
+    (s/validate schema/UI-State new-state)
+    (catch js/Object e
+      (.log js/console e)
+      (logp new-state))))
+
+
+(rf/register-handler
+ :initialise-db
+ #_rf/debug
+ (fn [_ _] (default-ui-state)))
+
+(rf/register-handler :chsk/encoding h/relay)
+
