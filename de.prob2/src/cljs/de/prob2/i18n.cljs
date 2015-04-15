@@ -34,7 +34,7 @@
     (logp :loading-languages)
     (reset! messages (init-messages))
     (logp :installed (keys @messages))
-    (logp @messages))
+    #_(logp @messages))
   (let [msg (get-in @messages [@language key] "missing message")]
     (if (= "missing message" msg) (logp :missing-message key))
     msg))
