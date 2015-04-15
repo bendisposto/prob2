@@ -83,12 +83,14 @@
       opts)))
 
 (defn expand-action [opts]
-  (when opts
-    (let [action (get opts :action ::missing-action)
+  (when (and opts (not (= "separator" (get opts :type))))
+    (let [xx (get opts :action ::missing-action)
+          action (if (seq? xx) (first xx) xx)
+          args (if (seq? xx) (rest xx) [])
           opts (if (:label opts)
                  opts
                  (assoc opts :label (i18n action)))
-          opts (assoc opts :click (fn [] (rf/dispatch [action])))]
+          opts (assoc opts :click (fn [] (rf/dispatch (into [action] args))))]
       opts)))
 
 (declare submenu)
