@@ -25,6 +25,9 @@
 ;; Views
 
 
+(defn editor [id]
+  [:div {:id "edit1"}
+   ])
 
 
 
@@ -48,6 +51,7 @@
     [:div {:id "h1"}
      [navigation [{:name (i18n :animations) :url"#"} {:name (:main-component-name @m) :url (str "#/trace/" id) :active? true}]]
      #_[dot-view "digraph simple { A->B }"]
+     [editor id]
      [formulabox id]
      [formulabox id "zuck"[:label {:class "control-label" :for "zuck"} "Input:" ] nil]
      [history-view id]
