@@ -1,4 +1,5 @@
 (ns de.prob2.menu
+  (:require-macros [reagent.ratom :as ra])
   (:require [taoensso.encore :as enc  :refer (logf log logp)]
             [de.prob2.nw :as nw]
             [re-frame.core :as rf]
@@ -24,7 +25,7 @@
 
 (defn listen [path callback]
   (let [state (rf/subscribe [:state-path path])]
-    (run! (callback @state))))
+    (ra/run! (callback @state) )))
 
 (defn menu-data []
   [
