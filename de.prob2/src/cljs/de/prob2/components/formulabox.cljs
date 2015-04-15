@@ -60,8 +60,13 @@
                                     selstart  (-> e .-target .-selectionStart)
                                     selend    (-> e .-target .-selectionEnd)
                                     diff      (- selend selstart)
-                                    v         (ut/do-translate value selstart)]
-                                (ma/go (a/>! c [(:translation v) (:pos v) (+ diff (:pos v))]))))
+                                    _         (logp :value value)
+                                    [l r]     (split-at selstart value)
+                                    to-trans  (ut/ascii (if (butlast l) (concat (ut/ascii (butlast l)) [(last l)]) l))
+                                    p         (ut/unicode to-trans)
+                                    v         (str p (apply str r))
+                                    pos       (count p)]
+                                (ma/go (a/>! c [v pos (+ diff pos)]))))
                       :on-key-down
                       (fn [e] (let [k (.-which e)]
                                 (.log js/console k)
