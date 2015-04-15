@@ -269,13 +269,9 @@
   {"parse" (fn [{:keys [animations]} [trace-id formula]]
              (let [trace (.getTrace animations trace-id)
                    model (.getModel trace)
-                   ascii (UnicodeTranslator/toAscii formula)
-                   unicode (UnicodeTranslator/toUnicode ascii)
                    status? (.checkSyntax model formula) 
                    ]
                {:status status?
-                :ascii ascii
-                :unicode unicode
                 :input formula}))})
 
 (defmethod dispatch-kernel
