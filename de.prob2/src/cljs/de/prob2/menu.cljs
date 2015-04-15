@@ -99,7 +99,7 @@
         opts (if-not (:submenu opts)
                opts
                (assoc opts :submenu (submenu (:submenu opts))))]
-    (logp :mk opts)
+    #_(logp :mk opts)
     (when opts
       (-> opts (assoc :element mi) clj->js (mi.)))))
 
