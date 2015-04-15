@@ -7,6 +7,7 @@
             [de.prob2.client :as client]
             [re-frame.core :as rf]
 
+            [de.prob2.nw :as nw]
             [taoensso.encore :as enc  :refer (logf log logp)]
 
             [de.prob2.helpers :as h]
@@ -26,11 +27,27 @@
 
 
 (defn editor [id]
-  [:div {:id "edit1"}
-   ])
-
-
-
+  (let [cm (atom nil)
+        m (rf/subscribe [:model id])]
+    (r/create-class
+     {:component-did-mount
+      (fn [c]
+        (let [elem (.getDOMNode c)
+              text (if @m (nw/slurp (:filename @m)) "")
+              mirr (js/CodeMirror
+                    elem
+                    (clj->js
+                     {:mode "b"
+                      :lineNumbers true
+                      :value text}))
+              doc (.-doc mirr)]
+          #_(.markText doc #js {:line 4 :ch 2} #js {:line 5 :ch 5} #js {:className "markymark"})
+          (reset! cm mirr)))
+      :reagent-render
+      (fn []
+        [:div {:class "panel panel-default"}
+         [:div {:id (:main-component-name @m) :class "panel-body codemirror-panel"}
+          ]])})))
 
 (defn navigation [path]
   (into [:ol {:class "breadcrumb"}]
@@ -47,15 +64,16 @@
 (defn animation-view []
   (let [id (session/get :focused-uuid)
         m (rf/subscribe [:model id])]
-    (logp :m @m)
     [:div {:id "h1"}
      [navigation [{:name (i18n :animations) :url"#"} {:name (:main-component-name @m) :url (str "#/trace/" id) :active? true}]]
      #_[dot-view "digraph simple { A->B }"]
      [editor id]
-     [formulabox id]
-     [formulabox id "zuck"[:label {:class "control-label" :for "zuck"} "Input:" ] nil]
-     [history-view id]
-     [events-view id]
+     #_[formulabox id]
+     #_[formulabox id "zuck"[:label {:class "control-label" :for "zuck"} "Input:" ] nil]
+     [:div
+      [:div {:class "col-lg-4"} [state-view id]]
+      [:span {:class "col-lg-4"} [events-view id]]
+      [:span {:class "col-lg-4"} [history-view id]]]
      ]))
 
 

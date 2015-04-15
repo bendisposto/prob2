@@ -6,15 +6,19 @@
             [de.prob2.helpers :as h]))
 
 
-(defn state-row [name current-value previous-value]
-  [:tr [:td name] [:td current-value] [:td previous-value]])
+(defn state-row [current-value]
+  [:tr
+   #_[:td name]
+   [:td current-value]
+   #_[:td previous-value]])
 
 (defn state-view [id]
-  (let [traces (rf/subscribe [:traces])
-        {:keys [trace-id current previous transition]} (get @traces id)
-        names (map first (:values current))
-        cvals (map second (:values current))
-        pvals (map second (:values previous))]
-    [:div (str  trace-id)]
-    (into [:table {:class "table"}] (map (fn [n c p] [state-row n c p]) names cvals pvals))
-    ))
+  (let [x (rf/subscribe  [:current-state id])
+        
+                                        ;     names (map first (:values current))
+                                        ;     cvals (map second (:values current))
+                                        ;     pvals (map second (:values previous))
+        ]
+    [:div]
+    (into [:table {:class "table"}]
+          (map (fn [v] [state-row v]) (:current @x)))))

@@ -283,3 +283,11 @@
   -webkit-transition: bottom 3s ease;
   padding-top: 15px;
 }
+
+.markymark {
+  background-color: yellow;
+}
+
+.codemirror-panel {
+  padding: 4px;
+}

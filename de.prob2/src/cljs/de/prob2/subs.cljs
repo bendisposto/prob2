@@ -29,6 +29,23 @@
  (fn [db]
    (reaction (:models @db))))
 
+(defn lookup-value [db [_ k]]
+  (get-in db [:results k]))
+
+(register-sub
+ :current-state
+ (fn [db [_ trace-id]]
+   (let [trace (reaction (get-in @db [:traces trace-id]))
+         trans (reaction (get @trace :current-transition))
+         dst-id (reaction (get @trace :current-state))
+         dst (reaction (get-in @db [:states @dst-id]))
+         dvals (reaction (map (partial lookup-value @db) (:values @dst)))]
+     (if @trans
+       (let [src (reaction (get-in @db [:states (:src @trans)]))
+             svals (reaction (map (partial lookup-value @db) (:values @src)))]
+         (reaction {:previous @svals :current @dvals :info @dst}))
+       (reaction :previous [] :current @dvals :info @dst)))))
+
 (register-sub
  :model
  (fn [db [_ trace-id]]

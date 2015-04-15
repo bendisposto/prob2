@@ -1,5 +1,6 @@
 (ns de.prob2.actions.open-file
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [de.prob2.nw :as nw]))
 
 
 (defn file-dialog []
@@ -15,6 +16,7 @@
    (if-not (seq file)
      (.click (.getElementById js/document "fileDialog"))
      (let [filename (first file)
-           extension (last (re-find #".*\.(.*)" filename))]
-       (rf/dispatch [:prob2/start-animation [filename extension]])))
-   db))
+           extension (last (re-find #".*\.(.*)" filename))
+           text (nw/slurp filename)]
+       (rf/dispatch [:prob2/start-animation [filename extension]])
+       db))))
