@@ -42,7 +42,8 @@
                     se (:se @ratom)
                     elem (.getElementById js/document id)]
                 (set! (.-selectionStart elem) ss)
-                (set! (.-selectionEnd elem) se)))
+                (set! (.-selectionEnd elem) se)
+                (.focus elem)))
        :reagent-render
        (fn []
          (let [s (:status @ratom)
