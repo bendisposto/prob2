@@ -17,7 +17,7 @@
     (h/pp-transition item)]])
 
 (defn history-view [id]
-  (let [sort-order (r/atom identity)]
+  (let [sort-order (r/atom reverse)]
     (fn []
       (let [t (rf/subscribe [:trace id])
             h (cons {:name (i18n :not-initialized)
