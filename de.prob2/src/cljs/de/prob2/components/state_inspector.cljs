@@ -19,6 +19,7 @@
                                         ;     cvals (map second (:values current))
                                         ;     pvals (map second (:values previous))
         ]
-    [:div]
-    (into [:table {:class "table"}]
-          (map (fn [v] [state-row v]) (:current @x)))))
+    [:div
+     [:table {:class "table"}
+      [:tbody
+       (map (fn [v] [state-row v]) (:current @x))]]]))
