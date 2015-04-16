@@ -1,6 +1,7 @@
 (ns de.prob2.core
   (:require-macros [de.prob2.macros :refer [remote-let]]
-                   [cljs.core.async.macros :refer [go]])
+                   [cljs.core.async.macros :refer [go]]
+                   [reagent.ratom :as ra :refer [reaction]])
   (:require [cljs.core.async :as async]
             [reagent.core :as r]
 
@@ -26,35 +27,36 @@
 ;; Views
 
 
-(defn editor [id]
-  (let [cm (atom nil)
-        m (rf/subscribe [:model id])]
-    (r/create-class
-     {:component-did-mount
-      (fn [c]
-        (let [elem (.getDOMNode c)
-              text (if @m (nw/slurp (:filename @m)) "")
-              mirr (js/CodeMirror
-                    elem
-                    (clj->js
-                     {:mode "b"
-                      :lineNumbers true
-                      :value text}))
-              doc (.-doc mirr)]
-          #_(.markText doc #js {:line 4 :ch 2} #js {:line 5 :ch 5} #js {:className "markymark"})
-          (reset! cm mirr)))
-      :reagent-render
-      (fn []
-        [:div {:class "panel panel-default"}
-         [:div {:id (:main-component-name @m) :class "panel-body codemirror-panel"}
-          ]])})))
-
 (defn navigation [path]
   (into [:ol {:class "breadcrumb"}]
         (for [{:keys [name url active?]} path]
           (if active?
             [:li {:class "active"} name]
             [:li [:a {:href url} name]]))))
+
+(defn editor [id]
+  (let [cm (atom nil)
+        editor-id (str "editor" (h/fresh-id))
+        m (rf/subscribe [:model id])
+        filename (reaction (:filename @m))
+        content (reaction (if @filename (nw/slurp @filename) ""))]
+    (r/create-class
+     {:component-did-mount
+      (fn [c] (logp :mount @filename)
+        (let [dom-element (.getElementById js/document editor-id)
+              mirr (.fromTextArea
+                    js/CodeMirror
+                    dom-element (clj->js {:mode "b"
+                                          :linenumbers true}))]
+          (reset! cm mirr)))
+      :component-did-update (fn [e]
+                              (let [doc (.-doc @cm)]
+                                (.setValue doc @content)))
+      :reagent-render
+      (fn []
+        (logp :render @filename)
+        [:div {:class "coll-lg-12"}
+         [:textarea {:id editor-id :defaultValue @content}]])})))
 
 (defn home-page []
   [:div
@@ -68,6 +70,7 @@
      [navigation [{:name (i18n :animations) :url"#"} {:name (:main-component-name @m) :url (str "#/trace/" id) :active? true}]]
      #_[dot-view "digraph simple { A->B }"]
      [editor id]
+     
      #_[formulabox id]
      #_[formulabox id "zuck"[:label {:class "control-label" :for "zuck"} "Input:" ] nil]
      [:div
