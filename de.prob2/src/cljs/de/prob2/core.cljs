@@ -56,7 +56,9 @@
       (fn []
         (logp :render @filename)
         [:div {:class "coll-lg-12"}
-         [:textarea {:id editor-id :defaultValue @content}]])})))
+         [:div {:class "panel panel-default"}
+          [:div {:class "panel-body codemirror-panel"}
+           [:textarea {:id editor-id :defaultValue @content}]]]])})))
 
 (defn home-page []
   [:div
@@ -70,7 +72,7 @@
      [navigation [{:name (i18n :animations) :url"#"} {:name (:main-component-name @m) :url (str "#/trace/" id) :active? true}]]
      #_[dot-view "digraph simple { A->B }"]
      [editor id]
-     
+
      #_[formulabox id]
      #_[formulabox id "zuck"[:label {:class "control-label" :for "zuck"} "Input:" ] nil]
      [:div
