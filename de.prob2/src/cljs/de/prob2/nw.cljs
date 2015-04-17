@@ -1,4 +1,5 @@
-(ns de.prob2.nw)
+(ns de.prob2.nw
+  (:require [cljs.reader :as r]))
 
 (def gui (js/require "nw.gui"))
 (def process (js/require "process"))
@@ -11,4 +12,4 @@
   (.readFileSync fs filename "utf8"))
 
 (defn read-string [s]
-  (cljs.reader/read-string s))
+  (r/read-string s))
