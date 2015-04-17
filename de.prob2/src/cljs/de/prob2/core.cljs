@@ -47,7 +47,7 @@
               mirr (.fromTextArea
                     js/CodeMirror
                     dom-element (clj->js {:mode "b"
-                                          :linenumbers true}))]
+                                          :lineNumbers true}))]
           (reset! cm mirr)))
       :component-did-update (fn [e]
                               (let [doc (.-doc @cm)]
