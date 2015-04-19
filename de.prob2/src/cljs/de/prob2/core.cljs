@@ -46,8 +46,9 @@
         (let [dom-element (.getElementById js/document editor-id)
               mirr (.fromTextArea
                     js/CodeMirror
-                    dom-element (clj->js {:mode "b"
-                                          :lineNumbers true}))]
+                    dom-element #js {:mode "b"
+                                     :lineWrapping true
+                                     :lineNumbers true})]
           (reset! cm mirr)))
       :component-did-update (fn [e]
                               (let [doc (.-doc @cm)]
