@@ -20,7 +20,7 @@
   (cond
     (contains? menu :submenu) (extract-menu akku (:submenu menu))
     (contains? menu :action) (let [a (:action menu)]
-                               (conj akku {:action a :name (i18n a)}))
+                               (conj akku {:action a :name (str "Menu: " (i18n a))}))
     (and  (not (map? menu)) (seqable? menu)) (reduce extract-menu akku menu)
     :else akku ))
 
