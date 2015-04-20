@@ -4,7 +4,8 @@
              [re-frame.core :as rf]
              [de.prob2.helpers :as h]
              [de.prob2.i18n :refer [i18n]]
-             [goog.style :as style]))
+             [goog.style :as style]
+             [de.prob2.menu :refer [menu-data]]))
 
 
 (defn pattern-match [regex]
@@ -14,17 +15,28 @@
           nt (map-indexed (fn [i x] (if (= 1 (mod i 2)) [:u x] x )) f)]
       (if-not (empty? nt) (assoc e :display nt) e))))
 
+(defn extract-menu [akku menu]
+  (logp :enter akku menu)
+  (cond
+    (contains? menu :submenu) (extract-menu akku (:submenu menu))
+    (contains? menu :action) (let [a (:action menu)]
+                               (conj akku {:action a :name (i18n a)}))
+    (and  (not (map? menu)) (seqable? menu)) (reduce extract-menu akku menu)
+    :else akku ))
+
+
+(defn all-commands []
+  (let [md (menu-data)
+        tf (extract-menu [] md)]
+    tf))
+
+
 (defn get-commands
-  ([] (into  [{:name (i18n :open-file) :action :open-file :desc "Opens a "}
-              {:name "Shutdown Server" :action :kill :desc "Kills the ProB server. All running animations are killed and all unsaved data is discarded."}
-              {:name "Foo" :desc "Foo ... obviously"}
-              {:name "Bar"}]
-             (for [e (range 10)] {:name (str "Some Command " e)})))
   ([filter-string]
    (let [s (clojure.string/split filter-string #"\s+")
          re (str "(?i)(.*)" (clojure.string/join "(.*)" (map #(str "(" % ")") s)) "(.*)")
          filter-regex (re-pattern re)
-         all-commands (get-commands)
+         all-commands (all-commands)
          transformed (map (pattern-match filter-regex) all-commands)]
      (filter #(:display %) transformed))))
 
@@ -100,7 +112,7 @@
 (rf/register-handler
  :modeline
  (fn [db [_ cmd & args]]
-   (cond 
+   (cond
      (or (not args) (= :toggle cmd)) (modeline-toggle)
      (= cmd :key) (apply modeline-key args))
    db))
