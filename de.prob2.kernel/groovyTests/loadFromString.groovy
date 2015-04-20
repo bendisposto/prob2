@@ -23,10 +23,11 @@ s = m as StateSpace
 
 cmd = new LoadBProjectFromStringCommand(modelString)
 s.execute(cmd)
-ast = cmd.parseString(modelString, new BParser())
+p = new BParser()
+ast = cmd.parseString(modelString, p)
 rml = cmd.getLoader(modelString)
 
-m.initialize(ast, rml, new File(""))
+m.initialize(ast, rml, new File(""), p)
 
 s.execute(new StartAnimationCommand())
 

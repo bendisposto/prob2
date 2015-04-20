@@ -15,12 +15,14 @@ import com.google.inject.Inject;
 import de.be4.ltl.core.parser.LtlParseException;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.domainobjects.LTL;
+import de.prob.annotations.OneToOne;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.State;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
+@OneToOne
 public class LtlFormula extends AbstractAnimationBasedView {
 
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);

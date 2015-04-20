@@ -38,6 +38,11 @@ public interface IAnimator {
 	void sendInterrupt();
 
 	/**
+	 * Kills the underlying probcli
+	 */
+	void kill();
+	
+	/**
 	 * Signals the {@link IAnimator} that a transaction is beginning. The
 	 * {@link IAnimator} can then set a flag indicating that it is busy because
 	 * the {@link IAnimator} is likely to be blocked for a long period of time.

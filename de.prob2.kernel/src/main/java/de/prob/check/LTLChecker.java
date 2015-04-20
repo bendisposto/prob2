@@ -11,7 +11,6 @@ public class LTLChecker implements IModelCheckJob {
 	private final ModelCheckingUI ui;
 	private final String jobId;
 	private final LTLCheckingJob job;
-	private final LTL formula;
 
 	public LTLChecker(final StateSpace s, final LTL formula) {
 		this(s, formula, null);
@@ -24,7 +23,6 @@ public class LTLChecker implements IModelCheckJob {
 					"Cannot perform LTL checking without a correctly parsed LTL Formula");
 		}
 		this.s = s;
-		this.formula = formula;
 		this.ui = ui;
 		this.jobId = ModelChecker.generateJobId();
 		job = new LTLCheckingJob(s, formula, jobId, ui);

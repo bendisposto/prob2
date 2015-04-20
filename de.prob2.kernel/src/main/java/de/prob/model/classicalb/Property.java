@@ -10,4 +10,10 @@ public class Property extends Axiom {
 		super(new ClassicalB(start));
 	}
 
+	@Override
+	public boolean isTheorem() {
+		// TODO: is this true?
+		return false;
+	}
+
 }

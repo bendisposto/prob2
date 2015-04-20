@@ -80,6 +80,8 @@ public abstract class AbstractModel extends AbstractElement {
 	public abstract AbstractElement getMainComponent();
 
 	public abstract IEvalElement parseFormula(String formula);
+	
+	public abstract boolean checkSyntax(String formula);
 
 	public abstract FormalismType getFormalismType();
 

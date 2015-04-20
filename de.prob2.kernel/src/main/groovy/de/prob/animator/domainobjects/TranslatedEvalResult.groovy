@@ -1,18 +1,15 @@
 package de.prob.animator.domainobjects
 
-import com.google.common.base.Joiner
+import de.prob.translator.types.BObject
 
-import de.prob.parser.BindingGenerator
-import de.prob.prolog.term.CompoundPrologTerm
-import de.prob.prolog.term.ListPrologTerm
-import de.prob.prolog.term.PrologTerm
 
-public class TranslatedEvalResult implements IEvalResult {
+public class TranslatedEvalResult extends AbstractEvalResult {
 
-	def value
-	def Map<String,Object> solutions
+	def BObject value
+	def Map<String,BObject> solutions
 
-	def TranslatedEvalResult(value, Map<String,Object> solutions) {
+	def TranslatedEvalResult(value, Map<String,BObject> solutions) {
+		super();
 		this.value = value
 		this.solutions = solutions
 	}
@@ -40,57 +37,11 @@ public class TranslatedEvalResult implements IEvalResult {
 	 * @param name of solution
 	 * @return Object representation of solution, or <code>null</code> if the solution does not exist
 	 */
-	def getSolution(String name) {
+	def BObject getSolution(String name) {
 		return solutions[name]
 	}
 
 	def String toString() {
 		return value.toString();
-	}
-
-	def static IEvalResult getResult(PrologTerm pt) {
-		if (pt instanceof ListPrologTerm) {
-			/*
-			 * If the evaluation was not successful, the result should be a
-			 * Prolog list with the code on the first index and a list of errors
-			 * This results therefore in a ComputationNotCompleted command
-			 */
-			ListPrologTerm listP = (ListPrologTerm) pt
-			def list = []
-
-			String code = listP.get(0).getFunctor();
-
-			for (int i = 1; i < listP.size(); i++) {
-				list.add(listP.get(i).getArgument(1).getFunctor());
-			}
-
-			return new ComputationNotCompletedResult(code, Joiner.on(",").join(list))
-		} else if(pt.getFunctor() == "result"){
-			PrologTerm v = pt.getArgument(1);
-			ValueTranslator translator = new ValueTranslator();
-			Object vobj = translator.toGroovy(v);
-
-			ListPrologTerm list = BindingGenerator.getList(pt
-					.getArgument(2));
-			Map<String, Object> solutions = Collections.emptyMap();
-			if (!list.isEmpty()) {
-				solutions = new HashMap<String, Object>();
-			}
-			for (PrologTerm pt2 : list) {
-				CompoundPrologTerm sol = BindingGenerator.getCompoundTerm(pt2, 2);
-				solutions.put(sol.getArgument(1).getFunctor(),
-						translator.toGroovy(sol.getArgument(2)));
-			}
-			return new TranslatedEvalResult(vobj, solutions);
-		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "NOT-WELL-DEFINED") {
-			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
-			return new WDError(arg2.collect { it.getFunctor()})
-		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "IDENTIFIER(S) NOT YET INITIALISED") {
-			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
-			return new IdentifierNotInitialised(arg2.collect { it.getFunctor()})
-		} else if (pt.getFunctor() == "enum_warning") {
-			return new EnumerationWarning()
-		}
-		throw new IllegalArgumentException("Unknown result type "+pt.toString())
 	}
 }

@@ -27,6 +27,8 @@ import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
+import de.prob.translator.TranslatingVisitor;
+import de.prob.translator.types.BObject;
 import de.prob.unicode.UnicodeTranslator;
 
 /**
@@ -51,16 +53,21 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	 *            formula
 	 */
 	public EventB(final String code) {
-		this.code = UnicodeTranslator.toAscii(code);
-		types = Collections.emptySet();
+		this(code, Collections.<IFormulaExtension> emptySet());
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types) {
-		this.code = UnicodeTranslator.toAscii(code);
-		this.types = types;
+		this(code, types, FormulaExpand.truncate);
 	}
 
-	private void ensureParsed() {
+	public EventB(final String code, final Set<IFormulaExtension> types,
+			final FormulaExpand expansion) {
+		this.code = UnicodeTranslator.toAscii(code);
+		this.types = types;
+		this.expansion = expansion;
+	}
+
+	public void ensureParsed() {
 		final String unicode = UnicodeTranslator.toUnicode(code);
 		kind = PREDICATE.toString();
 		IParseResult parseResult = FormulaFactory.getInstance(types)
@@ -217,5 +224,15 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 					toUnicode(), null);
 		}
 		return null;
+	}
+
+	@Override
+	public BObject translate() {
+		if (!getKind().equals(EXPRESSION.toString())) {
+			throw new IllegalArgumentException();
+		}
+		TranslatingVisitor v = new TranslatingVisitor();
+		getAst().apply(v);
+		return v.getResult();
 	}
 }

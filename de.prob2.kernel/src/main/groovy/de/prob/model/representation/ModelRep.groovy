@@ -141,7 +141,7 @@ class ModelRep {
 	def static String getLabelName(Class<? extends AbstractElement> c) {
 		def result = ""
 		switch(c) {
-			case BSet:
+			case Set:
 				result = "sets"
 				break
 			case Variant:

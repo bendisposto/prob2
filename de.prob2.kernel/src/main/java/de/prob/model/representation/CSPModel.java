@@ -1,13 +1,16 @@
 package de.prob.model.representation;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Map;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.animator.domainobjects.CSP;
+import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -32,20 +35,20 @@ public class CSPModel extends AbstractModel {
 
 	@Override
 	public AbstractElement getComponent(final String name) {
-		// TODO Auto-generated method stub
+		if (name.equals(modelFile.getName())) {
+			return getMainComponent();
+		}
 		return null;
 	}
 
 	@Override
 	public Map<String, AbstractElement> getComponents() {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.emptyMap();
 	}
 
 	@Override
 	public AbstractElement getMainComponent() {
-		// TODO Auto-generated method stub
-		return null;
+		return new CSPElement(modelFile.getName());
 	}
 
 	@Override
@@ -56,6 +59,18 @@ public class CSPModel extends AbstractModel {
 	@Override
 	public FormalismType getFormalismType() {
 		return FormalismType.CSP;
+	}
+
+	@Override
+	public boolean checkSyntax(final String formula) {
+		try {
+			CSP element = (CSP) parseFormula(formula);
+			element.printProlog(new PrologTermStringOutput());
+			;
+			return true;
+		} catch (EvaluationException e) {
+			return false;
+		}
 	}
 
 }

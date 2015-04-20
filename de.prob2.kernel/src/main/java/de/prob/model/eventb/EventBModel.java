@@ -5,6 +5,7 @@ import java.io.File;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.theory.Theory;
@@ -104,6 +105,17 @@ public class EventBModel extends AbstractModel {
 
 	public ModelElementList<Context> getContexts() {
 		return contexts;
+	}
+
+	@Override
+	public boolean checkSyntax(String formula) {
+		try {
+			EventB element = (EventB) parseFormula(formula);
+			element.ensureParsed();
+			return true;
+		} catch (EvaluationException e) {
+			return false;
+		}
 	}
 
 }

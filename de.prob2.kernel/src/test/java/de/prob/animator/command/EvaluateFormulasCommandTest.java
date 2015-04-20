@@ -11,7 +11,7 @@ import org.junit.Test;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -62,7 +62,7 @@ public class EvaluateFormulasCommandTest {
 				"root");
 		command.processResult(m1);
 
-		IEvalResult value = command.getValue();
+		AbstractEvalResult value = command.getValue();
 		assertEquals(((EvalResult) value).getValue(), "true");
 		assertEquals(((EvalResult) value).getSolutions().get("a"), "3");
 	}

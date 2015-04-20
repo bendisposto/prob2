@@ -20,14 +20,14 @@ assert modelProvider != null
 
 m = modelProvider.get()
 s = m as StateSpace
-
-ast = new BParser().parse(modelString, false)
+p = new BParser()
+ast = p.parse(modelString, false)
 
 cmd = new LoadBProjectFromAst(ast)
 s.execute(cmd)
 rml = cmd.getLoader(ast)
 
-m.initialize(ast, rml, new File(""))
+m.initialize(ast, rml, new File(""), p)
 
 s.execute(new StartAnimationCommand())
 

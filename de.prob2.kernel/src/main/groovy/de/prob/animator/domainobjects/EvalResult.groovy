@@ -7,10 +7,13 @@ import de.prob.parser.BindingGenerator
 import de.prob.prolog.term.CompoundPrologTerm
 import de.prob.prolog.term.ListPrologTerm
 import de.prob.prolog.term.PrologTerm
+import de.prob.translator.Translator
 import de.prob.unicode.UnicodeTranslator
 import de.prob.util.StringUtil
 
-public class EvalResult implements IEvalResult {
+public class EvalResult extends AbstractEvalResult {
+
+
 
 	public final static EvalResult TRUE = new EvalResult("TRUE", Collections.emptyMap())
 	public final static EvalResult FALSE = new EvalResult("FALSE", Collections.emptyMap())
@@ -25,6 +28,7 @@ public class EvalResult implements IEvalResult {
 
 	public EvalResult(final String value,
 	final Map<String, String> solutions) {
+		super();
 		this.value = value
 		this.solutions = solutions
 	}
@@ -66,6 +70,16 @@ public class EvalResult implements IEvalResult {
 		return solutions[name]
 	}
 
+	def TranslatedEvalResult translate() {
+		def val = Translator.translate(value);
+		def sols = solutions.collectEntries {k,v ->
+			[
+				k,
+				Translator.translate(v)
+			]}
+		return new TranslatedEvalResult(val, sols)
+	}
+
 	/**
 	 * Translates the results from ProB into an IEvalResult. This is intended
 	 * mainly for internal use, for developers who are writing commands and want
@@ -74,7 +88,7 @@ public class EvalResult implements IEvalResult {
 	 * @param pt PrologTerm
 	 * @return IEvalResult translation of pt
 	 */
-	def static IEvalResult getEvalResult(PrologTerm pt) {
+	def static AbstractEvalResult getEvalResult(PrologTerm pt) {
 		if (pt instanceof ListPrologTerm) {
 			/*
 			 * If the evaluation was not successful, the result should be a

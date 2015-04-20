@@ -24,6 +24,8 @@ import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
+import de.prob.translator.TranslatingVisitor;
+import de.prob.translator.types.BObject;
 
 /**
  * Representation of a ClassicalB formula.
@@ -42,20 +44,23 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 * @throws EvaluationException
 	 */
 	public ClassicalB(final String code) {
-		// this.code = code;
+		this(code, FormulaExpand.truncate);
+	}
+
+	public ClassicalB(final String code, final FormulaExpand expansion) {
 		Start ast;
 		try {
 			ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
-			this.code = prettyprint(ast);
 		} catch (BException e) {
 			try {
 				ast = BParser.parse(BParser.SUBSTITUTION_PREFIX + " " + code);
-				this.code = prettyprint(ast);
 			} catch (BException f) {
 				throw new EvaluationException(f.getMessage(), f);
 			}
 		}
 		this.ast = ast;
+		this.code = prettyprint(ast);
+		this.expansion = expansion;
 	}
 
 	/**
@@ -64,7 +69,12 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 *            and saved
 	 */
 	public ClassicalB(final Start ast) {
+		this(ast, FormulaExpand.truncate);
+	}
+
+	public ClassicalB(final Start ast, final FormulaExpand expansion) {
 		this.ast = ast;
+		this.expansion = expansion;
 		code = prettyprint(ast);
 	}
 
@@ -128,5 +138,15 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	@Override
 	public EvaluationCommand getCommand(final State stateId) {
 		return new EvaluateFormulaCommand(this, stateId.getId());
+	}
+
+	@Override
+	public BObject translate() {
+		if (!getKind().equals(EXPRESSION.toString())) {
+			throw new IllegalArgumentException();
+		}
+		TranslatingVisitor v = new TranslatingVisitor();
+		getAst().apply(v);
+		return v.getResult();
 	}
 }

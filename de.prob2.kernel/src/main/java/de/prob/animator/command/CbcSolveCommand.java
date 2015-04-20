@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -28,6 +28,7 @@ public class CbcSolveCommand extends AbstractCommand {
 	private static final int BINDINGS = 1;
 
 	private static final int VAR_NAME = 1;
+	@SuppressWarnings("unused")
 	private static final int PROLOG_REP = 2;
 	private static final int PRETTY_PRINT = 3;
 
@@ -35,13 +36,13 @@ public class CbcSolveCommand extends AbstractCommand {
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
 	private final IEvalElement evalElement;
-	private IEvalResult result;
+	private AbstractEvalResult result;
 
 	public CbcSolveCommand(final IEvalElement evalElement) {
 		this.evalElement = evalElement;
 	}
 
-	public IEvalResult getValue() {
+	public AbstractEvalResult getValue() {
 		return result;
 	}
 

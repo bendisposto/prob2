@@ -1,7 +1,7 @@
 package de.prob.model.eventb
 
 import spock.lang.Specification
-import de.prob.model.representation.BSet
+import de.prob.model.representation.Set
 import de.prob.model.representation.ModelElementList
 
 class ContextModifierTest extends Specification {
@@ -17,7 +17,7 @@ class ContextModifierTest extends Specification {
 		context.addConstants(new ModelElementList<EventBConstant>())
 		context.addExtends(new ModelElementList<Context>())
 		context.addProofs(new ModelElementList<ProofObligation>())
-		context.addSets(new ModelElementList<BSet>())
+		context.addSets(new ModelElementList<Set>())
 
 		modifier = new ContextModifier(context)
 	}
@@ -60,7 +60,7 @@ class ContextModifierTest extends Specification {
 
 	def "it is possible to add a carrier set"() {
 		when:
-		BSet set = modifier.addSet("blah")
+		Set set = modifier.addSet("blah")
 
 		then:
 		context.sets.contains(set)
@@ -68,7 +68,7 @@ class ContextModifierTest extends Specification {
 
 	def "it is possible to remove a set once added"() {
 		when:
-		BSet set = modifier.addSet("blah")
+		Set set = modifier.addSet("blah")
 		def removed = modifier.removeSet(set)
 
 		then:
@@ -77,7 +77,7 @@ class ContextModifierTest extends Specification {
 
 	def "it is possible to remove a set after a deep copy"() {
 		when:
-		BSet set = modifier.addSet("blah")
+		Set set = modifier.addSet("blah")
 		def context2 = ModelModifier.deepCopy(model, context)
 		def contained = context2.sets.contains(set)
 		def mod2 = new ContextModifier(context2)

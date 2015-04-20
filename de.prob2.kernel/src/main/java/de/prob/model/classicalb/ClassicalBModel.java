@@ -7,9 +7,13 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.NoContentProvider;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
@@ -23,6 +27,7 @@ public class ClassicalBModel extends AbstractModel {
 
 	private ClassicalBMachine mainMachine = null;
 	private final HashSet<String> done = new HashSet<String>();
+	private BParser bparser;
 
 	@Inject
 	public ClassicalBModel(final Provider<StateSpace> ssProvider) {
@@ -30,9 +35,11 @@ public class ClassicalBModel extends AbstractModel {
 	}
 
 	public DependencyGraph initialize(final Start mainast,
-			final RecursiveMachineLoader rml, final File modelFile) {
+			final RecursiveMachineLoader rml, final File modelFile,
+			final BParser bparser) {
 
 		this.modelFile = modelFile;
+		this.bparser = bparser;
 
 		final DependencyGraph graph = new DependencyGraph();
 
@@ -83,11 +90,26 @@ public class ClassicalBModel extends AbstractModel {
 
 	@Override
 	public IEvalElement parseFormula(final String formula) {
-		return new ClassicalB(formula);
+		try {
+			return new ClassicalB(bparser.parse(BParser.FORMULA_PREFIX + " "
+					+ formula, false, new NoContentProvider()));
+		} catch (BException e) {
+			throw new EvaluationException(e.getMessage());
+		}
 	}
 
 	@Override
 	public FormalismType getFormalismType() {
 		return FormalismType.B;
+	}
+
+	@Override
+	public boolean checkSyntax(String formula) {
+		try {
+			parseFormula(formula);
+			return true;
+		} catch (EvaluationException e) {
+			return false;
+		}
 	}
 }

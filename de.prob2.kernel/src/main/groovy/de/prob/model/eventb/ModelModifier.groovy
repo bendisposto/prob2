@@ -3,7 +3,7 @@ package de.prob.model.eventb
 import de.prob.Main
 import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.model.eventb.theory.Theory
-import de.prob.model.representation.BSet
+import de.prob.model.representation.Set
 import de.prob.model.representation.Constant
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.DependencyGraph.ERefType
@@ -79,7 +79,7 @@ public class ModelModifier {
 		}
 		newContext.addExtends(new ModelElementList<Context>(Extends))
 
-		newContext.addSets(new ModelElementList<BSet>(context.sets))
+		newContext.addSets(new ModelElementList<Set>(context.sets))
 
 		newContext.addConstants(new ModelElementList<Constant>(context.constants))
 		newContext.addProofs(new ModelElementList<ProofObligation>(context.proofs))

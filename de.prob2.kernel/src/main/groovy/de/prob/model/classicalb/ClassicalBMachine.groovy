@@ -1,7 +1,7 @@
 package de.prob.model.classicalb;
 
 import de.prob.model.representation.BEvent
-import de.prob.model.representation.BSet
+import de.prob.model.representation.Set
 import de.prob.model.representation.Constant
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
@@ -11,7 +11,7 @@ import de.prob.model.representation.Variable
 public class ClassicalBMachine extends Machine {
 
 	def ModelElementList<Parameter> parameters = new ModelElementList<Parameter>()
-	def ModelElementList<BSet> sets = new ModelElementList<BSet>()
+	def ModelElementList<Set> sets = new ModelElementList<Set>()
 	def ModelElementList<Constraint> constraints = new ModelElementList<Constraint>()
 	def ModelElementList<ClassicalBConstant> constants = new ModelElementList<Constant>()
 	def ModelElementList<Property> properties = new ModelElementList<Property>()
@@ -29,8 +29,8 @@ public class ClassicalBMachine extends Machine {
 		this.parameters = parameters
 	}
 
-	public void addSets(final ModelElementList<BSet> sets) {
-		put(BSet.class, sets)
+	public void addSets(final ModelElementList<Set> sets) {
+		put(Set.class, sets)
 		this.sets = sets
 	}
 

@@ -2,9 +2,9 @@ package de.prob.model.eventb;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractFormulaElement;
+import de.prob.model.representation.AbstractElement;
 
-public class EventParameter extends AbstractFormulaElement {
+public class EventParameter extends AbstractElement {
 
 	private final String name;
 	private final EventB expression;
@@ -33,7 +33,6 @@ public class EventParameter extends AbstractFormulaElement {
 		return expression;
 	}
 
-	@Override
 	public IEvalElement getFormula() {
 		return expression;
 	}

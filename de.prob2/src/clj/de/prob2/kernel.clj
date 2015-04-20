@@ -1,8 +1,10 @@
 (ns de.prob2.kernel
   (:require [com.stuartsierra.component :as component]
-            [de.prob2.sente :as snt])
+            [de.prob2.sente :as snt]
+            [clojure.reflect :as refl])
   (:import de.prob.Main
-           (de.prob.statespace AnimationSelector Trace ITraceChangesListener StateSpace)))
+           de.prob.unicode.UnicodeTranslator
+           (de.prob.statespace Trace ITraceChangesListener StateSpace )))
 
 
 (defn kebap-case
@@ -14,113 +16,221 @@
           (map (fn [s] (.toLowerCase s))
                (map second (re-seq #"([A-Z][a-z]*)" (.getSimpleName cls))))) add))))
 
-(defn default-map [v m]
-  (into  {:type (kebap-case (class v)) :name (.toString v)} m))
+(defn retrieve-methods [e]
+  (into #{} (map :name (:members (refl/reflect e)))))
 
+(defn default-map [v kids]
+  (merge {:name (.getName v)} kids))
 
-(defprotocol Transform (transform [this]))
+(defn formula-map [formula]
+  {:formula (.getCode formula)
+   :formula-id (.getUUID (.getFormulaId formula))})
+
+(defn formula-element [e]
+  (let [m (retrieve-methods e)
+        mmap (if (m 'getName) {:label (.getName e)} {})
+        formula (.getFormula e)]
+    (into mmap (formula-map formula))))
+
+(defn theorem?-element [e theorem?]
+  (merge (formula-element e) {:theorem? theorem?}))
+
+(defn clean-up-machine [kids]
+  (let [invs (:invariants kids)
+        assertions (:assertions kids)
+        kids' (dissoc kids :assertions)]
+    (if assertions
+      (assoc kids' :invariants (concat assertions invs))
+      kids')))
+
+(defn clean-up-event [kids]
+  (let [events (:events kids)]
+    (assoc (dissoc kids :events) :refines (map :name events))))
+
+(defprotocol Transform (transform [this kids]))
 (extend-protocol Transform
-  de.prob.model.representation.AbstractModel
-  (transform [v] {:type (kebap-case (class v)) :dir (.getModelDirPath v) :file (.getAbsolutePath (.getModelFile v)) :main-component-name (.toString (.getMainComponent v))})
   de.prob.model.representation.Machine
-  (transform [v] (default-map v {}))
+  (transform [v kids] (default-map v (clean-up-machine kids)))
   de.prob.model.eventb.Context
-  (transform [v] (default-map v {}))
-  de.prob.model.representation.BSet
-  (transform [v] (default-map v {}))
+  (transform [v kids] (default-map v kids))
+  de.prob.model.eventb.EventBGuard
+  (transform [v _] (theorem?-element v (.isTheorem v)))
+  de.prob.model.representation.AbstractTheoremElement
+  (transform [v _] (theorem?-element v (.isTheorem v)))
   de.prob.model.representation.AbstractFormulaElement
-  (transform [v] (default-map v {:formula-id (.. v getFormula getFormulaId getUUID)}))
+  (transform [v _] (formula-element v))
   de.prob.model.classicalb.Operation
-  (transform [v] {:type (kebap-case (class v)) :name (.getName v) :output (.getProperty v "output") :parameter (.getProperty v "parameters")})
+  (transform [v kids] (merge kids {:name (.getName v) :label (.getName v) :return-values (.getProperty v "output") :parameters (.getProperty v "parameters")}))
   de.prob.model.eventb.Event
-  (transform [v] {:type (kebap-case (class v)) :name (.getName v)})
+  (transform [v kids] (merge (clean-up-event kids)
+                             {:name (.getName v)
+                              :label (.getName v)
+                              :kind (keyword (.toLowerCase (str (.getType v))))}))
   de.prob.model.representation.Action
-  (transform [v] (default-map v {}))
+  (transform [v _] (.getCode (.getCode v)))
+  de.prob.model.eventb.EventParameter
+  (transform [v _] (.getName v))
+  de.prob.model.eventb.Witness
+  (transform [v _] (.getCode (.getFormula v)))
   java.lang.Object
-  (transform [o] {:type :unknown :class (type o) :object (.toString o)}))
+  (transform [o k] {:type :unknown :class (type o) :object (.toString o) :kids k}))
 
-(def exclude #{de.prob.model.eventb.ProofObligation})
+(defn name-keys [cls]
+  (let [name (.. cls getSimpleName toLowerCase)]
+    (condp = name
+      "property" :properties
+      "bevent"   :events
+      "witness"  :witnesses
+      "eventparameter" :parameters
+      "variant"  :variant
+      name       (keyword (str name "s")))))
+
+(def exclude #{de.prob.model.eventb.ProofObligation
+               de.prob.model.eventb.Context
+               de.prob.model.representation.Machine})
 
 (declare extractE)
 
 (defn extractV [x]
   (let [c (.getKey x) lv (.getValue x)]
-    [(keyword (.. c getSimpleName toLowerCase)) (if (exclude c) [] (map extractE lv))]))
+    (if (exclude c)
+      []
+      [(name-keys c) (map extractE lv)])))
 
 (defn extractE [absel]
-  (let [chd (.getChildren absel)
-        tgt (transform absel)]
+  (let [chd (.getChildren absel)]
     (if (seq chd)
-      (do (->> chd (map extractV) (into tgt)))
-      tgt)))
+      (transform absel (into {} (remove empty? (map extractV chd))))
+      (transform absel nil))))
 
-(defn transform-state-values [initialized? values]
-  (into {} (map (fn [x] [(.toString (.getKey x)) (if initialized? (.toString (.getValue x)) "not initialized" )]) values)))
+(defn extract-edge [edge]
+  (let [from (.getElementName (.getFrom edge))
+        to   (.getElementName (.getTo edge))
+        type (keyword (.toLowerCase (str (.getRelationship edge))))]
+    {:from from :to to :type type}))
 
-(defn transform-state [state]
-  (println state)
-  {:initialized? (.isInitialised state)
-   :inv-ok? (.isInvariantOk state)
-   :timeout? (.isTimeoutOccurred state)
-   :max-trans? (.isMaxTransitionsCalculated state)
-   :id (.getId state)
-   :state-errors (into [] (.getStateErrors state))
-   :transitions-with-timeout (into #{} (.getTransitionsWithTimeout state))
-   :values (transform-state-values (.isInitialised state) (.getValues state))})
+(defn extract-dep-graph [model]
+  (let [graph (.getGraph model)]
+    (map extract-edge (.getEdges graph))))
+
+(defn extract-model [model]
+  {:dir (.getModelDirPath model)
+   :main-component-name (.getName (.getMainComponent model))
+   :filename (.getAbsolutePath (.getModelFile model))
+   :type (kebap-case (class model))
+   :dependency-graph (extract-dep-graph model)
+   :components (into {} (map (fn [e] [(.getKey e) (extractE (.getValue e))])
+                             (.getComponents model)))})
+
+(defn extract-transition [transition]
+  (when transition
+    (let [name (.getName transition)
+          id (.getId transition)
+          parameters (.getParams transition)
+          return-values (.getReturnValues transition)
+          src (.getId (.getSource transition))
+          dest (.getId (.getDestination transition))
+          anim-id (.getId (.stateSpace transition))]
+      {:name name
+       :id id
+       :parameters parameters
+       :return-values (into [] return-values)
+       :src {:model anim-id :state src}
+       :dst {:model anim-id :state dest}})))
+
+(defn extract-trace [trace]
+  (let [trace-id (.getUUID trace)
+        t (.getTransitionList trace true)
+        transitions (map extract-transition t)
+        current-index (.getIndex (.getCurrent trace))
+        current-transition (extract-transition (.getCurrentTransition trace))
+        out-trans (map extract-transition (.getNextTransitions trace true))
+        back? (.canGoBack trace)
+        forward? (.canGoForward trace)
+        model (.getId (.getStateSpace trace))
+        current-state {:model model :state (.getId (.getCurrentState trace))}]
+    {:trace-id trace-id  :transitions transitions :current-index current-index
+     :out-transitions out-trans :back? back? :forward? forward? :model model :current-state current-state :current-transition current-transition}))
+
+(defn extract-state-error [se]
+  (let [event (.getEvent se)
+        short-desc (.getShortDescription se)
+        long-desc (.getLongDescription se)]
+    {:event event :short-desc short-desc :long-desc long-desc}))
+
+(defn extract-values [state]
+  (let [values (.getValues state)
+        value-map (into {} (map (fn [[x y]]
+                                  [(.getUUID (.getFormulaId x)) (.getId y)])
+                                values))
+        result-map (into {} (map (fn [[_ y]]
+                                   [(.getId y) (.toString y)])
+                                 values))]
+    {:values value-map :results result-map}))
+
+(defn extract-state [state]
+  (let [id           {:model (.getId (.getStateSpace state))
+                      :state (.getId state)}
+        initialized? (.isInitialised state)
+        inv-ok?      (.isInvariantOk state)
+        timeout?     (.isTimeoutOccurred state)
+        max-transitions-reached? (.isMaxTransitionsCalculated state)
+        state-errors (map extract-state-error (.getStateErrors state))
+        events-with-timeout (into [] (.getTransitionsWithTimeout state))
+        vals (extract-values state)]
+    {:state {:values (:values vals)
+             :initialized? initialized?
+             :inv-ok? inv-ok?
+             :timeout? timeout?
+             :max-transitions-reached? max-transitions-reached?
+             :id id
+             :state-errors state-errors
+             :events-with-timeout events-with-timeout}
+     :results (:results vals)}))
+
+(defn find-and-extract [{:keys [state]} state-space]
+  (extract-state (.getState state-space state)))
+
+(defn prepare-trace [t]
+  (let [trace (extract-trace t)
+        transitions (concat (:transitions trace) (:out-transitions trace))
+        state-space (.getStateSpace t)
+        ss (into #{} (concat (map :src transitions) (map :dst transitions)))
+        extracted (map (fn [s] (find-and-extract s state-space)) ss)
+        states (map :state extracted)
+        results (map :results extracted)]
+    {:trace trace
+     :states (into {} (map (fn [s] [(:id s) s]) states))
+     :results (apply merge results)}))
+
+(defn prepare-ui-state-packet [trace-list]
+  (let [ms (into #{} (map (fn [t] (.getModel t))) trace-list)
+        models (into {} (map (fn [m]
+                               [(.getId (.getStateSpace m))
+                                (extract-model m)]) ms))
+        ts (map prepare-trace trace-list)
+        traces (into {} (map (fn [{:keys [trace]}] [(:trace-id trace) trace]) ts))
+        states (apply merge (map :states ts))
+        results (apply merge (map :results ts))]
+    {:traces traces :models models :states states :results results}))
 
 
-(defn transform-transition [transition]
-  (let [name (.getName transition)
-        id (.getId transition)
-        parameters (.getParams transition)
-        return-values (.getReturnValues transition)]
-    {:name name
-     :id id
-     :parameters parameters
-     :return-values (into [] return-values)}))
-
-(defn prepare-trace-element [te]
-
-  (let [s (.getSrc te)
-        src (transform-state s)
-        d (.getDest te)
-        dest (transform-state (if d d s))]
-    {:previous src :current dest}))
-
-
-(defn prepare-trace-packet [trace]
-  (let [h (.getTransitionList trace true)
-        history (map transform-transition h)
-        te (.getCurrent trace)
-        cur (prepare-trace-element te)
-        uuid (.getUUID trace)
-        cur-index (.getIndex te)
-        model (extractE (.getModel trace))
-        model-id (.getId (.getStateSpace trace))
-        ]
-
-    (assoc cur :trace-id uuid :history history :current-index cur-index :model {:data model :model-id model-id})))
-
-
-;; FIXME We should only send information to clients who actually care
-(defn notify-model-changed [{:keys [clients] :as sente} state-space]
-  (doseq [c (:any @clients)]
-    (snt/send! sente c ::model-changed (extractE (.getModel state-space)))))
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-trace-changed [{:keys [clients] :as sente} traces]
-  (let [packet (mapv prepare-trace-packet traces)]
+  (let [packet (prepare-ui-state-packet traces)]
     (doseq [c (:any @clients)]
       (snt/send!
        sente c
-       ::trace-changed
+       ::ui-state
        packet))))
 
-;; FIXME We should only send information to clients who actually care
-(defn notify-animator-busy [{:keys [clients] :as sente} busy?]
+(defn notify-trace-removed [{:keys [clients] :as sente} traces]
   (doseq [c (:any @clients)]
-    (snt/send! sente c (if busy? ::animator-is-busy ::animator-is-idle) {})))
-
+    (snt/send!
+     sente c
+     ::trace-removed
+     traces)))
 
 
 (defn instantiate [{inj :injector :as prob} cls]
@@ -131,28 +241,70 @@
         (reify
           ITraceChangesListener
           (changed [this traces] (notify-trace-changed sente traces))
-          (removed [this traces] (println "removed"))
+          (removed [this traces] (do (println :remove traces) (notify-trace-removed sente traces)))
           (animatorStatus [this busy] (println "animation status")))]
     (.registerAnimationChangeListener animations listener)
     listener))
 
-(defn trace-list [trace]
-  (let [uuid (.getUUID trace)
-        model (transform (.getModel trace))
-        animator-id (.getId (.getStateSpace trace))]
-    (into model  {:uuid uuid :animator-id animator-id})))
-
 (defmulti dispatch-kernel snt/extract-action)
 (defmethod dispatch-kernel :handshake [{:keys [animations sente]} a]
   (let [traces (.getTraces animations)
-        packet (mapv trace-list traces)
+        packet (prepare-ui-state-packet traces)
         client (get-in a [:ring-req :session :uid])]
     (snt/send!
      sente client
-     ::traces
+     ::ui-state
      packet)))
 
-(defrecord ProB [injector listener sente animations]
+(defmethod dispatch-kernel
+  :kill!
+  [{:keys [animations]} a]
+  (let [trace-ids (get-in a [:?data :trace-ids])
+        traces (mapv #(.getTrace animations %) trace-ids)
+        animators (into #{} (mapv #(.getStateSpace %) traces))]
+    (doseq [t traces] (.removeTrace animations t))
+    (doseq [a animators] (.kill a))))
+
+(def clojure-ui-functions
+  {"parse" (fn [{:keys [animations]} [trace-id formula]]
+             (let [trace (.getTrace animations trace-id)
+                   model (.getModel trace)
+                   status? (.checkSyntax model formula) 
+                   ]
+               {:status status?
+                :input formula}))})
+
+(defmethod dispatch-kernel
+  :call
+  [{:keys [sente animations ui-functions] :as prob} request]
+  (let [client (get-in request [:ring-req :session :uid])
+        data (:?data request)
+        {:keys [caller-id type command args]} data
+        result (if (= type :clojure)
+                 ((get clojure-ui-functions command) prob args)
+                 (.call ui-functions command args))]
+    (snt/send!
+     sente client
+     ::response
+     {:result result :caller-id caller-id})))
+
+(defmethod dispatch-kernel
+  :start-animation
+  [{:keys [animations api]} {[file extension] :?data :as request}]
+  (println :file file :ext extension (contains? #{"csp"} extension))
+  (let [model (condp contains? extension
+                  #{"mch" "ref" "imp"} (.b_load api file)
+                  #{"bum" "buc" "bcc" "bcm"} (.eventb_load api file)
+                  #{"csp"} (.csp_load api file)
+                  #{"tla"} (.tla_load api file)
+                  :otherwise (throw (Exception. "Unknown file type")))
+        _ (println :model model)
+        trace (Trace. model)
+        _ (println trace)]
+    (.addNewAnimation animations trace)
+    (println :animations animations)))
+
+(defrecord ProB [injector listener sente animations api ui-functions]
   component/Lifecycle
   (start [this]
     (if injector
@@ -162,19 +314,28 @@
                 _ (println " -> Got the injector")
                 animations (.getInstance injector de.prob.statespace.Animations)
                 _ (println " -> got Animations object")
+                ui-functions (.getInstance injector de.prob.scripting.UiFunctionRegistry)
+                _ (println " -> got Ui Function registry")
                 listener (install-handlers sente animations)
                 _ (println " -> Installed Listeners")
-                this' (assoc this :injector injector :listener listener :animations animations)]
+                api (.getInstance injector de.prob.scripting.Api)
+                _ (println " -> Got Api object")
+                this' (assoc this :api api :injector injector :listener listener :animations animations :ui-functions ui-functions)]
             (defmethod snt/handle-updates :prob2 [_ a] (dispatch-kernel this' a))
             this'))))
   (stop [{:keys [animations listener] :as this}]
     (if injector (do (println "Shutting down ProB 2.0")
-                     (doseq [t (.getTraces animations)]
-                       (println "  * Removing " (str (.getProperty t "UUID")))
-                       (.removeTrace animations t))
+                     (let [traces (.getTraces animations)
+                           animators (into #{} (mapv #(.getStateSpace %) traces))]
+                       (doseq [t traces]
+                         (println "  * Removing " (str (.getProperty t "UUID")))
+                         (.removeTrace animations t))
+                       (doseq [a animators]
+                         (println "  * Killing " a)
+                         (.kill a)))
                      (println " * Deregistering Listener")
                      (.deregisterAnimationChangeListener animations listener)
-                     (dissoc this :injector :listener :animations :sente))
+                     (dissoc this :injector :listener :api :animations :ui-functions :sente))
         this)))
 
 (defn prob []

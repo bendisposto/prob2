@@ -34,7 +34,6 @@ public class ServletContextListener extends GuiceServletContextListener {
 
 	@Override
 	public void contextDestroyed(final ServletContextEvent event) {
-		Main.destroyPrologProcesses();
 	}
 
 }

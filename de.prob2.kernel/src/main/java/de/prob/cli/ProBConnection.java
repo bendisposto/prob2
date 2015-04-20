@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 public class ProBConnection {
 
@@ -33,7 +33,7 @@ public class ProBConnection {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(ProBConnection.class).add("key", key)
+		return MoreObjects.toStringHelper(ProBConnection.class).add("key", key)
 				.add("port", port).toString();
 	}
 

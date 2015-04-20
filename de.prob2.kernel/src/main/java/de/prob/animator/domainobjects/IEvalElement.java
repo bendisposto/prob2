@@ -40,4 +40,6 @@ public interface IEvalElement {
 	public IFormulaUUID getFormulaId();
 
 	public EvaluationCommand getCommand(State stateid);
+
+	public FormulaExpand expansion();
 }

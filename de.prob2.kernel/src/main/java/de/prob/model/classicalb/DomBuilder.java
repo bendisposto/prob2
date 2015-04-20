@@ -23,6 +23,7 @@ import de.be4.classicalb.core.parser.node.APreconditionSubstitution;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
 import de.be4.classicalb.core.parser.node.ASelectSubstitution;
+import de.be4.classicalb.core.parser.node.ASubstitutionParseUnit;
 import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
 import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
@@ -31,7 +32,7 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
-import de.prob.model.representation.BSet;
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.model.representation.ModelElementList;
 
 public class DomBuilder extends DepthFirstAdapter {
@@ -44,7 +45,7 @@ public class DomBuilder extends DepthFirstAdapter {
 	private final ModelElementList<Property> properties = new ModelElementList<Property>();
 	private final ModelElementList<ClassicalBVariable> variables = new ModelElementList<ClassicalBVariable>();
 	private final ModelElementList<ClassicalBInvariant> invariants = new ModelElementList<ClassicalBInvariant>();
-	private final ModelElementList<BSet> sets = new ModelElementList<BSet>();
+	private final ModelElementList<de.prob.model.representation.Set> sets = new ModelElementList<de.prob.model.representation.Set>();
 	private final ModelElementList<Assertion> assertions = new ModelElementList<Assertion>();
 	private final ModelElementList<Operation> operations = new ModelElementList<Operation>();
 	private final boolean used;
@@ -133,12 +134,14 @@ public class DomBuilder extends DepthFirstAdapter {
 
 	@Override
 	public void outADeferredSetSet(final ADeferredSetSet node) {
-		sets.add(new BSet(extractIdentifierName(node.getIdentifier())));
+		sets.add(new de.prob.model.representation.Set(new ClassicalB(
+				extractIdentifierName(node.getIdentifier()))));
 	}
 
 	@Override
 	public void outAEnumeratedSetSet(final AEnumeratedSetSet node) {
-		sets.add(new BSet(extractIdentifierName(node.getIdentifier())));
+		sets.add(new de.prob.model.representation.Set(new ClassicalB(
+				extractIdentifierName(node.getIdentifier()))));
 	}
 
 	@Override
@@ -156,25 +159,26 @@ public class DomBuilder extends DepthFirstAdapter {
 		final List<String> output = extractIdentifiers(node.getReturnValues());
 		Operation operation = new Operation(name, params, output);
 		PSubstitution body = node.getOperationBody();
+		ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 		if (body instanceof ASelectSubstitution) {
-			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 			PPredicate condition = ((ASelectSubstitution) body).getCondition();
 			List<PPredicate> predicates = getPredicates(condition);
 			for (PPredicate pPredicate : predicates) {
 				guards.add(new ClassicalBGuard(createPredicateAST(pPredicate)));
 			}
-			operation.addGuards(guards);
 		}
 		if (body instanceof APreconditionSubstitution) {
-			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 			PPredicate condition = ((APreconditionSubstitution) body)
 					.getPredicate();
 			List<PPredicate> predicates = getPredicates(condition);
 			for (PPredicate pPredicate : predicates) {
 				guards.add(new ClassicalBGuard(createPredicateAST(pPredicate)));
 			}
-			operation.addGuards(guards);
 		}
+		ModelElementList<ClassicalBAction> actions = new ModelElementList<ClassicalBAction>();
+		actions.add(new ClassicalBAction(createSubstitutionAST(body)));
+		operation.addActions(actions);
+		operation.addGuards(guards);
 
 		operations.add(operation);
 	}
@@ -231,6 +235,16 @@ public class DomBuilder extends DepthFirstAdapter {
 		start.setEOF(EOF);
 		node2.setPredicate((PPredicate) pPredicate.clone());
 		node2.getPredicate().apply(new RenameIdentifiers());
+		return start;
+	}
+
+	private Start createSubstitutionAST(final PSubstitution pSub) {
+		Start start = new Start();
+		ASubstitutionParseUnit node2 = new ASubstitutionParseUnit();
+		start.setPParseUnit(node2);
+		start.setEOF(EOF);
+		node2.setSubstitution((PSubstitution) pSub.clone());
+		node2.getSubstitution().apply(new RenameIdentifiers());
 		return start;
 	}
 

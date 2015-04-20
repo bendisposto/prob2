@@ -10,7 +10,7 @@ import java.util.List;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -81,7 +81,7 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			}
 			final String error = errors.isEmpty() ? "unspecified error"
 					: errors.get(0);
-			final IEvalResult er = new ComputationNotCompletedResult(
+			final AbstractEvalResult er = new ComputationNotCompletedResult(
 					evalElement.getCode(), error);
 			result = new EvalstoreResult(false, false, evalstoreId, er,
 					Collections.<String> emptyList());
@@ -114,12 +114,12 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 		private final boolean hasTimeoutOccurred;
 		private final boolean hasInterruptedOccurred;
 		private final long resultingStoreId;
-		private final IEvalResult result;
+		private final AbstractEvalResult result;
 		private final List<String> newIdentifiers;
 
 		public EvalstoreResult(final boolean hasTimeoutOccurred,
 				final boolean hasInterruptedOccurred,
-				final long resultingStoreId, final IEvalResult result,
+				final long resultingStoreId, final AbstractEvalResult result,
 				final List<String> newIdentifiers) {
 			super();
 			this.hasTimeoutOccurred = hasTimeoutOccurred;
@@ -146,7 +146,7 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			return resultingStoreId;
 		}
 
-		public IEvalResult getResult() {
+		public AbstractEvalResult getResult() {
 			return result;
 		}
 

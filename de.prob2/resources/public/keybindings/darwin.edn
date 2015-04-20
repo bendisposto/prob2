@@ -1,0 +1,11 @@
+[
+"Ctrl+Space" :modeline
+"Meta+c" :copy
+"Meta+x" :cut
+"Meta+v" :paste
+"Meta+a" :select-all
+"Meta+q" :quit
+"Meta+o" :open-file
+"Meta+s" :save
+"Meta+Shift+s" :save-as
+]

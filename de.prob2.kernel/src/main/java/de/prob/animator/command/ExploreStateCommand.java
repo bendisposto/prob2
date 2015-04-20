@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -107,7 +107,7 @@ public final class ExploreStateCommand extends AbstractCommand implements
 		return checkMaxOpCmd.getResult();
 	}
 
-	public Map<IEvalElement, IEvalResult> getFormulaResults() {
+	public Map<IEvalElement, AbstractEvalResult> getFormulaResults() {
 		return evalFormulasCmd.getResults();
 	}
 

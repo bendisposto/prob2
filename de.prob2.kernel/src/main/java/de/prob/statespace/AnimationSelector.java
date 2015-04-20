@@ -1,6 +1,5 @@
 package de.prob.statespace;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -40,8 +39,8 @@ public class AnimationSelector {
 
 	Logger logger = LoggerFactory.getLogger(AnimationSelector.class);
 
-	List<WeakReference<IAnimationChangeListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<IAnimationChangeListener>>();
-	List<WeakReference<IModelChangedListener>> modelListeners = new CopyOnWriteArrayList<WeakReference<IModelChangedListener>>();
+	List<IAnimationChangeListener> traceListeners = new CopyOnWriteArrayList<IAnimationChangeListener>();
+	List<IModelChangedListener> modelListeners = new CopyOnWriteArrayList<IModelChangedListener>();
 
 	Map<UUID, Trace> traces = new LinkedHashMap<UUID, Trace>();
 	Set<UUID> protectedTraces = new HashSet<UUID>();
@@ -58,20 +57,29 @@ public class AnimationSelector {
 	public void registerAnimationChangeListener(
 			final IAnimationChangeListener listener) {
 
-		traceListeners
-				.add(new WeakReference<IAnimationChangeListener>(listener));
+		traceListeners.add(listener);
 		if (currentTrace != null) {
 			listener.traceChange(currentTrace, true);
 			listener.animatorStatus(currentTrace.getStateSpace().isBusy());
 		}
 	}
 
+	public void deregisterAnimationChangeListener(
+			final IAnimationChangeListener listener) {
+		traceListeners.remove(listener);
+	}
+
 	public void registerModelChangedListener(
 			final IModelChangedListener listener) {
-		modelListeners.add(new WeakReference<IModelChangedListener>(listener));
+		modelListeners.add(listener);
 		if (currentStateSpace != null) {
 			listener.modelChanged(currentStateSpace);
 		}
+	}
+
+	public void deregisterModelChangedListeners(
+			final IModelChangedListener listener) {
+		modelListeners.remove(listener);
 	}
 
 	/**
@@ -169,20 +177,16 @@ public class AnimationSelector {
 		// Trace may be null, or not busy
 		if (trace == null || trace != null && !trace.getStateSpace().isBusy()) {
 
-			for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
-				IAnimationChangeListener animationChangeListener = listener
-						.get();
-				if (animationChangeListener != null) {
-					try {
-						animationChangeListener.traceChange(trace,
-								currentAnimationChanged);
-					} catch (Exception e) {
-						logger.error("An exception of type "
-								+ e.getClass()
-								+ " was thrown while executing IAnimationChangeListener of class "
-								+ animationChangeListener.getClass()
-								+ " with message " + e.getMessage());
-					}
+			for (IAnimationChangeListener animationChangeListener : traceListeners) {
+				try {
+					animationChangeListener.traceChange(trace,
+							currentAnimationChanged);
+				} catch (Exception e) {
+					logger.error("An exception of type "
+							+ e.getClass()
+							+ " was thrown while executing IAnimationChangeListener of class "
+							+ animationChangeListener.getClass()
+							+ " with message " + e.getMessage());
 				}
 			}
 		}
@@ -198,20 +202,14 @@ public class AnimationSelector {
 	 *            animation
 	 */
 	private void notifyStatusChange(final boolean busy) {
-		for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
-			IAnimationChangeListener animationChangeListener = listener.get();
-			if (animationChangeListener != null) {
-				animationChangeListener.animatorStatus(busy);
-			}
+		for (IAnimationChangeListener animationChangeListener : traceListeners) {
+			animationChangeListener.animatorStatus(busy);
 		}
 	}
 
 	private void notifyModelChanged(final StateSpace s) {
-		for (WeakReference<IModelChangedListener> listener : modelListeners) {
-			IModelChangedListener modelChangedListener = listener.get();
-			if (modelChangedListener != null) {
-				modelChangedListener.modelChanged(s);
-			}
+		for (IModelChangedListener modelChangedListener : modelListeners) {
+			modelChangedListener.modelChanged(s);
 		}
 	}
 

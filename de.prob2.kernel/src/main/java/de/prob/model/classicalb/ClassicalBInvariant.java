@@ -10,4 +10,9 @@ public class ClassicalBInvariant extends Invariant {
 		super(new ClassicalB(start));
 	}
 
+	@Override
+	public boolean isTheorem() {
+		return false;
+	}
+
 }

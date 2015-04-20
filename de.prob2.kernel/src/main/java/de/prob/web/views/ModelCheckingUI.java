@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.LTL;
+import de.prob.annotations.OneToOne;
 import de.prob.annotations.PublicSession;
 import de.prob.check.CBCDeadlockChecker;
 import de.prob.check.CBCInvariantChecker;
@@ -40,6 +41,7 @@ import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
 @PublicSession
+@OneToOne
 public class ModelCheckingUI extends AbstractAnimationBasedView implements
 		IModelChangedListener {
 

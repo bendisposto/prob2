@@ -3,7 +3,7 @@ package de.prob.model.representation;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.unicode.UnicodeTranslator;
 
-public abstract class Axiom extends AbstractFormulaElement {
+public abstract class Axiom extends AbstractTheoremElement {
 
 	private final IEvalElement predicate;
 

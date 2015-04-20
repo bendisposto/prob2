@@ -1,11 +1,12 @@
 package de.prob.animator.domainobjects;
 
-public class ComputationNotCompletedResult implements IEvalResult {
+public class ComputationNotCompletedResult extends AbstractEvalResult {
 
 	private final String reason;
 	private final String code;
 
 	public ComputationNotCompletedResult(final String code, final String reason) {
+		super();
 		this.code = code;
 		this.reason = reason;
 	}

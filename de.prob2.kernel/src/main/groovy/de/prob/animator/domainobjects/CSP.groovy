@@ -45,6 +45,7 @@ class CSP extends AbstractEvalElement {
 		if(osInfo.dirName == "win32")
 			this.target = ".exe"
 		this.procname = home+"lib"+File.separator+"cspmf" + target
+		this.expansion = FormulaExpand.truncate // this doesn't matter
 	}
 
 	public String getCode() {
@@ -94,12 +95,18 @@ class CSP extends AbstractEvalElement {
 
 	}
 
-	private void executeCmd(Process process, IPrologTermOutput pout) {
+	private boolean executeCmd(Process process) {
 		process.waitFor()
-		if (process.exitValue() != 0) {
+		return	process.exitValue() == 0;
+	}
+
+	private void executeCmd(Process process, IPrologTermOutput pout) {
+		if (executeCmd(process)) {
+			pout.printString(process.getText());
+		}
+		else  {
 			throw new EvaluationException("Error parsing CSP "+process.err.text);
 		}
-		pout.printString(process.getText());
 	}
 
 	/**

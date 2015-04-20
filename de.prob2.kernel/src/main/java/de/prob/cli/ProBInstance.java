@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.inject.Inject;
 
 import de.prob.exception.CliError;
@@ -20,13 +20,7 @@ public class ProBInstance {
 	final Logger logger = LoggerFactory.getLogger(ProBInstance.class);
 	private final Process process;
 
-	private final long userInterruptReference;
-
 	private final ProBConnection connection;
-
-	private final String home;
-
-	private final OsSpecificInfo osInfo;
 
 	private String[] interruptCommand;
 
@@ -36,12 +30,9 @@ public class ProBInstance {
 			final String home, final OsSpecificInfo osInfo) {
 		this.process = process;
 		this.connection = connection;
-		this.home = home;
-		this.osInfo = osInfo;
-		this.userInterruptReference = userInterruptReference.longValue();
 		final String command = home + osInfo.getUserInterruptCmd();
 		interruptCommand = new String[] { command,
-				Long.toString(userInterruptReference) };
+				Long.toString(userInterruptReference.longValue()) };
 		thread = makeOutputPublisher(stream);
 		thread.start();
 	}
@@ -90,7 +81,7 @@ public class ProBInstance {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(ProBInstance.class).addValue(connection)
+		return MoreObjects.toStringHelper(ProBInstance.class).addValue(connection)
 				.toString();
 	}
 

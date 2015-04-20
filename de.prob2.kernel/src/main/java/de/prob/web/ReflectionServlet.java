@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -24,13 +25,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.Main;
+import de.prob.annotations.OneToOne;
 import de.prob.annotations.PublicSession;
-import de.prob.annotations.Sessions;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.IModelChangedListener;
 import de.prob.web.data.SessionResult;
 
 @SuppressWarnings("serial")
@@ -41,8 +49,30 @@ public class ReflectionServlet extends HttpServlet {
 
 	Logger logger = LoggerFactory.getLogger(ReflectionServlet.class);
 
-	private final Map<String, ISession> sessions;
-	private final AnimationSelector animations;
+	private class RemoveSessionListener implements
+			RemovalListener<String, ISession> {
+
+		@Override
+		public void onRemoval(
+				final RemovalNotification<String, ISession> notification) {
+			ISession session = notification.getValue();
+			if (session != null) {
+				if (session instanceof IAnimationChangeListener) {
+					animations
+							.deregisterAnimationChangeListener((IAnimationChangeListener) session);
+				}
+				if (session instanceof IModelChangedListener) {
+					animations
+							.deregisterModelChangedListeners((IModelChangedListener) session);
+				}
+			}
+		}
+
+	}
+
+	private final Map<Class<ISession>, Map<String, ISession>> instanceCache = new HashMap<Class<ISession>, Map<String, ISession>>();
+	private final LoadingCache<String, ISession> sessions;
+
 	private final ExecutorService taskExecutor = Executors
 			.newFixedThreadPool(3);
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
@@ -50,11 +80,20 @@ public class ReflectionServlet extends HttpServlet {
 
 	private final static String FQN = "(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)+\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*";
 
+	private final AnimationSelector animations;
+
 	@Inject
-	public ReflectionServlet(@Sessions final Map<String, ISession> sessions,
-			final AnimationSelector animations) {
-		this.sessions = sessions;
+	public ReflectionServlet(final AnimationSelector animations) {
 		this.animations = animations;
+		this.sessions = CacheBuilder.newBuilder()
+				.removalListener(new RemoveSessionListener())
+				.build(new CacheLoader<String, ISession>() {
+					@Override
+					public ISession load(final String key) throws Exception {
+						return load(key);
+					}
+				});
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -94,9 +133,10 @@ public class ReflectionServlet extends HttpServlet {
 		String session = parts.get(3);
 		boolean isUuid = isUUID(session);
 
-		if (isUuid && sessions.containsKey(session)) {
+		ISession sess = sessions.getIfPresent(session);
+		if (isUuid && sess != null) {
 			// logger.trace("Delegating");
-			delegateToSession(req, resp, sessions.get(session));
+			delegateToSession(req, resp, sess);
 			// logger.trace("Delegated call completed");
 		} else {
 			Class<ISession> clazz = getClass(className);
@@ -111,7 +151,9 @@ public class ReflectionServlet extends HttpServlet {
 					: null);
 			logger.trace("Got the object");
 			String id = obj.getSessionUUID().toString();
-			sessions.put(id, obj);
+			if (sessions.getIfPresent(id) == null) {
+				sessions.put(id, obj);
+			}
 			String rest = prepareExtraParameters(req);
 			resp.sendRedirect(URL_PATTERN + className + "/" + id + rest);
 			return;
@@ -182,24 +224,49 @@ public class ReflectionServlet extends HttpServlet {
 	private ISession instantiate(final Class<ISession> clazz, final UUID uuid)
 			throws IOException {
 		boolean publicSession = false;
+		boolean oneToOne = false;
 		Annotation[] annotations = clazz.getAnnotations();
 		for (Annotation annotation : annotations) {
 			if (annotation instanceof PublicSession) {
 				publicSession = true;
-				break;
+			}
+			if (annotation instanceof OneToOne) {
+				oneToOne = true;
 			}
 		}
 
 		ISession obj = null;
 		if (!Main.restricted || publicSession) {
-			obj = Main.getInjector().getInstance(clazz);
-			if (Main.multianimation
-					&& obj instanceof AbstractAnimationBasedView) {
-				if (uuid != null) {
+			if (oneToOne) {
+				if (!instanceCache.containsKey(clazz)) {
+					instanceCache.put(clazz, new HashMap<String, ISession>());
+				}
+
+				String key = null;
+				if (Main.multianimation && uuid != null) {
+					key = uuid.toString();
+				} else {
+					key = "DEFAULT";
+				}
+
+				ISession iSession = instanceCache.get(clazz).get(key);
+				if (iSession != null) {
+					return iSession;
+				}
+
+				obj = Main.getInjector().getInstance(clazz);
+				instanceCache.get(clazz).put(key, obj);
+
+				if (Main.multianimation
+						&& obj instanceof AbstractAnimationBasedView
+						&& uuid != null) {
 					((AbstractAnimationBasedView) obj)
 							.setAnimationOfInterest(uuid);
 				}
+			} else {
+				obj = Main.getInjector().getInstance(clazz);
 			}
+
 		}
 		return obj;
 	}

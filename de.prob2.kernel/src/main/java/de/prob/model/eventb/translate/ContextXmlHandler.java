@@ -12,12 +12,12 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBConstant;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.BSet;
 import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.ModelElementList;
 
@@ -30,14 +30,14 @@ public class ContextXmlHandler extends DefaultHandler {
 
 	private final Context context;
 	private final ModelElementList<Context> Extends = new ModelElementList<Context>();
-	private final ModelElementList<BSet> sets = new ModelElementList<BSet>();
+	private final ModelElementList<de.prob.model.representation.Set> sets = new ModelElementList<de.prob.model.representation.Set>();
 	private final ModelElementList<EventBAxiom> axioms = new ModelElementList<EventBAxiom>();
 	private final ModelElementList<EventBAxiom> inheritedAxioms = new ModelElementList<EventBAxiom>();
 	private final ModelElementList<EventBConstant> constants = new ModelElementList<EventBConstant>();
 
 	private Context internalContext;
 	private ModelElementList<Context> internalExtends;
-	private ModelElementList<BSet> internalSets;
+	private ModelElementList<de.prob.model.representation.Set> internalSets;
 	private ModelElementList<EventBAxiom> internalAxioms;
 	private ModelElementList<EventBAxiom> internalInheritedAxioms;
 	private ModelElementList<EventBConstant> internalConstants;
@@ -93,7 +93,8 @@ public class ContextXmlHandler extends DefaultHandler {
 
 	private void addSet(final Attributes attributes) {
 		String name = attributes.getValue("name");
-		BSet bSet = new BSet(name);
+		de.prob.model.representation.Set bSet = new de.prob.model.representation.Set(
+				new EventB(name));
 		if (inInternalContext) {
 			internalSets.add(bSet);
 		} else {
@@ -186,7 +187,7 @@ public class ContextXmlHandler extends DefaultHandler {
 		internalExtends = new ModelElementList<Context>();
 		internalAxioms = new ModelElementList<EventBAxiom>();
 		internalInheritedAxioms = new ModelElementList<EventBAxiom>();
-		internalSets = new ModelElementList<BSet>();
+		internalSets = new ModelElementList<de.prob.model.representation.Set>();
 		internalConstants = new ModelElementList<EventBConstant>();
 	}
 

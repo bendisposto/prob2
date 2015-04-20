@@ -13,9 +13,15 @@ import java.util.HashMap;
  */
 public abstract class AbstractEvalElement implements IEvalElement {
 	protected String code;
+	protected FormulaExpand expansion;
 
 	@Override
 	public String getCode() {
 		return code;
+	}
+
+	@Override
+	public FormulaExpand expansion() {
+		return expansion;
 	}
 }

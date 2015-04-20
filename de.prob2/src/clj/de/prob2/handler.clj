@@ -2,6 +2,8 @@
   (:require [compojure.core :refer [GET POST defroutes]]
             [compojure.route :refer [not-found resources]]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+            [ring.util.response :refer [response]]
+            [ring.middleware.json :refer [wrap-json-response]]
             [selmer.parser :refer [render-file]]
             [com.stuartsierra.component :as component]
             [clojure.core.async :as async :refer (<! <!! >! >!! put! chan go go-loop)]
@@ -20,9 +22,20 @@
 
 (defn default-routes []
   (fn [{:keys [ws-handshake post]} prob]
-    [(GET "/" [] (render-file "templates/index.html" {:dev (env :dev?)}))
-     (GET  "/updates" req (-> req (assoc-in [:session :uid] (get-uid)) ws-handshake))
+    [(GET  "/updates" req (println "Shake it baby")(-> req (assoc-in [:session :uid] (get-uid)) ws-handshake))
      (GET "/stateview/:trace" [trace] (sv/create-state-view prob trace))
+     (GET "/version" []
+          (let [cv (.getVersion (kernel/instantiate prob de.prob.scripting.Api))
+                major (.-major cv)
+                minor (.-minor cv)
+                service (.-service cv)
+                qualifier (.-qualifier cv)
+                revision (.-revision cv)]
+            (response {:major major
+                       :minor minor
+                       :service service
+                       :qualifier qualifier
+                       :revision revision})))
      (POST "/updates" req (post req))
      (resources "/")
      (not-found "Not Found")]))
@@ -53,9 +66,10 @@
           (assoc this
                  :handler
                  (let [handler
-                       (wrap-defaults
-                        (:route-fn routes)
-                        site-defaults)]
+                       (wrap-json-response
+                        (wrap-defaults
+                         (:route-fn routes)
+                         site-defaults))]
                    (if (env :dev?)
                      (wrap-exceptions handler)
                      handler))))))

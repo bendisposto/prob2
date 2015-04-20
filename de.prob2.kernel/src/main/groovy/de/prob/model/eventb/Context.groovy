@@ -2,7 +2,7 @@ package de.prob.model.eventb;
 
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Axiom
-import de.prob.model.representation.BSet
+import de.prob.model.representation.Set
 import de.prob.model.representation.Constant
 import de.prob.model.representation.ModelElementList
 
@@ -11,7 +11,7 @@ public class Context extends AbstractElement {
 	private final String name;
 	def ModelElementList<ProofObligation> proofs
 	def ModelElementList<Context> Extends
-	def ModelElementList<BSet> sets
+	def ModelElementList<Set> sets
 	def ModelElementList<EventBAxiom> axioms
 	def ModelElementList<EventBAxiom> allAxioms // includes inherited
 	def ModelElementList<EventBConstant> constants
@@ -31,8 +31,8 @@ public class Context extends AbstractElement {
 		Extends = contexts
 	}
 
-	public void addSets(final ModelElementList<BSet> sets) {
-		put(BSet.class, sets);
+	public void addSets(final ModelElementList<Set> sets) {
+		put(Set.class, sets);
 		this.sets = sets
 	}
 
