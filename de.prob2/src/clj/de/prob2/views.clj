@@ -8,6 +8,17 @@
         t' (.gotoPosition t index)]
     (.traceChange animations t')))
 
+(defn go-back [{:keys [animations] :as prob} trace-id]
+  (let [t (.getTrace animations trace-id)
+        t' (.back t)]
+    (.traceChange animations t')))
+
+(defn go-forward [{:keys [animations] :as prob} trace-id]
+  (let [t (.getTrace animations trace-id)
+        t' (.forward t)]
+    (.traceChange animations t')))
+
+
 (defn execute-event [{:keys [animations] :as prob} {:keys [state-id trace-id event-id]}]
   (let [t (.getTrace animations trace-id)
         s (.getCurrentState t)
@@ -20,6 +31,8 @@
 
 (defmulti dispatch-history sente/extract-action)
 (defmethod dispatch-history :goto [prob {:keys [?data]}] (goto-position prob ?data))
+(defmethod dispatch-history :back [prob {:keys [?data]}] (go-back prob ?data))
+(defmethod dispatch-history :forward [prob {:keys [?data]}] (go-forward prob ?data))
 
 (defmulti dispatch-events sente/extract-action)
 (defmethod dispatch-events :execute [prob {:keys [?data]}]

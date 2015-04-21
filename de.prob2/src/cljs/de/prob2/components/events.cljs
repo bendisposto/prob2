@@ -14,14 +14,27 @@
         :on-click #(rf/dispatch [:events/execute {:state-id state :trace-id trace-id :event-id id}])}
     (h/pp-transition item)]])
 
+(defn- disabled-if-not [test]
+  (if-not test " disabled" ""))
+
 (defn events-view [id]
   (let [filtered? (r/atom true)]
     (fn []
       (let [trace (rf/subscribe [:trace id])
-            {{sid :state} :current-state ts :out-transitions} @trace
-            ]
+            {{sid :state} :current-state ts :out-transitions back? :back? fwd? :forward?} @trace]
         [:div {:class "events-view"}
+         [:div {:class "btn-group"}
+          [:button {:type "button"
+                    :class (str "btn btn-default " (disabled-if-not back?))
+                    :on-click #(rf/dispatch [:history/back id])}
+           [:span {:class "glyphicon glyphicon-chevron-left"}]]
+          [:button {:type "button"
+                    :class (str "btn btn-default " (disabled-if-not fwd?))
+                    :on-click #(rf/dispatch [:history/forward id])}
+           [:span {:class "glyphicon glyphicon-chevron-right"}]]]
          [:ul {:class "events-list"}
           (map (partial mk-event-item sid id) ts)]]))))
 
 (rf/register-handler :events/execute h/relay)
+(rf/register-handler :history/back h/relay)
+(rf/register-handler :history/forward h/relay)

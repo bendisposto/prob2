@@ -31,8 +31,7 @@
   [
    (menu
     :prob
-    [(item :hide-prob {:key "h" :selector "hide:"})
-     (item :hide-others {:key "h" :modifiers "cmd-alt" :selector "hideOtherApplications"})]
+    []
     {:mac :only})
    (menu
     :file-menu
