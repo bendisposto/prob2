@@ -27,12 +27,12 @@
     (let [t' (.add t event-id)]
       (.traceChange animations t'))))
 
-(defn random-event [{:keys [animations] :as prob} {:keys [state-id trace-id]}]
+(defn random-event [{:keys [animations] :as prob} {:keys [state-id trace-id number] :or {number 1}}]
   (let [t (.getTrace animations trace-id)
         s (.getCurrentState t)
         sid (.getId s)]
     (assert (= sid state-id) "Trying to execute event on a state that is not the current state")
-    (let [t' (.anyEvent t nil)]
+    (let [t' (reduce (fn [a _] (.anyEvent a nil)) t (range number))]
       (.traceChange animations t'))))
 
 (defmulti dispatch-history sente/extract-action)
