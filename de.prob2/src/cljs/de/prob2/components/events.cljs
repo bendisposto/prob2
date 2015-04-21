@@ -25,6 +25,10 @@
         [:div {:class "events-view"}
          [:div {:class "btn-group"}
           [:button {:type "button"
+                    :class "btn btn-default"
+                    :on-click #(rf/dispatch [:events/random {:state-id sid :trace-id id}])}
+           [:span {:class "glyphicon glyphicon-random"}]]
+          [:button {:type "button"
                     :class (str "btn btn-default " (disabled-if-not back?))
                     :on-click #(rf/dispatch [:history/back id])}
            [:span {:class "glyphicon glyphicon-chevron-left"}]]
@@ -34,7 +38,8 @@
            [:span {:class "glyphicon glyphicon-chevron-right"}]]]
          [:ul {:class "events-list"}
           (map (partial mk-event-item sid id) ts)]]))))
-
+ 
 (rf/register-handler :events/execute h/relay)
 (rf/register-handler :history/back h/relay)
 (rf/register-handler :history/forward h/relay)
+(rf/register-handler :events/random h/relay)

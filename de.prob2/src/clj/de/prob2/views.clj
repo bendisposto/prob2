@@ -23,11 +23,17 @@
   (let [t (.getTrace animations trace-id)
         s (.getCurrentState t)
         sid (.getId s)]
-    (assert (= sid state-id) "Trying to execute event on a state taht is not the current state")
+    (assert (= sid state-id) "Trying to execute event on a state that is not the current state")
     (let [t' (.add t event-id)]
       (.traceChange animations t'))))
 
-
+(defn random-event [{:keys [animations] :as prob} {:keys [state-id trace-id]}]
+  (let [t (.getTrace animations trace-id)
+        s (.getCurrentState t)
+        sid (.getId s)]
+    (assert (= sid state-id) "Trying to execute event on a state that is not the current state")
+    (let [t' (.anyEvent t nil)]
+      (.traceChange animations t'))))
 
 (defmulti dispatch-history sente/extract-action)
 (defmethod dispatch-history :goto [prob {:keys [?data]}] (goto-position prob ?data))
@@ -37,6 +43,9 @@
 (defmulti dispatch-events sente/extract-action)
 (defmethod dispatch-events :execute [prob {:keys [?data]}]
   (execute-event prob ?data))
+
+(defmethod dispatch-events :random [prob {:keys [?data]}]
+  (random-event prob ?data))
 
 (defrecord Views [prob] component/Lifecycle
            (start [this]
