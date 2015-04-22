@@ -12,11 +12,10 @@
   (let [model (rf/subscribe [:model id])
         dep-graph (:dependency-graph @model)
         k       (keys (:components @model))
-     ;   _ (.log js/console (into [] (map (fn [x] {:element x}) k)))
-     ;   vertices (map (fn [e] {:name e :label e :width 100 :height 100}) k)
-        edges  (map (fn [edge] (let [t (:type edge)]
-                          (-> edge (dissoc :type)
-                              (assoc :label (name t))))) dep-graph)
+        vertices (map (fn [e] {:name e :label e :width 50 :height 30}) k)
+        edges  (map (fn [edge] (let [t (:type edge)] (assoc edge :label (name t)))) dep-graph)
+        _  (logp :v vertices)
+        g (dh/create-graph {:nodes vertices :edges edges})
+       ; g2 (reduce dh/add-node g vertices)
         ]
-    
-    [:div (dh/example)]))
+    [:div (dh/to-svg (dh/render g))]))
