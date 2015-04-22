@@ -7,31 +7,49 @@
             [de.prob2.helpers :as h]
             [de.prob2.dagre-helper :as dh]))
 
+(defn add-node [g node]
+  (do (.setNode g (:name node) (clj->js node)) g))
+
+(defn add-edge
+  ([g edge]
+   (do (.setEdge g (:from edge) (:to edge) (clj->js edge)) g)))
+
+(defn create-graph [nodes edges]
+  (let [graph (js/global.dagre.graphlib.Graph.)
+        _     (.setGraph graph #js{})
+        g1    (reduce add-node graph nodes)]
+    (reduce add-edge g1 edges)))
+(defn render [g] (do (.layout js/global.dagre g) g))
+
+(defn extract-vertice [e]
+  (let [width (if (< 10 (count e)) (* 10 (count e)) 100)]
+    {:name e :width width :height 30}))
+
+(defn extract-edge [edge]
+  (let [t (:type edge)] (assoc edge :label (name t))))
+
+(defn calculate-dimensions [nodes dep-graph]
+  (let [vertices (map extract-vertice nodes)
+        edges    (map extract-edge dep-graph)
+        graph    (create-graph vertices edges)]
+    (render graph)))
+
 (defn create-canvas []
   [:div {:id "hierarchy-view"}])
 
-(defn create-component [dep-graph]
-  (fn [x] (let [;_     (.log js/console x)
-                graph (js/joint.dia.Graph.)
-                e     (js/$ "#other-one")
+(defn create-component [component-names dep-graph]
+  (fn [x] (let [graph (js/joint.dia.Graph.)
                 m     #js {:el (.getDOMNode x)
                            :width 600 :height 200
                            :model graph :gridSize 1}
-                paper (js/joint.dia.Paper. m)
-                _     (.log js/console paper)])))
+                paper (js/joint.dia.Paper. m)])))
 
 
 
 (defn hierarchy-view [id]
   (let [model (rf/subscribe [:model id])
         dep-graph (:dependency-graph @model)
-        k       (keys (:components @model))
-        vertices (map (fn [e] {:name e :label e :width 50 :height 30}) k)
-        edges  (map (fn [edge] (let [t (:type edge)] (assoc edge :label (name t)))) dep-graph)
-        _  (logp :v vertices)
-        g (dh/create-graph {:nodes vertices :edges edges})
-       ; g2 (reduce dh/add-node g vertices)
-        ]
+        component-names   (keys (:components @model))]
     (r/create-class
-     {:component-did-mount (create-component dep-graph)
+     {:component-did-mount (create-component component-names dep-graph)
       :reagent-render create-canvas})))
