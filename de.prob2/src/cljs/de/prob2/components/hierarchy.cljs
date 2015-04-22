@@ -7,6 +7,20 @@
             [de.prob2.helpers :as h]
             [de.prob2.dagre-helper :as dh]))
 
+(defn create-canvas []
+  [:div {:id "hierarchy-view"}])
+
+(defn create-component [dep-graph]
+  (fn [x] (let [;_     (.log js/console x)
+                graph (js/joint.dia.Graph.)
+                e     (js/$ "#other-one")
+                m     #js {:el (.getDOMNode x)
+                           :width 600 :height 200
+                           :model graph :gridSize 1}
+                paper (js/joint.dia.Paper. m)
+                _     (.log js/console paper)])))
+
+
 
 (defn hierarchy-view [id]
   (let [model (rf/subscribe [:model id])
@@ -18,4 +32,6 @@
         g (dh/create-graph {:nodes vertices :edges edges})
        ; g2 (reduce dh/add-node g vertices)
         ]
-    [:div (dh/to-svg (dh/render g))]))
+    (r/create-class
+     {:component-did-mount (create-component dep-graph)
+      :reagent-render create-canvas})))
