@@ -61,11 +61,10 @@
            end-node   (js->clj (.node g (edge "to")))
            w2         (end-node "width")
            h2         (end-node "height")]
-       (.log js/console start-node)
-       (.log js/console end-node)
+       (logp "w" w2 h2 (end "x") (end "y"))
        [:g [:line {:x1 (+ (start "x") (/ w1 2)) :y1 (+ (start "y") (/ h1 2))
--                  :x2 (+ (end   "x") (/ w2 2)) :y2 (+ (end   "y") (/ h2 2))
--                  :style {:stroke :black}}]
+                   :x2 (+ (/ w2 2) (end "x")) :y2 (+ (/ h2 2) (end "y"))
+                  :style {:stroke :black}}]
         [:text {:x (+ (middle "x") (/ w1 2)) :y (+  (middle "y") (/ h1 2)) } (or (edge "label") "")]]))])
 
 
