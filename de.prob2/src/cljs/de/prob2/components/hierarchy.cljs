@@ -34,6 +34,10 @@
         graph    (create-graph vertices edges)]
     (render graph)))
 
+(defn extract-nodes [dagre-graph]
+  (for [node-name (concat #js[] (.nodes dagre-graph))]
+    (.node dagre-graph node-name)))
+
 (defn create-canvas []
   [:div {:id "hierarchy-view"}])
 
@@ -42,9 +46,9 @@
                 m     #js {:el (.getDOMNode x)
                            :width 600 :height 200
                            :model graph :gridSize 1}
-                paper (js/joint.dia.Paper. m)])))
-
-
+                paper (js/joint.dia.Paper. m)
+                g     (calculate-dimensions component-names dep-graph)
+                _     (.log js/console (extract-nodes g))])))
 
 (defn hierarchy-view [id]
   (let [model (rf/subscribe [:model id])
