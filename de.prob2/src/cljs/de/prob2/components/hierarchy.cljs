@@ -49,11 +49,9 @@
 (defn extract-nodes [dagre-graph]
   (let [n  (weird-dagre-list-to-clj (.nodes dagre-graph))
         nodes (mapv  #( .node dagre-graph %) n)]
-    (logp nodes)
     (into {} (map (fn [e] [(.-name e) (get-joint-rect e)]) nodes))))
 
 (defn get-joint-link [edge node-map]
-  (logp :xxm edge node-map)
   (let [source    {:id (.-id (node-map (.-from edge)))}
         target    {:id (.-id (node-map (.-to edge)))}
         labels    [{:position 0.5 :attrs {:text {:text (or (.-label edge) "")}}}]
@@ -64,9 +62,8 @@
 
 (defn extract-links [dagre-graph node-map]
   (let [e (weird-dagre-list-to-clj (.edges dagre-graph))
-        edges (map #(.edge dagre-graph %) e)]
-    (.log js/console edges)
-    (map #(get-joint-link % node-map) edges)))
+        edges (mapv #(.edge dagre-graph %) e)]
+    (mapv #(get-joint-link % node-map) edges)))
 
 (defn create-canvas [model]
 ;  (logp @model)
@@ -84,11 +81,10 @@
                 paper (js/joint.dia.Paper. m)
                 g     (calculate-dimensions component-names dep-graph)
                 nodes (extract-nodes g) 
-                links (extract-links g (clj->js nodes)) 
-               ; _     (logp links) 
-                                        ; _     (.log js/console (first (vals nodes)))
-                _     (logp nodes)
+                links (extract-links g nodes)
+                _     (logp links)
                 _     (.addCells graph (clj->js (vals nodes)))
+                _     (.addCells graph (clj->js links))
                 dimensions (.getBBox graph (.getElements graph))
                 _     (.log js/console dimensions)
                                         ;    _     (.log js/console (js/$ (.getDOMNode x)))
