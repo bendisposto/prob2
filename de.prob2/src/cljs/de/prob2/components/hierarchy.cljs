@@ -7,20 +7,6 @@
             [de.prob2.helpers :as h]
             [de.prob2.dagre-helper :as dh]))
 
-(defn add-node [g node]
-  (do (.setNode g (:name node) (clj->js node)) g))
-
-(defn add-edge
-  ([g edge]
-   (do (.setEdge g (:from edge) (:to edge) (clj->js edge)) g)))
-
-(defn create-graph [nodes edges]
-  (let [graph (js/global.dagre.graphlib.Graph.)
-        _     (.setGraph graph #js{})
-        g1    (reduce add-node graph nodes)]
-    (reduce add-edge g1 edges)))
-(defn render [g] (do (.layout js/global.dagre g) g))
-
 (defn extract-vertice [e]
   (let [width (if (< 10 (count e)) (* 10 (count e)) 100)]
     {:name e :width width :height 30}))
@@ -29,14 +15,10 @@
   (let [t (:type edge)] (assoc edge :label (name t))))
 
 (defn calculate-dimensions [nodes dep-graph]
-  (logp nodes dep-graph)
   (let [vertices (mapv extract-vertice nodes)
         edges    (mapv extract-edge dep-graph)
-        graph    (create-graph vertices edges)]
-    (render graph)))
-
-(defn weird-dagre-list-to-clj [list]
-  (reverse (.reduce list (fn [l e] (cons e l)) [])))
+        graph    (dh/create-graph vertices edges)]
+    (dh/render graph)))
 
 (defn get-joint-rect [node]
   (let [position {:x (.-x node) :y (.-y node)}
@@ -47,8 +29,7 @@
                                         :attrs    attrs}))))
 
 (defn extract-nodes [dagre-graph]
-  (let [n  (weird-dagre-list-to-clj (.nodes dagre-graph))
-        nodes (mapv  #( .node dagre-graph %) n)]
+  (let [nodes  (dh/nodes dagre-graph)]
     (into {} (map (fn [e] [(.-name e) (get-joint-rect e)]) nodes))))
 
 (defn get-joint-link [edge node-map]
@@ -65,8 +46,7 @@
                                :smooth true   :attrs attrs}))))
 
 (defn extract-links [dagre-graph node-map]
-  (let [e (weird-dagre-list-to-clj (.edges dagre-graph))
-        edges (mapv #(.edge dagre-graph %) e)]
+  (let [edges (dh/edges dagre-graph)]
     (mapv #(get-joint-link % node-map) edges)))
 
 (defn create-canvas [model]

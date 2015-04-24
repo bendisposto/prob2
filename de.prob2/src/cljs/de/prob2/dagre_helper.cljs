@@ -2,76 +2,53 @@
   (:require [taoensso.encore :as enc  :refer (logf log logp)]))
 
 (defn add-node
- ([g node]
-  (do (.setNode g
-                (:name node)
-                (clj->js (dissoc node :name))) g)))
+  "node should be a map of form {:name -- :width -- :height--}"
+  [g node]
+ (do (.setNode g (:name node) (clj->js node)) g))
 
 (defn add-edge
-  ([g edge]
-   (do (.setEdge g
-                 (:from edge)
-                 (:to edge)
-                 (clj->js edge)) g)))
+  "edge should be a map of form {:from -- :to -- :label --}"
+  [g edge] 
+  (do (.setEdge g (:from edge) (:to edge) (clj->js edge)) g))
 
 (defn create-graph
-  ([{:keys [nodes edges]}]
+  "creates either an empty dagre graph (no params) or with a collection of nodes and edges which will then be added with add-node and add-edge"
+  ([nodes edges]
    (let [g0 (create-graph)
          g1 (reduce add-node g0 nodes)]
      (reduce add-edge g1 edges)))
-
   ([]
    (let [graph (js/global.dagre.graphlib.Graph.)]
      (.setGraph graph #js{})
      graph)))
 
+(defn render
+  "takes a dagre-graph and renders it"
+  [g]
+  (do (.layout js/global.dagre g) g))
 
-(defn render [g] (do (.layout js/global.dagre g) g))
+(defn dagre-list->clj
+  "the lists that are internally used by dagre aren't recognized by clojurescript. This function converts them to clojure lists"
+  [list]
+  (reverse (.reduce list (fn [l e] (cons e l)) [])))
 
-(defn node-names [g] (.concat #js[] (.nodes g)))
-(defn nodes [g] (map #(.node g %) (.concat #js[] (.nodes g)))) ;; have
-;; to concat for some weird javascript reason
+(defn nodes
+  "return a list of the node objects from the dagre graph"
+  [g]
+  (let [n (dagre-list->clj (.nodes g))]
+    (mapv #(.node g %) n)))
 
-(defn edge-names [g] (.concat #js[] (.edges g)))
-(defn edges [g] (map #(.edge g %) (.concat #js[] (.edges g)))) 
- 
-(defn to-svg [g]
-  [:svg {:width 500 :height 500}
-    (.log js/console (node-names g))
-   (for [n (node-names g)]
-     (let [node (js->clj (.node g n))]
-       (logp :n node)
-            [:g [:rect {:width (or (node "width") 100)
-                        :height (or (node "height") 50)
-                        :x (node "x")
-                        :y (node "y")
-                        :style {:fill :white :stroke :black}}]
-             [:text {:x (node "x") :y (node "y") :dy (if (node "height") (/ (node "height") 2) 25)
-                     :dx 5} n]]))
-   (for [e (edge-names g)]
-     (let [edge (js->clj (.edge g e))
-           _    (logp :edge edge)
-           start (first (edge "points"))
-           middle (second (edge "points"))
-           end   (last  (edge "points"))
-           _     (logp :sme start middle end)
-           start-node (js->clj (.node g (edge "from")))
-           w1         (start-node "width")
-           h1         (start-node "height")
-           end-node   (js->clj (.node g (edge "to")))
-           w2         (end-node "width")
-           h2         (end-node "height")]
-       (logp "w" w2 h2 (end "x") (end "y"))
-       [:g [:line {:x1 (+ (start "x") (/ w1 2)) :y1 (+ (start "y") (/ h1 2))
-                   :x2 (+ (/ w2 2) (end "x")) :y2 (+ (/ h2 2) (end "y"))
-                  :style {:stroke :black}}]
-        [:text {:x (+ (middle "x") (/ w1 2)) :y (+  (middle "y") (/ h1 2)) } (or (edge "label") "")]]))])
+(defn edges
+  "return a list of the edge objects from the dagre graph"
+  [g]
+  (let [e (dagre-list->clj (.edges g))]
+    (mapv #(.edge g %) e)))
 
-
-(defn example []
+(defn example-dagre-graph []
   (let [g (-> (create-graph)
               (add-node {:name "me" :width 30 :height 24})
               (add-node {:name "you" :width 30 :height 24})
-              (add-edge {:from "me" :to "you" :label "us"}) (render))]
-    (to-svg g)))
+              (add-edge {:from "me" :to "you" :label "us"})
+              (render))]
+    g))
 
