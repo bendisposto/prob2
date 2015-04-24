@@ -20,8 +20,7 @@
             [de.prob2.components.history :refer [history-view]]
             [de.prob2.components.hierarchy :refer [hierarchy-view]]
             [de.prob2.components.events :refer [events-view]]
-            [de.prob2.components.formulabox :refer [formulabox]]
-            [de.prob2.components.dot-view :refer [dot-view]]))
+            [de.prob2.components.formulabox :refer [formulabox]]))
 
 ;; -------------------------
 ;; Views
@@ -71,7 +70,6 @@
         m (rf/subscribe [:model id])]
     [:div {:id "h1"}
      [navigation [{:name (i18n :animations) :url"#"} {:name (:main-component-name @m) :url (str "#/trace/" id) :active? true}]]
-     #_[dot-view "digraph simple { A->B }"]
      [editor id]
 
      #_[formulabox id]
@@ -80,9 +78,5 @@
       [:div {:class "col-lg-4"} [state-view id]]
       [:span {:class "col-lg-4"} [events-view id]]
       [:span {:class "col-lg-4"} [history-view id]]]
+     #_[:div  {:class "col-lg-12"} [hierarchy-view id]]
      ]))
-
-
-(defn machine-hierarchy []
-  (let [id (session/get :focused-uuid)]
-    [hierarchy-view id]))
