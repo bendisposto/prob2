@@ -56,9 +56,13 @@
         target    {:id (.-id (node-map (.-to edge)))}
         labels    [{:position 0.5 :attrs {:text {:text (or (.-label edge) "")}}}]
         vertices  (or (butlast (rest (.-points edge))) [])
+        connector {:name "rounded" :args {:radius 50}}
+        attrs     {".marker-target" {:d "M 6 0 L 0 3 L 6 6 z"}}
        ]
     (joint.dia.Link. (clj->js {:source source :target target
-                                :labels labels :vertices vertices}))))
+                               :labels labels :vertices vertices
+                               :connector connector
+                               :smooth true   :attrs attrs}))))
 
 (defn extract-links [dagre-graph node-map]
   (let [e (weird-dagre-list-to-clj (.edges dagre-graph))
