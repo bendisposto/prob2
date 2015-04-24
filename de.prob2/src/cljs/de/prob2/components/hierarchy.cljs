@@ -70,26 +70,26 @@
   (fn [] [:div {:id (str "hierarchy-view" (:main-component-name @model)) :style {:height 0}}
           [:div]]))
 
+(defn draw-joint-graph [element dep-graph component-names]
+  (let [graph (js/joint.dia.Graph.)
+        m     #js {:el element :width 600 :height 200
+                   :model graph :gridSize 1}
+        paper (js/joint.dia.Paper. m)
+        dagre-graph     (calculate-dimensions component-names dep-graph)
+        nodes (extract-nodes dagre-graph)
+        links (extract-links dagre-graph nodes)
+        _     (.addCells graph (clj->js (vals nodes)))
+        _     (.addCells graph (clj->js links))
+        dimensions (.getBBox graph (.getElements graph))
+        ]
+    (set! (.-height (.-style element)) (+ 100 (.-height dimensions)))))
+
 (defn create-component [model]
   (fn [x] (let [dep-graph (:dependency-graph @model)
                 component-names (keys (:components @model))
-                graph (js/joint.dia.Graph.)
-                element (.getDOMNode x)
-                m     #js {:el element
-                           :width 600 :height 200
-                           :model graph :gridSize 1}
-                paper (js/joint.dia.Paper. m)
-                g     (calculate-dimensions component-names dep-graph)
-                nodes (extract-nodes g) 
-                links (extract-links g nodes)
-                _     (logp links)
-                _     (.addCells graph (clj->js (vals nodes)))
-                _     (.addCells graph (clj->js links))
-                dimensions (.getBBox graph (.getElements graph))
-                _     (.log js/console dimensions)
-                                        ;    _     (.log js/console (js/$ (.getDOMNode x)))
-                ] 
-            (set! (.-height (.-style element)) (+ 100 (.-height dimensions))))))
+                element (.getDOMNode x)]
+            (when (and dep-graph component-names element)
+              (draw-joint-graph element dep-graph component-names)))))
 
 (defn hierarchy-view [id]
   (let [model (rf/subscribe [:model id])]
