@@ -1,12 +1,12 @@
 (ns de.prob2.i18n
   (:require
    [de.prob2.nw :as nw]
+   [goog.string :as gstring]
    [taoensso.encore :as enc  :refer (logf log logp)]))
 
 (def language (atom :english))
 
 (def messages (atom nil))
-
 
 (defn read-language [file]
   (logp :language file)
@@ -38,3 +38,9 @@
   (let [msg (get-in @messages [@language key] "missing message")]
     (if (= "missing message" msg) (logp :missing-message key))
     msg))
+
+(defn format [key & params]
+  (apply gstring/format (i18n key) params))
+
+
+
