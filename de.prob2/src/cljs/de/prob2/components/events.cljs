@@ -32,7 +32,7 @@
 
 (defn random-panel [id sid rand-panel]
   (let [rand-id (str "random-n-select-" id)]
-    [:div.panel.panel-default.random-panel {:id rand-panel}
+    [:div.panel.panel-default.random-panel.collapse {:id rand-panel}
      [:div {:class "panel-body random-menu list-group"}
       [:a.list-group-item {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id}]))} (i18n :execute-1-random)]
       [:a.list-group-item {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id :number 5}]))} (format :execute-n-random 5)]
@@ -61,7 +61,9 @@
      [:div {:class "btn-toolbar" :role "toolbar" }
       [:div {:class "btn-group" :role "group" }
        [:button {:type "button"
-                 :class "btn btn-default dropdown-toggle"}
+                 :class "btn btn-default"
+                 :data-toggle "collapse"
+                 :data-target (str "#" rand-panel)}
         [:span {:class "glyphicon glyphicon-random"}]]]
       [trace-fwd-back id fwd? back?]]
      [random-panel id sid rand-panel]
