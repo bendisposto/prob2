@@ -28,3 +28,4 @@
 :execute-1-random "Execute 1 random event"
 :execute-n-random "Execute %d random events"
 :n-random "# of random events"
+:execute "Execute"

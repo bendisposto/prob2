@@ -29,30 +29,43 @@
              :on-click #(rf/dispatch [:history/forward id])}
     [:span {:class "glyphicon glyphicon-chevron-right"}]]])
 
-(defn toolbar [sid id fwd? back?]
+
+(defn random-panel [id sid rand-panel]
   (let [rand-id (str "random-n-select-" id)]
+    [:div.panel.panel-default.random-panel {:id rand-panel}
+     [:div {:class "panel-body random-menu list-group"}
+      [:a.list-group-item {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id}]))} (i18n :execute-1-random)]
+      [:a.list-group-item {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id :number 5}]))} (format :execute-n-random 5)]
+      [:a.list-group-item {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id :number 10}]))} (format :execute-n-random 10)]
+      [:form.list-group-item.form-inline
+       [:div.form-group
+        [:input.form-control {:type "text"
+                              :id rand-id
+                              :placeholder (i18n :n-random)}]
+        [:button
+         {:type "button"
+          :class "btn btn-default random-button"
+          :on-click (fn [e]
+                      (let [input (.getElementById js/document rand-id)
+                            value (js/parseInt (.-value input))]
+                        (rf/dispatch
+                         [:events/random
+                          {:state-id sid
+                           :trace-id id
+                           :number value}])))}
+         (i18n :execute)]]]]]))
+
+(defn toolbar [sid id fwd? back?]
+  (let [rand-panel (str "random-panel-" id)]
     [:div
-     [:div {:class "btn-toolbar" :role "toolbar" :aria-label "events-toolbar"}
-      [:div {:class "btn-group" :role "group" :aria-label "random"}
+     [:div {:class "btn-toolbar" :role "toolbar" }
+      [:div {:class "btn-group" :role "group" }
        [:button {:type "button"
                  :class "btn btn-default dropdown-toggle"}
         [:span {:class "glyphicon glyphicon-random"}]]]
       [trace-fwd-back id fwd? back?]]
-     [:div {:id "random-menu"}
-      [:ul
-       [:li [:a {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id}]))} (i18n :execute-1-random)]]
-       [:li [:a {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id :number 5}]))} (format :execute-n-random 5)]]
-       [:li [:a {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id :number 10}]))} (format :execute-n-random 10)]]
-       [:li [:div {:class "input-group"}
-             [:input {:type "text"
-                      :id rand-id
-                      :placeholder (i18n :n-random)}]
-             [:button {:type "button"
-                       :class "btn btn-default"
-                       :on-click (fn [e] (let [input (.getElementById js/document rand-id)
-                                              value (js/parseInt (.-value input))]
-                                          (rf/dispatch [:events/random {:state-id sid :trace-id id :number value}])))}
-              "Go!"]]]]]]))
+     [random-panel id sid rand-panel]
+     ]))
 
 (defn events-view [id]
   (let [filtered? (r/atom true)]

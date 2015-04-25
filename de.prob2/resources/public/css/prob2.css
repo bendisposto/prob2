@@ -291,3 +291,16 @@
 .codemirror-panel {
   padding: 4px;
 }
+
+.random-menu li {
+  list-style-type: none;
+}
+
+.random-button {
+  margin-left: 3px;
+}
+
+.random-panel {
+  margin-top: 3px;
+}
+
