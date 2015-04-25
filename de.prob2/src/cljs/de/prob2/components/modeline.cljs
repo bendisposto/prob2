@@ -7,16 +7,8 @@
              [goog.style :as style]
              [de.prob2.menu :refer [menu-data]]))
 
-
-(defn pattern-match [regex]
-  (fn [e]
-    (let [n (:name e)
-          f (next (re-find regex n))
-          nt (map-indexed (fn [i x] (if (= 1 (mod i 2)) [:u x] x )) f)]
-      (if-not (empty? nt) (assoc e :display nt) e))))
-
 (defn extract-menu [akku menu]
-  (logp :enter akku menu)
+                                        ; (logp :enter akku menu)
   (cond
     (contains? menu :submenu) (extract-menu akku (:submenu menu))
     (contains? menu :action) (let [a (:action menu)]
@@ -31,15 +23,6 @@
     tf))
 
 
-(defn get-commands
-  ([filter-string]
-   (let [s (clojure.string/split filter-string #"\s+")
-         re (str "(?i)(.*)" (clojure.string/join "(.*)" (map #(str "(" % ")") s)) "(.*)")
-         filter-regex (re-pattern re)
-         all-commands (all-commands)
-         transformed (map (pattern-match filter-regex) all-commands)]
-     (filter #(:display %) transformed))))
-
 (defn make-cmd-entry [selected]
   (fn [index entry]
     (let [name (get entry :name)
@@ -51,7 +34,17 @@
                  :on-click #(rf/dispatch [action])}] (:display entry)))))
 
 (defn modeline []
-  (let [items (r/atom {:elems (get-commands "") :index 0})]
+  (let [items (r/atom {:elems
+                       (h/filter-input
+                        ""
+                        :name
+                        (fn [x nt]
+                          (if-not (empty? nt)
+                            (assoc x :display nt)
+                            x))
+                        (fn [e] (get e :display))
+                        (all-commands))
+                       :index 0})]
     (fn []
       [:div {:id "sidebar-wrapper" :on-click (fn [e] (.focus (js/jQuery "#modeline-search")))}
        [:div {:class "container-fluid"}
@@ -64,7 +57,18 @@
                     :class "form-control"
                     :placeholder (i18n :search)
                     :role "search"
-                    :on-change (fn [e] (reset! items {:index 0 :elems (get-commands (.-value (.-target e)))}))
+                    :on-change
+                    (fn [e] (reset! items
+                                   {:index 0
+                                    :elems (h/filter-input
+                                            (.-value (.-target e))
+                                            :name
+                                            (fn [x nt]
+                                              (if-not (empty? nt)
+                                                (assoc x :display nt)
+                                                x))
+                                            (fn [e] (get e :display))
+                                            (all-commands))}))
                     :on-key-down (fn [e]
                                    (let [k ({13 :enter 38 :up 40 :down} (.-which e))]
                                      (when k (rf/dispatch [:modeline :key k items])

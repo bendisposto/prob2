@@ -14,7 +14,7 @@
 (def id-store (clojure.core/atom 0))
 (defn fresh-id []
   (swap! id-store inc))
- 
+
 (defn kebap-case
   [text]
   (clojure.string/join
@@ -114,3 +114,19 @@
 
 (defn remote-clojure-call [callback command & args]
   (rf/dispatch (into [:prob2/call callback :clojure identity command] args)))
+
+(defn pattern-match [regex extractor placer]
+  (fn [e]
+    (let [n (extractor e)
+          f (next (re-find regex n))
+          nt (map-indexed (fn [i x] (if (= 1 (mod i 2)) [:u x] x )) f)]
+      (placer e nt))))
+
+(defn filter-input
+  ([filter-string extractor placer filter-fkt input]
+   (logp :filter filter-string :input input)
+   (let [s (clojure.string/split filter-string #"\s+")
+         re (str "(?i)(.*)" (clojure.string/join "(.*)" (map #(str "(" % ")") s)) "(.*)")
+         filter-regex (re-pattern re)
+         transformed (map (pattern-match filter-regex extractor placer) input)]
+     (filter filter-fkt transformed))))

@@ -46,9 +46,22 @@
                            :number value}])))}
          (i18n :execute)]]]]]))
 
-(defn toolbar [sid id fwd? back? sort]
+(defn toolbar [sid id fwd? back? sort filter-fkt]
   (let [rand-panel (str "random-panel-" id)]
     [:div.events-toolbar
+     [:form {:role "search"}
+      [:input.form-control
+       {:type "text"
+        :placeholder (i18n :filter)
+        :on-change
+        (fn [e]
+          (let [v (.-value (.-target e))]
+            (reset! filter-fkt (partial
+                                h/filter-input
+                                v
+                                identity
+                                (fn [e nt] (when-not (empty? nt) e))
+                                identity))))}]]
      [:div {:class "btn-toolbar" :role "toolbar" }
       [:div {:class "btn-group" :role "group" }
        [:button {:type "button"
@@ -74,7 +87,7 @@
     (if (= 1 ci)
       (single-event state trace-id fi)
       (let [egid (str "event-details-" (h/fresh-id))]
-        
+
         [:div {:key egid}
          [:a.list-group-item
           {:data-toggle "collapse"
@@ -91,20 +104,25 @@
     1 sort
     0 identity))
 
-
 (defn events-view [id]
   (let [filtered? (r/atom true)
+        filter-fkt (r/atom (partial h/filter-input "" identity (fn [e nt] e) identity))
         sort (r/atom 0)]
     (fn []
       (let [trace (rf/subscribe [:trace id])
-            {{sid :state} :current-state ts :out-transitions back? :back? fwd? :forward?} @trace]
+            {{sid :state} :current-state ts :out-transitions back? :back? fwd? :forward?} @trace
+            events (group-by :name ts)
+            _ (logp :recall (keys events))
+            selected (@filter-fkt (keys events))
+            _ (logp :selected selected)]
         [:div {:class "events-view"}
-         [toolbar sid id fwd? back? sort]
+         [toolbar sid id fwd? back? sort filter-fkt]
          [:div.events-list.list-group
           (doall
            (map
             (partial mk-event-item sid id)
-            ((next-sort @sort) (group-by :name ts))))]]))))
+            ((next-sort @sort)
+             (select-keys events selected))))]]))))
 
 (rf/register-handler :events/execute h/relay)
 (rf/register-handler :history/back h/relay)

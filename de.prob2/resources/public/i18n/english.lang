@@ -29,3 +29,4 @@
 :execute-n-random "Execute %d random events"
 :n-random "# of random events"
 :execute "Execute"
+:filter "Filter ..."
