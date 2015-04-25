@@ -6,15 +6,6 @@
             [de.prob2.helpers :as h]
             [de.prob2.i18n :refer [i18n format]]))
 
-
-(defn- mk-event-item [state trace-id {:keys [id] :as item}]
-  ^{:key id}
-  [:li
-   [:a {:class "event-entry"
-        :href (str "#/trace/" trace-id)
-        :on-click #(rf/dispatch [:events/execute {:state-id state :trace-id trace-id :event-id id}])}
-    (h/pp-transition item)]])
-
 (defn- disabled-if-not [test]
   (if-not test " disabled" ""))
 
@@ -55,9 +46,9 @@
                            :number value}])))}
          (i18n :execute)]]]]]))
 
-(defn toolbar [sid id fwd? back?]
+(defn toolbar [sid id fwd? back? sort]
   (let [rand-panel (str "random-panel-" id)]
-    [:div
+    [:div.events-toolbar
      [:div {:class "btn-toolbar" :role "toolbar" }
       [:div {:class "btn-group" :role "group" }
        [:button {:type "button"
@@ -65,20 +56,49 @@
                  :data-toggle "collapse"
                  :data-target (str "#" rand-panel)}
         [:span {:class "glyphicon glyphicon-random"}]]]
-      [trace-fwd-back id fwd? back?]]
+      [trace-fwd-back id fwd? back?]
+      [:div.btn-group {:role "group"}
+       [:button.btn.btn-default {:type "button" :on-click #(swap! sort inc)} [:span.glyphicon.glyphicon-sort-by-attributes]]]]
      [random-panel id sid rand-panel]
      ]))
 
+(defn- single-event [state trace-id {:keys [id] :as item}]
+  [:a.list-group-item
+   {:on-click #(rf/dispatch [:events/execute {:state-id state :trace-id trace-id :event-id id}])}
+   (h/pp-transition item)])
+
+(defn- mk-event-item [state trace-id [event items]]
+  ^{:key event}
+  (let [ci (count items)
+        fi (first items)]
+    (if (= 1 ci) (single-event state trace-id fi)
+        (let [egid (str "event-details-" (h/fresh-id))]
+          [:div
+           [:a.list-group-item
+            {:data-toggle "collapse"
+             :data-target (str "#" egid)}
+            event
+            [:span.badge.pull-right (count items)]]
+           [:div.list-group.collapse.event-detail-dropdown {:id egid}
+            (map (partial single-event state trace-id) items)]]))))
+
+(defn next-sort [count]
+  (condp = (mod count 2)
+    1 sort
+    0 identity))
+
 (defn events-view [id]
-  (let [filtered? (r/atom true)]
+  (let [filtered? (r/atom true)
+        sort (r/atom 0)]
     (fn []
       (let [trace (rf/subscribe [:trace id])
             {{sid :state} :current-state ts :out-transitions back? :back? fwd? :forward?} @trace]
         [:div {:class "events-view"}
-
-         [toolbar sid id fwd? back?]
-         [:ul {:class "events-list"}
-          (map (partial mk-event-item sid id) ts)]]))))
+         [toolbar sid id fwd? back? sort]
+         [:div.events-list.list-group
+          (map
+           (partial mk-event-item sid id)
+           ((next-sort @sort) (group-by :name ts)))]]))))
 
 (rf/register-handler :events/execute h/relay)
 (rf/register-handler :history/back h/relay)
