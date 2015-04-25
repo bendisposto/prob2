@@ -3,7 +3,8 @@
             [taoensso.encore :as enc  :refer (logf log logp)]
             [reagent.session :as session]
             [re-frame.core :as rf]
-            [de.prob2.helpers :as h]))
+            [de.prob2.helpers :as h]
+            [de.prob2.i18n :refer [i18n format]]))
 
 
 (defn- mk-event-item [state trace-id {:keys [id] :as item}]
@@ -28,19 +29,30 @@
              :on-click #(rf/dispatch [:history/forward id])}
     [:span {:class "glyphicon glyphicon-chevron-right"}]]])
 
-(defn random-execution [sid id]
-  [:div {:class "btn-group" :role "group" :aria-label "random"}
-   [:div {:class "dropdown"}
-    [:button {:type "button"
-              :class "btn btn-default dropdown-toggle"
-              :data-toggle "dropdown"
-              :on-double-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id}]) (.preventDefault e))}
-     [:span {:class "glyphicon glyphicon-random"}]
-     [:span {:class "caret"}]]
-    [:ul {:class "dropdown-menu"}
-     [:li [:a {:on-click #(rf/dispatch [:events/random {:state-id sid :trace-id id :number 5}])} "Execute 5 Events"]]
-     [:li [:a {:on-click #(rf/dispatch [:events/random {:state-id sid :trace-id id :number 10}])}"Execute 10 Events"]]
-     #_[:li "Execute" [:input {:type "text" :placeholder 20}] "Events"]]]])
+(defn toolbar [sid id fwd? back?]
+  (let [rand-id (str "random-n-select-" id)]
+    [:div
+     [:div {:class "btn-toolbar" :role "toolbar" :aria-label "events-toolbar"}
+      [:div {:class "btn-group" :role "group" :aria-label "random"}
+       [:button {:type "button"
+                 :class "btn btn-default dropdown-toggle"}
+        [:span {:class "glyphicon glyphicon-random"}]]]
+      [trace-fwd-back id fwd? back?]]
+     [:div {:id "random-menu"}
+      [:ul
+       [:li [:a {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id}]))} (i18n :execute-1-random)]]
+       [:li [:a {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id :number 5}]))} (format :execute-n-random 5)]]
+       [:li [:a {:on-click (fn [e] (rf/dispatch [:events/random {:state-id sid :trace-id id :number 10}]))} (format :execute-n-random 10)]]
+       [:li [:div {:class "input-group"}
+             [:input {:type "text"
+                      :id rand-id
+                      :placeholder (i18n :n-random)}]
+             [:button {:type "button"
+                       :class "btn btn-default"
+                       :on-click (fn [e] (let [input (.getElementById js/document rand-id)
+                                              value (js/parseInt (.-value input))]
+                                          (rf/dispatch [:events/random {:state-id sid :trace-id id :number value}])))}
+              "Go!"]]]]]]))
 
 (defn events-view [id]
   (let [filtered? (r/atom true)]
@@ -48,9 +60,8 @@
       (let [trace (rf/subscribe [:trace id])
             {{sid :state} :current-state ts :out-transitions back? :back? fwd? :forward?} @trace]
         [:div {:class "events-view"}
-         [:div {:class "btn-toolbar" :role "toolbar" :aria-label "events-toolbar"}
-          [random-execution sid id]
-          [trace-fwd-back id fwd? back?]]
+
+         [toolbar sid id fwd? back?]
          [:ul {:class "events-list"}
           (map (partial mk-event-item sid id) ts)]]))))
 
