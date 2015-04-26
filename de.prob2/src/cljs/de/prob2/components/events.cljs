@@ -46,7 +46,7 @@
                            :number value}])))}
          (i18n :execute)]]]]]))
 
-(defn toolbar [sid id fwd? back? sort filter-fkt]
+(defn toolbar [sid id fwd? back? sort filter-fkt filtered?]
   (let [rand-panel (str "random-panel-" id)]
     [:div.events-toolbar
      [:form {:role "search"}
@@ -71,8 +71,13 @@
         [:span {:class "glyphicon glyphicon-random"}]]]
       [trace-fwd-back id fwd? back?]
       [:div.btn-group {:role "group"}
-       [:button.btn.btn-default {:type "button" :on-click #(swap! sort inc)} [:span.glyphicon.glyphicon-sort-by-attributes]]]]
+       [:button.btn.btn-default {:type "button" :on-click #(swap! sort inc)} [:span.glyphicon.glyphicon-sort-by-attributes]]]
+      [:div.btn-group {:role "group"}
+       [:button.btn.btn-default {:type "button" :on-click #(swap! filtered? not)} [:span.glyphicon.glyphicon-eye-open]]]]
      [random-panel id sid rand-panel]
+
+
+     
      ]))
 
 (defn- single-event [state trace-id {:keys [id] :as item}]
@@ -81,47 +86,67 @@
     :on-click #(rf/dispatch [:events/execute {:state-id state :trace-id trace-id :event-id id}])}
    (h/pp-transition item)])
 
+(defn- disabled-event [event]
+  [:div.list-group-item.list-group-item-danger
+   {:key (h/fresh-id)} event])
+
 (defn- mk-event-item [state trace-id [event items]]
   (let [ci (count items)
         fi (first items)]
-    (if (= 1 ci)
-      (single-event state trace-id fi)
-      (let [egid (str "event-details-" (h/fresh-id))]
+    (cond (= 1 ci)
+          (single-event state trace-id fi)
+          (= 0 ci)
+          (disabled-event event)
+          :otherwise
+          (let [egid (str "event-details-" (h/fresh-id))]
 
-        [:div {:key egid}
-         [:a.list-group-item
-          {:data-toggle "collapse"
-           :data-target (str "#" egid)}
-          event
-          [:span.badge.pull-right (count items)]]
-         [:div
-          {:class "list-group event-detail-dropdown collapse"
-           :id egid}
-          (doall (map (partial single-event state trace-id) items))]]))))
+            [:div {:key egid}
+             [:a.list-group-item
+              {:data-toggle "collapse"
+               :data-target (str "#" egid)}
+              event
+              [:span.badge.pull-right (count items)]]
+             [:div
+              {:class "list-group event-detail-dropdown collapse"
+               :id egid}
+              (doall (map (partial single-event state trace-id) items))]]))))
 
-(defn next-sort [count]
-  (condp = (mod count 2)
-    1 sort
-    0 identity))
+(defn get-map [filtered? events enabled-events]
+  (let [ks (if filtered? (keys enabled-events) events)]
+    (for [e ks](do
+                 [e (get enabled-events e [])]))))
+
+(defn next-sort [filtered? count model enabled-events]
+  (let [component (:main-component-name model)
+        cevents (get-in model [:components component :events])
+        events (map :name cevents)]
+    (condp = (mod count 2)
+      1 (get-map filtered? (sort events) enabled-events)
+      0 (get-map filtered? events enabled-events))))
+
 
 (defn events-view [id]
-  (let [filtered? (r/atom true)
+  (let [filtered? (r/atom false)
         filter-fkt (r/atom (partial h/filter-input "" identity (fn [e nt] e) identity))
         sort (r/atom 0)]
     (fn []
       (let [trace (rf/subscribe [:trace id])
+            model (rf/subscribe [:model id])
             {{sid :state} :current-state ts :out-transitions back? :back? fwd? :forward?} @trace
             events (group-by :name ts)
             _ (logp :recall (keys events))
             selected (@filter-fkt (keys events))
             _ (logp :selected selected)]
         [:div {:class "events-view"}
-         [toolbar sid id fwd? back? sort filter-fkt]
+         [toolbar sid id fwd? back? sort filter-fkt filtered?]
          [:div.events-list.list-group
           (doall
            (map
             (partial mk-event-item sid id)
-            ((next-sort @sort)
+            (next-sort
+             @filtered?
+             @sort
+             @model
              (select-keys events selected))))]]))))
 
 (rf/register-handler :events/execute h/relay)
