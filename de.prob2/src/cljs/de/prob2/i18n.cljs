@@ -9,7 +9,7 @@
 (def messages (atom nil))
 
 (defn read-language [file]
-  (logp :language file)
+  #_(logp :language file)
   (let [c (nw/slurp file)
         dss (str "{ " c " }")
         data (nw/read-string dss)]
@@ -31,9 +31,9 @@
 
 (defn i18n [key]
   (when-not @messages
-    (logp :loading-languages)
+    #_(logp :loading-languages)
     (reset! messages (init-messages))
-    (logp :installed (keys @messages))
+    #_(logp :installed (keys @messages))
     #_(logp @messages))
   (let [msg (get-in @messages [@language key] "missing message")]
     (if (= "missing message" msg) (logp :missing-message key))
@@ -41,6 +41,4 @@
 
 (defn format [key & params]
   (apply gstring/format (i18n key) params))
-
-
 
