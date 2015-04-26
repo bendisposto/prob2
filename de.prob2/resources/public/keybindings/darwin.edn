@@ -6,6 +6,7 @@
 "Meta+a" :select-all
 "Meta+q" :quit
 "Meta+o" :open-file
-"Meta+s" :save
-"Meta+Shift+s" :save-as
+"Meta+s" :save-file
+"Meta+Shift+s" :save-file-as
+"Meta+Alt+s" :save-all
 ]

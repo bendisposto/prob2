@@ -30,3 +30,6 @@
 :n-random "# of random events"
 :execute "Execute"
 :filter "Filter ..."
+:save-file "Save file"
+:save-file-as "Save as..."
+:save-all "Save all files"
