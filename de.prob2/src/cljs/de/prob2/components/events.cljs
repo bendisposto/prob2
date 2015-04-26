@@ -46,7 +46,7 @@
                            :number value}])))}
          (i18n :execute)]]]]]))
 
-(defn toolbar [sid id fwd? back? sort filter-fkt filtered?]
+(defn toolbar [sid id fwd? back? sort-c filter-fkt show-disabled?]
   (let [rand-panel (str "random-panel-" id)]
     [:div.events-toolbar
      [:form {:role "search"}
@@ -71,13 +71,13 @@
         [:span {:class "glyphicon glyphicon-random"}]]]
       [trace-fwd-back id fwd? back?]
       [:div.btn-group {:role "group"}
-       [:button.btn.btn-default {:type "button" :on-click #(swap! sort inc)} [:span.glyphicon.glyphicon-sort-by-attributes]]]
+       [:button.btn.btn-default {:type "button" :on-click #(swap! sort-c inc)} [:span.glyphicon.glyphicon-sort-by-attributes]]]
       [:div.btn-group {:role "group"}
-       [:button.btn.btn-default {:type "button" :on-click #(swap! filtered? not)} [:span.glyphicon.glyphicon-eye-open]]]]
+       [:button.btn.btn-default {:type "button" :on-click #(swap! show-disabled? not)} [:span.glyphicon.glyphicon-eye-open]]]]
      [random-panel id sid rand-panel]
 
 
-     
+
      ]))
 
 (defn- single-event [state trace-id {:keys [id] :as item}]
@@ -90,13 +90,13 @@
   [:div.list-group-item.list-group-item-danger
    {:key (h/fresh-id)} event])
 
-(defn- mk-event-item [state trace-id [event items]]
+(defn- mk-event-item [state trace-id show-disabled? [event items]]
   (let [ci (count items)
         fi (first items)]
     (cond (= 1 ci)
           (single-event state trace-id fi)
           (= 0 ci)
-          (disabled-event event)
+          (if show-disabled? (disabled-event event) "")
           :otherwise
           (let [egid (str "event-details-" (h/fresh-id))]
 
@@ -111,45 +111,32 @@
                :id egid}
               (doall (map (partial single-event state trace-id) items))]]))))
 
-(defn get-map [filtered? events enabled-events selected]
-  (let [ks (if filtered? (keys enabled-events) events)]
-    (for [e ks :when (get selected e)]
-      (do
-        [e (get enabled-events e [])]))))
 
-(defn next-sort [filtered? count model selected enabled-events]
-  (let [component (:main-component-name model)
-        cevents (get-in model [:components component :events])
-        events (map :name cevents)]
-    (condp = (mod count 2)
-      1 (get-map filtered? (sort events) enabled-events selected)
-      0 (get-map filtered? events enabled-events selected))))
-
+(defn- mk-events [sorted-events enabled-events]
+  (for [e sorted-events]
+    [e (get enabled-events e [])]))
 
 (defn events-view [id]
-  (let [filtered? (r/atom false)
+  (let [show-disabled? (r/atom true)
         filter-fkt (r/atom (partial h/filter-input "" identity (fn [e nt] e) identity))
-        sort (r/atom 0)]
+        sort-c (r/atom 0)]
     (fn []
       (let [trace (rf/subscribe [:trace id])
-            model (rf/subscribe [:model id])
             {{sid :state} :current-state ts :out-transitions back? :back? fwd? :forward?} @trace
-            events (group-by :name ts)
-            _ (logp :recall (keys events))
-            selected (@filter-fkt (keys events))
-            _ (logp :selected selected)]
+            model (rf/subscribe [:model id])
+            main-component (:main-component-name @model)
+            component-events  (map :name (get-in @model [:components main-component :events]))
+            selected-events  (@filter-fkt component-events)
+            sorted-events (if (odd? @sort-c) (sort selected-events) selected-events)
+            enabled-events (group-by :name ts)]
+
         [:div {:class "events-view"}
-         [toolbar sid id fwd? back? sort filter-fkt filtered?]
+         [toolbar sid id fwd? back? sort-c filter-fkt show-disabled?]
          [:div.events-list.list-group
           (doall
-           (map
-            (partial mk-event-item sid id)
-            (next-sort
-             @filtered?
-             @sort
-             @model
-             (into #{} selected)
-             (select-keys events selected))))]]))))
+             (map
+              (partial mk-event-item sid id @show-disabled?)
+              (mk-events sorted-events enabled-events)))]]))))
 
 (rf/register-handler :events/execute h/relay)
 (rf/register-handler :history/back h/relay)
