@@ -111,18 +111,19 @@
                :id egid}
               (doall (map (partial single-event state trace-id) items))]]))))
 
-(defn get-map [filtered? events enabled-events]
+(defn get-map [filtered? events enabled-events selected]
   (let [ks (if filtered? (keys enabled-events) events)]
-    (for [e ks](do
-                 [e (get enabled-events e [])]))))
+    (for [e ks :when (get selected e)]
+      (do
+        [e (get enabled-events e [])]))))
 
-(defn next-sort [filtered? count model enabled-events]
+(defn next-sort [filtered? count model selected enabled-events]
   (let [component (:main-component-name model)
         cevents (get-in model [:components component :events])
         events (map :name cevents)]
     (condp = (mod count 2)
-      1 (get-map filtered? (sort events) enabled-events)
-      0 (get-map filtered? events enabled-events))))
+      1 (get-map filtered? (sort events) enabled-events selected)
+      0 (get-map filtered? events enabled-events selected))))
 
 
 (defn events-view [id]
@@ -147,6 +148,7 @@
              @filtered?
              @sort
              @model
+             (into #{} selected)
              (select-keys events selected))))]]))))
 
 (rf/register-handler :events/execute h/relay)
