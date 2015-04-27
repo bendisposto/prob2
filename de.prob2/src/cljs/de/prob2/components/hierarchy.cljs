@@ -35,8 +35,17 @@
                                (model-order to dep-graph)) sorted-next)]
     (cons [element sorted-next] (distinct (apply concat extracted-next)))))
 
+(defn model-order2 [dep-graph queue out used]
+  (if (empty? queue) out
+      (let [el (first queue)
+            next (get dep-graph el [])
+            sorted-next (sort-by priority-type next)
+            filtered (remove (fn [{:keys [to]}] (used to)) sorted-next)
+            names (map :to filtered)]
+        (model-order2 dep-graph (concat (rest queue) names) (concat out [[el sorted-next]]) (conj used el)))))
+
 (defn draw-joint-graph [element main-comp dep-graph]
-  (let [rel-graph (model-order main-comp (group-by :from dep-graph))
+  (let [rel-graph (model-order2 (group-by :from dep-graph) [main-comp] [] #{}) ;(model-order main-comp (group-by :from dep-graph))
         graph (jh/mk-graph)
         paper (jh/mk-paper element graph)
         dagre-graph     (calculate-dimensions rel-graph)
