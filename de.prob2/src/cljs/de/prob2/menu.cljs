@@ -36,6 +36,11 @@
    (menu
     :file-menu
     [(item :open-file)
+     separator
+     (item :save-file)
+     (item :save-file-as)
+     (item :save-all)
+     separator
      (item :reload {:context-fn (listen [:context] (fn [ctx] (= ctx :animation)))})
      (item :close-animation {:context #{:animation}})
      separator

@@ -291,3 +291,25 @@
 .codemirror-panel {
   padding: 4px;
 }
+
+.random-menu li {
+  list-style-type: none;
+}
+
+.random-button {
+  margin-left: 3px;
+}
+
+.random-panel {
+  margin-top: 3px;
+  margin-bottom: 0px;
+}
+
+.event-detail-dropdown {
+  margin-bottom: 2px;
+}
+
+.events-toolbar {
+  margin-bottom:3px;
+}
+
