@@ -27,14 +27,16 @@
         target    {:id (.-id (node-map (.-to edge)))}
         labels    [{:position 0.5
                     :attrs {:text {:text (or (.-label edge) "")}}}]
-        vertices  (or (butlast (rest (.-points edge))) []) ; joint
+      ;  vertices  (or (butlast (rest (.-points edge))) []) ; joint
                                         ; takes care of the start and
                                         ; end node positions
-        connector {:name "rounded" :args {:radius 50}}
+        router {:name "metro"}
+        connector {:name "rounded" :args {:radius 10}}; {:name "normal"} ;
         attrs     {".marker-target" {:d "M 6 0 L 0 3 L 6 6 z"}}
        ]
     (joint.dia.Link. (clj->js {:source source :target target
-                               :labels labels :vertices vertices
+                               :labels labels :router router
+                                     ;   :vertices vertices
                                :connector connector
                                :smooth true   :attrs attrs}))))
 
@@ -50,6 +52,10 @@
 (defn graph-height [graph]
   (let [bbox (.getBBox graph (.getElements graph))]
     (if bbox (.-height bbox) 0)))
+
+(defn graph-width [graph]
+  (let [bbox (.getBBox graph (.getElements graph))]
+    (if bbox (.-width bbox) 0)))
 
 (defn mk-graph
   "creates a joint.dia.Graph"
