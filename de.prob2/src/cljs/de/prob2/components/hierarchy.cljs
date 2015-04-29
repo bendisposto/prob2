@@ -21,10 +21,6 @@
         graph    (dh/create-graph vertices edges)]
     (dh/render graph)))
 
-(defn create-canvas [model]
-  (fn [] [:div {:id (str "hierarchy-view" (:main-component-name @model)) :style {:height 0}}
-          [:div]]))
-
 (defn priority-type [{:keys [type]}]
   (if (= type :refines) 0 1))
 
@@ -44,7 +40,16 @@
             names (map :to filtered)]
         (model-order2 dep-graph (concat (rest queue) names) (concat out [[el sorted-next]]) (conj used el)))))
 
-(defn draw-joint-graph [element main-comp dep-graph]
+(defn register-click-handle [paper local]
+  (.on paper "cell:pointerdown"
+       (fn [cell evt _ _]
+         (let [attrs (.-attributes (.-model cell))
+               type (.-type attrs)]
+           (when (= type "basic.Rect")
+             (let [next-comp (.-text (.-text (.-attrs attrs)))]
+               (swap! local assoc :focused next-comp)))))))
+
+(defn draw-joint-graph [element local-state main-comp dep-graph]
   (let [rel-graph (model-order2 (group-by :from dep-graph) [main-comp] [] #{}) ;(model-order main-comp (group-by :from dep-graph))
         graph (jh/mk-graph)
         paper (jh/mk-paper element graph)
@@ -54,19 +59,60 @@
         graph2 (-> graph (jh/add-cells (vals nodes))
                    (jh/add-cells links))]
     (set! (.-height (.-style element)) (+ 100 (jh/graph-height graph2)))
-    (set! (.-width  (.-style element)) (+ 100 (jh/graph-width graph2)))))
+    (set! (.-width  (.-style element)) (+ 100 (jh/graph-width graph2)))
+    (register-click-handle paper local-state)))
 
-(defn create-component [model]
+(defn create-component [model local-state]
   (fn [x] (let [dep-graph (:dependency-graph @model)
                 component-names (keys (:components @model))
                 main-comp (:main-component-name @model)
+                _       (swap! local-state assoc :focused main-comp)
                 element (.getDOMNode x)]
             (when (and dep-graph main-comp element)
-              (draw-joint-graph element main-comp dep-graph)))))
+              (draw-joint-graph element local-state main-comp dep-graph)))))
+
+(defn create-canvas [model]
+  (fn []
+    [:div {:class "col-lg-9"
+      :id (str "hierarchy-view" (:main-component-name @model))
+      :style {:height 0}}]))
+
+(defn create-hierarchy-view [model local-state]
+  (r/create-class
+     {:component-did-update (create-component model local-state)
+      :component-did-mount  (create-component model local-state) ; for figwheel debugging
+      :reagent-render (create-canvas model)}))
+
+(defn extract-formula-list [key component]
+  (when-not (empty? (key component))
+    [:div (name key)
+     [:ul {:class "detail-view-list"}
+      (for [f (key component)] [:li {:key (h/fresh-id)} (:formula f)])]]))
+
+(defn context-detail-view [component comp-name]
+  [:div (str "CONTEXT " comp-name)
+   [extract-formula-list :sets component]
+   [extract-formula-list :constants component]])
+
+(defn machine-detail-view [component comp-name]
+  [:div (str "MACHINE " comp-name)
+   [extract-formula-list :variables component]
+   (when-not (empty? (:events component))
+     [:div "events"
+      [:ul {:class "detail-view-list"}
+       (for [e (:events component)] [:li {:key (h/fresh-id)} (:name e)])]])])
+
+(defn create-detail-view [model focused]
+  (fn [] (let [component (get (:components @model) (:focused @focused))
+               comp-name         (:focused @focused)]
+           (if (:variables component)
+             [machine-detail-view component comp-name]
+             [context-detail-view component comp-name]))))
 
 (defn hierarchy-view [id]
-  (let [model (rf/subscribe [:model id])]
-    (r/create-class
-     {:component-did-update (create-component model)
-      :component-did-mount  (create-component model) ; for figwheel debugging
-      :reagent-render (create-canvas model)})))
+  (let [model (rf/subscribe [:model id])
+        focus {:focused (:main-component-name @model)}
+        focused (r/atom focus)]
+    [:div {:class "row"}
+     [:div {:class "col-lg-3"} [create-detail-view model focused]]
+     [create-hierarchy-view model focused]]))
