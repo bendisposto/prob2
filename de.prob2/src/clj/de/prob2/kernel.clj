@@ -214,16 +214,17 @@
         results (apply merge (map :results ts))]
     {:traces traces :models models :states states :results results}))
 
-
+(defn notify-client [sente client changes]
+  (snt/send!
+   sente client
+   ::ui-state
+   changes))
 
 ;; FIXME We should only send information to clients who actually care
 (defn notify-trace-changed [{:keys [clients] :as sente} traces]
   (let [packet (prepare-ui-state-packet traces)]
     (doseq [c (:any @clients)]
-      (snt/send!
-       sente c
-       ::ui-state
-       packet))))
+      (notify-client sente c packet))))
 
 (defn notify-trace-removed [{:keys [clients] :as sente} traces]
   (doseq [c (:any @clients)]
