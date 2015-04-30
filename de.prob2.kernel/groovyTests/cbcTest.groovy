@@ -8,21 +8,26 @@ s = m as StateSpace
 cbc_solve = { String str ->
 	cmd = new CbcSolveCommand(str as ClassicalB)
 	s.execute(cmd)
-	cmd.getValue()
+	cmd
 }
 
-res = cbc_solve("1 = 2")
+cmd = cbc_solve("1 = 2")
+res = cmd.getValue()
 assert res instanceof ComputationNotCompletedResult
 assert res.getReason() == "contradiction found"
+assert cmd.getFreeVariables() == []
 
 //TODO: Get another example for timeout ?
 //res = cbc_solve("x : POW(NAT) & card(x) = 1000000000")
 //assert res instanceof ComputationNotCompletedResult
 //assert res.getReason() == "time out"
 
-res = cbc_solve("x : POW(NAT) & card(x) = 4 & y : x")
+cmd = cbc_solve("x : POW(NAT) & card(x) = 4 & y : x")
+res = cmd.getValue()
 assert res instanceof EvalResult
 assert res.getValue() == "TRUE"
+assert cmd.getFreeVariables().contains("x")
+assert cmd.getFreeVariables().contains("y")
 
 // x is the set {0,1,2,3}. However, we can not rely on the order of elements
 set = res.x.replaceAll("\\{","[")

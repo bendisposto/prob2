@@ -313,3 +313,11 @@
   margin-bottom:3px;
 }
 
+.element {
+  /* Joint element styling */
+  cursor: pointer;
+}
+
+.detail-view-list li {
+  list-style-type: none;
+}
