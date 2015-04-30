@@ -12,9 +12,9 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.statespace.Transition;
 
 public class GetShortestTraceCommand extends AbstractCommand implements
 		ITraceDescription, IStateSpaceModifier {
@@ -24,6 +24,7 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 	private static final String TRACE = "Trace";
 	private final String stateId;
 	private final List<Transition> transitions = new ArrayList<Transition>();
+	private boolean tracefound;
 
 	private final StateSpace s;
 
@@ -45,15 +46,14 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		PrologTerm trace = bindings.get(TRACE);
 		if (trace instanceof ListPrologTerm) {
+			tracefound = true;
 			for (PrologTerm term : (ListPrologTerm) trace) {
-				transitions.add(Transition.createTransitionFromCompoundPrologTerm(s,
-						(CompoundPrologTerm) term));
+				transitions.add(Transition
+						.createTransitionFromCompoundPrologTerm(s,
+								(CompoundPrologTerm) term));
 			}
 		} else {
-			String msg = "Trace was not found. Error was: "
-					+ trace.getFunctor();
-			logger.error(msg);
-			throw new RuntimeException(msg);
+			tracefound = false;
 		}
 	}
 
@@ -62,8 +62,17 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 		return transitions;
 	}
 
+	public boolean traceFound() {
+		return tracefound;
+	}
+
 	@Override
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
+		if (!tracefound) {
+			String msg = "No trace was found";
+			logger.error(msg);
+			throw new RuntimeException(msg);
+		}
 		return Trace.getTraceFromTransitions(s, transitions);
 	}
 }
