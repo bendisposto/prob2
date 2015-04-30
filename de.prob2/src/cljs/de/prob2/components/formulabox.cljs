@@ -20,8 +20,10 @@
                                    (assoc s :status ({true "" false "has-error"} status))))))))
 
 (defn formulabox
-  ([trace-id] (formulabox trace-id (gensym) nil nil))
-  ([trace-id id bfor aftr]
+  ([trace-id] (formulabox trace-id nil))
+  ;; Button is of form {:text "TEXT!" :click (fn [e] ..click handler)}
+  ([trace-id button] (formulabox trace-id button (gensym) nil nil))
+  ([trace-id button id bfor aftr]
    (let [ratom (r/atom {:status "" :input ""})
          c (a/chan)]
      (ma/go-loop [formula "" last-formula ""]
@@ -52,7 +54,8 @@
            [:div
             [:div {:class (str "form-group " s)}
              (if bfor bfor "")
-             [:input {:id id
+             [:div (when button {:class "input-group"})
+              [:input {:id id
                       :class "form-control"
                       :value formula
                       :on-change
@@ -79,5 +82,10 @@
                                         pos    (count prefix)]
                                     (ma/go (a/>! c [v pos pos]))) 
                                   )))
-                      }]
+                       }]
+              (when button
+               [:span {:class "input-group-btn"}
+                [:button {:class "btn btn-default" :type "button"
+                          :on-click (:click button)}
+                 (:text button)]])]
              (if aftr aftr "")]]))}))))
