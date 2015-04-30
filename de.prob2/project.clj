@@ -8,14 +8,15 @@
 
   :source-paths ["src/clj" "src/cljs"]
 
-  :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
+  :dependencies [[org.clojure/clojure "1.7.0-beta2" :scope "provided"]
                  [cljsjs/react "0.12.2-5"]
                  [reagent "0.5.0-alpha3"]
                  [reagent-forms "0.4.3"]
                  [reagent-utils "0.1.2"]
                  [secretary "1.2.1"]
+                 [instaparse "1.3.6" :scope "provided"]
                  [ring/ring-json "0.3.1"]
-                 [org.clojure/clojurescript "0.0-2843" :scope "provided"]
+                 [org.clojure/clojurescript "0.0-3211" :scope "provided"]
                  [com.stuartsierra/component "0.2.2"]
                  [ring/ring-core "1.3.2"]
                  [ring/ring-servlet "1.3.2"]
