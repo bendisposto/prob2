@@ -34,13 +34,16 @@
                  [cljs-ajax "0.3.10"]
                  [cljs-uuid "0.0.4"]
                  [reagent-forms "0.4.7"]
-                 [prismatic/schema "0.4.0"]]
+                 [prismatic/schema "0.4.0"]
+                 [org.clojure/test.check "0.7.0"]
+                 [schema-gen "0.1.4"]]
 
   :plugins [
             [lein-cljsbuild "1.0.4"]
             [lein-environ "1.0.0"]
             [com.keminglabs/cljx "0.6.0"]
-            [lein-asset-minifier "0.2.2"]]
+            [lein-asset-minifier "0.2.2"]
+            [com.cemerick/clojurescript.test "0.3.3"]]
 
   ;;  :ring {:handler de.prob2.handler/app
   ;;         :uberwar-name "de.prob2.war"}
@@ -71,13 +74,19 @@
   {:assets
    {"resources/public/css/prob2.min.css" "resources/public/css/prob2.css"}}
 
-  :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
+  :cljsbuild {:test-commands {"unit-tests" ["phantomjs" :runner "phantom/bind-polyfill.js" "target/cljs/testable.js"]}
+              :builds {:app {:source-paths ["src/cljs"]
                              :compiler {:output-to     "resources/public/js/app.js"
                                         :output-dir    "resources/public/js/out"
                                         ;;:externs       ["react/externs/react.js"]
                                         :asset-path   "js/out"
                                         :optimizations :none
-                                        :pretty-print  true}}}}
+                                        :pretty-print  true}}
+                       :test {:source-paths ["src/cljs" "test/cljs"]
+                              :compiler {:output-to "target/cljs/testable.js"
+                                         :optimizations :whitespace
+                                        ; :preamble ["react/react.min.js"]
+                                         :pretty-print true}}}}
 
   :profiles {:dev {:repl-options {:init-ns user
                                   :timeout 120000
