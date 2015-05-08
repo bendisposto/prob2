@@ -17,15 +17,17 @@ public class Event extends BEvent {
 	def ModelElementList<EventBGuard> guards
 	def ModelElementList<EventParameter> parameters
 	def ModelElementList<Witness> witnesses
+	def boolean extended
 
 	public enum EventType {
 		ORDINARY, CONVERGENT, ANTICIPATED
 	}
 
-	public Event(EventBMachine parentMachine, final String name, final EventType type) {
+	public Event(EventBMachine parentMachine, final String name, final EventType type, final boolean extended) {
 		super(name);
 		this.parentMachine = parentMachine
 		this.type = type;
+		this.extended = extended
 	}
 
 	public void addRefines(final ModelElementList<Event> refines) {

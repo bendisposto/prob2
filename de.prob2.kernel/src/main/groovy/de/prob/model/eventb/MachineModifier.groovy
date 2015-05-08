@@ -115,7 +115,7 @@ class MachineModifier {
 	 */
 	def EventModifier addEvent(String name) {
 		removePOsForEvent(name)
-		Event event = new Event(machine, name, EventType.ORDINARY)
+		Event event = new Event(machine, name, EventType.ORDINARY, false)
 		event.addActions(new ModelElementList<EventBAction>())
 		event.addGuards(new ModelElementList<EventBGuard>())
 		event.addParameters(new ModelElementList<EventParameter>())
