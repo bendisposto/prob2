@@ -327,3 +327,13 @@
 .CodeMirror {
   height: auto;
 }
+
+.pane-content {
+  border-top: 1px solid black;
+  margin-top: 0px;
+}
+
+.nav-tabs {
+  border-bottom: 0px;
+  margin-bottom: 1px;
+}

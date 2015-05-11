@@ -84,7 +84,7 @@
     [:div {:role "tabpanel" :style {:height @height}}
      [:ul.nav.nav-tabs {:role "tablist"}
       (map-indexed tab-title @pages)]
-     [:div.tab-content {:style {:height (- @height 41 30)}} ;; navigation  footer
+     [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
       (for [p (map vector (range) @pages)]  [tab-content p])]
      [:div.footer "(c) 2015"]]))
 
