@@ -337,3 +337,10 @@
   border-bottom: 0px;
   margin-bottom: 1px;
 }
+
+.overlay {
+  position: absolute;
+  z-index: 1000;
+  background-color: black;
+  opacity: 0.85;
+}

@@ -32,6 +32,7 @@
 (defn- reset-ui-state [ws size]
   {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil
    :ui {:screen size
+        :show-minibuffer false
         :pages {0 {:id 1
                    :type :editor
                    :label "scheduler"

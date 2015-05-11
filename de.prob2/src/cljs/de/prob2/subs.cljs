@@ -103,3 +103,9 @@
 
 (register-sub
  :height (fn [db] (reaction (get-in @db [:ui :screen :height]))))
+
+(register-sub
+ :width (fn [db] (reaction (get-in @db [:ui :screen :width]))))
+
+(register-sub
+ :minibuffer (fn [db] (reaction (get-in @db [:ui :show-minibuffer]))))

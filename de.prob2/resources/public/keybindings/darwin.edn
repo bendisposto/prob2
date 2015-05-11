@@ -1,5 +1,5 @@
 [
-"Ctrl+Space" :modeline
+"Ctrl+Space" :minibuffer
 "Meta+c" :copy
 "Meta+x" :cut
 "Meta+v" :paste

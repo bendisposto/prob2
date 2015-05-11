@@ -18,7 +18,7 @@
             [de.prob2.actions.open-file :refer [file-dialog]]
             [de.prob2.i18n :refer [i18n]]
             [de.prob2.menu]))
-  
+
 (defn preloader-waiting []
   [:div {:id "disconnected-screen"}
    [:h1 {:id "disconnected-msg"} (i18n :connecting)]
@@ -64,7 +64,7 @@
       :component-did-update (fn [e]
                               (logp :update file )
                               (let [doc (.-doc @cm)]
-                                (.setValue doc (nw/slurp file)))) 
+                                (.setValue doc (nw/slurp file))))
       :reagent-render
       (fn [_]
         (logp :id id :file file)
@@ -78,15 +78,35 @@
        {:key id :class (active idx) :role "tabpanel" :id (str "tab" id)}
        [render-page entry]])))
 
+(defn render-minibuffer []
+  (fn []
+    [:div "trololo"]))
+
+(rf/register-handler
+ :minibuffer
+ (fn [db _]
+   (update-in db [:ui :show-minibuffer] not)))
+
 (defn render-app []
   (let [pages (rf/subscribe [:pages])
+        width (rf/subscribe [:width])
+        minibuffer (rf/subscribe [:minibuffer])
         height (rf/subscribe [:height])]
-    [:div {:role "tabpanel" :style {:height @height}}
-     [:ul.nav.nav-tabs {:role "tablist"}
-      (map-indexed tab-title @pages)]
-     [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
-      (for [p (map vector (range) @pages)]  [tab-content p])]
-     [:div.footer "(c) 2015"]]))
+    (fn []
+      (logp :render @minibuffer)
+      [:div {:role "tabpanel" :style {:height @height}}
+       [:ul.nav.nav-tabs {:role "tablist"}
+        (map-indexed tab-title @pages)]
+       [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
+        (for [p (map vector (range) @pages)]  [tab-content p])]
+       [:div.footer "(c) 2015"]
+       [:div.overlay
+        {:class (if @minibuffer "" " hidden ")
+         :style {:height (- @height 200)
+                 :top 100
+                 :width (- @width 200)
+                 :left 100}}
+        [render-minibuffer]]])))
 
 
 (defn top-panel []
