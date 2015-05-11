@@ -277,11 +277,13 @@
   position: fixed;
   bottom: 0;
   width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #f4efdc;
+  height: 30px;
+  background-color: silver;
+  border-top: 1px solid black;
   -webkit-transition: bottom 3s ease;
-  padding-top: 15px;
+  padding-top: 4px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .markymark {
@@ -320,4 +322,8 @@
 
 .detail-view-list li {
   list-style-type: none;
+}
+
+.CodeMirror {
+  height: auto;
 }

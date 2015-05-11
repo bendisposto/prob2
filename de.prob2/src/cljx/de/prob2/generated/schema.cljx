@@ -104,7 +104,13 @@
    :states {Animatorstate-Spec State-Spec}
    :results {s/Int s/Str}})
 
+(def UI-Spec
+  {:screen {:height s/Num :width s/Num}
+   :pages {s/Num {:id s/Num :label s/Str :content {s/Keyword s/Any}}}})
+
 (def UI-State
   (merge Transmitted-State-Spec
-         {:connected s/Bool :local-state {s/Uuid {s/Keyword s/Any}}}))
+         {:connected s/Bool
+          :ui UI-Spec
+          :local-state {s/Uuid {s/Keyword s/Any}}}))
 

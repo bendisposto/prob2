@@ -29,11 +29,16 @@
                  (dispatch (vec (:?data e))))))}))
 
 
-(defn- reset-ui-state [ws]
-  {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil})
+(defn- reset-ui-state [ws size]
+  {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil
+   :ui {:screen size
+        :pages {0 {:id 1
+                   :type :editor
+                   :label "scheduler"
+                   :content {:file "/Users/bendisposto/joy/scheduler.mch"}}}}})
 
-(defn default-ui-state []
-  (reset-ui-state (init-websocket)))
+(defn default-ui-state [screen]
+  (reset-ui-state (init-websocket) screen))
 
 
 (defn patch [sdb deltas]
@@ -53,7 +58,11 @@
  (fn [{ws :websocket :as db} [_ connected?]]
    (if connected?
      (assoc db :connected? connected?)
-     (reset-ui-state ws))))
+     (reset-ui-state ws (get-in db [:ui :screen])))))
+
+(register-handler
+ :window-resize
+ (fn [db [_ size]] (assoc-in db [:ui :screen] size)))
 
 (register-handler
  :de.prob2.kernel/ui-state
@@ -110,7 +119,7 @@
 (rf/register-handler
  :initialise-db
  #_rf/debug
- (fn [_ _] (default-ui-state)))
+ (fn [_ [_ screen]] (default-ui-state screen)))
 
 (rf/register-handler :chsk/encoding h/relay)
 

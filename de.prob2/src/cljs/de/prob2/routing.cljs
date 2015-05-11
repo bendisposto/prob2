@@ -1,6 +1,6 @@
 (ns de.prob2.routing
+  (:require-macros [reagent.ratom :as ra :refer [reaction]])
   (:require [reagent.core :as r]
-            [reagent.session :as session]
             [goog.events :as events]
             [goog.dom.dataset]
             [taoensso.encore :as enc  :refer (logf log logp)]
@@ -17,44 +17,8 @@
             [de.prob2.components.modeline :refer [modeline]]
             [de.prob2.actions.open-file :refer [file-dialog]]
             [de.prob2.i18n :refer [i18n]]
-            [de.prob2.menu])
-
-  (:import goog.History))
-
-;; -------------------------
-;; Routes
-
-(defn mk-routes []
-
-  (secretary/set-config! :prefix "#")
-
-  (secretary/defroute "/" []
-    (session/put! :current-page #'core/home-page))
-
-
-  (secretary/defroute "/trace/:uuid" [uuid]
-    (session/put! :current-page #'core/animation-view)
-    (session/put! :focused-uuid  (cljs.core/UUID. uuid)))
-
+            [de.prob2.menu]))
   
-
-  )
-
-;; -------------------------
-;; History
-;; must be called after routes have been defined
-(defn hook-browser-navigation! []
-  (doto (History.)
-    (events/listen
-     EventType/NAVIGATE
-     (fn [event]
-       (secretary/dispatch! (.-token event))))
-    (.setEnabled true)))
-
-;; -------------------------
-;; Components
-
-
 (defn preloader-waiting []
   [:div {:id "disconnected-screen"}
    [:h1 {:id "disconnected-msg"} (i18n :connecting)]
@@ -69,19 +33,61 @@
 (rf/register-handler :paste (fn [db _] (.execCommand js/document "paste") db))
 (rf/register-handler :select-all (fn [db _] (.execCommand js/document "selectAll") db))
 
-
 (rf/register-handler :prob2/start-animation h/relay)
 
-(defn footer []
-  (let [mc (rf/subscribe [:animator-count])]
-    [:div
-     [:span (i18n :hint-modeline)]
-     [:span (str " -  R: " @mc " ")]
-     [:span {:class "pull-right"} "(c) 2015"]]))
+(defn active [i] (if (= 0 i) " active " ""))
 
+(defn tab-title [idx [_tab {:keys [id label] :as entry}]]
+  [:li {:key id
+        :class (active idx)
+        :role "presentation"}
+   [:a {:href (str "#tab" id)
+        :role "tab"
+        :data-toggle "tab"} label]])
 
-(defn current-page []
-  [:div [(session/get :current-page)]])
+(defmulti render-page :type)
+(defmethod render-page :editor [{id :id {:keys [file]} :content}]
+  (let [cm (atom nil)
+        id (str "editor" id)]
+    (r/create-class
+     {:component-did-mount
+      (fn [c] (logp :mount file)
+        (let [dom-element (.getElementById js/document id)
+              mirr (.fromTextArea
+                    js/CodeMirror
+                    dom-element #js {:mode "b"
+                                     :lineWrapping true
+                                     :lineNumbers true})
+              doc (.-doc mirr)]
+          (.setValue doc (nw/slurp file))
+          (reset! cm mirr)))
+      :component-did-update (fn [e]
+                              (logp :update file )
+                              (let [doc (.-doc @cm)]
+                                (.setValue doc (nw/slurp file)))) 
+      :reagent-render
+      (fn [_]
+        (logp :id id :file file)
+        [:textarea {:id id
+                    :defaultContent ""}])})))
+
+(defn tab-content [_]
+  (fn [[idx [id entry]]]
+    (let [f (:file (:content entry))]
+      [:div.tab-pane.pane-content
+       {:key id :class (active idx) :role "tabpanel" :id (str "tab" id)}
+       [render-page entry]])))
+
+(defn render-app []
+  (let [pages (rf/subscribe [:pages])
+        height (rf/subscribe [:height])]
+    [:div {:role "tabpanel" :style {:height @height}}
+     [:ul.nav.nav-tabs {:role "tablist"}
+      (map-indexed tab-title @pages)]
+     [:div.tab-content {:style {:height (- @height 41 30)}} ;; navigation  footer
+      (for [p (map vector (range) @pages)]  [tab-content p])]
+     [:div.footer "(c) 2015"]]))
+
 
 (defn top-panel []
   (let [init?  (rf/subscribe [:initialised?])
@@ -95,24 +101,19 @@
                    (if-not @ready?
                      (preloader-initializing)
                      (do  (rf/dispatch [:populate-menus])
-                          [:div
-                           [current-page]]))))])))
-
-
+                          [render-app]))))])))
 
 (defn init-keybindings []
   (let [bs (partition 2 (nw/read-string (nw/slurp (str "./keybindings/" (nw/os-name) ".edn"))))]
     (doseq [[sc b] bs]
       (.add js/shortcut sc #(rf/dispatch [b])))))
 
+(defn screen-size []
+  {:height (.-innerHeight js/window)
+   :width (.-innerWidth js/window)})
 
 (defn init! []
-  #_(events/listen (.getElementById js/document "wrapper") "keydown" (fn [e] (log e)) true)
-  (mk-routes)
-  (hook-browser-navigation!)
   (init-keybindings)
-  (rf/dispatch [:initialise-db])
-  (r/render-component [modeline] (.getElementById js/document "minibuffer"))
-  (r/render-component [top-panel] (.getElementById js/document "app"))
-  (r/render-component [footer] (.getElementById js/document "footer-content"))
-  )
+  (set! (.-onresize js/window) #(rf/dispatch [:window-resize (screen-size)]))
+  (rf/dispatch [:initialise-db (screen-size)])
+  (r/render-component [top-panel] (.getElementById js/document "app")))

@@ -97,3 +97,9 @@
  :constantly
  (fn [_ [_ v]]
    (reaction v)))
+
+(register-sub
+ :pages (fn [db] (reaction (get-in @db [:ui :pages]))))
+
+(register-sub
+ :height (fn [db] (reaction (get-in @db [:ui :screen :height]))))
