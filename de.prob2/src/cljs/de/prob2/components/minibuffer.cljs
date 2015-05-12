@@ -1,4 +1,4 @@
-(ns de.prob2.components.modeline
+(ns de.prob2.components.minibuffer
   (:require  [taoensso.encore :as enc  :refer (logf log logp)]
              [reagent.core :as r]
              [re-frame.core :as rf]
@@ -33,7 +33,7 @@
                  :class (str "list-group-item " selected)
                  :on-click #(rf/dispatch [action])}] (:display entry)))))
 
-(defn modeline []
+(defn render-minibuffer []
   (let [items (r/atom {:elems
                        (h/filter-input
                         ""
@@ -71,40 +71,34 @@
                                             (all-commands))}))
                     :on-key-down (fn [e]
                                    (let [k ({13 :enter 38 :up 40 :down} (.-which e))]
-                                     (when k (rf/dispatch [:modeline :key k items])
+                                     (when k (rf/dispatch [:minibuffer :key k items])
                                            (.preventDefault e))))}]
            [:div {:class "list-group"}
             (let [{selected :index elems :elems} @items]
               (map-indexed (make-cmd-entry selected) elems))]]]]]])))
 
-(defn modeline-toggle []
-  (let [wrapper (js/jQuery "#wrapper")
-        visible? (.hasClass wrapper "toggled")
-        searchbox (js/jQuery "#modeline-search")]
-    (.toggleClass wrapper "toggled")
-    (when visible? (.focus searchbox))))
 
-(defn modeline-key [kind ratom]
+(defn minibuffer-key [kind ratom]
   (let [cur-index (:index @ratom)
         items (:elems @ratom)
         selected (get (vec items) cur-index)]
     (condp = kind
       :enter (let [action (get selected :action ::missing-action)]
                (rf/dispatch [action])
-               (modeline-toggle))
+               (rf/dispatch [:minibuffer]))
       :up (if (< 0 cur-index)
             (do
               (style/scrollIntoContainerView
                (.getElementById js/document (str "modeline-entry" (dec cur-index)))
-               (.getElementById js/document "sidebar-wrapper"))
+               (.getElementById js/document "overlay"))
               (swap! ratom update-in [:index] dec))
             (style/scrollIntoContainerView
              (.getElementById js/document "scroll-anchor")
-             (.getElementById js/document "sidebar-wrapper")))
+             (.getElementById js/document "overlay")))
       :down (when (< cur-index (dec (count items)))
               (style/scrollIntoContainerView
                (.getElementById js/document (str "modeline-entry" (inc cur-index)))
-               (.getElementById js/document "sidebar-wrapper"))
+               (.getElementById js/document "overlay"))
               (swap! ratom update-in [:index] inc)))))
 
 
@@ -112,11 +106,10 @@
  ::missing-action
  (fn [db _] (js/alert "Missing action") db))
 
-
 (rf/register-handler
- :modeline
+ :minibuffer
  (fn [db [_ cmd & args]]
    (cond
-     (or (not args) (= :toggle cmd)) (modeline-toggle)
-     (= cmd :key) (apply modeline-key args))
-   db))
+     (or (not args) (= :toggle cmd)) (update-in db [:ui :show-minibuffer] not)
+     (= :key cmd) (do (apply minibuffer-key args) db)
+     :otherwise (do (logp :no-handler-defined cmd args) db))))

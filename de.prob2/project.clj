@@ -14,6 +14,7 @@
                  [reagent-forms "0.4.3"]
                  [reagent-utils "0.1.2"]
                  [secretary "1.2.1"]
+                 [markdown-clj "0.9.66"]
                  [instaparse "1.3.6" :scope "provided"]
                  [ring/ring-json "0.3.1"]
                  [org.clojure/clojurescript "0.0-3211" :scope "provided"]

@@ -34,9 +34,9 @@
    :ui {:screen size
         :show-minibuffer false
         :pages {0 {:id 1
-                   :type :editor
-                   :label "scheduler"
-                   :content {:file "/Users/bendisposto/joy/scheduler.mch"}}}}})
+                   :type :md
+                   :label "Info"
+                   :content {:file "info.md"}}}}})
 
 (defn default-ui-state [screen]
   (reset-ui-state (init-websocket) screen))

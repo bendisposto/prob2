@@ -124,7 +124,7 @@
 
 (defn filter-input
   ([filter-string extractor placer filter-fkt input]
-   (logp :filter filter-string :input input)
+   #_(logp :filter filter-string :input input)
    (let [s (clojure.string/split filter-string #"\s+")
          re (str "(?i)(.*)" (clojure.string/join "(.*)" (map #(str "(" % ")") s)) "(.*)")
          filter-regex (re-pattern re)

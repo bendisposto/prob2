@@ -10,13 +10,14 @@
             [re-frame.core :as rf]
             [de.prob2.jsapi]
             [de.prob2.subs]
+            [markdown.core :as md]
             [de.prob2.components.logo :refer [prob-logo]]
             [de.prob2.core :as core]
             [de.prob2.nw :as nw]
             [de.prob2.helpers :as h :refer [mk-url]]
-            [de.prob2.components.modeline :refer [modeline]]
+            [de.prob2.components.minibuffer :refer [render-minibuffer]]
             [de.prob2.actions.open-file :refer [file-dialog]]
-            [de.prob2.i18n :refer [i18n]]
+            [de.prob2.i18n :refer [i18n language]]
             [de.prob2.menu]))
 
 (defn preloader-waiting []
@@ -43,7 +44,14 @@
         :role "presentation"}
    [:a {:href (str "#tab" id)
         :role "tab"
-        :data-toggle "tab"} label]])
+        :data-toggle "tab"} label
+    [:span.glyphicon.glyphicon-remove.glyph-fix.remove-glyph {:on-click #(rf/dispatch [:remove-tab idx id])}]]])
+
+
+(rf/register-handler
+ :remove-tab ;; TODO Handle last tab
+ (fn [db [_ idx id]]
+   (h/dissoc-in db [:ui :pages idx])))
 
 (defmulti render-page :type)
 (defmethod render-page :editor [{id :id {:keys [file]} :content}]
@@ -51,7 +59,7 @@
         id (str "editor" id)]
     (r/create-class
      {:component-did-mount
-      (fn [c] (logp :mount file)
+      (fn [c]
         (let [dom-element (.getElementById js/document id)
               mirr (.fromTextArea
                     js/CodeMirror
@@ -62,14 +70,22 @@
           (.setValue doc (nw/slurp file))
           (reset! cm mirr)))
       :component-did-update (fn [e]
-                              (logp :update file )
                               (let [doc (.-doc @cm)]
                                 (.setValue doc (nw/slurp file))))
       :reagent-render
       (fn [_]
-        (logp :id id :file file)
         [:textarea {:id id
                     :defaultContent ""}])})))
+
+
+(defmethod render-page :md [{{:keys [file]} :content}]
+  [:div.padding-container {:dangerouslySetInnerHTML {:__html (md/md->html (nw/slurp (str "./doc/" (name @language) "/" file)))}}])
+
+
+(defmethod render-page :default [{:keys [id type content]}]
+  [:div [:h2 (str "Unknown View Type " type)]
+   [:h3 "Content: "
+    (prn-str content)]])
 
 (defn tab-content [_]
   (fn [[idx [id entry]]]
@@ -78,35 +94,30 @@
        {:key id :class (active idx) :role "tabpanel" :id (str "tab" id)}
        [render-page entry]])))
 
-(defn render-minibuffer []
-  (fn []
-    [:div "trololo"]))
-
-(rf/register-handler
- :minibuffer
- (fn [db _]
-   (update-in db [:ui :show-minibuffer] not)))
 
 (defn render-app []
   (let [pages (rf/subscribe [:pages])
         width (rf/subscribe [:width])
         minibuffer (rf/subscribe [:minibuffer])
         height (rf/subscribe [:height])]
-    (fn []
-      (logp :render @minibuffer)
-      [:div {:role "tabpanel" :style {:height @height}}
-       [:ul.nav.nav-tabs {:role "tablist"}
-        (map-indexed tab-title @pages)]
-       [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
-        (for [p (map vector (range) @pages)]  [tab-content p])]
-       [:div.footer "(c) 2015"]
-       [:div.overlay
-        {:class (if @minibuffer "" " hidden ")
-         :style {:height (- @height 200)
-                 :top 100
-                 :width (- @width 200)
-                 :left 100}}
-        [render-minibuffer]]])))
+    (r/create-class
+     {:component-did-update
+      (fn [_] (when @minibuffer (.focus (js/jQuery "#modeline-search"))))
+      :reagent-render
+      (fn []
+        [:div {:role "tabpanel" :style {:height @height}}
+         [:ul.nav.nav-tabs {:role "tablist"}
+          (map-indexed tab-title @pages)]
+         [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
+          (for [p (map vector (range) @pages)]  ^{:key (first p)} [tab-content p])]
+         [:div.footer "(c) 2015"]
+         [:div#overlay
+          {:class (if @minibuffer "" " hidden ")
+           :style {:height (- @height 200)
+                   :top 100
+                   :width (- @width 200)
+                   :left 100}}
+          [render-minibuffer]]])})))
 
 
 (defn top-panel []

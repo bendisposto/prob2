@@ -172,106 +172,6 @@
 
 
 
-#wrapper {
-  padding-right: 0;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-}
-
-#wrapper.toggled {
-  padding-right: -400px;
-}
-
-#sidebar-wrapper {
-  z-index: 1000;
-  position: fixed;
-  right: 400px;
-  width: 0;
-  height: 100%;
-  margin-right: -400px;
-  overflow-y: auto;
-  background: #3c506d;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-}
-
-#wrapper.toggled #sidebar-wrapper {
-  width: 400px;
-}
-
-#page-content-wrapper {
-  width: 100%;
-  position: absolute;
-  padding: 15px;
-}
-
-#wrapper.toggled #page-content-wrapper {
-  position: absolute;
-  margin-right: -400px;
-}
-
-/* Sidebar Styles */
-
-.sidebar-nav {
-  position: absolute;
-  top: 15;
-  width: 360px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-
-@media(min-width:768px) {
-  #wrapper {
-    padding-right: 400px;
-  }
-
-  #wrapper.toggled {
-    padding-right: 0;
-  }
-
-  #sidebar-wrapper {
-    width: 400px;
-  }
-
-  #wrapper.toggled #sidebar-wrapper {
-    width: 0;
-  }
-
-  #page-content-wrapper {
-    padding: 20px;
-    position: relative;
-  }
-
-  #wrapper.toggled #page-content-wrapper {
-    position: relative;
-    margin-right: 0;
-  }
-}
-
-#modeline-search,#scroll-anchor {
-  margin-bottom: 10px;
-}
-
-#wrapper {
-  padding-bottom: 60px;
-}
-
-
-.list-group-item u {
-  text-decoration: underline;
-  color:orange;
-}
-
-#footer.toggled {
-  bottom: -60;
-}
-
 .footer {
   opacity: 1;
   position: fixed;
@@ -280,7 +180,6 @@
   height: 30px;
   background-color: silver;
   border-top: 1px solid black;
-  -webkit-transition: bottom 3s ease;
   padding-top: 4px;
   padding-left: 15px;
   padding-right: 15px;
@@ -338,9 +237,34 @@
   margin-bottom: 1px;
 }
 
-.overlay {
+#overlay {
   position: absolute;
   z-index: 1000;
-  background-color: black;
-  opacity: 0.85;
+  background: #3c506d;
+  opacity: 0.95;
+  overflow: auto;
+  padding: 10px;
 }
+
+.list-group-item u {
+  text-decoration: underline;
+  color:orange;
+}
+
+.padding-container {
+  padding: 20px;
+}
+
+.glyph-fix {
+  top: 3px;
+  left: 5px;
+}
+
+.remove-glyph {
+  color: darkred;
+}
+
+.remove-glyph:hover {
+  color: red;
+}
+
