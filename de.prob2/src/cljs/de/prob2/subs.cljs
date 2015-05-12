@@ -99,7 +99,11 @@
    (reaction v)))
 
 (register-sub
- :pages (fn [db] (reaction (get-in @db [:ui :pages]))))
+ :pages (fn [db] (let [pane (reaction (get-in @db [:ui :pane]))
+                      pages (reaction (get-in @db [:ui :pages]))
+                      active (reaction (first @pane))
+                      active-page (reaction (assoc (get @pages @active) :class " active "))]
+                  (reaction (assoc @pages (:id @active-page) @active-page)))))
 
 (register-sub
  :height (fn [db] (reaction (get-in @db [:ui :screen :height]))))

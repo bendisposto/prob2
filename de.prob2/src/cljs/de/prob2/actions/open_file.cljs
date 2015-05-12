@@ -1,6 +1,8 @@
 (ns de.prob2.actions.open-file
   (:require [re-frame.core :as rf]
-            [de.prob2.nw :as nw]))
+            [de.prob2.nw :as nw]
+            [de.prob2.helpers :as h]
+            [taoensso.encore :as enc  :refer (logf log logp)]))
 
 
 (defn file-dialog []
@@ -16,9 +18,18 @@
    (if-not (seq file)
      (.click (.getElementById js/document "fileDialog"))
      (let [filename (first file)
-           pages (get-in db [:ui :pages])
-           label (last (clojure.string/split filename "/"))]
-       (assoc-in db [:ui :pages] (conj pages {:id (inc (count pages)) :type :editor :label label :content {:file filename}}))))))
+           id (h/fresh-id)
+           label (last (clojure.string/split filename "/"))
+           entry {:id id
+                  :type :editor
+                  :label label
+                  :content {:file filename}}
+           db' (update-in db [:ui :pane] conj id)
+           db'' (assoc-in db' [:ui :pages id] entry)]
+       (logp :1 (:ui db)
+             :2 (:ui db')
+             :3 (:ui db''))
+       db''))))
 
 (rf/register-handler
  :start-animation

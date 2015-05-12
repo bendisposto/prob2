@@ -30,13 +30,15 @@
 
 
 (defn- reset-ui-state [ws size]
-  {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil
-   :ui {:screen size
-        :show-minibuffer false
-        :pages [{:id 1
-                 :type :md
-                 :label "Info"
-                 :content {:file "info.md"}}]}})
+  (let [id (h/fresh-id)]
+    {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil
+     :ui {:screen size
+          :show-minibuffer false
+          :pane [id]
+          :pages {id {:id id
+                     :type :md
+                     :label "Info"
+                     :content {:file "info.md"}}}}}))
 
 (defn default-ui-state [screen]
   (reset-ui-state (init-websocket) screen))
@@ -123,4 +125,3 @@
  (fn [_ [_ screen]] (default-ui-state screen)))
 
 (rf/register-handler :chsk/encoding h/relay)
-

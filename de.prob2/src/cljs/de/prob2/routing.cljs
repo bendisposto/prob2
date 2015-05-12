@@ -36,11 +36,9 @@
 
 (rf/register-handler :prob2/start-animation h/relay)
 
-(defn active [i] (if (= 0 i) " active " ""))
-
-(defn tab-title [idx {:keys [id label] :as entry}]
+(defn tab-title [[idx {:keys [id label :class] :as entry}]]
   [:li {:key id
-        :class (active idx)
+        :class class
         :role "presentation"}
    [:a {:href (str "#tab" id)
         :role "tab"
@@ -51,10 +49,11 @@
 (rf/register-handler
  :remove-tab ;; TODO Handle last tab
  (fn [db [_  id]]
-   (let [pages (get-in db [:ui :pages])
-         removed (remove #(= id (:id %)) pages)]
-     (logp :p pages :r removed :i id)
-     (assoc-in db [:ui :pages] (into [] removed)))))
+   (logp :del id)
+   (let [pane (get-in db [:ui :pane])
+         removed (remove #{id} pane)]
+     (logp :rem removed)
+     (h/dissoc-in (assoc-in db [:ui :pane] (into [] removed)) [:ui :pages id]))))
 
 (defmulti render-page :type)
 (defmethod render-page :editor [{id :id {:keys [file]} :content}]
@@ -78,6 +77,7 @@
       :reagent-render
       (fn [_]
         [:textarea {:id id
+                    :autofocus "autofocus"
                     :defaultContent ""}])})))
 
 
@@ -96,10 +96,11 @@
     (prn-str content)]])
 
 (defn tab-content [_]
-  (fn [[idx {:keys [id] :as entry}]]
+  (fn [[idx {:keys [id class] :as entry}]]
+    (logp :e entry)
     (let [f (:file (:content entry))]
       [:div.tab-pane.pane-content
-       {:key id :class (active idx) :role "tabpanel" :id (str "tab" id)}
+       {:key id :class class :role "tabpanel" :id (str "tab" id)}
        [render-page entry]])))
 
 
@@ -113,11 +114,12 @@
       (fn [_] (when @minibuffer (.focus (js/jQuery "#modeline-search"))))
       :reagent-render
       (fn []
+        (logp :pp @pages)
         [:div {:role "tabpanel" :style {:height @height}}
          [:ul.nav.nav-tabs {:role "tablist"}
-          (map-indexed tab-title @pages)]
+          (map tab-title @pages)]
          [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
-          (for [p (map vector (range) @pages)]  ^{:key (first p)} [tab-content p])]
+          (for [p @pages]  ^{:key (:id (last p))} [tab-content p])]
          [:div.footer "(c) 2015"]
          [:div#overlay
           {:class (if @minibuffer "" " hidden ")
