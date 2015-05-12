@@ -33,10 +33,10 @@
   {:traces {} :models {} :states {} :results {} :websocket ws :encoding nil
    :ui {:screen size
         :show-minibuffer false
-        :pages {0 {:id 1
-                   :type :md
-                   :label "Info"
-                   :content {:file "info.md"}}}}})
+        :pages [{:id 1
+                 :type :md
+                 :label "Info"
+                 :content {:file "info.md"}}]}})
 
 (defn default-ui-state [screen]
   (reset-ui-state (init-websocket) screen))

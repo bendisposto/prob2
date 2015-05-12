@@ -38,20 +38,23 @@
 
 (defn active [i] (if (= 0 i) " active " ""))
 
-(defn tab-title [idx [_tab {:keys [id label] :as entry}]]
+(defn tab-title [idx {:keys [id label] :as entry}]
   [:li {:key id
         :class (active idx)
         :role "presentation"}
    [:a {:href (str "#tab" id)
         :role "tab"
         :data-toggle "tab"} label
-    [:span.glyphicon.glyphicon-remove.glyph-fix.remove-glyph {:on-click #(rf/dispatch [:remove-tab idx id])}]]])
+    [:span.glyphicon.glyphicon-remove.glyph-fix.remove-glyph {:on-click #(rf/dispatch [:remove-tab id])}]]])
 
 
 (rf/register-handler
  :remove-tab ;; TODO Handle last tab
- (fn [db [_ idx id]]
-   (h/dissoc-in db [:ui :pages idx])))
+ (fn [db [_  id]]
+   (let [pages (get-in db [:ui :pages])
+         removed (remove #(= id (:id %)) pages)]
+     (logp :p pages :r removed :i id)
+     (assoc-in db [:ui :pages] (into [] removed)))))
 
 (defmulti render-page :type)
 (defmethod render-page :editor [{id :id {:keys [file]} :content}]
@@ -78,8 +81,13 @@
                     :defaultContent ""}])})))
 
 
-(defmethod render-page :md [{{:keys [file]} :content}]
-  [:div.padding-container {:dangerouslySetInnerHTML {:__html (md/md->html (nw/slurp (str "./doc/" (name @language) "/" file)))}}])
+(defmethod render-page :md [_]
+  (fn [{{:keys [file]} :content}]
+    (let [path (str "./doc/" (name @language) "/" file)
+          text (nw/slurp path)
+          html (md/md->html text)]
+      (logp :p path :t text :h html)
+      [:div.padding-container {:dangerouslySetInnerHTML {:__html html}}])))
 
 
 (defmethod render-page :default [{:keys [id type content]}]
@@ -88,7 +96,7 @@
     (prn-str content)]])
 
 (defn tab-content [_]
-  (fn [[idx [id entry]]]
+  (fn [[idx {:keys [id] :as entry}]]
     (let [f (:file (:content entry))]
       [:div.tab-pane.pane-content
        {:key id :class (active idx) :role "tabpanel" :id (str "tab" id)}

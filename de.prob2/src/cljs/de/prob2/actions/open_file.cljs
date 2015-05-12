@@ -16,7 +16,13 @@
    (if-not (seq file)
      (.click (.getElementById js/document "fileDialog"))
      (let [filename (first file)
-           extension (last (re-find #".*\.(.*)" filename))
-           text (nw/slurp filename)]
-       (rf/dispatch [:prob2/start-animation [filename extension]])
-       db))))
+           pages (get-in db [:ui :pages])
+           label (last (clojure.string/split filename "/"))]
+       (assoc-in db [:ui :pages] (conj pages {:id (inc (count pages)) :type :editor :label label :content {:file filename}}))))))
+
+(rf/register-handler
+ :start-animation
+ (fn [db [_ filename]]
+   (let [extension (last (re-find #".*\.(.*)" filename))
+         text (nw/slurp filename)])
+   db))
