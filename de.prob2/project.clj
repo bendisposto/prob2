@@ -10,7 +10,7 @@
 
   :dependencies [[org.clojure/clojure "1.7.0-beta2" :scope "provided"]
                  [cljsjs/react "0.12.2-5"]
-                 [reagent "0.5.0-alpha3"]
+                 [reagent "0.5.0"]
                  [reagent-forms "0.4.3"]
                  [reagent-utils "0.1.2"]
                  [secretary "1.2.1"]
