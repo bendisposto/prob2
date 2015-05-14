@@ -113,3 +113,6 @@
 
 (register-sub
  :minibuffer (fn [db] (reaction (get-in @db [:ui :show-minibuffer]))))
+
+(register-sub
+ :active (fn [db] (reaction (get-in @db [:ui :active]))))

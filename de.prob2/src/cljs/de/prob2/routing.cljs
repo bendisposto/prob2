@@ -36,15 +36,22 @@
 
 (rf/register-handler :prob2/start-animation h/relay)
 
-(defn tab-title [[idx {:keys [id label :class] :as entry}]]
-  [:li {:key id
-        :class class
-        :role "presentation"}
-   [:a {:href (str "#tab" id)
-        :role "tab"
-        :data-toggle "tab"} label
-    [:span.glyphicon.glyphicon-remove.glyph-fix.remove-glyph {:on-click #(rf/dispatch [:remove-tab id])}]]])
+(defn tab-title [_]
+  (let [active (rf/subscribe [:active])]
+    (fn [[idx {:keys [id label] :as entry}]]
+      (let [class (if (= id @active) " active " "")]
+        [:li {:key id
+              :on-click #(rf/dispatch [:select-tab id])
+              :class class
+              :role "presentation"}
+         [:a {:href (str "#tab" id)
+              :role "tab"
+              :data-toggle "tab"} label
+          [:span.glyphicon.glyphicon-remove.glyph-fix.remove-glyph {:on-click #(rf/dispatch [:remove-tab id])}]]]))))
 
+(rf/register-handler
+ :select-tab
+ (fn [db [_ id]] (assoc-in db [:ui :active] id)))
 
 (rf/register-handler
  :remove-tab ;; TODO Handle last tab
@@ -66,6 +73,7 @@
               mirr (.fromTextArea
                     js/CodeMirror
                     dom-element #js {:mode "b"
+                                     :autofocus true
                                      :lineWrapping true
                                      :lineNumbers true})
               doc (.-doc mirr)]
@@ -73,7 +81,8 @@
           (reset! cm mirr)))
       :component-did-update (fn [e]
                               (let [doc (.-doc @cm)]
-                                (.setValue doc (nw/slurp file))))
+                                (.setValue doc (nw/slurp file))
+                                (.focus @cm)))
       :reagent-render
       (fn [_]
         [:textarea {:id id
@@ -96,12 +105,13 @@
     (prn-str content)]])
 
 (defn tab-content [_]
-  (fn [[idx {:keys [id class] :as entry}]]
-    (logp :e entry)
-    (let [f (:file (:content entry))]
-      [:div.tab-pane.pane-content
-       {:key id :class class :role "tabpanel" :id (str "tab" id)}
-       [render-page entry]])))
+  (let [active (rf/subscribe [:active])]
+    (fn [[idx {:keys [id class] :as entry}]]
+      (let [f (:file (:content entry))
+            class (if (= id @active) " active " "")]
+        [:div.tab-pane.pane-content
+         {:key id :class class :role "tabpanel" :id (str "tab" id)}
+         [render-page entry]]))))
 
 
 (defn render-app []
@@ -117,7 +127,7 @@
         (logp :pp @pages)
         [:div {:role "tabpanel" :style {:height @height}}
          [:ul.nav.nav-tabs {:role "tablist"}
-          (map tab-title @pages)]
+          (for [p @pages] ^{:key (first p)} [tab-title p])]
          [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
           (for [p @pages]  ^{:key (:id (last p))} [tab-content p])]
          [:div.footer "(c) 2015"]
