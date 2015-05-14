@@ -12,6 +12,14 @@ class ContextModifier {
 		this.context = context
 	}
 
+	def ContextModifier enumerated_set(HashMap properties) {
+		if (properties["name"] == null || properties["constants"] == null) {
+			throw new IllegalArgumentException("must set properties 'name' and 'constants' for enumerated sets")
+		}
+		addEnumeratedSet(properties["name"], properties["constants"] as String[])
+		this
+	}
+
 	/**
 	 * Adds the set and constants to the context, as well as the generated partition axiom.
 	 * @param setName of enumerated set to be added
@@ -111,5 +119,24 @@ class ContextModifier {
 			context.proofs.clear()
 		}
 		return a && b
+	}
+
+	def ContextModifier make(Closure definition) {
+		runClosure definition
+		this
+	}
+
+	private runClosure(Closure runClosure) {
+		// Create clone of closure for threading access.
+		Closure runClone = runClosure.clone()
+
+		// Set delegate of closure to this builder.
+		runClone.delegate = this
+
+		// And only use this builder as the closure delegate.
+		runClone.resolveStrategy = Closure.DELEGATE_ONLY
+
+		// Run closure code.
+		runClone()
 	}
 }

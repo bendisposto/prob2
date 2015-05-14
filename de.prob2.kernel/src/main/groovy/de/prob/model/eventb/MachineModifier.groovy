@@ -9,9 +9,9 @@ class MachineModifier {
 	EventBMachine machine
 	EventBModel model
 
-	def MachineModifier(EventBMachine machine, EventBModel model) {
+	def MachineModifier(EventBMachine machine, List<Context> seenContexts) {
 		this.machine = machine
-		this.model = model
+		this.machine.addSees(new ModelElementList<Context>(seenContexts))
 	}
 
 	/** adds a variable */

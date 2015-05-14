@@ -248,7 +248,7 @@ public class ModelModifier {
 	 */
 	def MachineModifier getMachine(String machineName) {
 		if (temp.getMachines().hasProperty(machineName)) {
-			return new MachineModifier(temp.getMachines().getElement(machineName), temp)
+			return new MachineModifier(temp.getMachines().getElement(machineName), [])
 		}
 	}
 
@@ -265,24 +265,51 @@ public class ModelModifier {
 		}
 	}
 
-	def context(String name, Closure definition) {
+	def context(HashMap properties, Closure definition) {
+		if (!properties.containsKey("name")) {
+			throw new IllegalArgumentException("Context definitions must specify the property name")
+		}
+		def c = new Context(properties["name"], modelDir)
+		temp.addContext(c)
+		if (properties["mainComponent"] == true) {
+			setMainComponent(c)
+		}
+		new ContextModifier(c).make(definition)
 	}
 
 	def MachineModifier machine(HashMap properties, Closure definition) {
-		if (!properties.containsKey("name")) {
+		def name = properties["name"]
+		if (name == null) {
 			throw new IllegalArgumentException("Machine definitions must specify the property name")
 		}
-		def m = new EventBMachine(properties["name"], modelDir)
+
+		def m = new EventBMachine(name, modelDir)
 		temp.addMachine(m)
 		if (properties["mainComponent"] == true) {
 			setMainComponent(m)
 		}
-		new MachineModifier(m, temp).make(definition)
+
+		def sees = properties["sees"]
+		def seenContexts = sees.collect { c ->
+			Context context = temp.getComponent(c)
+			if (context == null) {
+				throw new IllegalArgumentException("Tried to load context $c but could not find it")
+			}
+			temp.addRelationship(c, name, ERefType.SEES)
+			context
+		}
+		new MachineModifier(m, seenContexts).make(definition)
 	}
 
 	def setMainComponent(EventBMachine m) {
 		def modelFile = modelDir + File.separator + m.getName() + ".bum"
 		temp.setMainComponent(m)
+		temp.setModelFile(new File(modelFile))
+	}
+
+	def setMainComponent(Context c) {
+		def modelFile = modelDir + File.separator + c.getName() + ".buc"
+		temp.setMainComponent(c)
 		temp.setModelFile(new File(modelFile))
 	}
 
