@@ -3,6 +3,7 @@ package de.prob.model.eventb
 import de.prob.Main
 import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.model.eventb.theory.Theory
+import de.prob.model.eventb.translate.ModelToXML
 import de.prob.model.representation.Constant
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
@@ -14,6 +15,7 @@ import de.prob.scripting.LoadClosures
 public class ModelModifier {
 
 	EventBModel temp
+	String modelDir
 	Map<String, String> prefs
 	Closure loader
 	boolean startProB
@@ -31,12 +33,29 @@ public class ModelModifier {
 		temp = deepCopy(model)
 		this.startProB = startProB
 		if (startProB) {
-			GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
-			model.getStateSpace().execute(cmd)
-			prefs = cmd.getPreferences()
-			Api api = Main.getInjector().getInstance(Api.class)
-			loader = api.getSubscribeClosure(LoadClosures.EVENTB)
+			retrieveProBSettings(model);
 		}
+	}
+
+	def ModelModifier(String name, String path, boolean startProB=true) {
+		def mtx = new ModelToXML()
+		modelDir = mtx.createProjectFile(path, name)
+
+		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
+		temp = factory.modelCreator.get()
+
+		this.startProB = startProB
+		if(startProB) {
+			retrieveProBSettings(temp)
+		}
+	}
+
+	private void retrieveProBSettings(EventBModel model) {
+		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
+		model.getStateSpace().execute(cmd)
+		prefs = cmd.getPreferences()
+		Api api = Main.getInjector().getInstance(Api.class)
+		loader = api.getSubscribeClosure(LoadClosures.EVENTB)
 	}
 
 	/**
@@ -229,7 +248,7 @@ public class ModelModifier {
 	 */
 	def MachineModifier getMachine(String machineName) {
 		if (temp.getMachines().hasProperty(machineName)) {
-			return new MachineModifier(temp.getMachines().getElement(machineName))
+			return new MachineModifier(temp.getMachines().getElement(machineName), temp)
 		}
 	}
 
@@ -244,5 +263,45 @@ public class ModelModifier {
 		if (temp.getContexts().hasProperty(contextName)) {
 			return new ContextModifier(temp.getContexts().getElement(contextName))
 		}
+	}
+
+	def context(String name, Closure definition) {
+	}
+
+	def MachineModifier machine(HashMap properties, Closure definition) {
+		if (!properties.containsKey("name")) {
+			throw new IllegalArgumentException("Machine definitions must specify the property name")
+		}
+		def m = new EventBMachine(properties["name"], modelDir)
+		temp.addMachine(m)
+		if (properties["mainComponent"] == true) {
+			setMainComponent(m)
+		}
+		new MachineModifier(m, temp).make(definition)
+	}
+
+	def setMainComponent(EventBMachine m) {
+		def modelFile = modelDir + File.separator + m.getName() + ".bum"
+		temp.setMainComponent(m)
+		temp.setModelFile(new File(modelFile))
+	}
+
+	def ModelModifier make(Closure definition) {
+		runClosure definition
+		this
+	}
+
+	private runClosure(Closure runClosure) {
+		// Create clone of closure for threading access.
+		Closure runClone = runClosure.clone()
+
+		// Set delegate of closure to this builder.
+		runClone.delegate = this
+
+		// And only use this builder as the closure delegate.
+		runClone.resolveStrategy = Closure.DELEGATE_ONLY
+
+		// Run closure code.
+		runClone()
 	}
 }

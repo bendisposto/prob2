@@ -1,13 +1,34 @@
 package de.prob.model.eventb
 
 
+
+
 class EventModifier {
 	private UUID uuid = UUID.randomUUID()
 	private ctr = 0
 	def Event event
+	boolean initialisation
 
-	def EventModifier(Event event) {
+	def EventModifier(Event event, initialisation=false) {
 		this.event = event
+		this.initialisation = initialisation
+	}
+
+	def EventModifier guard(LinkedHashMap properties, boolean theorem=false) {
+		if (properties.size() == 1) {
+			def prop = properties.collect { k,v -> [k, v]}[0]
+			return guard(prop[0], prop[1], theorem)
+		}
+		throw new IllegalArgumentException("Invalid invariant definition "+properties)
+	}
+
+	def EventModifier guard(String name, String pred, boolean theorem=false) {
+		if (initialisation) {
+			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
+		}
+		def guard = new EventBGuard(event, name, pred, theorem, Collections.emptySet())
+		event.guards << guard
+		this
 	}
 
 	/**
@@ -30,6 +51,19 @@ class EventModifier {
 		return event.guards.remove(guard)
 	}
 
+	def EventModifier action(LinkedHashMap properties) {
+		if (properties.size() == 1) {
+			def prop = properties.collect { k,v -> [k, v]}[0]
+			return action(prop[0], prop[1])
+		}
+		throw new IllegalArgumentException("Invalid invariant definition "+properties)
+	}
+
+	def EventModifier action(String name, String action) {
+		def act = new EventBAction(event, name, action, Collections.emptySet())
+		event.actions << act
+		this
+	}
 
 	/**
 	 * Add an action to an event
@@ -49,6 +83,15 @@ class EventModifier {
 	 */
 	def boolean removeAction(EventBAction action) {
 		return event.actions.remove(action)
+	}
+
+	def EventModifier parameter(String parameter) {
+		if (initialisation) {
+			throw new IllegalArgumentException("Cannot add parameter to initialisation.")
+		}
+		def param = new EventParameter(event, parameter)
+		event.parameters << param
+		this
 	}
 
 	/**
@@ -74,5 +117,24 @@ class EventModifier {
 		def a = event.parameters.remove(block.parameter)
 		def b = event.guards.remove(block.typingGuard)
 		return a & b
+	}
+
+	def EventModifier make(Closure definition) {
+		runClosure definition
+		this
+	}
+
+	private runClosure(Closure runClosure) {
+		// Create clone of closure for threading access.
+		Closure runClone = runClosure.clone()
+
+		// Set delegate of closure to this builder.
+		runClone.delegate = this
+
+		// And only use this builder as the closure delegate.
+		runClone.resolveStrategy = Closure.DELEGATE_ONLY
+
+		// Run closure code.
+		runClone()
 	}
 }

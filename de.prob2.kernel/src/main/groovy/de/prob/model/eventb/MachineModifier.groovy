@@ -7,9 +7,17 @@ class MachineModifier {
 	private UUID uuid = UUID.randomUUID()
 	private ctr = 0
 	EventBMachine machine
+	EventBModel model
 
-	def MachineModifier(EventBMachine machine) {
+	def MachineModifier(EventBMachine machine, EventBModel model) {
 		this.machine = machine
+		this.model = model
+	}
+
+	/** adds a variable */
+	def MachineModifier variable(String varName) {
+		machine.variables << new EventBVariable(varName, null)
+		this
 	}
 
 	/**
@@ -46,6 +54,21 @@ class MachineModifier {
 		def b = removeInvariant(block.getTypingInvariant())
 		def c = machine.events.INITIALISATION.actions.remove(block.getInitialisationAction())
 		return a & b & c
+	}
+
+	def MachineModifier invariant(LinkedHashMap properties, boolean theorem=false) {
+		if (properties.size() == 1) {
+			def prop = properties.collect { k,v -> [k, v]}[0]
+			return invariant(prop[0], prop[1], theorem)
+		}
+		throw new IllegalArgumentException("Invalid invariant definition "+properties)
+	}
+
+	def MachineModifier invariant(String name, String pred, boolean theorem=false) {
+		def inv = new EventBInvariant(name, pred, theorem, Collections.emptySet())
+		machine.invariants << inv
+		machine.allInvariants << inv
+		this
 	}
 
 	/**
@@ -88,6 +111,19 @@ class MachineModifier {
 		return a && b
 	}
 
+	def MachineModifier initialisation(Closure cls) {
+		addEvent("INITIALISATION").make(cls)
+		this
+	}
+
+	def MachineModifier event(LinkedHashMap properties, Closure cls) {
+		if (properties["name"] == null) {
+			throw new IllegalArgumentException("Event name must be defined")
+		}
+		addEvent(properties["name"]).make(cls)
+		this
+	}
+
 
 	/**
 	 * This method searches for the {@link Event} with the specified name in the
@@ -99,7 +135,7 @@ class MachineModifier {
 	 */
 	def EventModifier getEvent(String name) {
 		if (machine.events.hasProperty(name)) {
-			return new EventModifier(machine.events.getProperty(name))
+			return new EventModifier(machine.events.getProperty(name), name == "INITIALISATION")
 		}
 		addEvent(name)
 	}
@@ -122,7 +158,7 @@ class MachineModifier {
 		event.addRefines(new ModelElementList<Event>())
 		event.addWitness(new ModelElementList<Witness>())
 		machine.events << event
-		return new EventModifier(event)
+		return new EventModifier(event, name == "INITIALISATION")
 	}
 
 	/**
@@ -163,5 +199,24 @@ class MachineModifier {
 
 	def List<EventModifier> getEvents() {
 		return machine.events.collect { new EventModifier(it) }
+	}
+
+	def MachineModifier make(Closure definition) {
+		runClosure definition
+		this
+	}
+
+	private runClosure(Closure runClosure) {
+		// Create clone of closure for threading access.
+		Closure runClone = runClosure.clone()
+
+		// Set delegate of closure to this builder.
+		runClone.delegate = this
+
+		// And only use this builder as the closure delegate.
+		runClone.resolveStrategy = Closure.DELEGATE_ONLY
+
+		// Run closure code.
+		runClone()
 	}
 }

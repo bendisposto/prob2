@@ -108,4 +108,32 @@ public class ModelToXML {
 		}
 		return writer.toString()
 	}
+
+	def File createProjectFile(String path, String modelName) {
+		String newpath = path + File.separator + modelName
+		def dir = new File(newpath)
+		dir.mkdir()
+		String projectFile = newpath + File.separator + ".project"
+		def file = new File(projectFile)
+
+		file.withWriter('UTF-8') { writer ->
+			MarkupBuilder xml = new MarkupBuilder(writer);
+
+			xml.mkp.xmlDeclaration(version: "1.0", encoding: "UTF-8")
+			xml.setExpandEmptyElements(true)
+			xml.projectDescription {
+				name(modelName)
+				comment()
+				projects()
+				buildSpec {
+					buildCommand {
+						name('org.rodinp.core.rodinbuilder')
+						arguments()
+					}
+				}
+				natures { nature('org.rodinp.core.rodinnature') }
+			}
+		}
+		dir
+	}
 }
