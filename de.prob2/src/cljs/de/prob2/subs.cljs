@@ -116,3 +116,13 @@
 
 (register-sub
  :active (fn [db] (reaction (get-in @db [:ui :active]))))
+
+(register-sub
+ :active-content
+ (fn [db] (let [active-page (reaction (get-in @db [:ui :active]))]
+           (logp :active @active-page)
+           (reaction (get-in @db [:ui :pages @active-page])))))
+
+(register-sub
+ :the-editor (fn [db] (reaction (get-in @db [:ui :the-editor]))))
+

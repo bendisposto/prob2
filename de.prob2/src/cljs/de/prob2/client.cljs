@@ -35,6 +35,7 @@
      :ui {:screen size
           :show-minibuffer false
           :pane [id]
+          :the-editor nil
           :active id 
           :pages {id {:id id
                       :type :md

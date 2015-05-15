@@ -57,19 +57,21 @@
  :remove-tab ;; TODO Handle last tab
  (fn [db [_  id]]
    (logp :del id)
-   (let [pane (get-in db [:ui :pane])
-         removed (remove #{id} pane)]
-     (logp :rem removed)
-     (h/dissoc-in (assoc-in db [:ui :pane] (into [] removed)) [:ui :pages id]))))
+   (let [[before elem after] (partition-by #(= % id) (get-in db [:ui :pane]))
+         removed (into [] (concat before after))
+         active (count before)
+         db' (assoc-in db [:ui :pane] removed)
+         db'' (assoc-in db' [:ui :active] active)]
+     (h/dissoc-in db'' [:ui :pages id]))))
 
-(defmulti render-page :type)
-(defmethod render-page :editor [{id :id {:keys [file]} :content}]
+(defn render-editor [_]
   (let [cm (atom nil)
-        id (str "editor" id)]
+        id (atom nil)
+        content (atom nil)]
     (r/create-class
      {:component-did-mount
       (fn [c]
-        (let [dom-element (.getElementById js/document id)
+        (let [dom-element (.getElementById js/document @id)
               mirr (.fromTextArea
                     js/CodeMirror
                     dom-element #js {:mode "b"
@@ -77,48 +79,49 @@
                                      :lineWrapping true
                                      :lineNumbers true})
               doc (.-doc mirr)]
-          (.setValue doc (nw/slurp file))
+          (.setValue doc @content)
           (reset! cm mirr)))
       :component-did-update (fn [e]
                               (let [doc (.-doc @cm)]
-                                (.setValue doc (nw/slurp file))
-                                (.focus @cm)))
+                                (.setValue doc @content)))
       :reagent-render
-      (fn [_]
-        [:textarea {:id id
+      (fn [{ii :id {:keys [file]} :content}]
+        (reset! content (nw/slurp file))
+        (reset! id (str "editor-" ii))
+        [:textarea {:id @id
                     :autofocus "autofocus"
-                    :defaultContent ""}])})))
+                    :defaultContent @content}])})))
 
-
-(defmethod render-page :md [_]
-  (fn [{{:keys [file]} :content}]
+(defn render-md [_]
+  (fn [{{:keys [file]} :content :as e}]
+    (logp :md e)
     (let [path (str "./doc/" (name @language) "/" file)
           text (nw/slurp path)
           html (md/md->html text)]
       (logp :p path :t text :h html)
       [:div.padding-container {:dangerouslySetInnerHTML {:__html html}}])))
 
-
-(defmethod render-page :default [{:keys [id type content]}]
+(defn render-default [{:keys [id type content]}]
   [:div [:h2 (str "Unknown View Type " type)]
    [:h3 "Content: "
     (prn-str content)]])
 
-(defn tab-content [_]
-  (let [active (rf/subscribe [:active])]
-    (fn [[idx {:keys [id class] :as entry}]]
-      (let [f (:file (:content entry))
-            class (if (= id @active) " active " "")]
-        [:div.tab-pane.pane-content
-         {:key id :class class :role "tabpanel" :id (str "tab" id)}
-         [render-page entry]]))))
+
+
+(defn render-page [_]
+  (fn  [{t :type :as e}]
+    (condp = t
+      :editor [render-editor e]
+      :md [render-md e]
+      [render-default e])))
 
 
 (defn render-app []
   (let [pages (rf/subscribe [:pages])
         width (rf/subscribe [:width])
         minibuffer (rf/subscribe [:minibuffer])
-        height (rf/subscribe [:height])]
+        height (rf/subscribe [:height])
+        active-content (rf/subscribe [:active-content])]
     (r/create-class
      {:component-did-update
       (fn [_] (when @minibuffer (.focus (js/jQuery "#modeline-search"))))
@@ -129,7 +132,8 @@
          [:ul.nav.nav-tabs {:role "tablist"}
           (for [p @pages] ^{:key (first p)} [tab-title p])]
          [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
-          (for [p @pages]  ^{:key (:id (last p))} [tab-content p])]
+          (logp :disp @active-content)
+          [render-page @active-content]]
          [:div.footer "(c) 2015"]
          [:div#overlay
           {:class (if @minibuffer "" " hidden ")
@@ -138,7 +142,6 @@
                    :width (- @width 200)
                    :left 100}}
           [render-minibuffer]]])})))
-
 
 (defn top-panel []
   (let [init?  (rf/subscribe [:initialised?])
