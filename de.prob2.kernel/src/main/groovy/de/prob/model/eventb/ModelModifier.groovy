@@ -221,6 +221,13 @@ public class ModelModifier {
 		return temp
 	}
 
+	def void writeToRodin() {
+		ModelToXML converter = new ModelToXML()
+		temp.getComponents().each { k, v ->
+			converter.convert(v)
+		}
+	}
+
 	/**
 	 * Change a given preference for the model in question
 	 * @param prefName the name of the preference
@@ -248,7 +255,8 @@ public class ModelModifier {
 	 */
 	def MachineModifier getMachine(String machineName) {
 		if (temp.getMachines().hasProperty(machineName)) {
-			return new MachineModifier(temp.getMachines().getElement(machineName), [])
+			def machine = temp.getMachines().getElement(machineName)
+			return new MachineModifier(machine, machine.getSees(), machine.getRefines())
 		}
 	}
 
@@ -289,16 +297,26 @@ public class ModelModifier {
 			setMainComponent(m)
 		}
 
+		def refines = properties["refines"]
+		def refined = refines.collect { ma ->
+			EventBMachine machine = temp.getMachines().getElement(ma)
+			if (machine == null) {
+				throw new IllegalArgumentException("Tried to load machine $ma but could not find it")
+			}
+			temp.addRelationship(name, ma, ERefType.REFINES)
+			machine
+		}
+
 		def sees = properties["sees"]
 		def seenContexts = sees.collect { c ->
-			Context context = temp.getComponent(c)
+			Context context = temp.getContexts().getElement(c)
 			if (context == null) {
 				throw new IllegalArgumentException("Tried to load context $c but could not find it")
 			}
-			temp.addRelationship(c, name, ERefType.SEES)
+			temp.addRelationship(name, c, ERefType.SEES)
 			context
 		}
-		new MachineModifier(m, seenContexts).make(definition)
+		new MachineModifier(m, seenContexts, refined).make(definition)
 	}
 
 	def setMainComponent(EventBMachine m) {

@@ -55,6 +55,11 @@ class ContextModifier {
 		return a && b && c
 	}
 
+	def ContextModifier set(String set) {
+		addSet(set)
+		this
+	}
+
 	/**
 	 * Add a carrier set to a context
 	 * @param set to be added
@@ -73,6 +78,11 @@ class ContextModifier {
 	 */
 	def boolean removeSet(Set set) {
 		return context.sets.remove(set)
+	}
+
+	def ContextModifier constant(String identifier) {
+		addConstant(identifier)
+		this
 	}
 
 	/**
@@ -94,6 +104,22 @@ class ContextModifier {
 	def boolean removeConstant(EventBConstant constant) {
 		return context.constants.remove(constant)
 	}
+
+	def ContextModifier axiom(LinkedHashMap props, boolean theorem=false) {
+		if (props.size() == 1) {
+			def prop = props.collect { k,v -> [k, v]}[0]
+			return axiom(prop[0], prop[1], theorem)
+		}
+		throw new IllegalArgumentException("Invalid invariant definition "+properties)
+	}
+
+	def ContextModifier axiom(String name, String pred, boolean theorem=false) {
+		def axm = new EventBAxiom(name, pred, theorem, Collections.emptySet());
+		context.allAxioms << axm
+		context.axioms << axm
+		this
+	}
+
 
 	/**
 	 * Add an axiom to a context

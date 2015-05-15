@@ -9,9 +9,10 @@ class MachineModifier {
 	EventBMachine machine
 	EventBModel model
 
-	def MachineModifier(EventBMachine machine, List<Context> seenContexts) {
+	def MachineModifier(EventBMachine machine, List<Context> seenContexts, List<EventBMachine> refined) {
 		this.machine = machine
 		this.machine.addSees(new ModelElementList<Context>(seenContexts))
+		this.machine.addRefines(new ModelElementList<EventBMachine>(refined))
 	}
 
 	/** adds a variable */
@@ -111,16 +112,40 @@ class MachineModifier {
 		return a && b
 	}
 
-	def MachineModifier initialisation(Closure cls) {
-		addEvent("INITIALISATION").make(cls)
+	def MachineModifier initialisation(LinkedHashMap properties) {
+		if (properties["extended"] == true) {
+			addEvent("INITIALISATION", true)
+		}
 		this
 	}
 
-	def MachineModifier event(LinkedHashMap properties, Closure cls) {
-		if (properties["name"] == null) {
+	def MachineModifier initialisation(Closure cls) {
+		def refinedEvent = machine.refines.isEmpty() ? null : machine.refines[0].events.INITIALISATION
+		addEvent("INITIALISATION", false, refinedEvent).make(cls)
+		this
+	}
+
+	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
+		def eventName = properties["name"]
+		if (eventName == null) {
 			throw new IllegalArgumentException("Event name must be defined")
 		}
-		addEvent(properties["name"]).make(cls)
+
+		def refinedEvent = properties["refines"]
+		def event
+		if (refinedEvent != null) {
+			machine.refines.each {
+				def e = it.events.find { it.getName() == refinedEvent}
+				if (e != null ) {
+					event = e
+				}
+			}
+		}
+		if (refinedEvent != null && event == null) {
+			throw new IllegalArgumentException("Tried to refine event $refinedEvent with $eventName, but could not find event in the refined machine ")
+		}
+
+		addEvent(eventName, properties["extended"] == true, event).make(cls)
 		this
 	}
 
@@ -149,13 +174,14 @@ class MachineModifier {
 	 * @param name of event to be added
 	 * @return an {@link EventModifier} to modify the specified {@link Event}
 	 */
-	def EventModifier addEvent(String name) {
+	def EventModifier addEvent(String name, boolean extended=false, Event refinedEvent=null) {
 		removePOsForEvent(name)
 		Event event = new Event(machine, name, EventType.ORDINARY, false)
 		event.addActions(new ModelElementList<EventBAction>())
 		event.addGuards(new ModelElementList<EventBGuard>())
 		event.addParameters(new ModelElementList<EventParameter>())
-		event.addRefines(new ModelElementList<Event>())
+		def refines = refinedEvent ? [refinedEvent]: []
+		event.addRefines(new ModelElementList<Event>(refines))
 		event.addWitness(new ModelElementList<Witness>())
 		machine.events << event
 		return new EventModifier(event, name == "INITIALISATION")
