@@ -56,7 +56,6 @@
 (rf/register-handler
  :remove-tab ;; TODO Handle last tab
  (fn [db [_  id]]
-   (logp :del id)
    (let [[before elem after] (partition-by #(= % id) (get-in db [:ui :pane]))
          removed (into [] (concat before after))
          active (count before)
@@ -88,17 +87,16 @@
       (fn [{ii :id {:keys [file]} :content}]
         (reset! content (nw/slurp file))
         (reset! id (str "editor-" ii))
-        [:textarea {:id @id
-                    :autofocus "autofocus"
-                    :defaultContent @content}])})))
+        [:div {:key @id}
+         [:textarea {:id @id
+                     :autofocus "autofocus"
+                     :defaultContent @content}]])})))
 
 (defn render-md [_]
   (fn [{{:keys [file]} :content :as e}]
-    (logp :md e)
     (let [path (str "./doc/" (name @language) "/" file)
           text (nw/slurp path)
           html (md/md->html text)]
-      (logp :p path :t text :h html)
       [:div.padding-container {:dangerouslySetInnerHTML {:__html html}}])))
 
 (defn render-default [{:keys [id type content]}]
@@ -124,15 +122,14 @@
         active-content (rf/subscribe [:active-content])]
     (r/create-class
      {:component-did-update
-      (fn [_] (when @minibuffer (.focus (js/jQuery "#modeline-search"))))
+      (fn [_] (when @minibuffer
+               (.focus (js/jQuery "#modeline-search"))))
       :reagent-render
       (fn []
-        (logp :pp @pages)
         [:div {:role "tabpanel" :style {:height @height}}
          [:ul.nav.nav-tabs {:role "tablist"}
           (for [p @pages] ^{:key (first p)} [tab-title p])]
          [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
-          (logp :disp @active-content)
           [render-page @active-content]]
          [:div.footer "(c) 2015"]
          [:div#overlay
