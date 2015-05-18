@@ -268,3 +268,9 @@
   color: red;
 }
 
+.nav-tabs>li.active>a {
+  background-color: #eeeeee;
+  font-weight: bold;
+  color: black;
+}
+
