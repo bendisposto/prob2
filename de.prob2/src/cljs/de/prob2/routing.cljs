@@ -41,48 +41,76 @@
     (fn [[idx {:keys [id label] :as entry}]]
       (let [class (if (= id @active) " active " "")]
         [:li {:key id
-              :on-click #(rf/dispatch [:select-tab id])
               :class class
               :role "presentation"}
          [:a {:href (str "#tab" id)
               :role "tab"
-              :data-toggle "tab"} label
+              :data-toggle "tab"}
+          [:span {:on-click #(rf/dispatch [:select-tab id])} label]
           [:span.glyphicon.glyphicon-remove.glyph-fix.remove-glyph {:on-click #(rf/dispatch [:remove-tab id])}]]]))))
 
 (rf/register-handler
  :select-tab
- (fn [db [_ id]] (assoc-in db [:ui :active] id)))
+ (fn [db [_ id]]
+   (assoc-in db [:ui :active] id)))
+
+(defn default-page [db id]
+  (-> db
+      (assoc-in [:ui :pane] [id])
+      (assoc-in [:ui :active] id)
+      (assoc-in [:ui :pages id]
+                {:id id
+                 :type :md
+                 :label "Info"
+                 :content {:file "info.md"}})))
+
+(defn compute-new-pane[id pane active]
+  (let [active? (= id active)
+        [p a] (cond
+                (= [id] pane) [[] nil]
+                (= id (first pane)) [(into [] (rest pane)) (second pane)]
+                (= id (last pane)) [(butlast pane) (last (butlast pane))]
+                :else (let [[before elem after] (partition-by #(= % id) pane)
+                            pane' (into [] (concat before after))]
+                        [pane' (nth pane' (dec (count before)))]))]
+    (if active? [p a] [p active])))
 
 (rf/register-handler
  :remove-tab ;; TODO Handle last tab
  (fn [db [_  id]]
-   (let [[before elem after] (partition-by #(= % id) (get-in db [:ui :pane]))
-         removed (into [] (concat before after))
-         active (count before)
-         db' (assoc-in db [:ui :pane] removed)
-         db'' (assoc-in db' [:ui :active] active)]
-     (h/dissoc-in db'' [:ui :pages id]))))
+   (let [[removed active] (compute-new-pane  id (get-in db [:ui :pane]) (get-in db [:ui :active]))
+         db1 (h/dissoc-in db [:ui :pages id])
+         db2 (if active
+               (-> db1
+                   (assoc-in [:ui :pane] removed)
+                   (assoc-in [:ui :active] active))
+               (default-page db1 (h/fresh-id)))]
+     db2)))
+
+(defn create-editor [id content]
+  (let [dom-element (.getElementById js/document id)
+        mirr (.fromTextArea
+              js/CodeMirror
+              dom-element #js {:mode "b"
+                               :autofocus true
+                               :lineWrapping true
+                               :lineNumbers true})
+        doc (.-doc mirr)]
+    (.setValue doc content)
+    mirr))
+
 
 (defn render-editor [_]
   (let [cm (atom nil)
         id (atom nil)
         content (atom nil)]
     (r/create-class
-     {:component-did-mount
-      (fn [c]
-        (let [dom-element (.getElementById js/document @id)
-              mirr (.fromTextArea
-                    js/CodeMirror
-                    dom-element #js {:mode "b"
-                                     :autofocus true
-                                     :lineWrapping true
-                                     :lineNumbers true})
-              doc (.-doc mirr)]
-          (.setValue doc @content)
-          (reset! cm mirr)))
-      :component-did-update (fn [e]
-                              (let [doc (.-doc @cm)]
-                                (.setValue doc @content)))
+     {:component-did-mount (fn [e]
+
+                             (reset! cm (create-editor @id @content)))
+      :component-did-update
+      (fn [e]
+        (reset! cm (create-editor @id @content)))
       :reagent-render
       (fn [{ii :id {:keys [file]} :content}]
         (reset! content (nw/slurp file))
@@ -103,7 +131,6 @@
   [:div [:h2 (str "Unknown View Type " type)]
    [:h3 "Content: "
     (prn-str content)]])
-
 
 
 (defn render-page [_]
