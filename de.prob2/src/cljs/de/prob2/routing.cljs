@@ -41,11 +41,8 @@
     (fn [[idx {:keys [id label] :as entry}]]
       (let [class (if (= id @active) " active " "")]
         [:li {:key id
-              :class class
-              :role "presentation"}
-         [:a {:href (str "#tab" id)
-              :role "tab"
-              :data-toggle "tab"}
+              :class class}
+         [:a 
           [:span {:on-click #(rf/dispatch [:select-tab id])} label]
           [:span.glyphicon.glyphicon-remove.glyph-fix.remove-glyph {:on-click #(rf/dispatch [:remove-tab id])}]]]))))
 
