@@ -6,11 +6,13 @@
 
 
 (defn file-dialog []
-  [:input {:style {:display "none"}
-           :id "fileDialog"
-           :type "file"
-           :accept ".mch,.ref,.imp,.bum,.buc,.bcc,.bcm,.tla,.csp"
-           :on-change (fn [e] (rf/dispatch [:open-file (-> e .-target .-value)]))}])
+  (fn []
+    [:input {:style {:display "none"}
+             :id "fileDialog"
+             :type "file"
+             :value nil
+             :accept ".mch,.ref,.imp,.bum,.buc,.bcc,.bcm,.tla,.csp"
+             :on-change (fn [e] (rf/dispatch [:open-file (-> e .-target .-value)]))}]))
 
 (rf/register-handler
  :open-file
