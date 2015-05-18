@@ -4,7 +4,6 @@
             [de.prob2.helpers :as h]
             [taoensso.encore :as enc  :refer (logf log logp)]))
 
-
 (defn file-dialog []
   (fn []
     [:input {:style {:display "none"}
@@ -25,13 +24,11 @@
            entry {:id id
                   :type :editor
                   :label label
-                  :content {:file filename}}
-           db' (update-in db [:ui :pane] conj id)
-           db'' (assoc-in db' [:ui :pages id] entry)]
-       (logp :1 (:ui db)
-             :2 (:ui db')
-             :3 (:ui db''))
-       db''))))
+                  :content {:file filename}}]
+       (-> db
+           (update-in [:ui :pane] conj id)
+           (assoc-in  [:ui :pages id] entry)
+           (assoc-in [:ui :active] id))))))
 
 (rf/register-handler
  :start-animation
