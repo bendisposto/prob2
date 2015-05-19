@@ -8,6 +8,7 @@ class MachineModifier extends AbstractModifier {
 	private ctr = 0
 	EventBMachine machine
 	EventBModel model
+	private eventModifiers = [:]
 
 	def MachineModifier(EventBMachine machine, List<Context> seenContexts, List<EventBMachine> refined) {
 		this.machine = machine
@@ -22,7 +23,12 @@ class MachineModifier extends AbstractModifier {
 	}
 	
 	def MachineModifier var_block(LinkedHashMap properties) {
-		hasProperties(properties, ["name", "invariant", "init"])
+		Map validated = validateProperties(properties, [name: String, invariant: Definition, init: Definition])
+		variable(validated["name"])
+		invariant(validated["invariant"].label, validated["invariant"].formula)
+		initialisation({
+			action validated["init"].label, validated["init"].formula
+		})
 		this
 	}
 
@@ -63,11 +69,8 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier invariant(LinkedHashMap properties, boolean theorem=false) {
-		if (properties.size() == 1) {
-			def prop = properties.collect { k,v -> [k, v]}[0]
-			return invariant(prop[0], prop[1], theorem)
-		}
-		throw new IllegalArgumentException("Invalid invariant definition "+properties)
+		Definition prop = getDefinition(properties)
+		return invariant(prop.label, prop.formula, theorem)
 	}
 
 	def MachineModifier invariant(String name, String pred, boolean theorem=false) {
@@ -119,19 +122,19 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier initialisation(LinkedHashMap properties) {
 		if (properties["extended"] == true) {
-			addEvent("INITIALISATION", true)
+			getEvent("INITIALISATION", true)
 		}
 		this
 	}
 
 	def MachineModifier initialisation(Closure cls) {
 		def refinedEvent = machine.refines.isEmpty() ? null : machine.refines[0].events.INITIALISATION
-		addEvent("INITIALISATION", false, refinedEvent).make(cls)
+		getEvent("INITIALISATION", false, refinedEvent).make(cls)
 		this
 	}
 
 	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
-		hasProperties(properties, ["name"])
+		validateProperties(properties, [name: String])
 		def refinedEvent = properties["refines"]
 		def event
 		if (refinedEvent != null) {
@@ -146,7 +149,7 @@ class MachineModifier extends AbstractModifier {
 			throw new IllegalArgumentException("Tried to refine event $refinedEvent with $eventName, but could not find event in the refined machine ")
 		}
 
-		addEvent(properties["name"], properties["extended"] == true, event).make(cls)
+		getEvent(properties["name"], properties["extended"] == true, event).make(cls)
 		this
 	}
 
@@ -159,19 +162,23 @@ class MachineModifier extends AbstractModifier {
 	 * @param name of event to be added
 	 * @return an {@link EventModifier} to modify the specified {@link Event}
 	 */
-	def EventModifier getEvent(String name) {
-		if (machine.events.hasProperty(name)) {
-			return new EventModifier(machine.events.getProperty(name), name == "INITIALISATION")
+	def EventModifier getEvent(String name, boolean extended= false, Event refinedEvent= null) {
+		if (eventModifiers[name]) {
+			return eventModifiers[name]
 		}
-		addEvent(name)
+		if (machine.events.hasProperty(name)) {
+			def x = new EventModifier(machine.events.getProperty(name), name == "INITIALISATION")
+			eventModifiers[name] = x
+			return x
+		}
+		eventModifiers[name] = addEvent(name, extended, refinedEvent)
+		eventModifiers[name]
 	}
 
 	/**
 	 * Creates a new {@link Event} object and adds it to the machine.
 	 * An {@link EventModifier} object is then created and returned to allow
 	 * the modification of the specified {@link Event}.
-	 * NOTE: This will override an existing {@link Event} in the model with
-	 * the same name. To modify an existing {@link Event} use {@link #getEvent(String)}
 	 * @param name of event to be added
 	 * @return an {@link EventModifier} to modify the specified {@link Event}
 	 */
@@ -185,7 +192,7 @@ class MachineModifier extends AbstractModifier {
 		event.addRefines(new ModelElementList<Event>(refines))
 		event.addWitness(new ModelElementList<Witness>())
 		machine.events << event
-		return new EventModifier(event, name == "INITIALISATION")
+		new EventModifier(event, name == "INITIALISATION")
 	}
 
 	/**
@@ -202,7 +209,9 @@ class MachineModifier extends AbstractModifier {
 		removePOsForEvent(newName)
 		Event event2 = ModelModifier.cloneEvent(machine, event, newName)
 		machine.events << event2
-		return new EventModifier(event2)
+		def modifier = new EventModifier(event2)
+		eventModifiers[newName] = modifier
+		return modifier
 	}
 
 	/**

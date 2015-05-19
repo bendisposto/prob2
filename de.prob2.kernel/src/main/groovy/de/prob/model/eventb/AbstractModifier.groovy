@@ -4,12 +4,21 @@ import groovy.lang.Closure;
 
 class AbstractModifier {
 	
-	protected hasProperties(Map properties, List required) {
-		required.each { prop ->
+	protected Map validateProperties(Map properties, Map required) {
+		required.collectEntries { prop,type ->
 			if(!properties[prop]) {
 				throw new IllegalArgumentException("Could not find required property $prop in definition")
 			}
+			try {
+				return [prop, properties[prop].asType(type)]
+			} catch(Exception e) {
+				throw new IllegalArgumentException("Expected property $prop to have type $type")
+			}
 		}
+	}
+	
+	protected getDefinition(LinkedHashMap definition) {
+		new Definition(definition)
 	}
 
 	protected runClosure(Closure runClosure) {

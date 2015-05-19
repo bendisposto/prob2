@@ -1,8 +1,8 @@
 
 import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-import de.prob.model.eventb.Event;
+import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.translate.*
+import de.prob.statespace.*
 
 mm = new ModelModifier("MyLift",dir)
 mm.make {
@@ -14,20 +14,17 @@ mm.make {
 	}
 	
 	machine(name: "lift0", sees: ["levels"]) {
-		variable "level"
-		variable "door_open"
-		invariant inv_level: "level : BOTTOM..TOP"
-		invariant inv_door:  "door_open : BOOL"
-		invariant always_true: "1 > 0", true
-		invariant "inv2", "level > 0" 
+		
 		var_block name: "level", 
 		          invariant: [inv_level: "level : BOTTOM..TOP"],
 				  init: [act_level: "level := BOTTOM"]
-		
-		initialisation {
-			action level: "level := BOTTOM"
-			action door:  "door_open := FALSE"
-		}
+				  
+		var_block name: "door_open",
+				  invariant: [inv_door: "door_open : BOOL"],
+				  init: [act_door: "door_open := FALSE"]
+				  
+		invariant always_true: "1 > 0", true
+		invariant "inv2", "level > 0"
 		
 		event(name: "up") {
 			guard level_grd: "level < TOP"
@@ -97,8 +94,8 @@ assert lift0.invariants.inv_level.getPredicate().getCode() == "level : BOTTOM..T
 assert lift0.invariants.inv2.getPredicate().getCode() == "level > 0"
 assert lift0.invariants.always_true.isTheorem()
 init = lift0.events.INITIALISATION
-init.actions.level.getCode().getCode() == "level := 1"
-init.actions.door.getCode().getCode() == "door_open := FALSE"
+init.actions.act_level.getCode().getCode() == "level := 1"
+init.actions.act_door.getCode().getCode() == "door_open := FALSE"
 
 mm.writeToRodin()
 

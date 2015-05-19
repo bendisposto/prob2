@@ -15,11 +15,8 @@ class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier guard(LinkedHashMap properties, boolean theorem=false) {
-		if (properties.size() == 1) {
-			def prop = properties.collect { k,v -> [k, v]}[0]
-			return guard(prop[0], prop[1], theorem)
-		}
-		throw new IllegalArgumentException("Invalid invariant definition "+properties)
+		Definition prop = getDefinition(properties)
+		return guard(prop.label, prop.formula, theorem)
 	}
 
 	def EventModifier guard(String name, String pred, boolean theorem=false) {
@@ -52,11 +49,8 @@ class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier action(LinkedHashMap properties) {
-		if (properties.size() == 1) {
-			def prop = properties.collect { k,v -> [k, v]}[0]
-			return action(prop[0], prop[1])
-		}
-		throw new IllegalArgumentException("Invalid invariant definition "+properties)
+		Definition prop = getDefinition(properties)
+		return action(prop.label, prop.formula)
 	}
 
 	def EventModifier action(String name, String action) {

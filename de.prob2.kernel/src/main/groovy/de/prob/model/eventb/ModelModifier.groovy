@@ -290,14 +290,14 @@ public class ModelModifier extends AbstractModifier {
 	}
 
 	def context(HashMap properties, Closure definition) {
-		hasProperties(properties, ["name"])
+		validateProperties(properties, [name: String])
 		def c = new Context(properties["name"], modelDir)
 		temp.addContext(c)
 		new ContextModifier(c).make(definition)
 	}
 
 	def MachineModifier machine(HashMap properties, Closure definition) {
-		hasProperties(properties, ["name"])
+		validateProperties(properties, [name: String])
 		
 		def name = properties["name"]
 		def m = new EventBMachine(name, modelDir)

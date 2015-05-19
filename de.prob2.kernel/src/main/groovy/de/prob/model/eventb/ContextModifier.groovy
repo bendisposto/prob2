@@ -13,8 +13,8 @@ class ContextModifier extends AbstractModifier {
 	}
 
 	def ContextModifier enumerated_set(HashMap properties) {
-		hasProperties(properties, ["name", "constants"])
-		addEnumeratedSet(properties["name"], properties["constants"] as String[])
+		Map validated = validateProperties(properties, [name: String, constants: String[]])
+		addEnumeratedSet(validated["name"], validated["constants"])
 		this
 	}
 
@@ -104,11 +104,8 @@ class ContextModifier extends AbstractModifier {
 	}
 
 	def ContextModifier axiom(LinkedHashMap props, boolean theorem=false) {
-		if (props.size() == 1) {
-			def prop = props.collect { k,v -> [k, v]}[0]
-			return axiom(prop[0], prop[1], theorem)
-		}
-		throw new IllegalArgumentException("Invalid invariant definition "+properties)
+		Definition prop = getDefinition(props)
+		return axiom(prop.label, prop.formula, theorem)
 	}
 
 	def ContextModifier axiom(String name, String pred, boolean theorem=false) {
