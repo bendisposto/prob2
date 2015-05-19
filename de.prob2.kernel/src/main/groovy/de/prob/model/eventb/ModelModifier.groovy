@@ -12,7 +12,7 @@ import de.prob.scripting.Api
 import de.prob.scripting.EventBFactory
 import de.prob.scripting.LoadClosures
 
-public class ModelModifier {
+public class ModelModifier extends AbstractModifier {
 
 	EventBModel temp
 	String modelDir
@@ -207,13 +207,29 @@ public class ModelModifier {
 
 		newEvent
 	}
+	
+	def resolveMainComponent(component) {
+		if (component instanceof EventBMachine || component instanceof Context) {
+			return component
+		}
+		if (component instanceof String) {
+			def comp = temp.getComponent(component)
+			if (comp != null) {
+				setMainComponent(comp)
+				return comp
+			}
+		}
+		throw new IllegalArgumentException("$component is an illegal main component for the specified model.")
+	}
+	
 
 	/**
 	 * This method makes the model object currently being modified into an
 	 * immutable form.
 	 * @return EventBModel object created
 	 */
-	def EventBModel getModifiedModel() {
+	def EventBModel getModifiedModel(mainModel=temp.getMainComponent()) {
+		resolveMainComponent(mainModel)
 		temp.isFinished()
 		if (startProB) {
 			EventBFactory.loadModel(temp, prefs, loader)
@@ -274,28 +290,18 @@ public class ModelModifier {
 	}
 
 	def context(HashMap properties, Closure definition) {
-		if (!properties.containsKey("name")) {
-			throw new IllegalArgumentException("Context definitions must specify the property name")
-		}
+		hasProperties(properties, ["name"])
 		def c = new Context(properties["name"], modelDir)
 		temp.addContext(c)
-		if (properties["mainComponent"] == true) {
-			setMainComponent(c)
-		}
 		new ContextModifier(c).make(definition)
 	}
 
 	def MachineModifier machine(HashMap properties, Closure definition) {
+		hasProperties(properties, ["name"])
+		
 		def name = properties["name"]
-		if (name == null) {
-			throw new IllegalArgumentException("Machine definitions must specify the property name")
-		}
-
 		def m = new EventBMachine(name, modelDir)
 		temp.addMachine(m)
-		if (properties["mainComponent"] == true) {
-			setMainComponent(m)
-		}
 
 		def refines = properties["refines"]
 		def refined = refines.collect { ma ->
@@ -334,19 +340,5 @@ public class ModelModifier {
 	def ModelModifier make(Closure definition) {
 		runClosure definition
 		this
-	}
-
-	private runClosure(Closure runClosure) {
-		// Create clone of closure for threading access.
-		Closure runClone = runClosure.clone()
-
-		// Set delegate of closure to this builder.
-		runClone.delegate = this
-
-		// And only use this builder as the closure delegate.
-		runClone.resolveStrategy = Closure.DELEGATE_ONLY
-
-		// Run closure code.
-		runClone()
 	}
 }

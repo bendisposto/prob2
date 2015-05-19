@@ -3,7 +3,7 @@ package de.prob.model.eventb
 
 
 
-class EventModifier {
+class EventModifier extends AbstractModifier {
 	private UUID uuid = UUID.randomUUID()
 	private ctr = 0
 	def Event event
@@ -122,19 +122,5 @@ class EventModifier {
 	def EventModifier make(Closure definition) {
 		runClosure definition
 		this
-	}
-
-	private runClosure(Closure runClosure) {
-		// Create clone of closure for threading access.
-		Closure runClone = runClosure.clone()
-
-		// Set delegate of closure to this builder.
-		runClone.delegate = this
-
-		// And only use this builder as the closure delegate.
-		runClone.resolveStrategy = Closure.DELEGATE_ONLY
-
-		// Run closure code.
-		runClone()
 	}
 }

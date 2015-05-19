@@ -8,83 +8,84 @@ mm = new ModelModifier("MyLift",dir)
 mm.make {
 	context(name: "levels") {
 		constant "TOP"
-		axiom "top_axm": "TOP = 5"
+		axiom top_axm: "TOP = 5"
 		constant "BOTTOM"
-		axiom "bottom_axm": "BOTTOM = 1"
+		axiom bottom_axm: "BOTTOM = 1"
 	}
 	
 	machine(name: "lift0", sees: ["levels"]) {
 		variable "level"
 		variable "door_open"
-		invariant "inv_level": "level : BOTTOM..TOP"
-		invariant "inv_door":  "door_open : BOOL"
-		invariant "always_true": "1 > 0", true
+		invariant inv_level: "level : BOTTOM..TOP"
+		invariant inv_door:  "door_open : BOOL"
+		invariant always_true: "1 > 0", true
 		invariant "inv2", "level > 0" 
+		var_block name: "level", 
+		          invariant: [inv_level: "level : BOTTOM..TOP"],
+				  init: [act_level: "level := BOTTOM"]
+		
 		initialisation {
-			action "level": "level := BOTTOM"
-			action "door":  "door_open := FALSE"
+			action level: "level := BOTTOM"
+			action door:  "door_open := FALSE"
 		}
 		
 		event(name: "up") {
-			guard "level_grd": "level < TOP"
-			guard "door_grd": "door_open = FALSE"
-			action "move_up": "level := level + 1" 
+			guard level_grd: "level < TOP"
+			guard door_grd: "door_open = FALSE"
+			action move_up: "level := level + 1" 
 		}
 		
 		event(name: "down") {
-			guard "level_grd": "level > BOTTOM"
-			guard "door_grd": "door_open = FALSE"
-			action "move_down": "level := level - 1"
+			guard level_grd: "level > BOTTOM"
+			guard door_grd: "door_open = FALSE"
+			action move_down: "level := level - 1"
 		}
 		
 		event(name: "open_door") {
-			guard "door_grd": "door_open = FALSE"
-			action "open": "door_open := TRUE"
+			guard door_grd: "door_open = FALSE"
+			action open: "door_open := TRUE"
 		}
 		
 		event(name: "close_door") {
-			guard "door_grd": "door_open = TRUE"
-			action "close": "door_open := FALSE"
+			guard door_grd: "door_open = TRUE"
+			action close: "door_open := FALSE"
 		}
 	}
 	
 	context(name: "door") {
-		constant "open"
-		constant "closed"
-		set "door_state"
-		axiom "partition": "partition(door_state,{open},{closed})"
+		enumerated_set(name: "door_state", constants: ["open", "closed"])
 	}
 	
 	machine(name: "lift1", refines: ["lift0"], sees: ["door","levels"], mainComponent: true) {
 		variable "door"
 		variable "level"
-		invariant "door_inv": "door : door_state"
-		invariant "level_inv": "level : BOTTOM..TOP"
-		invariant "gluing": "door_open = TRUE <=> door = open"
+		invariant door_inv: "door : door_state"
+		invariant level_inv: "level : BOTTOM..TOP"
+		invariant gluing: "door_open = TRUE <=> door = open"
 		initialisation {
-			action "level": "level := BOTTOM"
-			action "door": "door := closed"
+			action level: "level := BOTTOM"
+			action door: "door := closed"
 		}
 		event(name: "up", refines: "up") {
-			guard "level_grd": "level < TOP"
-			guard "door_grd": "door = closed"
-			action "move_up": "level := level + 1" 
+			guard level_grd: "level < TOP"
+			guard door_grd: "door = closed"
+			action move_up: "level := level + 1" 
 		}
 		
 		event(name: "down", refines: "down") {
-			guard "level_grd": "level > BOTTOM"
-			guard "door_grd": "door = closed"
-			action "move_down": "level := level - 1"
+			guard level_grd: "level > BOTTOM"
+			guard door_grd: "door = closed"
+			action move_down: "level := level - 1"
 		}
 		
 		event(name: "open_door", refines: "open_door") {
-			guard "door_grd": "door = closed"
-			action "open": "door := open"
+			guard door_grd: "door = closed"
+			action open: "door := open"
 		}
 		
 		event(name: "close_door", refines: "close_door") {
-			guard "door_grd": "door = open"
-			action "close": "door := closed"
+			guard door_grd: "door = open"
+			action close: "door := closed"
 		}
 	}
 }
@@ -101,7 +102,7 @@ init.actions.door.getCode().getCode() == "door_open := FALSE"
 
 mm.writeToRodin()
 
-m = mm.getModifiedModel()
+m = mm.getModifiedModel("lift1")
 s = m as StateSpace
 t = m as Trace
 

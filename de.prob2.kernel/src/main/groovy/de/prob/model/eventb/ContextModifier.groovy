@@ -3,7 +3,7 @@ package de.prob.model.eventb
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.representation.Set
 
-class ContextModifier {
+class ContextModifier extends AbstractModifier {
 	private UUID uuid = UUID.randomUUID()
 	private ctr = 0
 	Context context
@@ -13,9 +13,7 @@ class ContextModifier {
 	}
 
 	def ContextModifier enumerated_set(HashMap properties) {
-		if (properties["name"] == null || properties["constants"] == null) {
-			throw new IllegalArgumentException("must set properties 'name' and 'constants' for enumerated sets")
-		}
+		hasProperties(properties, ["name", "constants"])
 		addEnumeratedSet(properties["name"], properties["constants"] as String[])
 		this
 	}
@@ -152,17 +150,4 @@ class ContextModifier {
 		this
 	}
 
-	private runClosure(Closure runClosure) {
-		// Create clone of closure for threading access.
-		Closure runClone = runClosure.clone()
-
-		// Set delegate of closure to this builder.
-		runClone.delegate = this
-
-		// And only use this builder as the closure delegate.
-		runClone.resolveStrategy = Closure.DELEGATE_ONLY
-
-		// Run closure code.
-		runClone()
-	}
 }

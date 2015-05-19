@@ -3,7 +3,7 @@ package de.prob.model.eventb
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.ModelElementList
 
-class MachineModifier {
+class MachineModifier extends AbstractModifier {
 	private UUID uuid = UUID.randomUUID()
 	private ctr = 0
 	EventBMachine machine
@@ -18,6 +18,11 @@ class MachineModifier {
 	/** adds a variable */
 	def MachineModifier variable(String varName) {
 		machine.variables << new EventBVariable(varName, null)
+		this
+	}
+	
+	def MachineModifier var_block(LinkedHashMap properties) {
+		hasProperties(properties, ["name", "invariant", "init"])
 		this
 	}
 
@@ -126,11 +131,7 @@ class MachineModifier {
 	}
 
 	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
-		def eventName = properties["name"]
-		if (eventName == null) {
-			throw new IllegalArgumentException("Event name must be defined")
-		}
-
+		hasProperties(properties, ["name"])
 		def refinedEvent = properties["refines"]
 		def event
 		if (refinedEvent != null) {
@@ -145,7 +146,7 @@ class MachineModifier {
 			throw new IllegalArgumentException("Tried to refine event $refinedEvent with $eventName, but could not find event in the refined machine ")
 		}
 
-		addEvent(eventName, properties["extended"] == true, event).make(cls)
+		addEvent(properties["name"], properties["extended"] == true, event).make(cls)
 		this
 	}
 
@@ -232,17 +233,5 @@ class MachineModifier {
 		this
 	}
 
-	private runClosure(Closure runClosure) {
-		// Create clone of closure for threading access.
-		Closure runClone = runClosure.clone()
 
-		// Set delegate of closure to this builder.
-		runClone.delegate = this
-
-		// And only use this builder as the closure delegate.
-		runClone.resolveStrategy = Closure.DELEGATE_ONLY
-
-		// Run closure code.
-		runClone()
-	}
 }
