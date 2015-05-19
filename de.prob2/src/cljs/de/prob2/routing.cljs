@@ -138,9 +138,26 @@
       [render-default e])))
 
 
+(defn toolbar-editor []
+  (fn []
+    (let [active-content (rf/subscribe [:active-content])] 
+      [:span {:on-click #(rf/dispatch [:start-animation @active-content])} (i18n :start-animation)])))
+
+(defn toolbar-default [] (fn [] [:div]))
+
+
+(defn toolbar [context]
+  (cond
+    (= :editor context) [toolbar-editor]
+    :otherwise [toolbar-default]))
+
+(defn context-name [ctx]
+  (name ctx))
+
 (defn render-app []
   (let [pages (rf/subscribe [:pages])
         width (rf/subscribe [:width])
+        context (rf/subscribe [:context])
         minibuffer (rf/subscribe [:minibuffer])
         height (rf/subscribe [:height])
         active-content (rf/subscribe [:active-content])]
@@ -150,19 +167,23 @@
                (.focus (js/jQuery "#modeline-search"))))
       :reagent-render
       (fn []
-        [:div {:role "tabpanel" :style {:height @height}}
-         [:ul.nav.nav-tabs {:role "tablist"}
-          (for [p @pages] ^{:key (first p)} [tab-title p])]
-         [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
-          [render-page @active-content]]
-         [:div.footer "(c) 2015"]
-         [:div#overlay
-          {:class (if @minibuffer "" " hidden ")
-           :style {:height (- @height 200)
-                   :top 100
-                   :width (- @width 200)
-                   :left 100}}
-          [render-minibuffer]]])})))
+        [:div#page
+         [:div.toolbar
+          {:class (str "toolbar-context-" (name @context))}
+          [toolbar @context]]
+         [:div {:style {:height (- @height 50)}}
+          [:ul.nav.nav-tabs 
+           (for [p @pages] ^{:key (first p)} [tab-title p])]
+          [:div.tab-content {:style {:height (- @height 50 44 32)}} ;; toolbar navigation  footer
+           [render-page @active-content]]
+          [:div.footer "(c) 2015" [:div#ctx-name (context-name @context)]]
+          [:div#overlay
+           {:class (if @minibuffer "" " hidden ")
+            :style {:height (- @height 200)
+                    :top 100
+                    :width (- @width 200)
+                    :left 100}}
+           [render-minibuffer]]]])})))
 
 (defn top-panel []
   (let [init?  (rf/subscribe [:initialised?])

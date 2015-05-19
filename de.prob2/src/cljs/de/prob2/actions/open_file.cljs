@@ -32,7 +32,8 @@
 
 (rf/register-handler
  :start-animation
- (fn [db [_ filename]]
-   (let [extension (last (re-find #".*\.(.*)" filename))
-         text (nw/slurp filename)])
+ (fn [db [_ content]]
+   #_(let [extension (last (re-find #".*\.(.*)" filename))
+           text (nw/slurp filename)])
+   (logp content) 
    db))

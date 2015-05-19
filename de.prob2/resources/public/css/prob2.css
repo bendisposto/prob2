@@ -274,3 +274,19 @@
   color: black;
 }
 
+.toolbar {
+  height: 40px;
+  padding: 0px;
+  margin: 0px;
+  background-color: silver;
+  border-bottom: 1px solid black;
+}
+
+#ctx-name {
+  float:right;
+}
+
+.toolbar-context-editor {
+  //  background: green;
+}
+
