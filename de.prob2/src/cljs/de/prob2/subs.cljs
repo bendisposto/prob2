@@ -123,6 +123,10 @@
            (logp :active @active-page)
            (reaction (get-in @db [:ui :pages @active-page])))))
 
-(register-sub
- :the-editor (fn [db] (reaction (get-in @db [:ui :the-editor]))))
+(def context identity) ;; Maybe we want to aggregate contexts in the future
 
+(register-sub
+ :context
+ (fn [db]
+   (let [active (reaction (get-in @db [:ui :active]))]
+     (reaction (context (get-in @db [:ui :pages @active :type]))))))
