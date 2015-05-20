@@ -34,8 +34,15 @@
  :start-animation
  (fn [db [_ {{filename :file}:content}]]
    (let [extension (last (re-find #".*\.(.*)" filename))]
-     (logp :load filename extension)
      (rf/dispatch [:prob2/start-animation [filename extension]])) 
    db))
 
-(rf/register-handler :prob2/start-animation h/relay)
+(rf/register-handler
+ :select-trace
+ (fn [db [_ uuid]] (assoc-in db [:ui :trace] uuid)))
+
+(rf/register-handler
+ :prob2/start-animation
+ (fn [db [_ [filename extension]]]
+   (h/remote-clojure-call #(rf/dispatch [:select-trace %]) "start-animation" filename extension)
+   db))

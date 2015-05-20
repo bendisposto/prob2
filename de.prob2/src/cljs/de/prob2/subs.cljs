@@ -130,3 +130,8 @@
  (fn [db]
    (let [active (reaction (get-in @db [:ui :active]))]
      (reaction (context (get-in @db [:ui :pages @active :type]))))))
+
+(register-sub
+ :current-trace
+ (fn [db]
+   (reaction (get-in @db [:ui :trace]))))

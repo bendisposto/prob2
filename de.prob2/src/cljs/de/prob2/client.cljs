@@ -35,7 +35,8 @@
      :ui {:screen size
           :show-minibuffer false
           :pane [id]
-          :active id 
+          :active id
+          :trace nil
           :pages {id {:id id
                       :type :md
                       :label "Info"

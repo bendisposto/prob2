@@ -266,6 +266,23 @@
     (doseq [t traces] (.removeTrace animations t))
     (doseq [a animators] (.kill a))))
 
+
+
+(defn start-animation
+  [{:keys [animations api]} [file extension]]
+  (println :file file :ext extension (contains? #{"csp"} extension))
+  (let [model (condp contains? extension
+                #{"mch" "ref" "imp"} (.b_load api file)
+                #{"bum" "buc" "bcc" "bcm"} (.eventb_load api file)
+                #{"csp"} (.csp_load api file)
+                #{"tla"} (.tla_load api file)
+                :otherwise (throw (Exception. "Unknown file type")))
+        _ (println :model model)
+        trace (Trace. model)
+        _ (println trace)]
+    (.addNewAnimation animations trace)
+    (.getUUID trace)))
+
 (def clojure-ui-functions
   {"parse" (fn [{:keys [animations]} [trace-id formula]]
              (let [trace (.getTrace animations trace-id)
@@ -273,7 +290,8 @@
                    status? (.checkSyntax model formula) 
                    ]
                {:status status?
-                :input formula}))})
+                :input formula}))
+   "start-animation" start-animation})
 
 (defmethod dispatch-kernel
   :call
@@ -289,21 +307,8 @@
      ::response
      {:result result :caller-id caller-id})))
 
-(defmethod dispatch-kernel
-  :start-animation
-  [{:keys [animations api]} {[file extension] :?data :as request}]
-  (println :file file :ext extension (contains? #{"csp"} extension))
-  (let [model (condp contains? extension
-                  #{"mch" "ref" "imp"} (.b_load api file)
-                  #{"bum" "buc" "bcc" "bcm"} (.eventb_load api file)
-                  #{"csp"} (.csp_load api file)
-                  #{"tla"} (.tla_load api file)
-                  :otherwise (throw (Exception. "Unknown file type")))
-        _ (println :model model)
-        trace (Trace. model)
-        _ (println trace)]
-    (.addNewAnimation animations trace)
-    (println :animations animations)))
+
+
 
 (defrecord ProB [injector listener sente animations api ui-functions]
   component/Lifecycle
