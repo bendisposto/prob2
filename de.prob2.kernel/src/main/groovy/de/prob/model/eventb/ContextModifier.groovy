@@ -78,6 +78,13 @@ class ContextModifier extends AbstractModifier {
 		return context.sets.remove(set)
 	}
 
+	def ContextModifier constants(String... constants) {
+		constants.each {
+			constant(it)
+		}
+		this
+	}
+	
 	def ContextModifier constant(String identifier) {
 		addConstant(identifier)
 		this
@@ -102,8 +109,19 @@ class ContextModifier extends AbstractModifier {
 	def boolean removeConstant(EventBConstant constant) {
 		return context.constants.remove(constant)
 	}
+	
+	def ContextModifier axioms(Map axioms) {
+		axioms.each { k,v ->
+			axiom(k,v)
+		}
+		this
+	}
+	
+	def ContextModifier theorem(Map props) {
+		axiom(props, true)
+	}
 
-	def ContextModifier axiom(LinkedHashMap props, boolean theorem=false) {
+	def ContextModifier axiom(Map props, boolean theorem=false) {
 		Definition prop = getDefinition(props)
 		return axiom(prop.label, prop.formula, theorem)
 	}

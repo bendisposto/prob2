@@ -7,10 +7,10 @@ import de.prob.statespace.*
 mm = new ModelModifier("MyLift",dir)
 mm.make {
 	context(name: "levels") {
-		constant "TOP"
-		axiom top_axm: "TOP = 5"
-		constant "BOTTOM"
-		axiom bottom_axm: "BOTTOM = 1"
+		theorem always_true: "1 < 5"
+		constants "TOP", "BOTTOM"
+		axioms top_axm: "TOP = 5",
+		       bottom_axm: "BOTTOM = 1"
 	}
 	
 	machine(name: "lift0", sees: ["levels"]) {
@@ -24,6 +24,7 @@ mm.make {
 				  init: [act_door: "door_open := FALSE"]
 				  
 		invariant always_true: "1 > 0", true
+		theorem   also_always_true: "5 < 6"
 		invariant "inv2", "level > 0"
 		
 		event(name: "up") {
@@ -33,6 +34,7 @@ mm.make {
 		}
 		
 		event(name: "down") {
+			theorem always_true: "9 : 1..10"
 			guard level_grd: "level > BOTTOM"
 			guard door_grd: "door_open = FALSE"
 			action move_down: "level := level - 1"
@@ -50,22 +52,24 @@ mm.make {
 	}
 	
 	context(name: "door") {
-		enumerated_set(name: "door_state", constants: ["open", "closed"])
+		enumerated_set name: "door_state",
+		               constants: ["open", "closed"]
 	}
 	
 	machine(name: "lift1", refines: ["lift0"], sees: ["door","levels"], mainComponent: true) {
-		variable "door"
-		variable "level"
-		invariant door_inv: "door : door_state"
-		invariant level_inv: "level : BOTTOM..TOP"
-		invariant gluing: "door_open = TRUE <=> door = open"
+		variables "door", "level"
+		invariants door_inv: "door : door_state",
+				   level_inv: "level : BOTTOM..TOP",
+				   gluing: "door_open = TRUE <=> door = open"
+				   
 		initialisation {
-			action level: "level := BOTTOM"
-			action door: "door := closed"
+			actions level: "level := BOTTOM",
+			        door: "door := closed"
 		}
+		
 		event(name: "up", refines: "up") {
-			guard level_grd: "level < TOP"
-			guard door_grd: "door = closed"
+			guards level_grd: "level < TOP",
+				   door_grd: "door = closed"
 			action move_up: "level := level + 1" 
 		}
 		
@@ -87,15 +91,19 @@ mm.make {
 	}
 }
 
+assert mm.temp.levels.axioms.always_true.isTheorem()
+
 lift0 = mm.temp.lift0
 assert lift0 != null
 assert lift0.variables.level != null
 assert lift0.invariants.inv_level.getPredicate().getCode() == "level : BOTTOM..TOP"
 assert lift0.invariants.inv2.getPredicate().getCode() == "level > 0"
 assert lift0.invariants.always_true.isTheorem()
+assert lift0.invariants.also_always_true.isTheorem()
 init = lift0.events.INITIALISATION
 init.actions.act_level.getCode().getCode() == "level := 1"
 init.actions.act_door.getCode().getCode() == "door_open := FALSE"
+assert lift0.events.down.guards.always_true.isTheorem()
 
 mm.writeToRodin()
 

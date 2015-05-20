@@ -17,7 +17,7 @@ class AbstractModifier {
 		}
 	}
 	
-	protected getDefinition(LinkedHashMap definition) {
+	protected getDefinition(Map definition) {
 		new Definition(definition)
 	}
 

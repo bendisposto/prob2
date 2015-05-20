@@ -16,6 +16,11 @@ class MachineModifier extends AbstractModifier {
 		this.machine.addRefines(new ModelElementList<EventBMachine>(refined))
 	}
 
+	def MachineModifier variables(String... variables) {
+		variables.each { variable it }
+		this
+	}
+	
 	/** adds a variable */
 	def MachineModifier variable(String varName) {
 		machine.variables << new EventBVariable(varName, null)
@@ -66,6 +71,17 @@ class MachineModifier extends AbstractModifier {
 		def b = removeInvariant(block.getTypingInvariant())
 		def c = machine.events.INITIALISATION.actions.remove(block.getInitialisationAction())
 		return a & b & c
+	}
+	
+	def MachineModifier invariants(Map invariants) {
+		invariants.each { k,v ->
+			invariant(k,v)
+		}
+		this
+	}
+	
+	def MachineModifier theorem(LinkedHashMap properties) {
+		invariant(properties, true)
 	}
 
 	def MachineModifier invariant(LinkedHashMap properties, boolean theorem=false) {

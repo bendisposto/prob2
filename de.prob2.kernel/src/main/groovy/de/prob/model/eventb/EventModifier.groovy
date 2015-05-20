@@ -13,6 +13,17 @@ class EventModifier extends AbstractModifier {
 		this.event = event
 		this.initialisation = initialisation
 	}
+	
+	def EventModifier guards(Map guards) {
+		guards.each { k,v ->
+			guard(k,v)
+		}
+		this
+	}
+	
+	def EventModifier theorem(LinkedHashMap properties) {
+		guard(properties, true)
+	}
 
 	def EventModifier guard(LinkedHashMap properties, boolean theorem=false) {
 		Definition prop = getDefinition(properties)
@@ -46,6 +57,13 @@ class EventModifier extends AbstractModifier {
 	 */
 	def boolean removeGuard(EventBGuard guard) {
 		return event.guards.remove(guard)
+	}
+	
+	def EventModifier actions(Map actions) {
+		actions.each { k,v ->
+			action(k,v)
+		}
+		this
 	}
 
 	def EventModifier action(LinkedHashMap properties) {
