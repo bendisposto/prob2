@@ -148,6 +148,11 @@ class MachineModifier extends AbstractModifier {
 		getEvent("INITIALISATION", false, refinedEvent).make(cls)
 		this
 	}
+	
+	def MachineModifier refine(LinkedHashMap properties, Closure cls={}) {
+		properties["refines"] = properties["name"]
+		event(properties, cls)
+	}
 
 	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
 		validateProperties(properties, [name: String])
