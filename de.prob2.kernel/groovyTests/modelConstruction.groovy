@@ -60,7 +60,7 @@ mm.make {
 		               constants: ["open", "closed"]
 	}
 	
-	machine(name: "lift1", refines: ["lift0"], sees: ["door","levels"], mainComponent: true) {
+	machine(name: "lift1", refines: ["lift0"], sees: ["door","levels"]) {
 		variables "door", "level"
 		invariants door_inv: "door : door_state",
 				   level_inv: "level : BOTTOM..TOP",
@@ -74,6 +74,7 @@ mm.make {
 		event(name: "up", refines: "up") {
 			guards level_grd: "level < TOP",
 				   door_grd: "door = closed"
+		
 			action move_up: "level := level + 1" 
 		}
 		
@@ -132,5 +133,6 @@ assert !t.canExecuteEvent("up",[])
 assert t.evalCurrent("door").value == "open"
 
 s.animator.cli.shutdown();
+
 
 "it is possible to construct a model"

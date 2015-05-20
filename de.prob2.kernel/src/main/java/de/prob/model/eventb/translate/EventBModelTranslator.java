@@ -33,7 +33,7 @@ public class EventBModelTranslator {
 			proofObligations.addAll(ebM.getProofs());
 		}
 
-		for (Context context : model.getChildrenOfType(Context.class)) {
+		for (Context context : extractContextHierarchy(model)) {
 			contextTranslators.add(new ContextTranslator(context));
 			proofObligations.addAll(context.getProofs());
 		}
@@ -42,7 +42,7 @@ public class EventBModelTranslator {
 				model.getChildrenOfType(Theory.class));
 	}
 
-	private List<EventBMachine> extractMachineHierarchy(final EventBModel model) {
+	public List<EventBMachine> extractMachineHierarchy(final EventBModel model) {
 		AbstractElement mainComponent = model.getMainComponent();
 		if (mainComponent instanceof Context) {
 			return Collections.emptyList();
@@ -66,6 +66,46 @@ public class EventBModelTranslator {
 			machines.addAll(extractMachines(eventBMachine));
 		}
 		return machines;
+	}
+	
+	public List<Context> extractContextHierarchy(final EventBModel model) {
+		AbstractElement mainComponent = model.getMainComponent();
+		if (mainComponent instanceof Context) {
+			return extractContextHierarchy((Context) mainComponent);
+		}
+		if (mainComponent instanceof EventBMachine) {
+			return extractContextHierarchy((EventBMachine) mainComponent);
+		}
+		return Collections.emptyList();
+	}
+
+
+	private List<Context> extractContextHierarchy(EventBMachine machine) {
+		List<Context> contexts = new ArrayList<Context>();
+		for (Context c : machine.getSees()) {
+			contexts.add(c);
+			List<Context> contextHierarchy = extractContextHierarchy(c);
+			for (Context context : contextHierarchy) {
+				if (!contexts.contains(context)) {
+					contexts.add(context);
+				}
+			}
+		}
+		return contexts;
+	}
+
+	private List<Context> extractContextHierarchy(Context context) {
+		List<Context> contexts = new ArrayList<Context>();
+		for (Context c : context.getExtends()) {
+			contexts.add(c);
+			List<Context> contextHierarchy = extractContextHierarchy(c);
+			for (Context c2 : contextHierarchy) {
+				if (!contexts.contains(c2)) {
+					contexts.add(c2);
+				}
+			}
+		}
+		return contexts;
 	}
 
 	public void printProlog(final IPrologTermOutput pto) {

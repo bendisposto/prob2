@@ -80,6 +80,11 @@ public class ModelToXML {
 					'org.eventb.core.label': it.getName(),
 					'org.eventb.core.predicate': it.getPredicate().toUnicode())
 				}
+				e.witnesses.each {
+					xml.'org.eventb.core.witness'(name: genName(),
+						'org.eventb.core.label': it.getName(),
+						'org.eventb.core.predicate': it.getPredicate().toUnicode())
+				}
 				e.actions.each {
 					xml.'org.eventb.core.action'(name: genName(),
 					'org.eventb.core.assignment': it.getCode().toUnicode(),

@@ -130,6 +130,16 @@ class EventModifier extends AbstractModifier {
 		def b = event.guards.remove(block.typingGuard)
 		return a & b
 	}
+	
+	def EventModifier witness(Map definition) {
+		Definition d = definition as Definition
+		witness(d.label, d.formula)
+	}
+	
+	def EventModifier witness(String name, String code) {
+		event.witnesses << new Witness(event, name, code, Collections.emptySet())
+		this
+	}
 
 	def EventModifier make(Closure definition) {
 		runClosure definition
