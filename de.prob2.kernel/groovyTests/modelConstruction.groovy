@@ -51,7 +51,11 @@ mm.make {
 		}
 	}
 	
-	context(name: "door") {
+	context(name: "IDoNothing") {
+		axiom this_is_true: "1 = 1"
+	}
+	
+	context(name: "door", extends: ["IDoNothing"]) {
 		enumerated_set name: "door_state",
 		               constants: ["open", "closed"]
 	}
@@ -104,6 +108,8 @@ init = lift0.events.INITIALISATION
 init.actions.act_level.getCode().getCode() == "level := 1"
 init.actions.act_door.getCode().getCode() == "door_open := FALSE"
 assert lift0.events.down.guards.always_true.isTheorem()
+
+assert mm.temp.door.Extends[0].getName() == "IDoNothing"
 
 mm.writeToRodin()
 

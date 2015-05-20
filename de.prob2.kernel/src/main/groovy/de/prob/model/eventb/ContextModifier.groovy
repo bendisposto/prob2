@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 
 class ContextModifier extends AbstractModifier {
@@ -8,8 +9,9 @@ class ContextModifier extends AbstractModifier {
 	private ctr = 0
 	Context context
 
-	def ContextModifier(Context context) {
+	def ContextModifier(Context context, List<Context> extended) {
 		this.context = context
+		this.context.addExtends(new ModelElementList(extended))
 	}
 
 	def ContextModifier enumerated_set(HashMap properties) {

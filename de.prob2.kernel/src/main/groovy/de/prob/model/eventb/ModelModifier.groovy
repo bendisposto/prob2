@@ -285,15 +285,27 @@ public class ModelModifier extends AbstractModifier {
 	 */
 	def ContextModifier getContext(String contextName) {
 		if (temp.getContexts().hasProperty(contextName)) {
-			return new ContextModifier(temp.getContexts().getElement(contextName))
+			def ctx = temp.getContexts().getElement(contextName)
+			return new ContextModifier(ctx, ctx.getExtends())
 		}
 	}
 
 	def context(HashMap properties, Closure definition) {
 		validateProperties(properties, [name: String])
-		def c = new Context(properties["name"], modelDir)
+		def name = properties["name"]
+		def c = new Context(name, modelDir)
 		temp.addContext(c)
-		new ContextModifier(c).make(definition)
+		
+		def ext = properties["extends"]
+		def extended = ext.collect { co ->
+			Context ctx = temp.getContexts().getElement(co)
+			if (ctx == null) {
+				throw new IllegalArgumentException("Tried to load context $co but could not find it.")
+			}
+			temp.addRelationship(name, co, ERefType.EXTENDS)
+			ctx
+		}	
+		new ContextModifier(c, extended).make(definition)
 	}
 
 	def MachineModifier machine(HashMap properties, Closure definition) {
