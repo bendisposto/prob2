@@ -19,7 +19,7 @@ class ContextModifierTest extends Specification {
 		context.addProofs(new ModelElementList<ProofObligation>())
 		context.addSets(new ModelElementList<Set>())
 
-		modifier = new ContextModifier(context)
+		modifier = new ContextModifier(context, [])
 	}
 
 	def "it is possible to add an enumerated set"() {
@@ -51,7 +51,7 @@ class ContextModifierTest extends Specification {
 		def contained1 = context2.sets.contains(block.set)
 		def contained2 = block.constants.collect { context2.constants.contains(it) }.inject(true, {a,b -> a &&b})
 		def contained3 = context2.axioms.contains(block.typingAxiom)
-		def mod2 = new ContextModifier(context2)
+		def mod2 = new ContextModifier(context2, [])
 		def removed = mod2.removeEnumeratedSet(block)
 
 		then:
@@ -80,7 +80,7 @@ class ContextModifierTest extends Specification {
 		Set set = modifier.addSet("blah")
 		def context2 = ModelModifier.deepCopy(model, context)
 		def contained = context2.sets.contains(set)
-		def mod2 = new ContextModifier(context2)
+		def mod2 = new ContextModifier(context2, [])
 		def removed = mod2.removeSet(set)
 
 		then:

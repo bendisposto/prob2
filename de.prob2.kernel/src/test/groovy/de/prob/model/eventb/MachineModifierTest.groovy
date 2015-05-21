@@ -19,7 +19,7 @@ class MachineModifierTest extends Specification {
 		machine.addVariables(new ModelElementList<EventBVariable>())
 		machine.addVariant(new ModelElementList<Variant>())
 
-		modifier = new MachineModifier(machine)
+		modifier = new MachineModifier(machine, [], [])
 		modifier.addEvent("INITIALISATION")
 	}
 

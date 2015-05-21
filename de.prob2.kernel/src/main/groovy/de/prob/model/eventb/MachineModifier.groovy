@@ -10,7 +10,7 @@ class MachineModifier extends AbstractModifier {
 	EventBModel model
 	private eventModifiers = [:]
 
-	def MachineModifier(EventBMachine machine, List<Context> seenContexts, List<EventBMachine> refined) {
+	def MachineModifier(EventBMachine machine, List<Context> seenContexts=[], List<EventBMachine> refined=[]) {
 		this.machine = machine
 		this.machine.addSees(new ModelElementList<Context>(seenContexts))
 		this.machine.addRefines(new ModelElementList<EventBMachine>(refined))

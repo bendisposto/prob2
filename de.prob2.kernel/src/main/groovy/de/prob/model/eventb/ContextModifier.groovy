@@ -9,7 +9,7 @@ class ContextModifier extends AbstractModifier {
 	private ctr = 0
 	Context context
 
-	def ContextModifier(Context context, List<Context> extended) {
+	def ContextModifier(Context context, List<Context> extended=[]) {
 		this.context = context
 		this.context.addExtends(new ModelElementList(extended))
 	}
