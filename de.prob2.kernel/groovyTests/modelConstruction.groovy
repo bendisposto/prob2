@@ -4,7 +4,7 @@ import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
-mm = new ModelModifier("MyLift",dir)
+mm = new ModelModifier()
 mm.make {
 	context(name: "levels") {
 		theorem always_true: "1 < 5"

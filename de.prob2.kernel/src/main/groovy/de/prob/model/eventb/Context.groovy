@@ -15,10 +15,8 @@ public class Context extends AbstractElement {
 	def ModelElementList<EventBAxiom> axioms = new ModelElementList<EventBAxiom>()
 	def ModelElementList<EventBAxiom> allAxioms = new ModelElementList<EventBAxiom>()
 	def ModelElementList<EventBConstant> constants = new ModelElementList<EventBConstant>()
-	private final String directoryPath;
 
-	public Context(final String name, final String directoryPath) {
-		this.directoryPath = directoryPath;
+	public Context(final String name) {
 		this.name = name;
 	}
 

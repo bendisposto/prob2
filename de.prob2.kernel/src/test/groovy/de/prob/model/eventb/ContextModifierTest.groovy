@@ -12,7 +12,7 @@ class ContextModifierTest extends Specification {
 
 	def setup() {
 		model = new EventBModel(null)
-		context = new Context("MyContext", "/")
+		context = new Context("MyContext")
 		context.addAxioms(new ModelElementList<EventBAxiom>(), new ModelElementList<EventBAxiom>())
 		context.addConstants(new ModelElementList<EventBConstant>())
 		context.addExtends(new ModelElementList<Context>())

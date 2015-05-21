@@ -15,7 +15,6 @@ import de.prob.scripting.LoadClosures
 public class ModelModifier extends AbstractModifier {
 
 	EventBModel temp
-	String modelDir
 	Map<String, String> prefs
 	Closure loader
 	boolean startProB
@@ -37,9 +36,7 @@ public class ModelModifier extends AbstractModifier {
 		}
 	}
 
-	def ModelModifier(String name, String path, boolean startProB=true) {
-		modelDir = path + File.separator + name;
-		
+	def ModelModifier(boolean startProB=true) {
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
 		temp = factory.modelCreator.get()
 
@@ -69,7 +66,6 @@ public class ModelModifier extends AbstractModifier {
 		def mainComp = deepCopy(newModel, model.getMainComponent())
 		newModel.addTheories(new ModelElementList<Theory>(model.getChildrenOfType(Theory.class)))
 		newModel.setMainComponent(mainComp)
-		newModel.setModelFile(model.getModelFile())
 		newModel
 	}
 
@@ -88,7 +84,7 @@ public class ModelModifier extends AbstractModifier {
 		if (model.getComponents().containsKey(context.getName())) {
 			return model.getComponents().get(context.getName())
 		}
-		def newContext = new Context(context.name, context.directoryPath)
+		def newContext = new Context(context.name)
 		model.addContext(newContext)
 
 		def Extends = context.Extends.collect { deepCopy(model, it) }
@@ -125,7 +121,7 @@ public class ModelModifier extends AbstractModifier {
 		if (model.getComponents().containsKey(machine.getName())) {
 			return model.getComponents().get(machine.getName())
 		}
-		def newMachine = new EventBMachine(machine.name, machine.directoryPath)
+		def newMachine = new EventBMachine(machine.name)
 		model.addMachine(newMachine)
 
 		def refines = machine.refines.collect { deepCopy(model, it) }
@@ -296,7 +292,7 @@ public class ModelModifier extends AbstractModifier {
 	def context(HashMap properties, Closure definition) {
 		validateProperties(properties, [name: String])
 		def name = properties["name"]
-		def c = new Context(name, modelDir)
+		def c = new Context(name)
 		temp.addContext(c)
 		
 		def ext = properties["extends"]
@@ -315,7 +311,7 @@ public class ModelModifier extends AbstractModifier {
 		validateProperties(properties, [name: String])
 		
 		def name = properties["name"]
-		def m = new EventBMachine(name, modelDir)
+		def m = new EventBMachine(name)
 		temp.addMachine(m)
 
 		def refines = properties["refines"]
@@ -341,15 +337,11 @@ public class ModelModifier extends AbstractModifier {
 	}
 
 	def setMainComponent(EventBMachine m) {
-		def modelFile = modelDir + File.separator + m.getName() + ".bum"
 		temp.setMainComponent(m)
-		temp.setModelFile(new File(modelFile))
 	}
 
 	def setMainComponent(Context c) {
-		def modelFile = modelDir + File.separator + c.getName() + ".buc"
 		temp.setMainComponent(c)
-		temp.setModelFile(new File(modelFile))
 	}
 
 	def ModelModifier make(Closure definition) {

@@ -1,7 +1,7 @@
 import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
-mm = new ModelModifier("BowlOfCherries",dir)
+mm = new ModelModifier()
 mm.make {
 	
 	machine(name: "bowl1") {

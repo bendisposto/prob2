@@ -10,7 +10,7 @@ class MachineModifierTest extends Specification {
 
 	def setup() {
 		model = new EventBModel(null)
-		machine = new EventBMachine("myMachine", "/")
+		machine = new EventBMachine("myMachine")
 		machine.addEvents(new ModelElementList<Event>())
 		machine.addInvariants(new ModelElementList<EventBInvariant>(), new ModelElementList<EventBInvariant>())
 		machine.addProofs(new ModelElementList<ProofObligation>())
