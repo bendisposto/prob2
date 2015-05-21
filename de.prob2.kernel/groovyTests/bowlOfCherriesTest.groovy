@@ -56,13 +56,13 @@ mm.make {
 }
 
 //File dir = mm.writeToRodin("BowlOfCherries",dir)
+//dir.deleteDir()
 
 m = mm.getModifiedModel("bowl2")
 s = m as StateSpace
 t = m as Trace
 
 t = t.randomAnimation(10)
-println t
 
 
 s.animator.cli.shutdown();

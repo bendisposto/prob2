@@ -96,6 +96,7 @@ public class EventBModelTranslator {
 
 	private List<Context> extractContextHierarchy(Context context) {
 		List<Context> contexts = new ArrayList<Context>();
+		contexts.add(context);
 		for (Context c : context.getExtends()) {
 			contexts.add(c);
 			List<Context> contextHierarchy = extractContextHierarchy(c);

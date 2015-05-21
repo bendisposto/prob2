@@ -112,7 +112,8 @@ assert lift0.events.down.guards.always_true.isTheorem()
 
 assert mm.temp.door.Extends[0].getName() == "IDoNothing"
 
-//mm.writeToRodin("MyLift", dir)
+//File dir = mm.writeToRodin("MyLift", dir)
+//dir.deleteDir()
 
 m = mm.getModifiedModel("lift1")
 s = m as StateSpace
