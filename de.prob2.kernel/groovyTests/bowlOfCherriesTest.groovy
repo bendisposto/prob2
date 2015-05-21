@@ -36,7 +36,7 @@ mm.make {
 				  init: [act_bowl: "bowl := {}"]
 		invariant gluing: "size = card(bowl)"
 
-		event(name: "put", refines: "put") {
+		refine(name: "put") {
 			parameter "handfull"
 			guards    define: "handfull <: cherries",
 			          constrain: "card(handfull) : 1..5",
@@ -45,7 +45,7 @@ mm.make {
 			action    put: "bowl := bowl \\/ handfull"
 		}
 			
-		event(name: "take", refines: "take") {
+		refine(name: "take") {
 			parameter "handfull"
 			guards    define: "handfull <: bowl",
 					  constrain: "card(handfull) : 1..5"
@@ -55,7 +55,7 @@ mm.make {
 	}
 }
 
-mm.writeToRodin()
+//File dir = mm.writeToRodin("BowlOfCherries",dir)
 
 m = mm.getModifiedModel("bowl2")
 s = m as StateSpace

@@ -38,9 +38,8 @@ public class ModelModifier extends AbstractModifier {
 	}
 
 	def ModelModifier(String name, String path, boolean startProB=true) {
-		def mtx = new ModelToXML()
-		modelDir = mtx.createProjectFile(path, name)
-
+		modelDir = path + File.separator + name;
+		
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
 		temp = factory.modelCreator.get()
 
@@ -237,11 +236,15 @@ public class ModelModifier extends AbstractModifier {
 		return temp
 	}
 
-	def void writeToRodin() {
-		ModelToXML converter = new ModelToXML()
+	def File writeToRodin(String name, String path) {
+		def mtx = new ModelToXML()
+		def dir = mtx.createProjectFile(path, name)
+
 		temp.getComponents().each { k, v ->
-			converter.convert(v)
+			mtx.convert(v)
 		}
+		
+		dir
 	}
 
 	/**
