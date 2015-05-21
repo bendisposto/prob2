@@ -1,5 +1,6 @@
 import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
+import de.prob.model.eventb.translate.*
 
 mm = new ModelModifier()
 mm.make {
@@ -55,15 +56,15 @@ mm.make {
 	}
 }
 
-//File dir = mm.writeToRodin("BowlOfCherries",dir)
-//dir.deleteDir()
-
 m = mm.getModifiedModel("bowl2")
 s = m as StateSpace
 t = m as Trace
 
 t = t.randomAnimation(10)
 
+//mtx = new ModelToXML()
+//d = mtx.writeToRodin(m, "BowlOfCherries", dir)
+//d.deleteDir()
 
 s.animator.cli.shutdown();
-"add a description of the test here"
+"generate and animate a model"

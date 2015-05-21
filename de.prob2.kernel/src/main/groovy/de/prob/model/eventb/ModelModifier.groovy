@@ -232,17 +232,6 @@ public class ModelModifier extends AbstractModifier {
 		return temp
 	}
 
-	def File writeToRodin(String name, String path) {
-		def mtx = new ModelToXML()
-		def dir = mtx.createProjectFile(path, name)
-
-		temp.getComponents().each { k, v ->
-			mtx.convert(v)
-		}
-		
-		dir
-	}
-
 	/**
 	 * Change a given preference for the model in question
 	 * @param prefName the name of the preference

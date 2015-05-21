@@ -1,9 +1,12 @@
 package de.prob.model.eventb.translate
 
+import java.io.File;
+
 import groovy.xml.MarkupBuilder
 import de.prob.model.eventb.Context
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBMachine
+import de.prob.model.eventb.EventBModel
 
 public class ModelToXML {
 
@@ -15,17 +18,28 @@ public class ModelToXML {
 	def String genName() {
 		return "n" + ctr++;
 	}
+	
+	def File writeToRodin(EventBModel model, String name, String path) {
+		def directoryPath = path + File.separator + name
+		def dir = createProjectFile(name, directoryPath)
 
-	def convert(EventBMachine m) {
-		extractMachine(m)
+		model.getComponents().each { k, v ->
+			convert(v, directoryPath)
+		}
+		
+		dir
 	}
 
-	def convert(Context c) {
-		extractContext(c)
+	def convert(EventBMachine m, String directoryPath) {
+		extractMachine(m, directoryPath)
 	}
 
-	def extractMachine(EventBMachine m) {
-		String fileName = m.directoryPath + File.separator + m.getName() + ".bum"
+	def convert(Context c, String directoryPath) {
+		extractContext(c, directoryPath)
+	}
+
+	def extractMachine(EventBMachine m, String directoryPath) {
+		String fileName = directoryPath + File.separator + m.getName() + ".bum"
 		new File(fileName).withWriter("UTF-8") { writer ->
 			MarkupBuilder xml = new MarkupBuilder(writer);
 
@@ -94,8 +108,8 @@ public class ModelToXML {
 		}
 	}
 
-	def extractContext(Context c) {
-		String fileName = c.directoryPath + File.separator + c.getName() + ".buc"
+	def extractContext(Context c, String directoryPath) {
+		String fileName = directoryPath + File.separator + c.getName() + ".buc"
 		new File(fileName).withWriter("UTF-8") { writer ->
 			MarkupBuilder xml = new MarkupBuilder(writer);
 
@@ -123,11 +137,10 @@ public class ModelToXML {
 		}
 	}
 
-	def File createProjectFile(String path, String modelName) {
-		String newpath = path + File.separator + modelName
-		def dir = new File(newpath)
+	def File createProjectFile(String modelName, String directoryPath) {
+		def dir = new File(directoryPath)
 		dir.mkdir()
-		String projectFile = newpath + File.separator + ".project"
+		String projectFile = directoryPath + File.separator + ".project"
 		def file = new File(projectFile)
 
 		file.withWriter('UTF-8') { writer ->
