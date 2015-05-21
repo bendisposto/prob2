@@ -10,7 +10,7 @@ class EventModifierTest extends Specification {
 	def EventModifier modifier
 
 	def setup() {
-		event = new Event(null, "myEvent", EventType.ORDINARY)
+		event = new Event(null, "myEvent", EventType.ORDINARY, false)
 		event.addRefines(new ModelElementList<Event>())
 		event.addActions(new ModelElementList<EventBAction>())
 		event.addGuards(new ModelElementList<EventBGuard>())

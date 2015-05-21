@@ -35,10 +35,11 @@
      :ui {:screen size
           :show-minibuffer false
           :pane [id]
+          :active id 
           :pages {id {:id id
-                     :type :md
-                     :label "Info"
-                     :content {:file "info.md"}}}}}))
+                      :type :md
+                      :label "Info"
+                      :content {:file "info.md"}}}}}))
 
 (defn default-ui-state [screen]
   (reset-ui-state (init-websocket) screen))

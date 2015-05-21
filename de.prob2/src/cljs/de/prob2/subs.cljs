@@ -113,3 +113,20 @@
 
 (register-sub
  :minibuffer (fn [db] (reaction (get-in @db [:ui :show-minibuffer]))))
+
+(register-sub
+ :active (fn [db] (reaction (get-in @db [:ui :active]))))
+
+(register-sub
+ :active-content
+ (fn [db] (let [active-page (reaction (get-in @db [:ui :active]))]
+           (logp :active @active-page)
+           (reaction (get-in @db [:ui :pages @active-page])))))
+
+(def context identity) ;; Maybe we want to aggregate contexts in the future
+
+(register-sub
+ :context
+ (fn [db]
+   (let [active (reaction (get-in @db [:ui :active]))]
+     (reaction (context (get-in @db [:ui :pages @active :type]))))))

@@ -36,99 +36,154 @@
 
 (rf/register-handler :prob2/start-animation h/relay)
 
-(defn tab-title [[idx {:keys [id label :class] :as entry}]]
-  [:li {:key id
-        :class class
-        :role "presentation"}
-   [:a {:href (str "#tab" id)
-        :role "tab"
-        :data-toggle "tab"} label
-    [:span.glyphicon.glyphicon-remove.glyph-fix.remove-glyph {:on-click #(rf/dispatch [:remove-tab id])}]]])
+(defn tab-title [_]
+  (let [active (rf/subscribe [:active])]
+    (fn [[idx {:keys [id label] :as entry}]]
+      (let [class (if (= id @active) " active " "")]
+        [:li {:key id
+              :class class}
+         [:a 
+          [:span {:on-click #(rf/dispatch [:select-tab id])} label]
+          [:span.glyphicon.glyphicon-remove.glyph-fix.remove-glyph {:on-click #(rf/dispatch [:remove-tab id])}]]]))))
 
+(rf/register-handler
+ :select-tab
+ (fn [db [_ id]]
+   (assoc-in db [:ui :active] id)))
+
+(defn default-page [db id]
+  (-> db
+      (assoc-in [:ui :pane] [id])
+      (assoc-in [:ui :active] id)
+      (assoc-in [:ui :pages id]
+                {:id id
+                 :type :md
+                 :label "Info"
+                 :content {:file "info.md"}})))
+
+(defn compute-new-pane[id pane active]
+  (let [active? (= id active)
+        [p a] (cond
+                (= [id] pane) [[] nil]
+                (= id (first pane)) [(into [] (rest pane)) (second pane)]
+                (= id (last pane)) [(butlast pane) (last (butlast pane))]
+                :else (let [[before elem after] (partition-by #(= % id) pane)
+                            pane' (into [] (concat before after))]
+                        [pane' (nth pane' (dec (count before)))]))]
+    (if active? [p a] [p active])))
 
 (rf/register-handler
  :remove-tab ;; TODO Handle last tab
  (fn [db [_  id]]
-   (logp :del id)
-   (let [pane (get-in db [:ui :pane])
-         removed (remove #{id} pane)]
-     (logp :rem removed)
-     (h/dissoc-in (assoc-in db [:ui :pane] (into [] removed)) [:ui :pages id]))))
+   (let [[removed active] (compute-new-pane  id (get-in db [:ui :pane]) (get-in db [:ui :active]))
+         db1 (h/dissoc-in db [:ui :pages id])
+         db2 (if active
+               (-> db1
+                   (assoc-in [:ui :pane] removed)
+                   (assoc-in [:ui :active] active))
+               (default-page db1 (h/fresh-id)))]
+     db2)))
 
-(defmulti render-page :type)
-(defmethod render-page :editor [{id :id {:keys [file]} :content}]
+(defn create-editor [id content]
+  (let [dom-element (.getElementById js/document id)
+        mirr (.fromTextArea
+              js/CodeMirror
+              dom-element #js {:mode "b"
+                               :autofocus true
+                               :lineWrapping true
+                               :lineNumbers true})
+        doc (.-doc mirr)]
+    (.setValue doc content)
+    mirr))
+
+
+(defn render-editor [_]
   (let [cm (atom nil)
-        id (str "editor" id)]
+        id (atom nil)
+        content (atom nil)]
     (r/create-class
-     {:component-did-mount
-      (fn [c]
-        (let [dom-element (.getElementById js/document id)
-              mirr (.fromTextArea
-                    js/CodeMirror
-                    dom-element #js {:mode "b"
-                                     :lineWrapping true
-                                     :lineNumbers true})
-              doc (.-doc mirr)]
-          (.setValue doc (nw/slurp file))
-          (reset! cm mirr)))
-      :component-did-update (fn [e]
-                              (let [doc (.-doc @cm)]
-                                (.setValue doc (nw/slurp file))))
+     {:component-did-mount (fn [e]
+
+                             (reset! cm (create-editor @id @content)))
+      :component-did-update
+      (fn [e]
+        (reset! cm (create-editor @id @content)))
       :reagent-render
-      (fn [_]
-        [:textarea {:id id
-                    :autofocus "autofocus"
-                    :defaultContent ""}])})))
+      (fn [{ii :id {:keys [file]} :content}]
+        (reset! content (nw/slurp file))
+        (reset! id (str "editor-" ii))
+        [:div {:key @id}
+         [:textarea {:id @id
+                     :autofocus "autofocus"
+                     :defaultContent @content}]])})))
 
-
-(defmethod render-page :md [_]
-  (fn [{{:keys [file]} :content}]
+(defn render-md [_]
+  (fn [{{:keys [file]} :content :as e}]
     (let [path (str "./doc/" (name @language) "/" file)
           text (nw/slurp path)
           html (md/md->html text)]
-      (logp :p path :t text :h html)
       [:div.padding-container {:dangerouslySetInnerHTML {:__html html}}])))
 
-
-(defmethod render-page :default [{:keys [id type content]}]
+(defn render-default [{:keys [id type content]}]
   [:div [:h2 (str "Unknown View Type " type)]
    [:h3 "Content: "
     (prn-str content)]])
 
-(defn tab-content [_]
-  (fn [[idx {:keys [id class] :as entry}]]
-    (logp :e entry)
-    (let [f (:file (:content entry))]
-      [:div.tab-pane.pane-content
-       {:key id :class class :role "tabpanel" :id (str "tab" id)}
-       [render-page entry]])))
 
+(defn render-page [_]
+  (fn  [{t :type :as e}]
+    (condp = t
+      :editor [render-editor e]
+      :md [render-md e]
+      [render-default e])))
+
+
+(defn toolbar-editor []
+  (fn []
+    (let [active-content (rf/subscribe [:active-content])] 
+      [:span {:on-click #(rf/dispatch [:start-animation @active-content])} (i18n :start-animation)])))
+
+(defn toolbar-default [] (fn [] [:div]))
+
+
+(defn toolbar [context]
+  (cond
+    (= :editor context) [toolbar-editor]
+    :otherwise [toolbar-default]))
+
+(defn context-name [ctx]
+  (name ctx))
 
 (defn render-app []
   (let [pages (rf/subscribe [:pages])
         width (rf/subscribe [:width])
+        context (rf/subscribe [:context])
         minibuffer (rf/subscribe [:minibuffer])
-        height (rf/subscribe [:height])]
+        height (rf/subscribe [:height])
+        active-content (rf/subscribe [:active-content])]
     (r/create-class
      {:component-did-update
-      (fn [_] (when @minibuffer (.focus (js/jQuery "#modeline-search"))))
+      (fn [_] (when @minibuffer
+               (.focus (js/jQuery "#modeline-search"))))
       :reagent-render
       (fn []
-        (logp :pp @pages)
-        [:div {:role "tabpanel" :style {:height @height}}
-         [:ul.nav.nav-tabs {:role "tablist"}
-          (map tab-title @pages)]
-         [:div.tab-content {:style {:height (- @height 44 32)}} ;; navigation  footer
-          (for [p @pages]  ^{:key (:id (last p))} [tab-content p])]
-         [:div.footer "(c) 2015"]
-         [:div#overlay
-          {:class (if @minibuffer "" " hidden ")
-           :style {:height (- @height 200)
-                   :top 100
-                   :width (- @width 200)
-                   :left 100}}
-          [render-minibuffer]]])})))
-
+        [:div#page
+         [:div.toolbar
+          {:class (str "toolbar-context-" (name @context))}
+          [toolbar @context]]
+         [:div {:style {:height (- @height 50)}}
+          [:ul.nav.nav-tabs 
+           (for [p @pages] ^{:key (first p)} [tab-title p])]
+          [:div.tab-content {:style {:height (- @height 50 44 32)}} ;; toolbar navigation  footer
+           [render-page @active-content]]
+          [:div.footer "(c) 2015" [:div#ctx-name (context-name @context)]]
+          [:div#overlay
+           {:class (if @minibuffer "" " hidden ")
+            :style {:height (- @height 200)
+                    :top 100
+                    :width (- @width 200)
+                    :left 100}}
+           [render-minibuffer]]]])})))
 
 (defn top-panel []
   (let [init?  (rf/subscribe [:initialised?])
