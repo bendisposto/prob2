@@ -34,8 +34,6 @@
 (rf/register-handler :paste (fn [db _] (.execCommand js/document "paste") db))
 (rf/register-handler :select-all (fn [db _] (.execCommand js/document "selectAll") db))
 
-(rf/register-handler :prob2/start-animation h/relay)
-
 (defn tab-title [_]
   (let [active (rf/subscribe [:active])]
     (fn [[idx {:keys [id label] :as entry}]]
@@ -141,7 +139,7 @@
 (defn toolbar-editor []
   (fn []
     (let [active-content (rf/subscribe [:active-content])] 
-      [:span {:on-click #(rf/dispatch [:start-animation @active-content])} (i18n :start-animation)])))
+      [:a {:on-click #(rf/dispatch [:start-animation @active-content])} (i18n :start-animation)])))
 
 (defn toolbar-default [] (fn [] [:div]))
 
