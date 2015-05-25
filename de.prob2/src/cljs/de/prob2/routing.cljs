@@ -55,9 +55,9 @@
       (assoc-in [:ui :active] id)
       (assoc-in [:ui :pages id]
                 {:id id
-                 :type :md
+                 :type :html
                  :label "Info"
-                 :content {:file "info.md"}})))
+                 :content {:file "info.html"}})))
 
 (defn compute-new-pane[id pane active]
   (let [active? (= id active)
@@ -115,23 +115,31 @@
                      :autofocus "autofocus"
                      :defaultContent @content}]])})))
 
-(defn render-md [_]
-  (fn [{{:keys [file]} :content :as e}]
+(defn render-file [file transform]
+  (fn [file transform]
     (let [path (str "./doc/" (name @language) "/" file)
           text (nw/slurp path)
-          html (md/md->html text)]
+          html (transform text)]
       [:div.padding-container {:dangerouslySetInnerHTML {:__html html}}])))
+
+(defn render-md [_]
+  (fn [{{:keys [file]} :content}]
+    [render-file file md/md->html]))
+
+(defn render-html [_]
+  (fn [{{:keys [file]} :content}]
+    [render-file file identity]))
 
 (defn render-default [{:keys [id type content]}]
   [:div [:h2 (str "Unknown View Type " type)]
    [:h3 "Content: "
     (prn-str content)]])
 
-
 (defn render-page [_]
   (fn  [{t :type :as e}]
     (condp = t
       :editor [render-editor e]
+      :html [render-html e]
       :md [render-md e]
       [render-default e])))
 

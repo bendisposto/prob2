@@ -38,9 +38,9 @@
           :active id
           :trace nil
           :pages {id {:id id
-                      :type :md
+                      :type :html
                       :label "Info"
-                      :content {:file "info.md"}}}}}))
+                      :content {:file "info.html"}}}}}))
 
 (defn default-ui-state [screen]
   (reset-ui-state (init-websocket) screen))
