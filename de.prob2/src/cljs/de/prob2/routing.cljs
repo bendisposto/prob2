@@ -146,8 +146,10 @@
 
 (defn toolbar-editor []
   (fn []
-    (let [active-content (rf/subscribe [:active-content])] 
-      [:a {:on-click #(rf/dispatch [:start-animation @active-content])} (i18n :start-animation)])))
+    (let [active-content (rf/subscribe [:active-content])]
+      [:ul#navi  
+       [:li [:a {:on-click #(rf/dispatch [:start-animation @active-content])} (i18n :start-animation)]]
+       [:li [:a {:on-click #(rf/dispatch [:show-hierarchy @active-content])} (i18n :show-hierarchy)]]])))
 
 (defn toolbar-default [] (fn [] [:div]))
 

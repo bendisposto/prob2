@@ -276,7 +276,7 @@
 
 .toolbar {
   height: 40px;
-  padding: 0px;
+  padding: 9px;
   margin: 0px;
   background-color: silver;
   border-bottom: 1px solid black;
@@ -293,3 +293,10 @@
 .tab-content {
   border-top: 1px solid black;
 }
+
+#navi li {
+  display: inline;
+  margin-right: 10px;
+}
+
+

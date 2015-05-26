@@ -34,3 +34,4 @@
 :save-file-as "Save as..."
 :save-all "Save all files"
 :start-animation "Start Animation"
+:show-hierarchy "Show Machine Hierarchy"
