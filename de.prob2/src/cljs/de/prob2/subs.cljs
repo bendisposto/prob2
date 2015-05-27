@@ -123,7 +123,8 @@
            (logp :active @active-page)
            (reaction (get-in @db [:ui :pages @active-page])))))
 
-(def context identity) ;; Maybe we want to aggregate contexts in the future
+(defn context [ctx]
+  (if ctx ctx :default)) ;; Maybe we want to aggregate contexts in the future
 
 (register-sub
  :context

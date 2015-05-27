@@ -17,6 +17,7 @@
             [de.prob2.helpers :as h :refer [mk-url]]
             [de.prob2.components.minibuffer :refer [render-minibuffer]]
             [de.prob2.actions.open-file :refer [file-dialog]]
+            [de.prob2.components.hierarchy :refer [hierarchy-view]]
             [de.prob2.i18n :refer [i18n language]]
             [de.prob2.menu]))
 
@@ -130,6 +131,23 @@
   (fn [{{:keys [file]} :content}]
     [render-file file identity]))
 
+(defmulti render-view :view)
+(defmethod render-view :hierarchy [_]
+  (fn [_]
+    (let [trace (rf/subscribe [:current-state])]
+      [hierarchy-view @trace])))
+
+(rf/register-handler
+ :show-hierarchy
+ rf/debug
+ (fn [db _]
+   (let [id (h/fresh-id)
+         label "Hierarchy"]
+     (-> db
+         (update-in [:ui :pane] conj id)
+         (assoc-in [:ui :active] id)
+         (assoc-in [:ui :pages id] {:type :view :label label :view :hierarchy})))))
+
 (defn render-default [{:keys [id type content]}]
   [:div [:h2 (str "Unknown View Type " type)]
    [:h3 "Content: "
@@ -141,6 +159,7 @@
       :editor [render-editor e]
       :html [render-html e]
       :md [render-md e]
+      :view [render-view e]
       [render-default e])))
 
 
@@ -160,6 +179,7 @@
     :otherwise [toolbar-default]))
 
 (defn context-name [ctx]
+  (logp :context ctx)
   (name ctx))
 
 (defn render-app []
