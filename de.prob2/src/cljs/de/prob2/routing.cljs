@@ -131,10 +131,10 @@
   (fn [{{:keys [file]} :content}]
     [render-file file identity]))
 
-(defmulti render-view :view)
-(defmethod render-view :hierarchy [_]
-  (fn [_]
-    (let [trace (rf/subscribe [:current-state])]
+(defn render-hierarchy-view [_]
+  (let [trace (rf/subscribe [:current-trace])]
+    (fn [_]
+      (logp :hv @trace)
       [hierarchy-view @trace])))
 
 (rf/register-handler
@@ -146,7 +146,7 @@
      (-> db
          (update-in [:ui :pane] conj id)
          (assoc-in [:ui :active] id)
-         (assoc-in [:ui :pages id] {:type :view :label label :view :hierarchy})))))
+         (assoc-in [:ui :pages id] {:id id :label label :type :hierarchy-view})))))
 
 (defn render-default [{:keys [id type content]}]
   [:div [:h2 (str "Unknown View Type " type)]
@@ -159,7 +159,7 @@
       :editor [render-editor e]
       :html [render-html e]
       :md [render-md e]
-      :view [render-view e]
+      :hierarchy-view [render-hierarchy-view e]
       [render-default e])))
 
 

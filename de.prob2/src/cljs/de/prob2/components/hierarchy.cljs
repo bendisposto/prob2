@@ -17,7 +17,7 @@
 
 (defn calculate-dimensions [rel-graph]
   (let [ vertices (mapv (fn [v] (extract-vertice (first v))) rel-graph)
-         edges    (mapv extract-edge (mapcat second rel-graph))
+        edges    (mapv extract-edge (mapcat second rel-graph))
         graph    (dh/create-graph vertices edges)]
     (dh/render graph)))
 
@@ -64,24 +64,24 @@
 
 (defn create-component [model local-state]
   (fn [x] (let [dep-graph (:dependency-graph @model)
-                component-names (keys (:components @model))
-                main-comp (:main-component-name @model)
-                _       (swap! local-state assoc :focused main-comp)
-                element (.getDOMNode x)]
-            (when (and dep-graph main-comp element)
-              (draw-joint-graph element local-state main-comp dep-graph)))))
+               component-names (keys (:components @model))
+               main-comp (:main-component-name @model)
+               _       (swap! local-state assoc :focused main-comp)
+               element (.getDOMNode x)]
+           (when (and dep-graph main-comp element)
+             (draw-joint-graph element local-state main-comp dep-graph)))))
 
 (defn create-canvas [model]
   (fn []
     [:div {:class "col-lg-9"
-      :id (str "hierarchy-view" (:main-component-name @model))
-      :style {:height 0}}]))
+           :id (str "hierarchy-view" (:main-component-name @model))
+           :style {:height 0}}]))
 
 (defn create-hierarchy-view [model local-state]
   (r/create-class
-     {:component-did-update (create-component model local-state)
-      :component-did-mount  (create-component model local-state) ; for figwheel debugging
-      :reagent-render (create-canvas model)}))
+   {:component-did-update (create-component model local-state)
+    :component-did-mount  (create-component model local-state) ; for figwheel debugging
+    :reagent-render (create-canvas model)}))
 
 (defn extract-formula-list [key component]
   (when-not (empty? (key component))
@@ -103,16 +103,21 @@
        (for [e (:events component)] [:li {:key (h/fresh-id)} (:name e)])]])])
 
 (defn create-detail-view [model focused]
-  (fn [] (let [component (get (:components @model) (:focused @focused))
-               comp-name         (:focused @focused)]
-           (if (:variables component)
-             [machine-detail-view component comp-name]
-             [context-detail-view component comp-name]))))
+  (fn []
+    (logp :m @model :f @focused)
+    (let [component (get (:components @model) (:focused @focused))
+          comp-name (:focused @focused)]
+      (if (:variables component)
+        [machine-detail-view component comp-name]
+        [context-detail-view component comp-name]))))
 
 (defn hierarchy-view [id]
-  (let [model (rf/subscribe [:model id])
-        focus {:focused (:main-component-name @model)}
-        focused (r/atom focus)]
-    [:div {:class "row"}
-     [:div {:class "col-lg-3"} [create-detail-view model focused]]
-     [create-hierarchy-view model focused]]))
+  (fn [id]
+    (let [model (rf/subscribe [:model id])
+          focus {:focused (:main-component-name @model)}
+          focused (r/atom focus)]
+      [:div.container
+       [:div.row
+        [:div.col-lg-3
+         [create-detail-view model focused]]
+        [create-hierarchy-view model focused]]])))
