@@ -134,7 +134,6 @@
 (defn render-hierarchy-view [_]
   (let [trace (rf/subscribe [:current-trace])]
     (fn [_]
-      (logp :hv @trace)
       [hierarchy-view @trace])))
 
 (rf/register-handler
@@ -179,7 +178,6 @@
     :otherwise [toolbar-default]))
 
 (defn context-name [ctx]
-  (logp :context ctx)
   (name ctx))
 
 (defn render-app []
