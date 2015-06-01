@@ -8,6 +8,11 @@ The project is intended for internal usage, do not rely on any of the features o
 
 The source code of the current ProB release is located at http://github.com/bendisposto/prob
 
+# Documentation
+* Java-Doc: http://nightly.cobra.cs.uni-duesseldorf.de/prob2/javadoc/ 
+* Tutorial: http://stups.hhu.de/ProB/w/Tutorial13 
+* Developer Handbook: http://nightly.cobra.cs.uni-duesseldorf.de/prob2/developer-documentation/prob-devel.pdf
+
 # Bugs
 Please report bugs and feature requests at https://probjira.atlassian.net
 
