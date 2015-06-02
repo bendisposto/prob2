@@ -1,0 +1,14 @@
+
+task buildClojureScript(type:Exec) {
+    workingDir = './de.prob2'
+	executable = 'lein'
+	args = ['cljsbuild','once']
+}
+
+task buildClojure(type:Exec) {
+    workingDir = './de.prob2'
+	executable = 'lein'
+	args = ['uberjar']
+}
+
+task deploy(dependsOn: [buildClojure, buildClojureScript])
