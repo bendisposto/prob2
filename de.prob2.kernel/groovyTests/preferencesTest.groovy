@@ -6,7 +6,7 @@ import de.prob.statespace.*
 m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch", ["MAXINT":"10"])
 s = m as StateSpace
 
-expected_size = 25
+expected_size = 26
 
 cmd = new GetDefaultPreferencesCommand()
 s.execute(cmd)

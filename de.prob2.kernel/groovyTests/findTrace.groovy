@@ -5,15 +5,9 @@ m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 s = m as StateSpace
 t = new Trace(s)
 
-boolean thrown = false
-try {
-  cmd = new GetShortestTraceCommand(s, "7")
-  s.execute(cmd)
-  assert cmd.getOperationIds().isEmpty()
-} catch(RuntimeException e) {
-	thrown = true
-}
-assert thrown == true
+cmd = new GetShortestTraceCommand(s, "7")
+s.execute(cmd)
+assert !cmd.traceFound()
 
 t = t.randomAnimation(10)
 assert s[4] != null

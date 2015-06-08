@@ -1,15 +1,17 @@
 package de.prob.animator.command;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -35,8 +37,10 @@ public class CbcSolveCommand extends AbstractCommand {
 	Logger logger = LoggerFactory.getLogger(CbcSolveCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
+	private static final String IDENTIFIER_LIST = "IdList";
 	private final IEvalElement evalElement;
 	private AbstractEvalResult result;
+	private final List<String> freeVariables = new ArrayList<String>();
 
 	public CbcSolveCommand(final IEvalElement evalElement) {
 		this.evalElement = evalElement;
@@ -49,6 +53,12 @@ public class CbcSolveCommand extends AbstractCommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
+		PrologTerm idList = bindings.get(IDENTIFIER_LIST);
+		if (idList instanceof ListPrologTerm) {
+			for (PrologTerm id : (ListPrologTerm) idList) {
+				freeVariables.add(id.getFunctor());
+			}
+		}
 
 		PrologTerm prologTerm = bindings.get(EVALUATE_TERM_VARIABLE);
 
@@ -96,8 +106,12 @@ public class CbcSolveCommand extends AbstractCommand {
 		pout.openList();
 		evalElement.printProlog(pout);
 		pout.closeList();
+		pout.printVariable(IDENTIFIER_LIST);
 		pout.printVariable(EVALUATE_TERM_VARIABLE);
 		pout.closeTerm();
 	}
 
+	public List<String> getFreeVariables() {
+		return freeVariables;
+	}
 }

@@ -189,10 +189,11 @@ public class MachineXmlHandler extends DefaultHandler {
 		String crazyRodinInternalName = attributes.getValue("name");
 		String name = attributes.getValue("org.eventb.core.label");
 		String convergence = attributes.getValue("org.eventb.core.convergence");
+		String extended = attributes.getValue("org.eventb.core.extended");
 		EventType eventType = "0".equals(convergence) ? EventType.ORDINARY
 				: ("1".equals(convergence) ? EventType.CONVERGENT
 						: EventType.ANTICIPATED);
-		event = new Event(machine, name, eventType);
+		event = new Event(machine, name, eventType, Boolean.valueOf(extended));
 		events.add(event);
 		eventCache.get(machine.getName()).put(crazyRodinInternalName, event);
 

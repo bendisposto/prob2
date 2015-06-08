@@ -66,7 +66,18 @@ class AnimatorImpl implements IAnimator {
 			List<String> errormessages = getErrors();
 
 			if (result instanceof YesResult && errormessages.isEmpty()) {
-				command.processResult(((YesResult) result).getBindings());
+				try {
+					command.processResult(((YesResult) result).getBindings());
+				} catch (Exception e) {
+					String message = "Exception of type " + e.getClass()
+							+ " was thrown when executing "
+							+ command.getClass().getSimpleName()
+							+ ". Message was: " + e.getMessage();
+					System.out.println(message + "\n");
+					e.printStackTrace();
+					logger.error(message, e);
+					System.exit(-1);
+				}
 			} else {
 				command.processErrorResult(result, errormessages);
 			}

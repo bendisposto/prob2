@@ -3,9 +3,9 @@ package de.prob.model.eventb
 import de.prob.Main
 import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.model.eventb.theory.Theory
-import de.prob.model.representation.Set
 import de.prob.model.representation.Constant
 import de.prob.model.representation.ModelElementList
+import de.prob.model.representation.Set
 import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.scripting.Api
 import de.prob.scripting.EventBFactory
@@ -160,7 +160,7 @@ public class ModelModifier {
 	 * @return Event object created when cloning the given event
 	 */
 	public static Event cloneEvent(EventBMachine parentMachine, Event event, String newName) {
-		def newEvent = new Event(parentMachine, newName, event.type)
+		def newEvent = new Event(parentMachine, newName, event.type, event.extended)
 
 		def refines = event.refines.collect {
 			it.parentMachine.getEvent(it.name)
