@@ -4,14 +4,22 @@ package de.prob.model.eventb
 
 
 class EventModifier extends AbstractModifier {
-	private UUID uuid = UUID.randomUUID()
-	private ctr = 0
+	private actctr = 0
+	private grdctr = 0
 	def Event event
 	boolean initialisation
 
 	def EventModifier(Event event, initialisation=false) {
 		this.event = event
 		this.initialisation = initialisation
+	}
+	
+	private String genActLabel() {
+		return "a" + actctr++
+	}
+	
+	private String genGrdLabel() {
+		return "g" + grdctr++
 	}
 	
 	def EventModifier guards(Map guards) {
@@ -45,7 +53,7 @@ class EventModifier extends AbstractModifier {
 	 * @return {@link EventBGuard} that has been added to the event
 	 */
 	def EventBGuard addGuard(String predicate) {
-		def guard = new EventBGuard(event, "gen-guard-${uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
+		def guard = new EventBGuard(event, genGrdLabel(), predicate, false, Collections.emptySet())
 		event.guards << guard
 		guard
 	}
@@ -76,6 +84,11 @@ class EventModifier extends AbstractModifier {
 		event.actions << act
 		this
 	}
+	
+	def EventModifier action(String actionString) {
+		addAction(actionString)
+		this
+	}
 
 	/**
 	 * Add an action to an event
@@ -83,7 +96,7 @@ class EventModifier extends AbstractModifier {
 	 * @return the {@link EventBAction} that has been added to the {@link Event}
 	 */
 	def EventBAction addAction(String action) {
-		def a = new EventBAction(event, "gen-action-${uuid.toString()}-${ctr++}", action, Collections.emptySet())
+		def a = new EventBAction(event, genActLabel(), action, Collections.emptySet())
 		event.actions << a
 		a
 	}
@@ -114,7 +127,7 @@ class EventModifier extends AbstractModifier {
 	def ParameterBlock addParameter(String parameter, String typingGuard) {
 		def param = new EventParameter(event, parameter)
 		event.parameters << param
-		def guard = new EventBGuard(event, "gen-typing-guard-${uuid.toString()}-${ctr++}", typingGuard, false, Collections.emptySet())
+		def guard = new EventBGuard(event, genGrdLabel(), typingGuard, false, Collections.emptySet())
 		event.guards << guard
 		new ParameterBlock(param, guard)
 	}

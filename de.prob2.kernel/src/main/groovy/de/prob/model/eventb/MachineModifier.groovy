@@ -5,7 +5,7 @@ import de.prob.model.representation.ModelElementList
 
 class MachineModifier extends AbstractModifier {
 	private UUID uuid = UUID.randomUUID()
-	private ctr = 0
+	private invctr = 0
 	EventBMachine machine
 	EventBModel model
 	private eventModifiers = [:]
@@ -14,6 +14,10 @@ class MachineModifier extends AbstractModifier {
 		this.machine = machine
 		this.machine.addSees(new ModelElementList<Context>(seenContexts))
 		this.machine.addRefines(new ModelElementList<EventBMachine>(refined))
+	}
+	
+	private String genInvLabel() {
+		return "i" + invctr++
 	}
 
 	def MachineModifier variables(String... variables) {
@@ -28,11 +32,20 @@ class MachineModifier extends AbstractModifier {
 	}
 	
 	def MachineModifier var_block(LinkedHashMap properties) {
-		Map validated = validateProperties(properties, [name: String, invariant: Definition, init: Definition])
-		variable(validated["name"])
-		invariant(validated["invariant"].label, validated["invariant"].formula)
+		Map validated = validateProperties(properties, [name: String, invariant: Object, init: Object])
+		var_block(validated.name, validated.invariant, validated.init)
+	}
+	
+	def MachineModifier var_block(String name, String invariant, String init) {
+		addVariable(name, invariant, init)
+		this
+	}
+	
+	def MachineModifier var_block(String name, Map inv, Map init) {
+		variable(name)
+		invariant(inv)
 		initialisation({
-			action validated["init"].label, validated["init"].formula
+			action init
 		})
 		this
 	}
@@ -49,13 +62,11 @@ class MachineModifier extends AbstractModifier {
 		// if we could check whether typingInvariant is in fact only typing,
 		// we could remove just selected proof information
 		def var = new EventBVariable(variable, null)
-		def c = ctr++
 		machine.variables << var
 		def inv = addInvariant(typingInvariant)
-		Event initialisation = machine.events.INITIALISATION
-		def init = new EventBAction(initialisation, "generated-init-${uuid.toString()}-${c}", initialisationAction, Collections.emptySet())
-		initialisation.actions << init
-		def x = new VariableBlock(var, inv, init)
+		def evt = getEvent("INITIALISATION")
+		def act = evt.addAction(initialisationAction)
+		def x = new VariableBlock(var, inv, act)
 	}
 
 	/**
@@ -95,6 +106,11 @@ class MachineModifier extends AbstractModifier {
 		machine.allInvariants << inv
 		this
 	}
+	
+	def MachineModifier invariant(String pred) {
+		addInvariant(pred)
+		this
+	}
 
 	/**
 	 * Adds an invariant to a given machine
@@ -110,7 +126,7 @@ class MachineModifier extends AbstractModifier {
 			}
 		}
 
-		def invariant = new EventBInvariant("generated-inv-{uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
+		def invariant = new EventBInvariant(genInvLabel(), predicate, false, Collections.emptySet())
 		machine.invariants << invariant
 		machine.allInvariants << invariant
 		invariant

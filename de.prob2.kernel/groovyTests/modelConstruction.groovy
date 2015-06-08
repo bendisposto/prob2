@@ -20,12 +20,12 @@ mm.make {
 				  init: [act_level: "level := BOTTOM"]
 				  
 		var_block name: "door_open",
-				  invariant: [inv_door: "door_open : BOOL"],
-				  init: [act_door: "door_open := FALSE"]
+				  invariant: "door_open : BOOL",
+				  init: "door_open := FALSE"
 				  
 		invariant always_true: "1 > 0", true
 		theorem   also_always_true: "5 < 6"
-		invariant "inv2", "level > 0"
+		invariant "level > 0"
 		
 		event(name: "up") {
 			guard level_grd: "level < TOP"
@@ -101,13 +101,15 @@ assert mm.temp.levels.axioms.always_true.isTheorem()
 lift0 = mm.temp.lift0
 assert lift0 != null
 assert lift0.variables.level != null
+assert lift0.invariants.collect { it.getName() } == ["inv_level","i0","always_true","also_always_true","i1"]
 assert lift0.invariants.inv_level.getPredicate().getCode() == "level : BOTTOM..TOP"
-assert lift0.invariants.inv2.getPredicate().getCode() == "level > 0"
+assert lift0.invariants.i1.getPredicate().getCode() == "level > 0"
 assert lift0.invariants.always_true.isTheorem()
 assert lift0.invariants.also_always_true.isTheorem()
 init = lift0.events.INITIALISATION
+init.actions.collect { it.getName() } == ["act_level", "a0"]
 init.actions.act_level.getCode().getCode() == "level := 1"
-init.actions.act_door.getCode().getCode() == "door_open := FALSE"
+init.actions.a0.getCode().getCode() == "door_open := FALSE"
 assert lift0.events.down.guards.always_true.isTheorem()
 
 assert mm.temp.door.Extends[0].getName() == "IDoNothing"
