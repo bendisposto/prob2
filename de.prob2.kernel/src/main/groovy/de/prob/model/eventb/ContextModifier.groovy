@@ -5,8 +5,7 @@ import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 
 class ContextModifier extends AbstractModifier {
-	private UUID uuid = UUID.randomUUID()
-	private ctr = 0
+	private axmctr = 0
 	Context context
 
 	def ContextModifier(Context context, List<Context> extended=[]) {
@@ -112,6 +111,10 @@ class ContextModifier extends AbstractModifier {
 		return context.constants.remove(constant)
 	}
 	
+	def genAxmLabel() {
+		return "ax" + axmctr++
+	}
+	
 	def ContextModifier axioms(Map axioms) {
 		axioms.each { k,v ->
 			axiom(k,v)
@@ -119,6 +122,17 @@ class ContextModifier extends AbstractModifier {
 		this
 	}
 	
+	def ContextModifier axioms(String... axioms) {
+		axioms.each {
+			axiom(it)
+		}
+		this
+	}
+	
+	def ContextModifier theorem(String thm) {
+		axiom(thm, true)
+	}
+		
 	def ContextModifier theorem(Map props) {
 		axiom(props, true)
 	}
@@ -127,22 +141,28 @@ class ContextModifier extends AbstractModifier {
 		Definition prop = getDefinition(props)
 		return axiom(prop.label, prop.formula, theorem)
 	}
+	
+	def ContextModifier axiom(String pred, boolean theorem=false) {
+		axiom(genAxmLabel(), pred, theorem)
+	}
 
 	def ContextModifier axiom(String name, String pred, boolean theorem=false) {
-		def axm = new EventBAxiom(name, pred, theorem, Collections.emptySet());
-		context.allAxioms << axm
-		context.axioms << axm
+		addAxiom(name, pred, theorem)
 		this
 	}
 
 
+	def EventBAxiom addAxiom(String predicate, boolean theorem=false) {
+		addAxiom(genAxmLabel(), predicate, theorem)
+	}
+	
 	/**
 	 * Add an axiom to a context
 	 * @param predicate to be added as an axiom
 	 * @return {@link EventBAxiom} added to the {@link Context}
 	 */
-	def EventBAxiom addAxiom(String predicate) {
-		def axiom = new EventBAxiom("gen-axiom-${uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
+	def EventBAxiom addAxiom(String name, String predicate, boolean theorem=false) {
+		def axiom = new EventBAxiom(name, predicate, theorem, Collections.emptySet())
 		context.axioms << axiom
 		context.allAxioms << axiom
 		axiom

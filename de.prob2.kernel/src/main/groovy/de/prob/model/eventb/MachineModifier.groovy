@@ -4,7 +4,6 @@ import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.ModelElementList
 
 class MachineModifier extends AbstractModifier {
-	private UUID uuid = UUID.randomUUID()
 	private invctr = 0
 	EventBMachine machine
 	EventBModel model
@@ -64,8 +63,8 @@ class MachineModifier extends AbstractModifier {
 		def var = new EventBVariable(variable, null)
 		machine.variables << var
 		def inv = addInvariant(typingInvariant)
-		def evt = getEvent("INITIALISATION")
-		def act = evt.addAction(initialisationAction)
+		def refinedEvent = machine.refines.isEmpty() ? null : machine.refines[0].events.INITIALISATION
+		def act = getInitialisation().addAction(initialisationAction)
 		def x = new VariableBlock(var, inv, act)
 	}
 
@@ -91,25 +90,37 @@ class MachineModifier extends AbstractModifier {
 		this
 	}
 	
+	def MachineModifier invariants(String... invariants) {
+		invariants.each {
+			invariant(it)
+		}
+		this
+	}
+	
 	def MachineModifier theorem(LinkedHashMap properties) {
 		invariant(properties, true)
+	}
+	
+	def MachineModifier theorem(String thm) {
+		invariant(thm, true)
 	}
 
 	def MachineModifier invariant(LinkedHashMap properties, boolean theorem=false) {
 		Definition prop = getDefinition(properties)
 		return invariant(prop.label, prop.formula, theorem)
 	}
+	
+	def MachineModifier invariant(String pred, boolean theorem=false) {
+		invariant(genInvLabel(), pred, theorem)
+	}
 
 	def MachineModifier invariant(String name, String pred, boolean theorem=false) {
-		def inv = new EventBInvariant(name, pred, theorem, Collections.emptySet())
-		machine.invariants << inv
-		machine.allInvariants << inv
+		addInvariant(name, pred, theorem)
 		this
 	}
 	
-	def MachineModifier invariant(String pred) {
-		addInvariant(pred)
-		this
+	def EventBInvariant addInvariant(String predicate, boolean theorem=false) {
+		addInvariant(genInvLabel(), predicate, theorem)
 	}
 
 	/**
@@ -117,7 +128,7 @@ class MachineModifier extends AbstractModifier {
 	 * @param predicate to be added as an invariant
 	 * @return the {@link EventBInvariant} object that has been added to the machine
 	 */
-	def EventBInvariant addInvariant(String predicate) {
+	def EventBInvariant addInvariant(String name, String predicate, boolean theorem=false) {
 		// all proof information regarding invariant preservation might now be wrong - remove
 		def iterator = machine.proofs.iterator()
 		while(iterator.hasNext()) {
@@ -126,7 +137,7 @@ class MachineModifier extends AbstractModifier {
 			}
 		}
 
-		def invariant = new EventBInvariant(genInvLabel(), predicate, false, Collections.emptySet())
+		def invariant = new EventBInvariant(name, predicate, theorem, Collections.emptySet())
 		machine.invariants << invariant
 		machine.allInvariants << invariant
 		invariant
@@ -154,14 +165,13 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier initialisation(LinkedHashMap properties) {
 		if (properties["extended"] == true) {
-			getEvent("INITIALISATION", true)
+			getInitialisation(true)
 		}
 		this
 	}
 
 	def MachineModifier initialisation(Closure cls) {
-		def refinedEvent = machine.refines.isEmpty() ? null : machine.refines[0].events.INITIALISATION
-		getEvent("INITIALISATION", false, refinedEvent).make(cls)
+		getInitialisation().make(cls)
 		this
 	}
 	
@@ -190,6 +200,10 @@ class MachineModifier extends AbstractModifier {
 		this
 	}
 
+	def EventModifier getInitialisation(boolean extended=false) {
+		def refinedEvent = machine.refines.isEmpty() ? null : machine.refines[0].events.INITIALISATION
+		getEvent("INITIALISATION", extended, refinedEvent)
+	}
 
 	/**
 	 * This method searches for the {@link Event} with the specified name in the

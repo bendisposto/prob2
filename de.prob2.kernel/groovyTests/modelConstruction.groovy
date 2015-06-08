@@ -9,8 +9,8 @@ mm.make {
 	context(name: "levels") {
 		theorem always_true: "1 < 5"
 		constants "TOP", "BOTTOM"
-		axioms top_axm: "TOP = 5",
-		       bottom_axm: "BOTTOM = 1"
+		axioms "TOP = 5",
+		       "BOTTOM = 1"
 	}
 	
 	machine(name: "lift0", sees: ["levels"]) {
@@ -62,9 +62,9 @@ mm.make {
 	
 	machine(name: "lift1", refines: ["lift0"], sees: ["door","levels"]) {
 		variables "door", "level"
-		invariants door_inv: "door : door_state",
-				   level_inv: "level : BOTTOM..TOP",
-				   gluing: "door_open = TRUE <=> door = open"
+		invariants "door : door_state",
+				   "level : BOTTOM..TOP"
+	    invariant  gluing: "door_open = TRUE <=> door = open"
 				   
 		initialisation {
 			actions level: "level := BOTTOM",
