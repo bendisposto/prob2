@@ -1,5 +1,7 @@
 package de.prob.model.eventb
 
+import de.prob.model.eventb.Event.EventType
+
 
 
 
@@ -20,6 +22,22 @@ class EventModifier extends AbstractModifier {
 	
 	private String genGrdLabel() {
 		return "g" + grdctr++
+	}
+	
+	def EventModifier when(Map g) {
+		guards(g)
+	}
+	
+	def EventModifier when(String... g) {
+		guards(g)
+	}
+	
+	def EventModifier where(Map g) { 
+		guards(g)
+	}
+	
+	def EventModifier where(String... g) {
+		guards(g)
 	}
 	
 	def EventModifier guards(Map guards) {
@@ -83,6 +101,14 @@ class EventModifier extends AbstractModifier {
 	 */
 	def boolean removeGuard(EventBGuard guard) {
 		return event.guards.remove(guard)
+	}
+	
+	def EventModifier then(Map acts) {
+		actions(acts)
+	}
+	
+	def EventModifier then(String... acts) {
+		actions(acts)
 	}
 	
 	def EventModifier actions(Map actions) {
@@ -190,6 +216,11 @@ class EventModifier extends AbstractModifier {
 	
 	def EventModifier witness(String name, String code) {
 		event.witnesses << new Witness(event, name, code, Collections.emptySet())
+		this
+	}
+	
+	def EventModifier setType(EventType type) {
+		event.type = type
 		this
 	}
 

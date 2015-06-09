@@ -61,7 +61,8 @@ public class ModelToXML {
 				}
 				m.invariants.each {
 					xml.'org.eventb.core.invariant'(name: genName(), 'org.eventb.core.label': it.getName(),
-					'org.eventb.core.predicate': it.getPredicate().toUnicode())
+					'org.eventb.core.predicate': it.getPredicate().toUnicode(),
+					'org.eventb.core.theorem': it.isTheorem())
 				}
 				m.events.each { extractEvent(xml, it) }
 			}
@@ -92,7 +93,8 @@ public class ModelToXML {
 				e.guards.each {
 					xml.'org.eventb.core.guard'(name: genName(),
 					'org.eventb.core.label': it.getName(),
-					'org.eventb.core.predicate': it.getPredicate().toUnicode())
+					'org.eventb.core.predicate': it.getPredicate().toUnicode(),
+					'org.eventb.core.theorem': it.isTheorem())
 				}
 				e.witnesses.each {
 					xml.'org.eventb.core.witness'(name: genName(),
@@ -131,7 +133,8 @@ public class ModelToXML {
 				c.axioms.each {
 					xml.'org.eventb.core.axiom'(name: genName(),
 					'org.eventb.core.label': it.getName(),
-					'org.eventb.core.predicate': it.getPredicate().toUnicode())
+					'org.eventb.core.predicate': it.getPredicate().toUnicode(),
+					'org.eventb.core.theorem': it.isTheorem())
 				}
 			}
 		}

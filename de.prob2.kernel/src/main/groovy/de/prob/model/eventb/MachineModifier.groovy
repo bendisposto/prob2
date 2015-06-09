@@ -97,6 +97,20 @@ class MachineModifier extends AbstractModifier {
 		this
 	}
 	
+	def MachineModifier theorems(Map invariants) {
+		invariants.each { k,v ->
+			theorem(k,v)
+		}
+		this
+	}
+	
+	def MachineModifier theorems(String... invariants) {
+		invariants.each {
+			theorem(it)
+		}
+		this
+	}
+	
 	def MachineModifier theorem(LinkedHashMap properties) {
 		invariant(properties, true)
 	}
@@ -162,6 +176,22 @@ class MachineModifier extends AbstractModifier {
 		def b = machine.invariants.remove(invariant)
 		return a && b
 	}
+	
+	def MachineModifier variant(String expression) {
+		setVariant(expression)
+		return this
+	}
+	
+	def Variant setVariant(String expression) {
+		def variant = new Variant(expression, Collections.emptySet())
+		machine.addVariant(new ModelElementList([variant]))
+		return variant
+	}
+	
+	def boolean removeVariant(Variant variant) {
+	    machine.variant = null
+		return machine.getChildrenOfType(Variant.class).remove(variant)
+	}
 
 	def MachineModifier initialisation(LinkedHashMap properties) {
 		if (properties["extended"] == true) {
@@ -192,11 +222,13 @@ class MachineModifier extends AbstractModifier {
 				}
 			}
 		}
+		def type = properties["type"] ?: EventType.ORDINARY
+		
 		if (refinedEvent != null && event == null) {
 			throw new IllegalArgumentException("Tried to refine event $refinedEvent with $eventName, but could not find event in the refined machine ")
 		}
 
-		getEvent(properties["name"], properties["extended"] == true, event).make(cls)
+		getEvent(properties["name"], properties["extended"] == true, event).make(cls).setType(type)
 		this
 	}
 
