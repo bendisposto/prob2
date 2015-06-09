@@ -62,7 +62,7 @@ mm.make {
 			then "a:=a-1", "b:=b+1"
 		}
 				   
-		event(name: "IL_out", type: CONVERGENT) {
+		event(name: "IL_out", type: ANTICIPATED) { // just to check that anticipated works too
 			when "0<b","a=0"
 			then "b:=b-1", "c:=c+1"
 		}
@@ -73,10 +73,13 @@ m = mm.getModifiedModel("m1")
 s = m as StateSpace
 t = m as Trace
 
+assert m.m1.variant.getExpression().getCode() == "2*a+b"
+assert m.m1.events.IL_in.type == CONVERGENT
+assert m.m1.events.IL_out.type == ANTICIPATED
 t = t.randomAnimation(10)
 
-mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "cars", "/tmp")
+//mtx = new ModelToXML()
+//d = mtx.writeToRodin(m, "cars", "/tmp")
 //d.deleteDir()
 
 s.animator.cli.shutdown();

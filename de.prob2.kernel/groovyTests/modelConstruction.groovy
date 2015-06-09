@@ -107,9 +107,9 @@ assert lift0.invariants.i1.getPredicate().getCode() == "level > 0"
 assert lift0.invariants.always_true.isTheorem()
 assert lift0.invariants.also_always_true.isTheorem()
 init = lift0.events.INITIALISATION
-init.actions.collect { it.getName() } == ["act_level", "a0"]
+assert init.actions.collect { it.getName() } == ["act_level", "ac0"]
 init.actions.act_level.getCode().getCode() == "level := 1"
-init.actions.a0.getCode().getCode() == "door_open := FALSE"
+init.actions.ac0.getCode().getCode() == "door_open := FALSE"
 assert lift0.events.down.guards.always_true.isTheorem()
 
 assert mm.temp.door.Extends[0].getName() == "IDoNothing"

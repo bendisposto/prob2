@@ -3,7 +3,6 @@ package de.prob.model.eventb
 import de.prob.Main
 import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.model.eventb.theory.Theory
-import de.prob.model.eventb.translate.ModelToXML
 import de.prob.model.representation.Constant
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
@@ -202,7 +201,7 @@ public class ModelModifier extends AbstractModifier {
 
 		newEvent
 	}
-	
+
 	def resolveMainComponent(component) {
 		if (component instanceof EventBMachine || component instanceof Context) {
 			return component
@@ -216,7 +215,7 @@ public class ModelModifier extends AbstractModifier {
 		}
 		throw new IllegalArgumentException("$component is an illegal main component for the specified model.")
 	}
-	
+
 
 	/**
 	 * This method makes the model object currently being modified into an
@@ -283,8 +282,8 @@ public class ModelModifier extends AbstractModifier {
 		def name = properties["name"]
 		def c = new Context(name)
 		temp.addContext(c)
-		
-		def ext = properties["extends"]
+
+		def ext = properties["extends"] ?: []
 		def extended = ext.collect { co ->
 			Context ctx = temp.getContexts().getElement(co)
 			if (ctx == null) {
@@ -292,18 +291,18 @@ public class ModelModifier extends AbstractModifier {
 			}
 			temp.addRelationship(name, co, ERefType.EXTENDS)
 			ctx
-		}	
+		}
 		new ContextModifier(c, extended).make(definition)
 	}
 
 	def MachineModifier machine(HashMap properties, Closure definition) {
 		validateProperties(properties, [name: String])
-		
+
 		def name = properties["name"]
 		def m = new EventBMachine(name)
 		temp.addMachine(m)
 
-		def refines = properties["refines"]
+		def refines = properties["refines"] ?: []
 		def refined = refines.collect { ma ->
 			EventBMachine machine = temp.getMachines().getElement(ma)
 			if (machine == null) {
@@ -313,7 +312,7 @@ public class ModelModifier extends AbstractModifier {
 			machine
 		}
 
-		def sees = properties["sees"]
+		def sees = properties["sees"] ?: []
 		def seenContexts = sees.collect { c ->
 			Context context = temp.getContexts().getElement(c)
 			if (context == null) {
