@@ -3,6 +3,31 @@ package de.prob.model.eventb
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.ModelElementList
 
+/**
+ * The {@link MachineModifier} provides an API to programmatically modify or
+ * construct {@link EventBMachine}s. Basic elements can be added to the machine
+ * via the methods beginning with 'add' (e.g. {@link #addInvariant(String)}).
+ * <br>
+ * Machines can also be constructed using JavaBuilder syntax which adds an element
+ * and returns the {@link MachineModifier} object itself to allow the method calls
+ * to be chained together.
+ * <br>
+ * For example: <br>
+ * <code>modifier.var_block("x","x:NAT","x:=0").invariant("x < 10")</code>
+ * <br>
+ * These methods can then be put together to create a Groovy DSL.
+ * <br>
+ * <code>
+ * modifier.make {<br>
+ * <br>
+ * var_block name: "x", invariant: "x:NAT", init: "x:=0"<br>
+ * <br>
+ * event(name: "inc") { action x:=x+1 }<br>
+ * <br>
+ * }<br>
+ * </code>
+ * @author Joy Clark
+ */
 class MachineModifier extends AbstractModifier {
 	private invctr = 0
 	EventBMachine machine
@@ -14,7 +39,7 @@ class MachineModifier extends AbstractModifier {
 		this.machine.addSees(new ModelElementList<Context>(seenContexts))
 		this.machine.addRefines(new ModelElementList<EventBMachine>(refined))
 	}
-	
+
 	private String genInvLabel() {
 		return "i" + invctr++
 	}
@@ -23,29 +48,27 @@ class MachineModifier extends AbstractModifier {
 		variables.each { variable it }
 		this
 	}
-	
+
 	/** adds a variable */
 	def MachineModifier variable(String varName) {
 		machine.variables << new EventBVariable(varName, null)
 		this
 	}
-	
+
 	def MachineModifier var_block(LinkedHashMap properties) {
 		Map validated = validateProperties(properties, [name: String, invariant: Object, init: Object])
 		var_block(validated.name, validated.invariant, validated.init)
 	}
-	
+
 	def MachineModifier var_block(String name, String invariant, String init) {
 		addVariable(name, invariant, init)
 		this
 	}
-	
+
 	def MachineModifier var_block(String name, Map inv, Map init) {
 		variable(name)
 		invariant(inv)
-		initialisation({
-			action init
-		})
+		initialisation({ action init })
 		this
 	}
 
@@ -82,39 +105,35 @@ class MachineModifier extends AbstractModifier {
 		def c = machine.events.INITIALISATION.actions.remove(block.getInitialisationAction())
 		return a & b & c
 	}
-	
+
 	def MachineModifier invariants(Map invariants) {
 		invariants.each { k,v ->
 			invariant(k,v)
 		}
 		this
 	}
-	
+
 	def MachineModifier invariants(String... invariants) {
-		invariants.each {
-			invariant(it)
-		}
+		invariants.each { invariant(it) }
 		this
 	}
-	
+
 	def MachineModifier theorems(Map invariants) {
 		invariants.each { k,v ->
 			theorem(k,v)
 		}
 		this
 	}
-	
+
 	def MachineModifier theorems(String... invariants) {
-		invariants.each {
-			theorem(it)
-		}
+		invariants.each { theorem(it) }
 		this
 	}
-	
+
 	def MachineModifier theorem(LinkedHashMap properties) {
 		invariant(properties, true)
 	}
-	
+
 	def MachineModifier theorem(String thm) {
 		invariant(thm, true)
 	}
@@ -123,7 +142,7 @@ class MachineModifier extends AbstractModifier {
 		Definition prop = getDefinition(properties)
 		return invariant(prop.label, prop.formula, theorem)
 	}
-	
+
 	def MachineModifier invariant(String pred, boolean theorem=false) {
 		invariant(genInvLabel(), pred, theorem)
 	}
@@ -132,7 +151,7 @@ class MachineModifier extends AbstractModifier {
 		addInvariant(name, pred, theorem)
 		this
 	}
-	
+
 	def EventBInvariant addInvariant(String predicate, boolean theorem=false) {
 		addInvariant(genInvLabel(), predicate, theorem)
 	}
@@ -176,20 +195,20 @@ class MachineModifier extends AbstractModifier {
 		def b = machine.invariants.remove(invariant)
 		return a && b
 	}
-	
+
 	def MachineModifier variant(String expression) {
 		setVariant(expression)
 		return this
 	}
-	
+
 	def Variant setVariant(String expression) {
 		def variant = new Variant(expression, Collections.emptySet())
 		machine.addVariant(new ModelElementList([variant]))
 		return variant
 	}
-	
+
 	def boolean removeVariant(Variant variant) {
-	    machine.variant = null
+		machine.variant = null
 		return machine.getChildrenOfType(Variant.class).remove(variant)
 	}
 
@@ -204,7 +223,7 @@ class MachineModifier extends AbstractModifier {
 		getInitialisation().make(cls)
 		this
 	}
-	
+
 	def MachineModifier refine(LinkedHashMap properties, Closure cls={}) {
 		properties["refines"] = properties["name"]
 		event(properties, cls)
@@ -223,7 +242,7 @@ class MachineModifier extends AbstractModifier {
 			}
 		}
 		def type = properties["type"] ?: EventType.ORDINARY
-		
+
 		if (refinedEvent != null && event == null) {
 			throw new IllegalArgumentException("Tried to refine event $refinedEvent with $eventName, but could not find event in the refined machine ")
 		}
