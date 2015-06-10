@@ -11,7 +11,7 @@ import de.prob.scripting.Api
 import de.prob.scripting.EventBFactory
 import de.prob.scripting.LoadClosures
 
-public class ModelModifier {
+public class ModelModifier extends AbstractModifier {
 
 	EventBModel temp
 	Map<String, String> prefs
@@ -31,12 +31,26 @@ public class ModelModifier {
 		temp = deepCopy(model)
 		this.startProB = startProB
 		if (startProB) {
-			GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
-			model.getStateSpace().execute(cmd)
-			prefs = cmd.getPreferences()
-			Api api = Main.getInjector().getInstance(Api.class)
-			loader = api.getSubscribeClosure(LoadClosures.EVENTB)
+			retrieveProBSettings(model);
 		}
+	}
+
+	def ModelModifier(boolean startProB=true) {
+		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
+		temp = factory.modelCreator.get()
+
+		this.startProB = startProB
+		if(startProB) {
+			retrieveProBSettings(temp)
+		}
+	}
+
+	private void retrieveProBSettings(EventBModel model) {
+		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
+		model.getStateSpace().execute(cmd)
+		prefs = cmd.getPreferences()
+		Api api = Main.getInjector().getInstance(Api.class)
+		loader = api.getSubscribeClosure(LoadClosures.EVENTB)
 	}
 
 	/**
@@ -51,7 +65,6 @@ public class ModelModifier {
 		def mainComp = deepCopy(newModel, model.getMainComponent())
 		newModel.addTheories(new ModelElementList<Theory>(model.getChildrenOfType(Theory.class)))
 		newModel.setMainComponent(mainComp)
-		newModel.setModelFile(model.getModelFile())
 		newModel
 	}
 
@@ -70,7 +83,7 @@ public class ModelModifier {
 		if (model.getComponents().containsKey(context.getName())) {
 			return model.getComponents().get(context.getName())
 		}
-		def newContext = new Context(context.name, context.directoryPath)
+		def newContext = new Context(context.name)
 		model.addContext(newContext)
 
 		def Extends = context.Extends.collect { deepCopy(model, it) }
@@ -107,7 +120,7 @@ public class ModelModifier {
 		if (model.getComponents().containsKey(machine.getName())) {
 			return model.getComponents().get(machine.getName())
 		}
-		def newMachine = new EventBMachine(machine.name, machine.directoryPath)
+		def newMachine = new EventBMachine(machine.name)
 		model.addMachine(newMachine)
 
 		def refines = machine.refines.collect { deepCopy(model, it) }
@@ -189,12 +202,28 @@ public class ModelModifier {
 		newEvent
 	}
 
+	def resolveMainComponent(component) {
+		if (component instanceof EventBMachine || component instanceof Context) {
+			return component
+		}
+		if (component instanceof String) {
+			def comp = temp.getComponent(component)
+			if (comp != null) {
+				setMainComponent(comp)
+				return comp
+			}
+		}
+		throw new IllegalArgumentException("$component is an illegal main component for the specified model.")
+	}
+
+
 	/**
 	 * This method makes the model object currently being modified into an
 	 * immutable form.
 	 * @return EventBModel object created
 	 */
-	def EventBModel getModifiedModel() {
+	def EventBModel getModifiedModel(mainModel=temp.getMainComponent()) {
+		resolveMainComponent(mainModel)
 		temp.isFinished()
 		if (startProB) {
 			EventBFactory.loadModel(temp, prefs, loader)
@@ -229,7 +258,8 @@ public class ModelModifier {
 	 */
 	def MachineModifier getMachine(String machineName) {
 		if (temp.getMachines().hasProperty(machineName)) {
-			return new MachineModifier(temp.getMachines().getElement(machineName))
+			def machine = temp.getMachines().getElement(machineName)
+			return new MachineModifier(machine, machine.getSees(), machine.getRefines())
 		}
 	}
 
@@ -242,7 +272,68 @@ public class ModelModifier {
 	 */
 	def ContextModifier getContext(String contextName) {
 		if (temp.getContexts().hasProperty(contextName)) {
-			return new ContextModifier(temp.getContexts().getElement(contextName))
+			def ctx = temp.getContexts().getElement(contextName)
+			return new ContextModifier(ctx, ctx.getExtends())
 		}
+	}
+
+	def context(HashMap properties, Closure definition) {
+		validateProperties(properties, [name: String])
+		def name = properties["name"]
+		def c = new Context(name)
+		temp.addContext(c)
+
+		def ext = properties["extends"] ?: []
+		def extended = ext.collect { co ->
+			Context ctx = temp.getContexts().getElement(co)
+			if (ctx == null) {
+				throw new IllegalArgumentException("Tried to load context $co but could not find it.")
+			}
+			temp.addRelationship(name, co, ERefType.EXTENDS)
+			ctx
+		}
+		new ContextModifier(c, extended).make(definition)
+	}
+
+	def MachineModifier machine(HashMap properties, Closure definition) {
+		validateProperties(properties, [name: String])
+
+		def name = properties["name"]
+		def m = new EventBMachine(name)
+		temp.addMachine(m)
+
+		def refines = properties["refines"] ?: []
+		def refined = refines.collect { ma ->
+			EventBMachine machine = temp.getMachines().getElement(ma)
+			if (machine == null) {
+				throw new IllegalArgumentException("Tried to load machine $ma but could not find it")
+			}
+			temp.addRelationship(name, ma, ERefType.REFINES)
+			machine
+		}
+
+		def sees = properties["sees"] ?: []
+		def seenContexts = sees.collect { c ->
+			Context context = temp.getContexts().getElement(c)
+			if (context == null) {
+				throw new IllegalArgumentException("Tried to load context $c but could not find it")
+			}
+			temp.addRelationship(name, c, ERefType.SEES)
+			context
+		}
+		new MachineModifier(m, seenContexts, refined).make(definition)
+	}
+
+	def setMainComponent(EventBMachine m) {
+		temp.setMainComponent(m)
+	}
+
+	def setMainComponent(Context c) {
+		temp.setMainComponent(c)
+	}
+
+	def ModelModifier make(Closure definition) {
+		runClosure definition
+		this
 	}
 }

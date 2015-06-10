@@ -16,11 +16,9 @@ public class EventBMachine extends Machine {
 	def ModelElementList<EventBInvariant> allInvariants = new ModelElementList<EventBInvariant>() // includes inherited invariants
 	def ModelElementList<ProofObligation> proofs = new ModelElementList<ProofObligation>()
 	def Variant variant
-	private final String directoryPath
 
-	public EventBMachine(final String name, final String directoryPath) {
+	public EventBMachine(final String name) {
 		super(name)
-		this.directoryPath = directoryPath;
 	}
 
 	public void addRefines(final ModelElementList<EventBMachine> refines) {

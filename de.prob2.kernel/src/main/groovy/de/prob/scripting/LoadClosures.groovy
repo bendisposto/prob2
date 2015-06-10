@@ -2,6 +2,7 @@ package de.prob.scripting
 
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
+import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractModel
 import de.prob.statespace.StateSpace
 
@@ -12,7 +13,8 @@ class LoadClosures {
 	def static Closure<Object> EVENTB =  {EventBModel model ->
 		def vars = new HashSet<String>()
 		def s = model as StateSpace
-		model.getMachines().reverse().each {
+		def mt = new EventBModelTranslator(model)
+		mt.extractMachineHierarchy(model).reverse().each {
 			it.getVariables().each {
 				if (!vars.contains(it.getName())) {
 					it.subscribe(s)
@@ -21,7 +23,7 @@ class LoadClosures {
 			}
 		}
 		def cs = new HashSet<String>()
-		model.getContexts().reverse().each {
+		mt.extractContextHierarchy(model).reverse().each {
 			it.getConstants().each {
 				if (!cs.contains(it.getName())) {
 					it.subscribe(s)

@@ -1,15 +1,22 @@
 package de.prob.model.eventb
 
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 
-class ContextModifier {
-	private UUID uuid = UUID.randomUUID()
-	private ctr = 0
+class ContextModifier extends AbstractModifier {
+	private axmctr = 0
 	Context context
 
-	def ContextModifier(Context context) {
+	def ContextModifier(Context context, List<Context> extended=[]) {
 		this.context = context
+		this.context.addExtends(new ModelElementList(extended))
+	}
+
+	def ContextModifier enumerated_set(HashMap properties) {
+		Map validated = validateProperties(properties, [name: String, constants: String[]])
+		addEnumeratedSet(validated["name"], validated["constants"])
+		this
 	}
 
 	/**
@@ -47,6 +54,11 @@ class ContextModifier {
 		return a && b && c
 	}
 
+	def ContextModifier set(String set) {
+		addSet(set)
+		this
+	}
+
 	/**
 	 * Add a carrier set to a context
 	 * @param set to be added
@@ -65,6 +77,18 @@ class ContextModifier {
 	 */
 	def boolean removeSet(Set set) {
 		return context.sets.remove(set)
+	}
+
+	def ContextModifier constants(String... constants) {
+		constants.each {
+			constant(it)
+		}
+		this
+	}
+	
+	def ContextModifier constant(String identifier) {
+		addConstant(identifier)
+		this
 	}
 
 	/**
@@ -86,14 +110,59 @@ class ContextModifier {
 	def boolean removeConstant(EventBConstant constant) {
 		return context.constants.remove(constant)
 	}
+	
+	def genAxmLabel() {
+		return "ax" + axmctr++
+	}
+	
+	def ContextModifier axioms(Map axioms) {
+		axioms.each { k,v ->
+			axiom(k,v)
+		}
+		this
+	}
+	
+	def ContextModifier axioms(String... axioms) {
+		axioms.each {
+			axiom(it)
+		}
+		this
+	}
+	
+	def ContextModifier theorem(String thm) {
+		axiom(thm, true)
+	}
+		
+	def ContextModifier theorem(Map props) {
+		axiom(props, true)
+	}
 
+	def ContextModifier axiom(Map props, boolean theorem=false) {
+		Definition prop = getDefinition(props)
+		return axiom(prop.label, prop.formula, theorem)
+	}
+	
+	def ContextModifier axiom(String pred, boolean theorem=false) {
+		axiom(genAxmLabel(), pred, theorem)
+	}
+
+	def ContextModifier axiom(String name, String pred, boolean theorem=false) {
+		addAxiom(name, pred, theorem)
+		this
+	}
+
+
+	def EventBAxiom addAxiom(String predicate, boolean theorem=false) {
+		addAxiom(genAxmLabel(), predicate, theorem)
+	}
+	
 	/**
 	 * Add an axiom to a context
 	 * @param predicate to be added as an axiom
 	 * @return {@link EventBAxiom} added to the {@link Context}
 	 */
-	def EventBAxiom addAxiom(String predicate) {
-		def axiom = new EventBAxiom("gen-axiom-${uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
+	def EventBAxiom addAxiom(String name, String predicate, boolean theorem=false) {
+		def axiom = new EventBAxiom(name, predicate, theorem, Collections.emptySet())
 		context.axioms << axiom
 		context.allAxioms << axiom
 		axiom
@@ -112,4 +181,10 @@ class ContextModifier {
 		}
 		return a && b
 	}
+
+	def ContextModifier make(Closure definition) {
+		runClosure definition
+		this
+	}
+
 }

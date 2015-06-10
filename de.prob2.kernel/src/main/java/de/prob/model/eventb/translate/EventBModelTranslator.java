@@ -1,6 +1,7 @@
 package de.prob.model.eventb.translate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
@@ -12,6 +13,7 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.EventBVariable;
 import de.prob.model.eventb.ProofObligation;
 import de.prob.model.eventb.theory.Theory;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Machine;
 import de.prob.prolog.output.IPrologTermOutput;
 
@@ -23,21 +25,88 @@ public class EventBModelTranslator {
 	private final EventBModel model;
 
 	public EventBModelTranslator(final EventBModel model) {
-
 		this.model = model;
-		for (Machine machine : model.getChildrenOfType(Machine.class)) {
+
+		for (Machine machine : extractMachineHierarchy(model)) {
 			EventBMachine ebM = (EventBMachine) machine;
 			machineTranslators.add(new EventBMachineTranslator(ebM));
 			proofObligations.addAll(ebM.getProofs());
 		}
 
-		for (Context context : model.getChildrenOfType(Context.class)) {
+		for (Context context : extractContextHierarchy(model)) {
 			contextTranslators.add(new ContextTranslator(context));
 			proofObligations.addAll(context.getProofs());
 		}
 
 		theoryTranslator = new TheoryTranslator(
 				model.getChildrenOfType(Theory.class));
+	}
+
+	public List<EventBMachine> extractMachineHierarchy(final EventBModel model) {
+		AbstractElement mainComponent = model.getMainComponent();
+		if (mainComponent instanceof Context) {
+			return Collections.emptyList();
+		}
+		List<EventBMachine> machines = new ArrayList<EventBMachine>();
+		if (mainComponent instanceof EventBMachine) {
+			EventBMachine machine = (EventBMachine) mainComponent;
+			machines.add(machine);
+			machines.addAll(extractMachines(machine));
+		}
+		return machines;
+	}
+
+	private List<EventBMachine> extractMachines(final EventBMachine machine) {
+		if (machine.getRefines().isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<EventBMachine> machines = new ArrayList<EventBMachine>();
+		for (EventBMachine eventBMachine : machine.getRefines()) {
+			machines.add(eventBMachine);
+			machines.addAll(extractMachines(eventBMachine));
+		}
+		return machines;
+	}
+	
+	public List<Context> extractContextHierarchy(final EventBModel model) {
+		AbstractElement mainComponent = model.getMainComponent();
+		if (mainComponent instanceof Context) {
+			return extractContextHierarchy((Context) mainComponent);
+		}
+		if (mainComponent instanceof EventBMachine) {
+			return extractContextHierarchy((EventBMachine) mainComponent);
+		}
+		return Collections.emptyList();
+	}
+
+
+	private List<Context> extractContextHierarchy(EventBMachine machine) {
+		List<Context> contexts = new ArrayList<Context>();
+		for (Context c : machine.getSees()) {
+			contexts.add(c);
+			List<Context> contextHierarchy = extractContextHierarchy(c);
+			for (Context context : contextHierarchy) {
+				if (!contexts.contains(context)) {
+					contexts.add(context);
+				}
+			}
+		}
+		return contexts;
+	}
+
+	private List<Context> extractContextHierarchy(Context context) {
+		List<Context> contexts = new ArrayList<Context>();
+		contexts.add(context);
+		for (Context c : context.getExtends()) {
+			contexts.add(c);
+			List<Context> contextHierarchy = extractContextHierarchy(c);
+			for (Context c2 : contextHierarchy) {
+				if (!contexts.contains(c2)) {
+					contexts.add(c2);
+				}
+			}
+		}
+		return contexts;
 	}
 
 	public void printProlog(final IPrologTermOutput pto) {
