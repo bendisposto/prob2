@@ -1,5 +1,15 @@
 package de.prob.scripting;
 
+import java.io.File;
+import java.io.IOException;
+
+import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
+import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.node.Start;
+import de.prob.model.classicalb.ClassicalBModel;
+
+
 import java.util.Map.Entry
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -28,6 +38,14 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 		super(modelCreator, fileHandler, LoadClosures.getEVENTB());
 	}
 
+	@Override
+	public EventBModel extract(String modelPath) throws IOException,
+			ModelTranslationError {
+		EventBModel model = modelCreator.get();
+		new EventBDatabaseTranslator(model, getValidFileName(modelPath));
+		model
+	}
+	
 	@Override
 	public EventBModel load(final String modelPath, final Map<String, String> prefs,
 			final Closure<Object> loader) throws IOException, ModelTranslationError {

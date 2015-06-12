@@ -77,14 +77,14 @@ public abstract class AbstractModel extends AbstractElement {
 		+ " found.");
 	}
 
-	public abstract AbstractElement getMainComponent();
-
 	public abstract IEvalElement parseFormula(String formula);
 	
 	public abstract boolean checkSyntax(String formula);
 
 	public abstract FormalismType getFormalismType();
 
+	public abstract StateSpace load(Map<String,String> preferences, AbstractElement mainComponent);
+	
 	protected void extractModelDir(File modelFile, String dirName) {
 		if (modelFile == null) {
 			return;
@@ -127,4 +127,6 @@ public abstract class AbstractModel extends AbstractElement {
 	def Closure getClosure() {
 		return AbstractModel.subscribe
 	}
+	
+	
 }

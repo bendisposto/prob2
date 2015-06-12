@@ -34,10 +34,8 @@ public abstract class ModelFactory<T extends AbstractModel> {
 		this.defaultClosure = defaultClosure;
 	}
 
-	public T load(final String fileName) throws IOException,
-			ModelTranslationError {
-		return load(fileName, new HashMap<String, String>());
-	}
+	public abstract T extract(final String fileName) throws IOException,
+			ModelTranslationError;
 
 	public T load(final String fileName, final Map<String, String> preferences)
 			throws IOException, ModelTranslationError {

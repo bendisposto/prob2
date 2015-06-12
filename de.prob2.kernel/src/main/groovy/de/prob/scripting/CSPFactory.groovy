@@ -18,6 +18,14 @@ class CSPFactory extends ModelFactory<CSPModel> {
 	public CSPFactory(final Provider<CSPModel> modelCreator, FileHandler fileHandler) {
 		super(modelCreator, fileHandler, LoadClosures.EMPTY)
 	}
+	
+	@Override
+	public CSPModel extract(final String modelPath) throws IOException, ModelTranslationError {
+		CSPModel cspModel = modelCreator.get()
+		File f = new File(modelPath)
+		cspModel.init(readFile(f),f)
+		return cspModel;
+	}
 
 	@Override
 	public CSPModel load(final String modelPath, Map<String, String> prefs, Closure<Object> loadClosure) throws IOException, ModelTranslationError {

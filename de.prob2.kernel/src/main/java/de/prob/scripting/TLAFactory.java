@@ -38,6 +38,37 @@ public class TLAFactory extends ModelFactory<ClassicalBModel> {
 			final FileHandler fileHandler) {
 		super(modelCreator, fileHandler, LoadClosures.getB());
 	}
+	
+	@Override
+	public ClassicalBModel extract(String fileName) throws IOException,
+			ModelTranslationError {
+		ClassicalBModel classicalBModel = modelCreator.get();
+		File f = new File(fileName);
+		if (!f.exists()) {
+			throw new FileNotFoundException("The TLA Model" + fileName
+					+ " was not found.");
+		}
+
+		Translator translator;
+		Start ast;
+		try {
+			translator = new Translator(f.getAbsolutePath());
+			ast = translator.translate();
+		} catch (TLA2BException e) {
+			throw new ModelTranslationError("Translation Error: "
+					+ e.getMessage(), e);
+		}
+
+		BParser bparser = new BParser();
+		bparser.getDefinitions().addAll(translator.getBDefinitions());
+		try {
+			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
+			classicalBModel.initialize(ast, rml, f, bparser);
+		} catch (BException e) {
+			throw new ModelTranslationError(e.getMessage(), e);
+		}
+		return classicalBModel;
+	}
 
 	@Override
 	public ClassicalBModel load(final String fileName,
@@ -167,4 +198,6 @@ public class TLAFactory extends ModelFactory<ClassicalBModel> {
 		ast = bparser.parseFile(model, false);
 		return ast;
 	}
+
+
 }

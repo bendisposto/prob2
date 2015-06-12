@@ -41,6 +41,24 @@ public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
 			final FileHandler fileHandler) {
 		super(modelCreator, fileHandler, LoadClosures.getB());
 	}
+	
+	@Override
+	public ClassicalBModel extract(String modelPath) throws IOException,
+			ModelTranslationError {
+		ClassicalBModel classicalBModel = modelCreator.get();
+
+		File f = new File(modelPath);
+		BParser bparser = new BParser();
+
+		try {
+			Start ast = parseFile(f, bparser);
+			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
+			classicalBModel.initialize(ast, rml, f, bparser);
+		} catch (BException e) {
+			throw new ModelTranslationError(e.getMessage(), e);
+		}
+		return classicalBModel;
+	}
 
 	@Override
 	public ClassicalBModel load(final String modelPath,
@@ -156,5 +174,7 @@ public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
 		ast = bparser.parseFile(model, false);
 		return ast;
 	}
+
+
 
 }
