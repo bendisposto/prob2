@@ -1,15 +1,5 @@
 package de.prob.scripting;
 
-import java.io.File;
-import java.io.IOException;
-
-import de.be4.classicalb.core.parser.BParser;
-import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
-import de.be4.classicalb.core.parser.exceptions.BException;
-import de.be4.classicalb.core.parser.node.Start;
-import de.prob.model.classicalb.ClassicalBModel;
-
-
 import java.util.Map.Entry
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -21,26 +11,23 @@ import com.google.inject.Provider
 import de.prob.animator.command.AbstractCommand
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.LoadEventBFileCommand
-import de.prob.animator.command.LoadEventBProjectCommand
 import de.prob.animator.command.SetPreferenceCommand
 import de.prob.animator.command.StartAnimationCommand
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.translate.EventBDatabaseTranslator
-import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractElement
 import de.prob.statespace.StateSpace
 
 public class EventBFactory extends ModelFactory<EventBModel> {
 
 	@Inject
-	public EventBFactory(final Provider<EventBModel> modelCreator,
-	final FileHandler fileHandler) {
-		super(modelCreator, fileHandler, LoadClosures.getEVENTB());
+	public EventBFactory(final Provider<EventBModel> modelCreator) {
+		super(modelCreator);
 	}
 
 	@Override
 	public ExtractedModel<EventBModel> extract(String modelPath) throws IOException,
-			ModelTranslationError {
+	ModelTranslationError {
 		EventBModel model = modelCreator.get();
 		EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, getValidFileName(modelPath));
 		new ExtractedModel<EventBModel>(model,translator.getMainComponent())

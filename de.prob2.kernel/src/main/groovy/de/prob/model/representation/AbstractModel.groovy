@@ -1,23 +1,18 @@
 package de.prob.model.representation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map.Entry
 
 import com.google.inject.Inject
 import com.google.inject.Provider
 
 import de.prob.animator.command.AbstractCommand
-import de.prob.animator.command.ComposedCommand;
-import de.prob.animator.command.LoadEventBProjectCommand;
-import de.prob.animator.command.SetPreferenceCommand;
-import de.prob.animator.command.StartAnimationCommand;
+import de.prob.animator.command.ComposedCommand
+import de.prob.animator.command.SetPreferenceCommand
+import de.prob.animator.command.StartAnimationCommand
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.model.eventb.translate.EventBModelTranslator;
 import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
-import de.prob.statespace.Trace
 
 public abstract class AbstractModel extends AbstractElement {
 
@@ -76,16 +71,8 @@ public abstract class AbstractModel extends AbstractElement {
 		return graph.toString();
 	}
 
-	public Object asType(final Class<?> className) {
-		if (className.getSimpleName().equals("Trace")) {
-			return new Trace(getStateSpace());
-		}
-		throw new ClassCastException("No element of type " + className
-		+ " found.");
-	}
-
 	public abstract IEvalElement parseFormula(String formula);
-	
+
 	public abstract boolean checkSyntax(String formula);
 
 	public abstract FormalismType getFormalismType();
@@ -122,7 +109,7 @@ public abstract class AbstractModel extends AbstractElement {
 	def Closure getClosure() {
 		return AbstractModel.subscribe
 	}
-	
+
 	protected StateSpace loadFromCommand(AbstractElement mainComponent, Map<String,String> preferences, AbstractCommand loadCmd) {
 		StateSpace s = createStateSpace(mainComponent);
 		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();

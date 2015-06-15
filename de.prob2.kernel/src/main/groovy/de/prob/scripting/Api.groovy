@@ -6,17 +6,14 @@ import org.slf4j.LoggerFactory
 import com.google.inject.Inject
 
 import de.be4.classicalb.core.parser.exceptions.BException
+import de.prob.Main
 import de.prob.animator.IAnimator
-import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.animator.command.GetVersionCommand
 import de.prob.cli.CliVersionNumber
 import de.prob.cli.ProBInstance
 import de.prob.exception.ProBError
-import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.translate.EventBModelTranslator
-import de.prob.model.representation.AbstractModel
-import de.prob.model.representation.CSPModel
 import de.prob.prolog.output.PrologTermOutput
 import de.prob.statespace.StateSpace
 
@@ -79,7 +76,7 @@ public class Api {
 		}
 		def extracted = factory.extract(fileName)
 		StateSpace s = extracted.load(prefs)
-		loadClosure(s.getModel())
+		loadClosure(s)
 		return s
 	}
 
@@ -121,7 +118,7 @@ public class Api {
 				.getClassicalBFactory();
 		def extracted = bFactory.extract(file)
 		StateSpace s = extracted.load(prefs)
-		loadClosure(s.getModel())
+		loadClosure(s)
 		return s
 	}
 
@@ -130,7 +127,7 @@ public class Api {
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
 		def extracted = tlaFactory.extract(file)
 		StateSpace s = extracted.load(prefs)
-		loadClosure(s.getModel())
+		loadClosure(s)
 		return s
 	}
 
@@ -150,7 +147,7 @@ public class Api {
 		try {
 			def extracted = cspFactory.extract(file)
 			s = extracted.load(prefs)
-			loadClosure(s.getModel())
+			loadClosure(s)
 		} catch (ProBError error) {
 			throw new Exception(
 			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory");

@@ -18,7 +18,7 @@ class StateSpaceCachingTest extends Specification {
 	def setupSpec() {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
-		s = factory.load(path) as StateSpace
+		s = factory.extract(path).load([:])
 	}
 
 	def setup() {
@@ -108,7 +108,7 @@ class StateSpaceCachingTest extends Specification {
 		when:
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
-		StateSpace s = factory.load(path) as StateSpace
+		StateSpace s = factory.extract(path).load([:])
 		Trace t = new Trace(s)
 		def sizes = []
 		for (i in 1..10) {

@@ -24,7 +24,8 @@ public class EventBModelTranslator {
 	private final TheoryTranslator theoryTranslator;
 	private final EventBModel model;
 
-	public EventBModelTranslator(final EventBModel model, AbstractElement mainComponent) {
+	public EventBModelTranslator(final EventBModel model,
+			final AbstractElement mainComponent) {
 		this.model = model;
 
 		for (Machine machine : extractMachineHierarchy(mainComponent)) {
@@ -33,7 +34,7 @@ public class EventBModelTranslator {
 			proofObligations.addAll(ebM.getProofs());
 		}
 
-		for (Context context : extractContextHierarchy(model)) {
+		for (Context context : extractContextHierarchy(mainComponent)) {
 			contextTranslators.add(new ContextTranslator(context));
 			proofObligations.addAll(context.getProofs());
 		}
@@ -42,7 +43,8 @@ public class EventBModelTranslator {
 				model.getChildrenOfType(Theory.class));
 	}
 
-	public List<EventBMachine> extractMachineHierarchy(final AbstractElement mainComponent) {
+	public List<EventBMachine> extractMachineHierarchy(
+			final AbstractElement mainComponent) {
 		if (mainComponent instanceof Context) {
 			return Collections.emptyList();
 		}
@@ -66,8 +68,9 @@ public class EventBModelTranslator {
 		}
 		return machines;
 	}
-	
-	public List<Context> extractContextHierarchy(final AbstractElement mainComponent) {
+
+	public List<Context> extractContextHierarchy(
+			final AbstractElement mainComponent) {
 		if (mainComponent instanceof Context) {
 			return extractContextHierarchy((Context) mainComponent);
 		}
@@ -77,8 +80,7 @@ public class EventBModelTranslator {
 		return Collections.emptyList();
 	}
 
-
-	private List<Context> extractContextHierarchy(EventBMachine machine) {
+	private List<Context> extractContextHierarchy(final EventBMachine machine) {
 		List<Context> contexts = new ArrayList<Context>();
 		for (Context c : machine.getSees()) {
 			contexts.add(c);
@@ -92,7 +94,7 @@ public class EventBModelTranslator {
 		return contexts;
 	}
 
-	private List<Context> extractContextHierarchy(Context context) {
+	private List<Context> extractContextHierarchy(final Context context) {
 		List<Context> contexts = new ArrayList<Context>();
 		contexts.add(context);
 		for (Context c : context.getExtends()) {

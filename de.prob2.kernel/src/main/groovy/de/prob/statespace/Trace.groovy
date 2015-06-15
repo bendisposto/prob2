@@ -25,10 +25,6 @@ public class Trace {
 	def final UUID UUID
 	def final List<Transition> transitionList
 
-	def Trace(final AbstractModel m) {
-		this(m.getStateSpace())
-	}
-
 	def Trace(final StateSpace s) {
 		this(s.getRoot())
 	}
