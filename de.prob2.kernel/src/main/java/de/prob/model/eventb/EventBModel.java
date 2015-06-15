@@ -101,8 +101,8 @@ public class EventBModel extends AbstractModel {
 	}
 
 	@Override
-	public StateSpace load(final Map<String, String> preferences,
-			final AbstractElement mainComponent) {
+	public StateSpace load(final AbstractElement mainComponent,
+			final Map<String, String> preferences) {
 		return loadFromCommand(mainComponent, preferences,
 				new LoadEventBProjectCommand(new EventBModelTranslator(this,
 						mainComponent)));

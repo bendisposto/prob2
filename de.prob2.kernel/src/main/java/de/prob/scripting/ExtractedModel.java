@@ -7,22 +7,22 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.StateSpace;
 
 public class ExtractedModel<T extends AbstractModel> {
-	private T model;
-	private AbstractElement mainComponent;
+	private final T model;
+	private final AbstractElement mainComponent;
 
-	public ExtractedModel(T model, AbstractElement mainComponent) {
+	public ExtractedModel(final T model, final AbstractElement mainComponent) {
 		this.model = model;
 		this.mainComponent = mainComponent;
 	}
-	
-	public StateSpace load(Map<String, String> preferences) {
-		return model.load(preferences, mainComponent);
+
+	public StateSpace load(final Map<String, String> preferences) {
+		return model.load(mainComponent, preferences);
 	}
-	
+
 	public T getModel() {
 		return model;
 	}
-	
+
 	public AbstractElement getMainComponent() {
 		return mainComponent;
 	}

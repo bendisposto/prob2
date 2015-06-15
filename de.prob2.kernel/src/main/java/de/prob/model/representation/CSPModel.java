@@ -27,7 +27,7 @@ public class CSPModel extends AbstractModel {
 		this.content = content;
 		this.modelFile = modelFile;
 		components
-				.put(modelFile.getName(), new CSPElement(modelFile.getName()));
+		.put(modelFile.getName(), new CSPElement(modelFile.getName()));
 	}
 
 	public String getContent() {
@@ -57,8 +57,8 @@ public class CSPModel extends AbstractModel {
 	}
 
 	@Override
-	public StateSpace load(final Map<String, String> preferences,
-			final AbstractElement mainComponent) {
+	public StateSpace load(final AbstractElement mainComponent,
+			final Map<String, String> preferences) {
 		return loadFromCommand(mainComponent, preferences, new LoadCSPCommand(
 				modelFile.getAbsolutePath()));
 	}

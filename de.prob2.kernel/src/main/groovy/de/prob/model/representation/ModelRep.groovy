@@ -24,13 +24,14 @@ class ModelRep {
 	def children = []
 	def path = []
 
-	def static List<ModelRep> translate(AbstractModel m) {
+	def static List<ModelRep> translate(StateSpace s) {
 		def reps = []
+		def m = s.getModel()
 		m.getChildrenOfType(Machine.class).each {
-			reps << translate(it, [], m.getStateSpace())
+			reps << translate(it, [], s)
 		}
 		m.getChildrenOfType(Context.class).each {
-			reps << translate(it, [], m.getStateSpace())
+			reps << translate(it, [], s)
 		}
 		reps
 	}

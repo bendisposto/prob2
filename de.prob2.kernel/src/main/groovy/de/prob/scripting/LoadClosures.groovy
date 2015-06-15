@@ -9,7 +9,7 @@ class LoadClosures {
 
 	def static Closure<Object> EVENTB =  {StateSpace s ->
 		def vars = new HashSet<String>()
-		def mt = new EventBModelTranslator(s.getModel())
+		def mt = new EventBModelTranslator(s.getModel(), s.getMainComponent())
 		mt.extractMachineHierarchy(s.getModel()).reverse().each {
 			it.getVariables().each {
 				if (!vars.contains(it.getName())) {

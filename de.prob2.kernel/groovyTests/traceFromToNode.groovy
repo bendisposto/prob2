@@ -3,8 +3,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 t = new Trace(s)
 t1 = t.$initialise_machine().new("pp = PID1")
 

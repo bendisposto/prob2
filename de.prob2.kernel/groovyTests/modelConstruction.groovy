@@ -114,14 +114,14 @@ assert lift0.events.down.guards.always_true.isTheorem()
 
 assert mm.temp.door.Extends[0].getName() == "IDoNothing"
 
-m = mm.getModifiedModel("lift1")
+m = mm.getModifiedModel()
 
 //mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "MyLift", dir)
 //d.deleteDir()
 
-s = m as StateSpace
-t = m as Trace
+s = m.load(m.lift1)
+t = s as Trace
 
 t = t.$setup_constants()
 t = t.$initialise_machine()

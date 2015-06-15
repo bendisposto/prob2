@@ -56,9 +56,9 @@ mm.make {
 	}
 }
 
-m = mm.getModifiedModel("bowl2")
-s = m as StateSpace
-t = m as Trace
+m = mm.getModifiedModel()
+s = m.load(m.bowl2)
+t = s as Trace
 
 t = t.randomAnimation(10)
 

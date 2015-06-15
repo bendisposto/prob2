@@ -61,10 +61,10 @@ public class StateInspector extends AbstractAnimationBasedView {
 			extractFormulas(currentStateSpace);
 			Object values = calculateFormulas(currentTrace);
 			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
-					"components", WebUtils.toJson(ModelRep
-							.translate(currentStateSpace.getModel())),
-					"values", WebUtils.toJson(values), "history", WebUtils
-							.toJson(history)));
+					"components",
+					WebUtils.toJson(ModelRep.translate(currentStateSpace)),
+					"values", WebUtils.toJson(values), "history",
+					WebUtils.toJson(history)));
 		}
 	}
 
@@ -144,8 +144,8 @@ public class StateInspector extends AbstractAnimationBasedView {
 
 			Object calculatedValues = calculateFormulas(currentTrace);
 			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
-					"components", WebUtils.toJson(ModelRep
-							.translate(currentStateSpace.getModel())),
+					"components",
+					WebUtils.toJson(ModelRep.translate(currentStateSpace)),
 					"values", WebUtils.toJson(calculatedValues), "history",
 					WebUtils.toJson(history)));
 			return;

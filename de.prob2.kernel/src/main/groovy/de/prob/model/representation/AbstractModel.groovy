@@ -33,7 +33,7 @@ public abstract class AbstractModel extends AbstractElement {
 	 * @return StateSpace object associated with this AbstractModel instance
 	 */
 	protected StateSpace createStateSpace(AbstractElement mainComponent) {
-		if (mainComponent != null && !components.containsValue(mainComponent)) {
+		if (mainComponent == null || !components.containsValue(mainComponent)) {
 			throw new IllegalArgumentException("Specified main component: "+mainComponent.toString()+" is not a valid machine or context in this model.");
 		}
 		StateSpace s = stateSpaceProvider.get()
@@ -77,7 +77,7 @@ public abstract class AbstractModel extends AbstractElement {
 
 	public abstract FormalismType getFormalismType();
 
-	public abstract StateSpace load(Map<String,String> preferences, AbstractElement mainComponent);
+
 
 	public File getModelFile() {
 		return modelFile;
@@ -109,6 +109,12 @@ public abstract class AbstractModel extends AbstractElement {
 	def Closure getClosure() {
 		return AbstractModel.subscribe
 	}
+
+	public StateSpace load(AbstractElement mainComponent) {
+		load(mainComponent, [:])
+	}
+
+	public abstract StateSpace load(AbstractElement mainComponent, Map<String,String> preferences);
 
 	protected StateSpace loadFromCommand(AbstractElement mainComponent, Map<String,String> preferences, AbstractCommand loadCmd) {
 		StateSpace s = createStateSpace(mainComponent);

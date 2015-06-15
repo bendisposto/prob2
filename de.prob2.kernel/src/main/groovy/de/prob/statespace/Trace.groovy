@@ -9,7 +9,6 @@ import de.prob.animator.command.EvaluationCommand
 import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.representation.AbstractModel
 
 /**
@@ -343,7 +342,7 @@ public class Trace {
 			return stateSpace.model
 		}
 		if(className == stateSpace.model.getClass()) {
-			return (ClassicalBModel) stateSpace.model
+			return stateSpace.model
 		}
 		throw new ClassCastException("Not able to convert Trace object to ${className}")
 	}

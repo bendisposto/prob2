@@ -88,8 +88,8 @@ public class Api {
 		return factory.loadModelFromZip(zipFile, componentName, prefs, loadClosure)
 	}
 
-	public void eventb_save(final EventBModel model, final String path) {
-		EventBModelTranslator translator = new EventBModelTranslator(model);
+	public void eventb_save(final StateSpace s, final String path) {
+		EventBModelTranslator translator = new EventBModelTranslator(s.getModel(), s.getMainComponent());
 
 		def fos = new FileOutputStream(path);
 		PrologTermOutput pto = new PrologTermOutput(fos,false);

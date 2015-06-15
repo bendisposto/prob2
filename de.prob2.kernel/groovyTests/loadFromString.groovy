@@ -1,7 +1,7 @@
 import de.be4.classicalb.core.parser.BParser;
 import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
-
+import de.prob.Main
 
 modelString = """MACHINE blah
 SETS
@@ -19,8 +19,7 @@ modelProvider = api.modelFactoryProvider.classical_b_factory.modelCreator
 assert modelProvider != null 
 
 m = modelProvider.get()
-s = m as StateSpace
-
+s = Main.getInjector().getInstance(StateSpace.class)
 cmd = new LoadBProjectFromStringCommand(modelString)
 s.execute(cmd)
 p = new BParser()
@@ -28,7 +27,7 @@ ast = cmd.parseString(modelString, p)
 rml = cmd.getLoader(modelString)
 
 m.initialize(ast, rml, new File(""), p)
-
+s.setModel(m, m.blah)
 s.execute(new StartAnimationCommand())
 
 // Test that animation works correctly
