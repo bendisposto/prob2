@@ -39,21 +39,11 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 	}
 
 	@Override
-	public EventBModel extract(String modelPath) throws IOException,
+	public ExtractedModel<EventBModel> extract(String modelPath) throws IOException,
 			ModelTranslationError {
 		EventBModel model = modelCreator.get();
-		new EventBDatabaseTranslator(model, getValidFileName(modelPath));
-		model
-	}
-	
-	@Override
-	public EventBModel load(final String modelPath, final Map<String, String> prefs,
-			final Closure<Object> loader) throws IOException, ModelTranslationError {
-		EventBModel model = modelCreator.get();
-
-		new EventBDatabaseTranslator(model, getValidFileName(modelPath));
-
-		return loadModel(model, getPreferences(model, prefs), loader);
+		EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, getValidFileName(modelPath));
+		new ExtractedModel<EventBModel>(model,translator.getMainComponent())
 	}
 
 	private String getValidFileName(String fileName) {
@@ -69,32 +59,6 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 		fileName
 	}
 
-
-	/**
-	 * Loads the specified EventBModel, sets the specified ProB Preferences, and then
-	 * executes the user specified loader to
-	 * @param model to load
-	 * @param prefs ProB preferences
-	 * @param loader actions to take place after loading
-	 * @return the same model after the loading process
-	 */
-	public static EventBModel loadModel(final EventBModel model,
-			final Map<String, String> prefs, final Closure<Object> loader) throws IOException, ModelTranslationError {
-		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
-
-		for (Entry<String, String> pref : prefs.entrySet()) {
-			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
-		}
-
-		cmds.add(new LoadEventBProjectCommand(
-				new EventBModelTranslator(model)));
-		cmds.add(new StartAnimationCommand());
-		StateSpace s = model.getStateSpace();
-		s.execute(new ComposedCommand(cmds));
-
-		loader(model)
-		return model;
-	}
 
 	public EventBModel loadModelFromEventBFile(final String fileName,
 			final Map<String, String> prefs, final Closure loadClosure) throws IOException {
@@ -115,7 +79,6 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 
 		String componentName = file.getName().replaceAll("\\.eventb\$", "")
 
-		model.setMainComponent(new DummyElement(componentName))
 		model.setModelFile(file);
 		model.isFinished();
 
@@ -125,7 +88,7 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 
-		StateSpace s = model.getStateSpace();
+		StateSpace s = model.createStateSpace(new DummyElement(componentName))
 		s.execute(new ComposedCommand(cmds));
 
 		s.execute(new LoadEventBFileCommand(loadcmd));

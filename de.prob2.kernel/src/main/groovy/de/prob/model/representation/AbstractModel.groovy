@@ -1,9 +1,19 @@
 package de.prob.model.representation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+
 import com.google.inject.Inject
 import com.google.inject.Provider
 
+import de.prob.animator.command.AbstractCommand
+import de.prob.animator.command.ComposedCommand;
+import de.prob.animator.command.LoadEventBProjectCommand;
+import de.prob.animator.command.SetPreferenceCommand;
+import de.prob.animator.command.StartAnimationCommand;
 import de.prob.animator.domainobjects.IEvalElement
+import de.prob.model.eventb.translate.EventBModelTranslator;
 import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
@@ -11,7 +21,6 @@ import de.prob.statespace.Trace
 
 public abstract class AbstractModel extends AbstractElement {
 
-	private StateSpace stateSpace = null;
 	private final Provider<StateSpace> stateSpaceProvider;
 	protected boolean dirty = false;
 	protected File modelFile;
@@ -28,12 +37,13 @@ public abstract class AbstractModel extends AbstractElement {
 	/**
 	 * @return StateSpace object associated with this AbstractModel instance
 	 */
-	public StateSpace getStateSpace() {
-		if (stateSpace == null) {
-			stateSpace = stateSpaceProvider.get();
-			stateSpace.setModel(this);
+	protected StateSpace createStateSpace(AbstractElement mainComponent) {
+		if (mainComponent != null && !components.containsValue(mainComponent)) {
+			throw new IllegalArgumentException("Specified main component: "+mainComponent.toString()+" is not a valid machine or context in this model.");
 		}
-		return stateSpace;
+		StateSpace s = stateSpaceProvider.get()
+		s.setModel(this,mainComponent)
+		return s;
 	}
 
 	public AbstractElement getComponent(final String name) {
@@ -67,9 +77,6 @@ public abstract class AbstractModel extends AbstractElement {
 	}
 
 	public Object asType(final Class<?> className) {
-		if (className.getSimpleName().equals("StateSpace")) {
-			return getStateSpace();
-		}
 		if (className.getSimpleName().equals("Trace")) {
 			return new Trace(getStateSpace());
 		}
@@ -84,21 +91,9 @@ public abstract class AbstractModel extends AbstractElement {
 	public abstract FormalismType getFormalismType();
 
 	public abstract StateSpace load(Map<String,String> preferences, AbstractElement mainComponent);
-	
-	protected void extractModelDir(File modelFile, String dirName) {
-		if (modelFile == null) {
-			return;
-		}
-		modelDirPath = modelFile.absolutePath.substring(0, modelFile.absolutePath.lastIndexOf(File.separator)+1) + dirName + File.separator
-		new File(modelDirPath).mkdir()
-	}
 
 	public File getModelFile() {
 		return modelFile;
-	}
-
-	public String getModelDirPath() {
-		return modelDirPath;
 	}
 
 	def getProperty(final String name) {
@@ -128,5 +123,18 @@ public abstract class AbstractModel extends AbstractElement {
 		return AbstractModel.subscribe
 	}
 	
-	
+	protected StateSpace loadFromCommand(AbstractElement mainComponent, Map<String,String> preferences, AbstractCommand loadCmd) {
+		StateSpace s = createStateSpace(mainComponent);
+		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
+
+		for (Entry<String, String> pref : preferences.entrySet()) {
+			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
+		}
+
+		cmds.add(loadCmd);
+		cmds.add(new StartAnimationCommand());
+
+		s.execute(new ComposedCommand(cmds));
+		return s;
+	}
 }

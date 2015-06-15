@@ -1,14 +1,11 @@
 package de.prob.scripting;
 
-import java.util.Map.Entry
-
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import com.google.inject.Inject
 
 import de.be4.classicalb.core.parser.exceptions.BException
-import de.prob.Main
 import de.prob.animator.IAnimator
 import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.animator.command.GetVersionCommand
@@ -21,6 +18,7 @@ import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractModel
 import de.prob.model.representation.CSPModel
 import de.prob.prolog.output.PrologTermOutput
+import de.prob.statespace.StateSpace
 
 
 public class Api {
@@ -73,13 +71,16 @@ public class Api {
 		x.shutdown();
 	}
 
-	public EventBModel eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.EVENTB)) {
+	public StateSpace eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.EVENTB)) {
 		def fileName = file;
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (fileName.endsWith(".eventb")) {
 			return factory.loadModelFromEventBFile(file, prefs, loadClosure)
 		}
-		return factory.load(fileName, prefs, loadClosure);
+		def extracted = factory.extract(fileName)
+		StateSpace s = extracted.load(prefs)
+		loadClosure(s.getModel())
+		return s
 	}
 
 	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.EVENTB)) {
@@ -114,17 +115,23 @@ public class Api {
 	 * @throws BException
 	 * @throws IOException
 	 */
-	public ClassicalBModel b_load(final String file,
+	public StateSpace b_load(final String file,
 			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.B)) throws IOException, BException {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
-		return bFactory.load(file, prefs, loadClosure);
+		def extracted = bFactory.extract(file)
+		StateSpace s = extracted.load(prefs)
+		loadClosure(s.getModel())
+		return s
 	}
 
-	public ClassicalBModel tla_load(final String file,
+	public StateSpace tla_load(final String file,
 			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.B)) throws IOException, BException {
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
-		return tlaFactory.load(file, prefs, loadClosure);
+		def extracted = tlaFactory.extract(file)
+		StateSpace s = extracted.load(prefs)
+		loadClosure(s.getModel())
+		return s
 	}
 
 	/**
@@ -136,72 +143,19 @@ public class Api {
 	 * @return {@link CSPModel} that has been loaded from file
 	 * @throws Exception
 	 */
-	public CSPModel csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=LoadClosures.EMPTY)
+	public StateSpace csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=LoadClosures.EMPTY)
 	throws Exception {
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
-		CSPModel m = null;
+		StateSpace s = null;
 		try {
-			m = cspFactory.load(file, prefs, loadClosure);
+			def extracted = cspFactory.extract(file)
+			s = extracted.load(prefs)
+			loadClosure(s.getModel())
 		} catch (ProBError error) {
 			throw new Exception(
 			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory");
 		}
-		return m;
-	}
-
-	public AbstractModel load(final String filename) throws Exception {
-		Properties p = new Properties();
-
-		Map<String, String> prefs = new HashMap<String, String>();
-
-		try {
-			p.load(new FileInputStream(filename));
-
-			Set<String> keys = p.stringPropertyNames();
-			for (String key : keys) {
-				if (key.endsWith(".prolog")) {
-					prefs.put(key.substring(0, key.indexOf(".")),
-							p.getProperty(key));
-				}
-			}
-
-			String modelFile = p.getProperty("MODEL_FILE");
-			String formalism = p.getProperty("FORMALISM");
-			if (formalism.equals("ClassicalBModel")) {
-				return b_load(modelFile, prefs);
-			}
-			if (formalism.equals("CSPModel")) {
-				return csp_load(modelFile, prefs);
-			}
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		return null;
-	}
-
-	public void save(final AbstractModel m, final String filename) {
-		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand();
-
-		m.getStateSpace().execute(cmd);
-		Map<String, String> prefs = cmd.getPreferences();
-
-		try {
-			Properties p = new Properties();
-
-			for (Entry<String, String> pref : prefs.entrySet()) {
-				p.setProperty(pref.getKey() + ".prolog", pref.getValue());
-			}
-
-			p.setProperty("MODEL_FILE", m.getModelFile().getAbsolutePath());
-			p.setProperty("FORMALISM", m.getClass().getSimpleName());
-
-			p.store(new FileOutputStream(filename), null);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		return s;
 	}
 
 	/**

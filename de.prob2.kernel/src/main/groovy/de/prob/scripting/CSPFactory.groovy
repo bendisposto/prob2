@@ -15,45 +15,15 @@ class CSPFactory extends ModelFactory<CSPModel> {
 
 
 	@Inject
-	public CSPFactory(final Provider<CSPModel> modelCreator, FileHandler fileHandler) {
-		super(modelCreator, fileHandler, LoadClosures.EMPTY)
+	public CSPFactory(final Provider<CSPModel> modelCreator) {
+		super(modelCreator)
 	}
 	
 	@Override
-	public CSPModel extract(final String modelPath) throws IOException, ModelTranslationError {
+	public ExtractedModel<CSPModel> extract(final String modelPath) throws IOException, ModelTranslationError {
 		CSPModel cspModel = modelCreator.get()
 		File f = new File(modelPath)
-		cspModel.init(readFile(f),f)
-		return cspModel;
-	}
-
-	@Override
-	public CSPModel load(final String modelPath, Map<String, String> prefs, Closure<Object> loadClosure) throws IOException, ModelTranslationError {
-		CSPModel cspModel = modelCreator.get()
-		File f = new File(modelPath)
-		cspModel.init(readFile(f),f)
-		startAnimation(cspModel, f, getPreferences(cspModel, prefs))
-		loadClosure(cspModel)
-		return cspModel;
-	}
-
-	@Deprecated
-	public CSPModel load(final File f, Map<String, String> prefs, Closure loadClosure) throws IOException, BException {
-		return load(f.getAbsolutePath(), prefs, loadClosure)
-	}
-
-	private String readFile(File f) {
-		return f.getText();
-	}
-
-	private void startAnimation(final CSPModel cspModel, final File f, final Map<String, String> prefs) {
-		def cmds = [];
-
-		prefs.each { k,v -> cmds << new SetPreferenceCommand(k, v) }
-
-		cmds << new LoadCSPCommand(f.getAbsolutePath());
-		cmds << new StartAnimationCommand()
-
-		cspModel.getStateSpace().execute(new ComposedCommand(cmds));
+		cspModel.init(f.getText(),f)
+		return new ExtractedModel<CSPModel>(cspModel, cspModel.getComponent(f.getName()));
 	}
 }

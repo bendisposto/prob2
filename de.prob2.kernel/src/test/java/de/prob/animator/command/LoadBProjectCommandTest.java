@@ -20,7 +20,6 @@ import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.scripting.ClassicalBFactory;
-import de.prob.scripting.FileHandler;
 
 public class LoadBProjectCommandTest {
 
@@ -32,8 +31,7 @@ public class LoadBProjectCommandTest {
 		try {
 			f = new File(resource.toURI());
 			StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
-			ClassicalBFactory factory = new ClassicalBFactory(null,
-					new FileHandler());
+			ClassicalBFactory factory = new ClassicalBFactory(null);
 			BParser bparser = new BParser();
 			Start ast = factory.parseFile(f, bparser);
 			RecursiveMachineLoader rml = factory.parseAllMachines(ast, f,

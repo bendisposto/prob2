@@ -21,8 +21,8 @@ import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.annotations.OneToOne;
-import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
@@ -47,18 +47,18 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 
 	Logger logger = LoggerFactory.getLogger(ValueOverTime.class);
 	private Trace currentTrace;
-	private final AbstractModel model;
+	private final StateSpace stateSpace;
 	private String mode = "over";
 
 	@Inject
 	public ValueOverTime(final AnimationSelector animations) {
 		super(animations);
-		this.incrementalUpdate = false;
+		incrementalUpdate = false;
 		currentTrace = animations.getCurrentTrace();
 		if (currentTrace == null) {
-			model = null;
+			stateSpace = null;
 		} else {
-			model = currentTrace.getModel();
+			stateSpace = currentTrace.getStateSpace();
 			animations.registerAnimationChangeListener(this);
 		}
 	}
@@ -66,7 +66,7 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
-		if (model == null) {
+		if (stateSpace == null) {
 			return "<html><head><title>Value Over Time</title></head></html>";
 		}
 		Object scope = WebUtils.wrap("clientid", clientid, "id", UUID
@@ -78,7 +78,7 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		if (model != null) {
+		if (stateSpace != null) {
 			List<Object> result = new ArrayList<Object>();
 			for (FormulaElement formula : testedFormulas) {
 				result.add(WebUtils.wrap("id", formula.id, "formula",
@@ -108,8 +108,8 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 
 	@Override
 	public void performTraceChange(final Trace trace) {
-		if (model != null && trace != null
-				&& trace.getStateSpace().equals(model.getStateSpace())) {
+		if (stateSpace != null && trace != null
+				&& trace.getStateSpace().equals(stateSpace)) {
 			currentTrace = trace;
 			List<Object> result = calculateData();
 			IEvalElement time = formulas.get("time");
@@ -344,7 +344,7 @@ public class ValueOverTime extends AbstractAnimationBasedView {
 		}
 
 		try {
-			IEvalElement e = model.parseFormula(f);
+			IEvalElement e = stateSpace.getModel().parseFormula(f);
 			formulas.put(id, e);
 			return WebUtils.wrap("cmd", "ValueOverTime.parseOk", "id", id);
 		} catch (Exception e) {

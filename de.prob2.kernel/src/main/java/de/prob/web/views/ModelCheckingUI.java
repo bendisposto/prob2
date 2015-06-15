@@ -43,7 +43,7 @@ import de.prob.web.WebUtils;
 @PublicSession
 @OneToOne
 public class ModelCheckingUI extends AbstractAnimationBasedView implements
-		IModelChangedListener {
+IModelChangedListener {
 
 	private ModelCheckingOptions options;
 
@@ -148,7 +148,7 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 				currentStateSpace, options, null, this));
 		jobs.put(checker.getJobId(), checker);
 		checker.start();
-		AbstractElement main = currentStateSpace.getModel().getMainComponent();
+		AbstractElement main = currentStateSpace.getMainComponent();
 		String name = main == null ? "Model Check" : main.toString();
 		List<String> ss = new ArrayList<String>();
 		for (Options opts : options.getPrologOptions()) {
@@ -295,9 +295,9 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 		Trace ofInterest = animationOfInterest == null ? animationsRegistry
 				.getCurrentTrace() : animationsRegistry
 				.getTrace(animationOfInterest);
-		if (ofInterest != null) {
-			modelChanged(ofInterest.getStateSpace());
-		}
+				if (ofInterest != null) {
+					modelChanged(ofInterest.getStateSpace());
+				}
 	}
 
 	@Override
@@ -325,7 +325,7 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 
 			boolean b_model = currentStateSpace == null ? false
 					: currentStateSpace.getModel().getFormalismType()
-							.equals(FormalismType.B);
+					.equals(FormalismType.B);
 			List<String> eventNames = b_model ? extractEventNames(currentStateSpace)
 					: new ArrayList<String>();
 			selectedEvents = new ArrayList<String>();
@@ -343,10 +343,10 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 	 */
 	private List<String> extractEventNames(final StateSpace s) {
 		List<String> sts = new ArrayList<String>();
-		if (s == null || s.getModel().getMainComponent() == null) {
+		if (s == null || s.getMainComponent() == null) {
 			return sts;
 		}
-		ModelElementList<BEvent> events = s.getModel().getMainComponent()
+		ModelElementList<BEvent> events = s.getMainComponent()
 				.getChildrenOfType(BEvent.class);
 		for (BEvent bEvent : events) {
 			sts.add(bEvent.getName());

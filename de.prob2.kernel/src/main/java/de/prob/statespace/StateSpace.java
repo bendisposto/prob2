@@ -43,6 +43,7 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.annotations.MaxCacheSize;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.CSPModel;
 
@@ -111,6 +112,7 @@ public class StateSpace implements IAnimator {
 	}
 
 	private AbstractModel model;
+	private AbstractElement mainComponent;
 
 	@Inject
 	public StateSpace(final Provider<IAnimator> panimator,
@@ -654,8 +656,9 @@ public class StateSpace implements IAnimator {
 	 * 
 	 * @param model
 	 */
-	public void setModel(final AbstractModel model) {
+	public void setModel(final AbstractModel model, final AbstractElement mainComponent) {
 		this.model = model;
+		this.mainComponent = mainComponent;
 	}
 
 	/**
@@ -666,6 +669,10 @@ public class StateSpace implements IAnimator {
 	 */
 	public AbstractModel getModel() {
 		return model;
+	}
+	
+	public AbstractElement getMainComponent() {
+		return mainComponent;
 	}
 
 	/**

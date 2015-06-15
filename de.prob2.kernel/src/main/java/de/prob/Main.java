@@ -3,6 +3,7 @@ package de.prob;
 import static java.io.File.separator;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -18,6 +19,7 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 
 import de.prob.scripting.Downloader;
+import de.prob.scripting.FileHandler;
 import de.prob.webconsole.WebConsole;
 
 /**
@@ -25,9 +27,9 @@ import de.prob.webconsole.WebConsole;
  * but should rather be started from a .jar file, accessed through Guice via
  * {@link ServletContextListener#getInjector()#getInstance()} with Main.class as
  * parameter, or started in a jetty server via {@link WebConsole#run()}.
- * 
+ *
  * @author joy
- * 
+ *
  */
 public class Main {
 
@@ -44,13 +46,19 @@ public class Main {
 	private static Injector INJECTOR = Guice.createInjector(Stage.PRODUCTION,
 			new MainModule());
 
+	/**
+	 * Name of file in which the preferences are saved. Currently
+	 * "prob2preferences"
+	 */
+	public static final String PREFERENCE_FILE_NAME = "prob2preferences";
+
 	public static Injector getInjector() {
 		return INJECTOR;
 	}
 
 	/**
 	 * Allows to customize the Injector. Handle with care!
-	 * 
+	 *
 	 * @param i
 	 */
 	public static void setInjector(final Injector i) {
@@ -70,14 +78,14 @@ public class Main {
 	 */
 	public final static String LOG_CONFIG = System
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
-			.getProperty("PROB_LOG_CONFIG");
+					.getProperty("PROB_LOG_CONFIG");
 
 	private final Downloader downloader;
 
 	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
 	 * should NOT be instantiated by hand.
-	 * 
+	 *
 	 * @param parser
 	 * @param options
 	 * @param shell
@@ -173,7 +181,7 @@ public class Main {
 	/**
 	 * Returns the directory in which the binary files and libraries for ProB
 	 * are stored.
-	 * 
+	 *
 	 * @return if System Property "prob.home" is defined, the path to this
 	 *         directory is returned. Otherwise, the directory specified by
 	 *         System Property "user.home" is chosen, and the directory ".prob"
@@ -185,13 +193,26 @@ public class Main {
 			return homedir + separator;
 		}
 		return System.getProperty("user.home") + separator + ".prob"
-				+ separator;
+		+ separator;
+	}
+
+	public static Map<String, String> getGlobalPreferences(
+			final Map<String, String> localPrefs) {
+		String preferenceFileName = Main.getProBDirectory()
+				+ PREFERENCE_FILE_NAME;
+		FileHandler handler = new FileHandler();
+		Map<String, String> prefs = handler.getMapOfStrings(preferenceFileName);
+		if (prefs == null) {
+			return localPrefs;
+		}
+		prefs.putAll(localPrefs);
+		return prefs;
 	}
 
 	/**
 	 * Start the ProB 2.0 shell with argument -s. Run integration tests with
 	 * -test /path/to/testDir
-	 * 
+	 *
 	 * @param args
 	 * @throws Throwable
 	 */
@@ -209,5 +230,4 @@ public class Main {
 		System.exit(0);
 	}
 
-	
 }

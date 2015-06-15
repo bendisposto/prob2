@@ -187,7 +187,8 @@ public class Events extends AbstractAnimationBasedView {
 
 	private void updateModel(final Trace trace) {
 		currentModel = trace.getModel();
-		AbstractElement mainComponent = currentModel.getMainComponent();
+		AbstractElement mainComponent = trace.getStateSpace()
+				.getMainComponent();
 		opNames = new ArrayList<String>();
 		opToParams = new HashMap<String, List<String>>();
 		if (mainComponent instanceof Machine) {
@@ -250,15 +251,15 @@ public class Events extends AbstractAnimationBasedView {
 				WebUtils.toJson(events),
 				"canGoBack",
 				currentTrace == null ? false : currentTrace.canGoBack(),
-				"canGoForward",
-				currentTrace == null ? false : currentTrace.canGoForward(),
-				"sortMode",
-				getSortMode(),
-				"hide",
-				hide,
-				"errors",
-				currentTrace == null ? "[]" : WebUtils
-						.toJson(extractErrors(currentTrace.getCurrentState())));
+						"canGoForward",
+						currentTrace == null ? false : currentTrace.canGoForward(),
+								"sortMode",
+								getSortMode(),
+								"hide",
+								hide,
+								"errors",
+								currentTrace == null ? "[]" : WebUtils
+										.toJson(extractErrors(currentTrace.getCurrentState())));
 		submit(wrap);
 	}
 
@@ -348,7 +349,7 @@ public class Events extends AbstractAnimationBasedView {
 	}
 
 	private class ModelOrder extends EventComparator implements
-			Comparator<Operation> {
+	Comparator<Operation> {
 
 		private final List<String> ops;
 

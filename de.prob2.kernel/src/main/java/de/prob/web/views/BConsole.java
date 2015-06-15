@@ -26,7 +26,7 @@ import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 public class BConsole extends AbstractSession implements
-		IAnimationChangeListener {
+IAnimationChangeListener {
 
 	private final StateSpace defaultSS;
 	private String modelName;
@@ -99,8 +99,8 @@ public class BConsole extends AbstractSession implements
 				this.currentTrace = currentTrace;
 			} else if (currentTrace.getModel().getFormalismType() == FormalismType.B) {
 				// ignore models that are not B models
-				String modelName = currentTrace.getModel().getMainComponent()
-						.toString();
+				String modelName = currentTrace.getStateSpace()
+						.getMainComponent().toString();
 				if (!modelName.equals(this.modelName)) {
 					this.modelName = modelName;
 					notifyModelChange(this.modelName);

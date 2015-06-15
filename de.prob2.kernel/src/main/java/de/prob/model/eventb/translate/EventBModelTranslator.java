@@ -24,10 +24,10 @@ public class EventBModelTranslator {
 	private final TheoryTranslator theoryTranslator;
 	private final EventBModel model;
 
-	public EventBModelTranslator(final EventBModel model) {
+	public EventBModelTranslator(final EventBModel model, AbstractElement mainComponent) {
 		this.model = model;
 
-		for (Machine machine : extractMachineHierarchy(model)) {
+		for (Machine machine : extractMachineHierarchy(mainComponent)) {
 			EventBMachine ebM = (EventBMachine) machine;
 			machineTranslators.add(new EventBMachineTranslator(ebM));
 			proofObligations.addAll(ebM.getProofs());
@@ -42,8 +42,7 @@ public class EventBModelTranslator {
 				model.getChildrenOfType(Theory.class));
 	}
 
-	public List<EventBMachine> extractMachineHierarchy(final EventBModel model) {
-		AbstractElement mainComponent = model.getMainComponent();
+	public List<EventBMachine> extractMachineHierarchy(final AbstractElement mainComponent) {
 		if (mainComponent instanceof Context) {
 			return Collections.emptyList();
 		}
@@ -68,8 +67,7 @@ public class EventBModelTranslator {
 		return machines;
 	}
 	
-	public List<Context> extractContextHierarchy(final EventBModel model) {
-		AbstractElement mainComponent = model.getMainComponent();
+	public List<Context> extractContextHierarchy(final AbstractElement mainComponent) {
 		if (mainComponent instanceof Context) {
 			return extractContextHierarchy((Context) mainComponent);
 		}
