@@ -15,21 +15,14 @@ OPERATIONS
 END"""
 
 
-modelProvider = api.modelFactoryProvider.classical_b_factory.modelCreator
-assert modelProvider != null 
-
-m = modelProvider.get()
-s = Main.getInjector().getInstance(StateSpace.class)
+modelFactory = api.modelFactoryProvider.classical_b_factory
+assert modelFactory != null 
 p = new BParser()
 ast = p.parse(modelString, false)
 
-cmd = new LoadBProjectFromAst(ast)
-s.execute(cmd)
-rml = cmd.getLoader(ast)
-
-m.initialize(ast, rml, new File(""), p)
-s.setModel(m, m.blah)
-s.execute(new StartAnimationCommand())
+em = modelFactory.create(ast)
+m = em.model
+s = em.load()
 
 // Test that animation works correctly
 t = new Trace(s)

@@ -1,5 +1,6 @@
 package de.prob.scripting;
 
+import java.util.Collections;
 import java.util.Map;
 
 import de.prob.model.representation.AbstractElement;
@@ -13,6 +14,10 @@ public class ExtractedModel<T extends AbstractModel> {
 	public ExtractedModel(final T model, final AbstractElement mainComponent) {
 		this.model = model;
 		this.mainComponent = mainComponent;
+	}
+
+	public StateSpace load() {
+		return load(Collections.<String, String> emptyMap());
 	}
 
 	public StateSpace load(final Map<String, String> preferences) {

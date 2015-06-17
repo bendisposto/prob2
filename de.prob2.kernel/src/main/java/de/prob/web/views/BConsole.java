@@ -8,15 +8,13 @@ import javax.servlet.AsyncContext;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.command.EvaluationCommand;
-import de.prob.animator.command.LoadBProjectFromStringCommand;
-import de.prob.animator.command.StartAnimationCommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.scripting.ClassicalBFactory;
+import de.prob.scripting.ModelTranslationError;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.IAnimationChangeListener;
@@ -26,24 +24,23 @@ import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 public class BConsole extends AbstractSession implements
-IAnimationChangeListener {
+		IAnimationChangeListener {
 
 	private final StateSpace defaultSS;
 	private String modelName;
 	private Trace currentTrace;
 
 	@Inject
-	public BConsole(final UUID id, final Provider<StateSpace> ssProvider,
+	public BConsole(final UUID id, final ClassicalBFactory bfactory,
 			final AnimationSelector animations) {
 		super(id);
-		defaultSS = ssProvider.get();
+		StateSpace s = null;
 		try {
-			LoadBProjectFromStringCommand cmd = new LoadBProjectFromStringCommand(
-					"MACHINE Empty END");
-			defaultSS.execute(cmd, new StartAnimationCommand());
-		} catch (BException e) {
-			// TODO Implement
+			s = bfactory.create("MACHINE Empty END").load();
+		} catch (ModelTranslationError e) {
+			throw new RuntimeException("loading a model into ProB failed!");
 		}
+		defaultSS = s;
 		animations.registerAnimationChangeListener(this);
 		incrementalUpdate = false;
 	}

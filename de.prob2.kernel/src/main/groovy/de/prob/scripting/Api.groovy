@@ -68,8 +68,9 @@ public class Api {
 		x.shutdown();
 	}
 
-	public StateSpace eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.EVENTB)) {
+	public StateSpace eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap()) {
 		def fileName = file;
+		def loadClosure=getSubscribeClosure(LoadClosures.EVENTB)
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (fileName.endsWith(".eventb")) {
 			return factory.loadModelFromEventBFile(file, prefs, loadClosure)
@@ -80,7 +81,8 @@ public class Api {
 		return s
 	}
 
-	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.EVENTB)) {
+	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap()) {
+		Closure loadClosure=getSubscribeClosure(LoadClosures.EVENTB)
 		if (!zipFile.endsWith(".zip")) {
 			throw new IllegalArgumentException("$zipFile is not a zip file")
 		}
@@ -113,9 +115,10 @@ public class Api {
 	 * @throws IOException
 	 */
 	public StateSpace b_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.B)) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
+		Closure loadClosure=getSubscribeClosure(LoadClosures.B)
 		def extracted = bFactory.extract(file)
 		StateSpace s = extracted.load(prefs)
 		loadClosure(s)
@@ -123,8 +126,9 @@ public class Api {
 	}
 
 	public StateSpace tla_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.B)) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
+		Closure loadClosure=getSubscribeClosure(LoadClosures.B)
 		def extracted = tlaFactory.extract(file)
 		StateSpace s = extracted.load(prefs)
 		loadClosure(s)
@@ -140,14 +144,13 @@ public class Api {
 	 * @return {@link CSPModel} that has been loaded from file
 	 * @throws Exception
 	 */
-	public StateSpace csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=LoadClosures.EMPTY)
+	public StateSpace csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap())
 	throws Exception {
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
 		StateSpace s = null;
 		try {
 			def extracted = cspFactory.extract(file)
 			s = extracted.load(prefs)
-			loadClosure(s)
 		} catch (ProBError error) {
 			throw new Exception(
 			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory");
