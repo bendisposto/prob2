@@ -1,6 +1,5 @@
 package de.prob.scripting;
 
-import java.util.Map.Entry
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
@@ -8,11 +7,7 @@ import java.util.zip.ZipInputStream
 import com.google.inject.Inject
 import com.google.inject.Provider
 
-import de.prob.animator.command.AbstractCommand
-import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.LoadEventBFileCommand
-import de.prob.animator.command.SetPreferenceCommand
-import de.prob.animator.command.StartAnimationCommand
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.translate.EventBDatabaseTranslator
 import de.prob.model.representation.AbstractElement
@@ -20,9 +15,12 @@ import de.prob.statespace.StateSpace
 
 public class EventBFactory extends ModelFactory<EventBModel> {
 
+	private final StateSpaceProvider ssProvider
+
 	@Inject
-	public EventBFactory(final Provider<EventBModel> modelCreator) {
+	public EventBFactory(final Provider<EventBModel> modelCreator, StateSpaceProvider ssProvider) {
 		super(modelCreator);
+		this.ssProvider = ssProvider
 	}
 
 	@Override
@@ -47,8 +45,8 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 	}
 
 
-	public EventBModel loadModelFromEventBFile(final String fileName,
-			final Map<String, String> prefs, final Closure loadClosure) throws IOException {
+	public StateSpace loadModelFromEventBFile(final String fileName,
+			final Map<String, String> prefs) throws IOException {
 		EventBModel model = modelCreator.get();
 		Pattern pattern = Pattern.compile("^package\\((.*?)\\)\\.");
 		File file = new File(fileName);
@@ -66,23 +64,7 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 
 		String componentName = file.getName().replaceAll("\\.eventb\$", "")
 
-		model.setModelFile(file);
-		model.isFinished();
-
-		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
-
-		for (Entry<String, String> pref : prefs.entrySet()) {
-			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
-		}
-
-		StateSpace s = model.createStateSpace(new DummyElement(componentName))
-		s.execute(new ComposedCommand(cmds));
-
-		s.execute(new LoadEventBFileCommand(loadcmd));
-		s.execute(new StartAnimationCommand());
-
-		loadClosure(model)
-		return model;
+		return ssProvider.loadFromCommand(model, new DummyElement(componentName), prefs, new LoadEventBFileCommand(loadcmd))
 	}
 
 	public final List<String> readFile(final File machine) throws IOException {

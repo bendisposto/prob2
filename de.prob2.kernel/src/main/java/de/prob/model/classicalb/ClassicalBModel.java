@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.NoContentProvider;
@@ -22,6 +21,7 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
+import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -33,7 +33,7 @@ public class ClassicalBModel extends AbstractModel {
 	private RecursiveMachineLoader rml;
 
 	@Inject
-	public ClassicalBModel(final Provider<StateSpace> ssProvider) {
+	public ClassicalBModel(final StateSpaceProvider ssProvider) {
 		super(ssProvider);
 	}
 
@@ -113,7 +113,7 @@ public class ClassicalBModel extends AbstractModel {
 	@Override
 	public StateSpace load(final AbstractElement mainComponent,
 			final Map<String, String> preferences) {
-		return loadFromCommand(mainComponent, preferences,
-				new LoadBProjectCommand(rml, modelFile));
+		return stateSpaceProvider.loadFromCommand(this, mainComponent,
+				preferences, new LoadBProjectCommand(rml, modelFile));
 	}
 }

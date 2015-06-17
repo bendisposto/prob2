@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Map;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 import de.prob.animator.command.LoadEventBProjectCommand;
 import de.prob.animator.domainobjects.EvaluationException;
@@ -17,6 +16,7 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
+import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -26,7 +26,7 @@ public class EventBModel extends AbstractModel {
 	private final ModelElementList<Context> contexts = new ModelElementList<Context>();
 
 	@Inject
-	public EventBModel(final Provider<StateSpace> stateSpaceProvider) {
+	public EventBModel(final StateSpaceProvider stateSpaceProvider) {
 		super(stateSpaceProvider);
 	}
 
@@ -103,9 +103,9 @@ public class EventBModel extends AbstractModel {
 	@Override
 	public StateSpace load(final AbstractElement mainComponent,
 			final Map<String, String> preferences) {
-		return loadFromCommand(mainComponent, preferences,
-				new LoadEventBProjectCommand(new EventBModelTranslator(this,
-						mainComponent)));
+		return stateSpaceProvider.loadFromCommand(this, mainComponent,
+				preferences, new LoadEventBProjectCommand(
+						new EventBModelTranslator(this, mainComponent)));
 	}
 
 }

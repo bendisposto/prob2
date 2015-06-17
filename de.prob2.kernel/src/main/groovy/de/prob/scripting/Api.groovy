@@ -73,7 +73,7 @@ public class Api {
 		def loadClosure=getSubscribeClosure(LoadClosures.EVENTB)
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (fileName.endsWith(".eventb")) {
-			return factory.loadModelFromEventBFile(file, prefs, loadClosure)
+			return factory.loadModelFromEventBFile(file, prefs)
 		}
 		def extracted = factory.extract(fileName)
 		StateSpace s = extracted.load(prefs)

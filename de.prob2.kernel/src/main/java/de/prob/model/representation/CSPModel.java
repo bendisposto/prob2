@@ -4,13 +4,13 @@ import java.io.File;
 import java.util.Map;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 import de.prob.animator.command.LoadCSPCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.prolog.output.PrologTermStringOutput;
+import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -19,7 +19,7 @@ public class CSPModel extends AbstractModel {
 	private String content;
 
 	@Inject
-	public CSPModel(final Provider<StateSpace> ssProvider) {
+	public CSPModel(final StateSpaceProvider ssProvider) {
 		super(ssProvider);
 	}
 
@@ -27,7 +27,7 @@ public class CSPModel extends AbstractModel {
 		this.content = content;
 		this.modelFile = modelFile;
 		components
-		.put(modelFile.getName(), new CSPElement(modelFile.getName()));
+				.put(modelFile.getName(), new CSPElement(modelFile.getName()));
 	}
 
 	public String getContent() {
@@ -59,8 +59,8 @@ public class CSPModel extends AbstractModel {
 	@Override
 	public StateSpace load(final AbstractElement mainComponent,
 			final Map<String, String> preferences) {
-		return loadFromCommand(mainComponent, preferences, new LoadCSPCommand(
-				modelFile.getAbsolutePath()));
+		return stateSpaceProvider.loadFromCommand(this, mainComponent,
+				preferences, new LoadCSPCommand(modelFile.getAbsolutePath()));
 	}
 
 }

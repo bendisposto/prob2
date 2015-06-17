@@ -1,22 +1,16 @@
 package de.prob.model.representation;
 
-import java.util.Map.Entry
-
 import com.google.inject.Inject
-import com.google.inject.Provider
 
-import de.prob.animator.command.AbstractCommand
-import de.prob.animator.command.ComposedCommand
-import de.prob.animator.command.SetPreferenceCommand
-import de.prob.animator.command.StartAnimationCommand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.DependencyGraph.ERefType
+import de.prob.scripting.StateSpaceProvider
 import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
 
 public abstract class AbstractModel extends AbstractElement {
 
-	private final Provider<StateSpace> stateSpaceProvider;
+	protected final StateSpaceProvider stateSpaceProvider;
 	protected boolean dirty = false;
 	protected File modelFile;
 	protected String modelDirPath;
@@ -25,20 +19,8 @@ public abstract class AbstractModel extends AbstractElement {
 	def static Closure subscribe = null
 
 	@Inject
-	def AbstractModel(Provider<StateSpace> stateSpaceProvider) {
+	def AbstractModel(StateSpaceProvider stateSpaceProvider) {
 		this.stateSpaceProvider = stateSpaceProvider
-	}
-
-	/**
-	 * @return StateSpace object associated with this AbstractModel instance
-	 */
-	protected StateSpace createStateSpace(AbstractElement mainComponent) {
-		if (mainComponent == null || !components.containsValue(mainComponent)) {
-			throw new IllegalArgumentException("Specified main component: "+mainComponent.toString()+" is not a valid machine or context in this model.");
-		}
-		StateSpace s = stateSpaceProvider.get()
-		s.setModel(this,mainComponent)
-		return s;
 	}
 
 	public AbstractElement getComponent(final String name) {
@@ -77,8 +59,6 @@ public abstract class AbstractModel extends AbstractElement {
 
 	public abstract FormalismType getFormalismType();
 
-
-
 	public File getModelFile() {
 		return modelFile;
 	}
@@ -115,19 +95,4 @@ public abstract class AbstractModel extends AbstractElement {
 	}
 
 	public abstract StateSpace load(AbstractElement mainComponent, Map<String,String> preferences);
-
-	protected StateSpace loadFromCommand(AbstractElement mainComponent, Map<String,String> preferences, AbstractCommand loadCmd) {
-		StateSpace s = createStateSpace(mainComponent);
-		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
-
-		for (Entry<String, String> pref : preferences.entrySet()) {
-			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
-		}
-
-		cmds.add(loadCmd);
-		cmds.add(new StartAnimationCommand());
-
-		s.execute(new ComposedCommand(cmds));
-		return s;
-	}
 }
