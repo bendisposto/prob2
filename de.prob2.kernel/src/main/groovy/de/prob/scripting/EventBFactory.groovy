@@ -13,14 +13,15 @@ import de.prob.model.eventb.translate.EventBDatabaseTranslator
 import de.prob.model.representation.AbstractElement
 import de.prob.statespace.StateSpace
 
-public class EventBFactory extends ModelFactory<EventBModel> {
+public class EventBFactory implements ModelFactory<EventBModel> {
 
 	private final StateSpaceProvider ssProvider
+	private final Provider<EventBModel> modelCreator
 
 	@Inject
 	public EventBFactory(final Provider<EventBModel> modelCreator, StateSpaceProvider ssProvider) {
-		super(modelCreator);
 		this.ssProvider = ssProvider
+		this.modelCreator = modelCreator
 	}
 
 	@Override

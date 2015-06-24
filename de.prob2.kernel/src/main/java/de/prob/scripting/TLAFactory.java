@@ -18,18 +18,19 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.tla2b.exceptions.TLA2BException;
 import de.tla2bAst.Translator;
 
-public class TLAFactory extends ModelFactory<ClassicalBModel> {
+public class TLAFactory implements ModelFactory<ClassicalBModel> {
 
 	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
+	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
 	public TLAFactory(final Provider<ClassicalBModel> modelCreator) {
-		super(modelCreator);
+		this.modelCreator = modelCreator;
 	}
-	
+
 	@Override
-	public ExtractedModel<ClassicalBModel> extract(String fileName) throws IOException,
-			ModelTranslationError {
+	public ExtractedModel<ClassicalBModel> extract(final String fileName)
+			throws IOException, ModelTranslationError {
 		ClassicalBModel classicalBModel = modelCreator.get();
 		File f = new File(fileName);
 		if (!f.exists()) {
@@ -55,13 +56,14 @@ public class TLAFactory extends ModelFactory<ClassicalBModel> {
 		} catch (BException e) {
 			throw new ModelTranslationError(e.getMessage(), e);
 		}
-		return new ExtractedModel<ClassicalBModel>(classicalBModel, classicalBModel.getMainMachine());
+		return new ExtractedModel<ClassicalBModel>(classicalBModel,
+				classicalBModel.getMainMachine());
 	}
 
 	/**
 	 * Given an {@link Start} ast, {@link File} f, and {@link BParser} bparser,
 	 * all machines are loaded.
-	 * 
+	 *
 	 * @param ast
 	 *            {@link Start} representing the abstract syntax tree for the
 	 *            machine
@@ -101,6 +103,5 @@ public class TLAFactory extends ModelFactory<ClassicalBModel> {
 		ast = bparser.parseFile(model, false);
 		return ast;
 	}
-
 
 }

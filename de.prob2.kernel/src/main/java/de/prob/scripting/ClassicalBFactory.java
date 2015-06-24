@@ -23,13 +23,14 @@ import de.prob.model.classicalb.ClassicalBModel;
  * @author joy
  *
  */
-public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
+public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 
 	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
+	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
 	public ClassicalBFactory(final Provider<ClassicalBModel> modelCreator) {
-		super(modelCreator);
+		this.modelCreator = modelCreator;
 	}
 
 	@Override
@@ -69,7 +70,7 @@ public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
 		final RecursiveMachineLoader rml = parseAllMachines(model, ".",
 				new File(""), new CachingDefinitionFileProvider(), bparser);
 		classicalBModel
-		.initialize(model, rml, new File("from_string"), bparser);
+				.initialize(model, rml, new File("from_string"), bparser);
 		return new ExtractedModel<ClassicalBModel>(classicalBModel,
 				classicalBModel.getMainMachine());
 	}
@@ -91,7 +92,7 @@ public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
 	public RecursiveMachineLoader parseAllMachines(final Start ast,
 			final String directory, final File f,
 			final IDefinitionFileProvider contentProvider, final BParser bparser)
-					throws ModelTranslationError {
+			throws ModelTranslationError {
 		try {
 			final RecursiveMachineLoader rml = new RecursiveMachineLoader(
 					directory, contentProvider);
