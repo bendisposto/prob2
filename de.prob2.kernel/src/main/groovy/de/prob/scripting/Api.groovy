@@ -12,7 +12,6 @@ import de.prob.animator.command.GetVersionCommand
 import de.prob.cli.CliVersionNumber
 import de.prob.cli.ProBInstance
 import de.prob.exception.ProBError
-import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.prolog.output.PrologTermOutput
 import de.prob.statespace.StateSpace
@@ -79,15 +78,6 @@ public class Api {
 		StateSpace s = extracted.load(prefs)
 		loadClosure(s)
 		return s
-	}
-
-	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap()) {
-		Closure loadClosure=getSubscribeClosure(LoadClosures.EVENTB)
-		if (!zipFile.endsWith(".zip")) {
-			throw new IllegalArgumentException("$zipFile is not a zip file")
-		}
-		EventBFactory factory = modelFactoryProvider.getEventBFactory();
-		return factory.loadModelFromZip(zipFile, componentName, prefs, loadClosure)
 	}
 
 	public void eventb_save(final StateSpace s, final String path) {

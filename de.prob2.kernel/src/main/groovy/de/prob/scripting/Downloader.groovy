@@ -2,8 +2,6 @@ package de.prob.scripting
 
 import static java.io.File.*
 
-import java.util.zip.ZipInputStream
-
 import com.google.inject.Inject
 
 import de.prob.annotations.Home
@@ -100,46 +98,13 @@ class Downloader {
 		def url = versionurl + "probcli_${zipName}.zip"
 		download(url,targetzip)
 
-		// Unzip file to correct directory (probhome)
-		File.metaClass.unzip = { String dest ->
-			//in metaclass added methods, 'delegate' is the object on which
-			//the method is called. Here it's the file to unzip
-			def result = new ZipInputStream(new FileInputStream(delegate))
-			def destFile = new File(dest)
-			if(!destFile.exists()){
-				destFile.mkdir();
-			}
-			result.withStream{
-				def entry
-				while(entry = result.nextEntry){
-					if (!entry.isDirectory()){
-						new File(dest + File.separator + entry.name).parentFile?.mkdirs()
-						def output = new FileOutputStream(dest + File.separator
-								+ entry.name)
-						output.withStream{
-							int len = 0;
-							byte[] buffer = new byte[4096]
-							while ((len = result.read(buffer)) > 0){
-								output.write(buffer, 0, len);
-							}
-						}
-					}
-					else {
-						new File(dest + File.separator + entry.name).mkdir()
-					}
-				}
-			}
-
-		}
-
-		File f = new File(targetzip)
-		f.unzip(probhome)
-		f.delete()
+		new FileHandler().extractZip(targetzip, probhome)
+		new File(targetzip).delete()
 
 		if(os == "win32" || os == "win64") {
 			def target = probhome+"lib.zip";
 			def zipFile = os == "win32" ? "windowslib32.zip" : "windowslib64.zip"
-			 
+
 			download(versionurl+zipFile,target)
 			File r = new File(target)
 			r.unzip(probhome)

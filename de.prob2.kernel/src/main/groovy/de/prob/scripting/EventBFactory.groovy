@@ -2,7 +2,6 @@ package de.prob.scripting;
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import java.util.zip.ZipInputStream
 
 import com.google.inject.Inject
 import com.google.inject.Provider
@@ -29,6 +28,7 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 	ModelTranslationError {
 		EventBModel model = modelCreator.get();
 		EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, getValidFileName(modelPath));
+		model.isFinished()
 		new ExtractedModel<EventBModel>(model,translator.getMainComponent())
 	}
 
@@ -64,7 +64,7 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 		}
 
 		String componentName = file.getName().replaceAll("\\.eventb\$", "")
-
+		model.isFinished()
 		return ssProvider.loadFromCommand(model, new DummyElement(componentName), prefs, new LoadEventBFileCommand(loadcmd))
 	}
 
@@ -74,64 +74,39 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 		lines
 	}
 
-	public EventBModel loadModelFromZip(final String zipfile, String componentName,
-			final Map<String, String> prefs, Closure loader) throws IOException {
-		File.metaClass.unzip = { String dest ->
-			//in metaclass added methods, 'delegate' is the object on which
-			//the method is called. Here it's the file to unzip
-			def result = new ZipInputStream(new FileInputStream(delegate))
-			def destFile = new File(dest)
-			if(!destFile.exists()){
-				destFile.mkdir();
-			}
-			result.withStream{
-				def entry
-				while(entry = result.nextEntry){
-					if (!entry.isDirectory()){
-						new File(dest + File.separator + entry.name).parentFile?.mkdirs()
-						def output = new FileOutputStream(dest + File.separator
-								+ entry.name)
-						output.withStream{
-							int len = 0;
-							byte[] buffer = new byte[4096]
-							while ((len = result.read(buffer)) > 0){
-								output.write(buffer, 0, len);
-							}
-						}
-					}
-					else {
-						new File(dest + File.separator + entry.name).mkdir()
-					}
-				}
-			}
+	public EventBModel extractModelFromZip(final String zipfile) throws IOException {
+		final File tempdir = createTempDir()
+		new FileHandler().extractZip(zipfile,tempdir.getAbsolutePath())
 
+		def pattern = Pattern.compile(".*.bcc\$|.*.bcm\$")
+		def modelFiles = []
+		tempdir.traverse(nameFilter: pattern) { f -> modelFiles << f }
+		if (modelFiles.size() == 0) {
+			tempdir.deleteDir()
+			throw new IllegalArgumentException("No static checked Event-B files were found in that zip archive!")
 		}
+		EventBModel model = modelCreator.get();
+		modelFiles.each { File f ->
+			String modelPath = f.getAbsolutePath()
+			String name = modelPath.substring(modelPath.lastIndexOf(File.separatorChar.toString()) + 1, modelPath.lastIndexOf("."))
+			if (!model.getComponents().containsKey(name)) {
+				EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, modelPath);
+			}
+		}
+		return model
+	}
 
-		def pattern = Pattern.compile(".*${componentName}.bcc|.*${componentName}.bcm")
-
-		File zip = new File(zipfile)
+	private File createTempDir() {
 		final File tempdir = File.createTempDir("eventb-model","")
 
-		zip.unzip(tempdir.getAbsolutePath())
-
 		// the temporary directory will be deleted on shutdown of the JVM
-		Runtime.getRuntime().addShutdownHook(new Thread()
-				{
+		Runtime.getRuntime().addShutdownHook(new Thread() {
 					public void run()
 					{
 						tempdir.deleteDir()
 					}
 				});
-
-
-		def modelFiles = []
-		tempdir.traverse(nameFilter: pattern) { f -> modelFiles << f }
-		if (modelFiles.size() != 1) {
-			tempdir.deleteDir()
-			throw new IllegalArgumentException("The component name should reference exactly one component in the model.")
-		}
-
-		return load(modelFiles[0].getAbsolutePath(), prefs, loader);
+		tempdir
 	}
 
 	private class DummyElement extends AbstractElement {
