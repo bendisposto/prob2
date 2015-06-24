@@ -29,6 +29,14 @@ try {
 }
 assert thrown
 
+thrown = false
+try {
+	tt.iDontExist()
+} catch(IllegalArgumentException e) {
+	thrown = true
+}
+assert thrown
+
 tt1 = tt.execute(0, "new", [])
 assert tt1.traces[0].getCurrentTransition().getName() == "new"
 assert tt1.traces[1].getCurrentTransition().getName() == "up"
@@ -36,6 +44,11 @@ tt2 = tt1.execute(1, "down", [])
 assert tt2.traces[0].getCurrentTransition().getName() == "del"
 assert tt2.traces[1].getCurrentTransition().getName() == "down"
 
+tt3 = tt.execute(0, "nr_ready", [])
+assert tt3.traces[0].getCurrentTransition().getName() == "nr_ready"
+assert tt3.traces[1] == t1
+
+assert tt.toString() instanceof String
 
 s0.animator.cli.shutdown();
 s1.animator.cli.shutdown();
