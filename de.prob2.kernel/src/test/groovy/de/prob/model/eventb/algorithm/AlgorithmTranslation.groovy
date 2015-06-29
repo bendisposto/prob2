@@ -34,6 +34,10 @@ class AlgorithmTranslation extends Specification {
 		guards(e.evt0_if) == ["pc = 0", "x < 0"]
 		actions(e.evt0_if) == ["pc := 1"]
 
+		e.evt0_else != null
+		guards(e.evt0_else) == ["pc = 0", "not(x < 0)"]
+		actions(e.evt0_else) == ["pc := 2"]
+
 		e.evt1 != null
 		guards(e.evt1) == ["pc = 1"]
 		actions(e.evt1) == ["pc := 2", "x := 0"]

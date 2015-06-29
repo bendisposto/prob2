@@ -21,6 +21,7 @@ end
  * 
  */
 
+
 mm = new ModelModifier()
 //mm.startProB = false
 mm.make {
@@ -28,7 +29,7 @@ mm.make {
 	context(name: "definitions") {
 		constants "Divides", "IsGCD"
 		
-		axioms "Divides = {i|->j | #k.(k:0..j & j = i*k)}",
+		axioms "Divides = {i↦j ∣ ∃k·k∈0‥j ∧ j = i∗k}",
 		       """IsGCD = {i↦j↦k ∣ i↦j ∈ Divides ∧ i↦k ∈ Divides ∧
 			   (∀r· r ∈ (0‥j ∪ 0‥k)
 			   ⇒  (r↦j ∈ Divides ∧ r↦k ∈ Divides ⇒ r↦i ∈ Divides)
@@ -43,7 +44,7 @@ mm.make {
 			   "k = 100"
 	}
 	
-	machine(name: "euclid") { //, sees: ["definitions"]) { //, sees: ["limits"]) {
+	machine(name: "euclid") {
 		var_block name: "u", invariant: "u : 1..100", init: "u := 50"
 		var_block name: "v", invariant: "v : 1..100", init: "v := 20"
 		
@@ -112,17 +113,53 @@ assert evt6 != null
 assert guards(evt6) == ["pc = 6"]
 assert actions(evt6) == []
 
+//m = api.eventb_load("/tmp/Euclid/euclid.bcm")
 s = m as StateSpace
 t = s as Trace
+//t = t.$setup_constants().$initialise_machine()
 t = t.$initialise_machine()
-println t.getNextTransitions()
 t = t.evt0_enter_while()
+assert t.evalCurrent("u").value == "50" && t.evalCurrent("v").value == "20"
+t = t.evt1_else()
+assert t.evalCurrent("u").value == "50" && t.evalCurrent("v").value == "20"
+t = t.evt3()
+assert t.evalCurrent("u").value == "30" && t.evalCurrent("v").value == "20"
+t = t.evt4_loop()
+assert t.evalCurrent("u").value == "30" && t.evalCurrent("v").value == "20"
+t = t.evt0_enter_while()
+assert t.evalCurrent("u").value == "30" && t.evalCurrent("v").value == "20"
+t = t.evt1_else()
+assert t.evalCurrent("u").value == "30" && t.evalCurrent("v").value == "20"
+t = t.evt3()
+assert t.evalCurrent("u").value == "10" && t.evalCurrent("v").value == "20"
+t = t.evt4_loop()
+assert t.evalCurrent("u").value == "10" && t.evalCurrent("v").value == "20"
+t = t.evt0_enter_while()
+assert t.evalCurrent("u").value == "10" && t.evalCurrent("v").value == "20"
+t = t.evt1_if()
+assert t.evalCurrent("u").value == "10" && t.evalCurrent("v").value == "20"
+t = t.evt2()
+assert t.evalCurrent("u").value == "20" && t.evalCurrent("v").value == "10"
+t = t.evt3()
+assert t.evalCurrent("u").value == "10" && t.evalCurrent("v").value == "10"
+t = t.evt4_loop()
+assert t.evalCurrent("u").value == "10" && t.evalCurrent("v").value == "10"
+t = t.evt0_enter_while()
+assert t.evalCurrent("u").value == "10" && t.evalCurrent("v").value == "10"
+t = t.evt1_else()
+assert t.evalCurrent("u").value == "10" && t.evalCurrent("v").value == "10"
+t = t.evt3()
+assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
+t = t.evt4_loop()
+assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
+t = t.evt0_exit_while()
+assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
+t = t.evt5()
+assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
 
-//t = t.randomAnimation(10)
-
-mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "Euclid", "/tmp")
+//mtx = new ModelToXML()
+//d = mtx.writeToRodin(m, "Euclid", "/tmp")
 //d.deleteDir()
 
-//s.animator.cli.shutdown();
+s.animator.cli.shutdown();
 "generate and animate a model"

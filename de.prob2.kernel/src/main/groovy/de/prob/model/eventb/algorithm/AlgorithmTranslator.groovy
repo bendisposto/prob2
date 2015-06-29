@@ -75,6 +75,10 @@ class AlgorithmTranslator {
 				.action("pc := $npc")
 		npc = translate(npc, statement.Then)
 		if (statement.Else.statements.isEmpty()) {
+			machineM.addEvent("evt${pc}_else")
+					.guard("pc = $pc")
+					.guard("not(${statement.condition})")
+					.action("pc := $npc")
 			return npc
 		}
 
