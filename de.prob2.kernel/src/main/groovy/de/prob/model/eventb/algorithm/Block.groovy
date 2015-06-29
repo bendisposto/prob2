@@ -24,9 +24,7 @@ class Block {
 	}
 
 	def Block Assign(String... assignments) {
-		assignments.each {
-			statements << new Assignment(it)
-		}
+		statements << new Assignments(assignments as List)
 		this
 	}
 

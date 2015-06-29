@@ -22,7 +22,9 @@ class If implements Statement {
 		if(Then != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		Then = new Block(assignments.collect { new Assignment(it)})
+		Then = new Block([
+			new Assignments(assignments as List)
+		])
 		this
 	}
 
@@ -38,7 +40,9 @@ class If implements Statement {
 		if(Else != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		Else = new Block(assignments.collect { new Assignment(it)})
+		Else = new Block([
+			new Assignments(assignments as List)
+		])
 		this
 	}
 

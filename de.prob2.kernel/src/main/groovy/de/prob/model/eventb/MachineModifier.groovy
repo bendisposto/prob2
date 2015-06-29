@@ -1,6 +1,8 @@
 package de.prob.model.eventb
 
 import de.prob.model.eventb.Event.EventType
+import de.prob.model.eventb.algorithm.AlgorithmTranslator
+import de.prob.model.eventb.algorithm.Block
 import de.prob.model.representation.ModelElementList
 
 /**
@@ -341,6 +343,11 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier make(Closure definition) {
 		runClosure definition
+		this
+	}
+
+	def MachineModifier algorithm(Closure definition) {
+		new AlgorithmTranslator(this).create(new Block().make(definition))
 		this
 	}
 
