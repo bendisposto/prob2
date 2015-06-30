@@ -41,12 +41,14 @@ mm.make {
 		constants "m", "n", "k"
 		axioms "m : 1..k",
 		       "n : 1..k",
-			   "k = 100"
+			   "k = 100",
+			   "m = 50",
+			   "n = 20"
 	}
 	
-	machine(name: "euclid") {
-		var_block name: "u", invariant: "u : 1..100", init: "u := 50"
-		var_block name: "v", invariant: "v : 1..100", init: "v := 20"
+	machine(name: "euclid", sees: ["definitions", "limits"]) {
+		var_block name: "u", invariant: "u : 0..k", init: "u := m"
+		var_block name: "v", invariant: "v : 0..k", init: "v := n"
 		
 		algorithm {
 			While("u /= 0") {
@@ -55,7 +57,7 @@ mm.make {
 				}
 				Assign("u := u - v")
 			}
-			Assert("TRUE = TRUE")//"v|->50|->20 : IsGCD")
+			Assert("v|->m|->n : IsGCD")//"TRUE = TRUE")
 		}
 	}
 }
@@ -104,8 +106,8 @@ assert actions(evt4_loop) == ["pc := 0"]
 
 evt5 = e.events.evt5
 assert evt5 != null
-//assert guards(evt5) == ["pc = 5", "v|->50|->20 : IsGCD"]//"TRUE = TRUE"] 
-//assert evt5.guards[1].isTheorem()
+assert guards(evt5) == ["pc = 5", "v|->m|->n : IsGCD"]//"TRUE = TRUE"] 
+assert evt5.guards[1].isTheorem()
 assert actions(evt5) == ["pc := 6"]
 
 evt6 = e.events.evt6
@@ -116,8 +118,8 @@ assert actions(evt6) == []
 //m = api.eventb_load("/tmp/Euclid/euclid.bcm")
 s = m as StateSpace
 t = s as Trace
-//t = t.$setup_constants().$initialise_machine()
-t = t.$initialise_machine()
+t = t.$setup_constants().$initialise_machine()
+//t = t.$initialise_machine()
 t = t.evt0_enter_while()
 assert t.evalCurrent("u").value == "50" && t.evalCurrent("v").value == "20"
 t = t.evt1_else()
@@ -154,11 +156,12 @@ t = t.evt4_loop()
 assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
 t = t.evt0_exit_while()
 assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
+assert t.evalCurrent("v|->m|->n : IsGCD").value == "TRUE"
 t = t.evt5()
 assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
 
-//mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "Euclid", "/tmp")
+mtx = new ModelToXML()
+d = mtx.writeToRodin(m, "Euclid", "/tmp")
 //d.deleteDir()
 
 s.animator.cli.shutdown();
