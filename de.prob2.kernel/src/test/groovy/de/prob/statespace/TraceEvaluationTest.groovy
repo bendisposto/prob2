@@ -90,7 +90,7 @@ class TraceEvaluationTest extends Specification {
 	def "It is possible to evaluate a parsed formula over the course of a Trace"() {
 		when:
 		def Trace t = t.$initialise_machine().new("pp = PID1").new("pp = PID2")
-		def x = t.eval("waiting" as ClassicalB)
+		def x = t.eval(new ClassicalB("waiting"))
 
 		then:
 		x.size() == 3
@@ -109,7 +109,7 @@ class TraceEvaluationTest extends Specification {
 		AbstractModel m = factory.load(path)
 		t = new Trace(m)
 		def Trace t = t.$setup_constants().$initialise_machine().up()
-		def x = t.eval("level" as EventB)
+		def x = t.eval(new EventB("level"))
 
 		then:
 		x.size() == 2

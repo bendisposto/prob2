@@ -18,23 +18,19 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 
 import de.prob.scripting.Downloader;
-import de.prob.webconsole.WebConsole;
 
 /**
  * The Main class initializes ProB 2.0. This class should NOT be instantiated
  * but should rather be started from a .jar file, accessed through Guice via
  * {@link ServletContextListener#getInjector()#getInstance()} with Main.class as
  * parameter, or started in a jetty server via {@link WebConsole#run()}.
- * 
+ *
  * @author joy
- * 
+ *
  */
 public class Main {
 
-	public static boolean restricted = true;
-	public static boolean standalone = false;
-	public static boolean local = false;
-	public static boolean multianimation = false;
+
 	public static int maxCacheSize = 100;
 	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
@@ -50,7 +46,7 @@ public class Main {
 
 	/**
 	 * Allows to customize the Injector. Handle with care!
-	 * 
+	 *
 	 * @param i
 	 */
 	public static void setInjector(final Injector i) {
@@ -70,14 +66,14 @@ public class Main {
 	 */
 	public final static String LOG_CONFIG = System
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
-			.getProperty("PROB_LOG_CONFIG");
+					.getProperty("PROB_LOG_CONFIG");
 
 	private final Downloader downloader;
 
 	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
 	 * should NOT be instantiated by hand.
-	 * 
+	 *
 	 * @param parser
 	 * @param options
 	 * @param shell
@@ -93,10 +89,10 @@ public class Main {
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
+
+
 	private void run(final String[] args) throws Throwable {
-		String url = "";
-		int port = -1;
-		String iface = "0.0.0.0";
+
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("upgrade")) {
@@ -110,25 +106,7 @@ public class Main {
 					System.out.println(downloader.downloadCli(version));
 				}
 			}
-			if (line.hasOption("browser")) {
-				logger.debug("Browser");
-				url = line.getOptionValue("browser");
-				logger.debug("Browser started");
-			}
-			if (line.hasOption("port")) {
-				port = Integer.parseInt(line.getOptionValue("port"));
-			}
-			if (line.hasOption("local")) {
-				Main.local = true;
-				Main.restricted = false;
-				iface = "127.0.0.1";
-			}
-			if (line.hasOption("standalone")) {
-				Main.standalone = true;
-			}
-			if (line.hasOption("multianimation")) {
-				Main.multianimation = true;
-			}
+
 			if (line.hasOption("maxCacheSize")) {
 				logger.debug("setting maximum cache size requested");
 				String value = line.getOptionValue("maxCacheSize");
@@ -137,15 +115,9 @@ public class Main {
 				logger.debug("Max size set successfully to {}", value);
 			}
 
-			runServer(url, iface, port);
-			if (line.hasOption("shell")) {
-				while (true) {
-					Thread.sleep(10);
-				}
-			}
-			if (line.hasOption("test")) {
+			if (line.hasOption("script")) {
 				logger.debug("Run Script");
-				String value = line.getOptionValue("test");
+				String value = line.getOptionValue("script");
 				shell.runScript(new File(value), false);
 			}
 		} catch (ParseException exp) {
@@ -154,26 +126,12 @@ public class Main {
 		}
 	}
 
-	private void runServer(final String url, final String iface, final int port) {
-		logger.debug("Shell");
-		Thread thread = new Thread(new Runnable() {
 
-			@Override
-			public void run() {
-				try {
-					WebConsole.run(url, iface, port);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		thread.start();
-	}
 
 	/**
 	 * Returns the directory in which the binary files and libraries for ProB
 	 * are stored.
-	 * 
+	 *
 	 * @return if System Property "prob.home" is defined, the path to this
 	 *         directory is returned. Otherwise, the directory specified by
 	 *         System Property "user.home" is chosen, and the directory ".prob"
@@ -185,13 +143,13 @@ public class Main {
 			return homedir + separator;
 		}
 		return System.getProperty("user.home") + separator + ".prob"
-				+ separator;
+		+ separator;
 	}
 
 	/**
 	 * Start the ProB 2.0 shell with argument -s. Run integration tests with
 	 * -test /path/to/testDir
-	 * 
+	 *
 	 * @param args
 	 * @throws Throwable
 	 */
@@ -209,5 +167,5 @@ public class Main {
 		System.exit(0);
 	}
 
-	
+
 }
