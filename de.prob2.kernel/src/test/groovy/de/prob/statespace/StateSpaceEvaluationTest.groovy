@@ -35,14 +35,14 @@ class StateSpaceEvaluationTest extends Specification {
 	def "it is possible to evaluate formulas in a state"() {
 		expect:
 		s.eval(firstState, [
-			"waiting" as ClassicalB,
-			"ready" as ClassicalB
+			new ClassicalB("waiting"),
+			new ClassicalB("ready")
 		]).collect { it.getValue() } == ["{}", "{}"]
 	}
 
 	def "it is possible for someone to subscribe to a formula"() {
 		when:
-		def formula = "waiting /\\ ready" as ClassicalB
+		def formula = new ClassicalB("waiting /\\ ready")
 		boolean before = s.formulaRegistry.containsKey(formula)
 		def subscriber = "I am a subscriber!"
 		def success = s.subscribe(subscriber, formula)
@@ -57,7 +57,7 @@ class StateSpaceEvaluationTest extends Specification {
 
 	def "it is possible for multiple people to subscribe to the same formula"() {
 		when:
-		def formula = "waiting \\/ ready" as ClassicalB
+		def formula = new ClassicalB("waiting \\/ ready")
 		boolean before = s.formulaRegistry.containsKey(formula)
 		def subscriber1 = "I am a subscriber!"
 		def subscriber2 = "I am also a subscriber!"
@@ -90,8 +90,8 @@ class StateSpaceEvaluationTest extends Specification {
 
 	def "it is possible for someone to subscribe to multiple formulas"() {
 		when:
-		def formula = "card(waiting)" as ClassicalB
-		def formula2 = "card(ready)" as ClassicalB
+		def formula = new ClassicalB("card(waiting)")
+		def formula2 = new ClassicalB("card(ready)")
 		boolean before = s.formulaRegistry.containsKey(formula)
 		boolean before2 = s.formulaRegistry.containsKey(formula2)
 		def subscriber = "I am a subscriber!"
@@ -111,8 +111,8 @@ class StateSpaceEvaluationTest extends Specification {
 
 	def "it is possible for multiple people to subscribe to the same multiple formulas"() {
 		when:
-		def formula = "card(ready)+card(waiting)" as ClassicalB
-		def formula2 = "card(active)" as ClassicalB
+		def formula = new ClassicalB("card(ready)+card(waiting)")
+		def formula2 = new ClassicalB("card(active)")
 		boolean before = s.formulaRegistry.containsKey(formula)
 		boolean before2 = s.formulaRegistry.containsKey(formula2)
 		def subscriber1 = "I am a subscriber!"
@@ -159,7 +159,7 @@ class StateSpaceEvaluationTest extends Specification {
 
 	def "after subscribing a formula, its values can be retrieved using valuesAt"() {
 		when:
-		def formula = "card(waiting) + 1" as ClassicalB
+		def formula = new ClassicalB("card(waiting) + 1")
 		s.subscribe("mmm",formula)
 		def values = s.valuesAt(firstState)
 
@@ -175,7 +175,7 @@ class StateSpaceEvaluationTest extends Specification {
 	def "the garbage collector should automatically remove subscribers if their references no longer exist"() {
 		when:
 		def subscriber = new DummyObject()
-		def formula = 'card(ready) + 1' as ClassicalB
+		def formula = new ClassicalB('card(ready) + 1')
 		def success = s.subscribe(subscriber, formula)
 		def before = s.formulaRegistry.containsKey(formula)
 		def before2 = s.formulaRegistry[formula].containsKey(subscriber)
@@ -191,13 +191,13 @@ class StateSpaceEvaluationTest extends Specification {
 	}
 
 	def "a formula that has not yet been subscribed should be recognized as subscribed"() {
-		expect: !s.isSubscribed("card(waiting)+10" as ClassicalB)
+		expect: !s.isSubscribed(new ClassicalB("card(waiting)+10"))
 	}
 
 	def "if there are no longer any subscribers who are interested in a formula, it is recognized as subscribed"() {
 		when:
 		def subscriber = new DummyObject()
-		def formula = 'card(ready) + 77' as ClassicalB
+		def formula = new ClassicalB('card(ready) + 77')
 		def success = s.subscribe(subscriber, formula)
 		def before = s.isSubscribed(formula)
 		s.formulaRegistry[formula].remove(subscriber) // this will happen at some point if the subscriber is cleaned up by the garbage collector
@@ -211,7 +211,7 @@ class StateSpaceEvaluationTest extends Specification {
 	def "it is possible to unsubscribe a formula after subscribing it"() {
 		when:
 		def subscriber = "I'm a subscriber!"
-		def formula = "card(waiting) + 5" as ClassicalB
+		def formula = new ClassicalB("card(waiting) + 5")
 		def success = s.subscribe(subscriber, formula)
 		def before = s.isSubscribed(formula)
 		def success2 = s.unsubscribe(subscriber, formula)
@@ -226,7 +226,7 @@ class StateSpaceEvaluationTest extends Specification {
 		when:
 		def subscriber = "hi!"
 		def subscriber2 = "hi again!"
-		def formula = "card(ready) + card(active) + 7" as ClassicalB
+		def formula = new ClassicalB("card(ready) + card(active) + 7")
 		def success = s.subscribe(subscriber, formula)
 		def success2 = s.subscribe(subscriber2, formula)
 
@@ -238,13 +238,13 @@ class StateSpaceEvaluationTest extends Specification {
 
 	def "it is not possible to unsubscribe a formula that is not subscribed (nothing will happen)"() {
 		expect:
-		!s.unsubscribe("I'm not a subscriber", "1+24" as ClassicalB)
+		!s.unsubscribe("I'm not a subscriber", new ClassicalB("1+24"))
 	}
 
 	def "getting subscribed formulas also removes formulas that aren't there any more"() {
 		when:
 		def subscriber = "hi!"
-		def formula = "card(active) + 9" as ClassicalB
+		def formula = new ClassicalB("card(active) + 9")
 		def success = s.subscribe(subscriber, formula)
 		def before = s.getSubscribedFormulas() == [formula] as Set
 		s.formulaRegistry.remove(formula)
@@ -258,7 +258,7 @@ class StateSpaceEvaluationTest extends Specification {
 	def "getting subscribed formulas also removes formulas that aren't there any more 2"() {
 		when:
 		def subscriber = "hi!"
-		def formula = "card(active) + 10" as ClassicalB
+		def formula = new ClassicalB("card(active) + 10")
 		def success = s.subscribe(subscriber, formula)
 		def before = s.getSubscribedFormulas() == [formula] as Set
 		s.formulaRegistry[formula].remove(subscriber)
@@ -271,9 +271,9 @@ class StateSpaceEvaluationTest extends Specification {
 
 	def "it is possible to evaluate multiple formulas in multiple states"() {
 		when:
-		def waiting = "waiting" as ClassicalB
-		def ready = "ready" as ClassicalB
-		def active = "active" as ClassicalB
+		def waiting = new ClassicalB("waiting")
+		def ready = new ClassicalB("ready")
+		def active = new ClassicalB("active")
 		def state2 = firstState.new("pp=PID1")
 		def state3 = firstState.new("pp=PID2")
 		def state4 = firstState.new("pp=PID3")

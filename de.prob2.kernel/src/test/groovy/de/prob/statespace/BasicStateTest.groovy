@@ -315,7 +315,7 @@ class BasicStateTest extends Specification {
 
 	def "explore changes all the values"() {
 		setup:
-		def f = "1+2" as ClassicalB
+		def f = new ClassicalB("1+2")
 		s.subscribe(root, [f])
 		root.transitions = []
 		root.values = [:]

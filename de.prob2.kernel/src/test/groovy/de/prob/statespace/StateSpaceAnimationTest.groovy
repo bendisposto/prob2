@@ -28,7 +28,7 @@ class StateSpaceAnimationTest extends Specification {
 	def "it is possible to get states based on a given predicate"() {
 		when:
 		firstState.new("pp=PID1").new("pp=PID2")
-		def formula = "card(waiting) > 0" as ClassicalB
+		def formula = new ClassicalB("card(waiting) > 0")
 		def states = s.getStatesFromPredicate(formula)
 
 		then:
@@ -145,7 +145,7 @@ class StateSpaceAnimationTest extends Specification {
 
 	def "it is possible to generate a trace to a state in which a given predicate holds"() {
 		when:
-		def formula = "waiting = {PID1,PID3}" as ClassicalB
+		def formula = new ClassicalB("waiting = {PID1,PID3}")
 		Trace t = s.getTraceToState(formula)
 
 		then:
