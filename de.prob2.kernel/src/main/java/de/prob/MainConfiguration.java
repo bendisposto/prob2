@@ -82,9 +82,6 @@ public class MainConfiguration extends AbstractModule {
 	@Provides
 	public final Options getCommandlineOptions() {
 		Options options = new Options();
-		Option shell = new Option("s", "shell", false,
-				"start ProB's Groovy shell");
-
 
 		Option maxCacheSize = OptionBuilder
 				.withArgName("maxSize")
@@ -114,7 +111,6 @@ public class MainConfiguration extends AbstractModule {
 		OptionGroup mode = new OptionGroup();
 		mode.setRequired(true);
 		// mode.addOption(modelcheck);
-		mode.addOption(shell);
 		mode.addOption(script);
 		options.addOptionGroup(mode);
 		options.addOption(upgrade);
