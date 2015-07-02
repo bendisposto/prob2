@@ -79,7 +79,7 @@ class TraceEvaluationTest extends Specification {
 		then:
 		x.size() == 3
 		def sIds = t.getTransitionList().collect { it.getDestination().getId() }
-		def results = x.collect { [it.a, it.b.getValue()]}
+		def results = x.collect { [it.getFirst(), it.getSecond().getValue()]}
 
 		results[0] == [sIds[0], "{}"]
 		results[1] == [sIds[1], "{PID1}"]
@@ -94,7 +94,7 @@ class TraceEvaluationTest extends Specification {
 		then:
 		x.size() == 3
 		def sIds = t.getTransitionList().collect { it.getDestination().getId() }
-		def results = x.collect { [it.a, it.b.getValue()]}
+		def results = x.collect { [it.getFirst(), it.getSecond().getValue()]}
 
 		results[0] == [sIds[0], "{}"]
 		results[1] == [sIds[1], "{PID1}"]
@@ -112,7 +112,7 @@ class TraceEvaluationTest extends Specification {
 
 		then:
 		x.size() == 2
-		x[0].b.getValue() == "L0"
-		x[1].b.getValue() == "L1"
+		x[0].getSecond().getValue() == "L0"
+		x[1].getSecond().getValue() == "L1"
 	}
 }

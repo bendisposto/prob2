@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.parboiled.common.Tuple2;
-
 import de.be4.classicalb.core.parser.node.AAbstractConstantsContextClause;
 import de.be4.classicalb.core.parser.node.AAxiomsContextClause;
 import de.be4.classicalb.core.parser.node.AConstantsContextClause;
@@ -27,6 +25,7 @@ import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBConstant;
 import de.prob.model.representation.Axiom;
 import de.prob.model.representation.Set;
+import de.prob.util.Tuple2;
 
 public class ContextTranslator {
 

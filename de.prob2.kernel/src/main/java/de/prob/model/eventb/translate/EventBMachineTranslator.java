@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.parboiled.common.Tuple2;
-
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
 import de.be4.classicalb.core.parser.node.AConvergentEventstatus;
 import de.be4.classicalb.core.parser.node.AEvent;
@@ -39,6 +37,7 @@ import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBVariable;
 import de.prob.model.eventb.EventParameter;
 import de.prob.model.eventb.Witness;
+import de.prob.util.Tuple2;
 
 public class EventBMachineTranslator {
 

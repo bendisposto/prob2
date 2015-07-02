@@ -1,7 +1,5 @@
 package de.prob.statespace
 
-import org.parboiled.common.Tuple2
-
 import com.github.krukow.clj_lang.PersistentVector
 
 import de.prob.animator.command.ComposedCommand
@@ -10,6 +8,7 @@ import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.AbstractModel
+import de.prob.util.Tuple2
 
 /**
  * @author joy

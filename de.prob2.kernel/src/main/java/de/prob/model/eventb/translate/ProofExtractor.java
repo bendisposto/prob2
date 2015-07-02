@@ -14,7 +14,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.parboiled.common.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -25,6 +24,7 @@ import de.prob.model.eventb.EventBGuard;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.ProofObligation;
 import de.prob.model.representation.ModelElementList;
+import de.prob.util.Tuple2;
 
 public class ProofExtractor {
 

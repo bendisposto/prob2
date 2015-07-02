@@ -12,7 +12,6 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.pegdown.PegDownProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,6 @@ public class MainConfiguration extends AbstractModule {
 				buildConstants.getProperty("version", "0.0.0"));
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
 		.toInstance(Main.class.getClassLoader());
-		bind(PegDownProcessor.class);
 
 		// TODO: Should this property be set here? Should it be set at all?
 		System.setProperty("PROB_LOGFILE", getProBLogfile());
