@@ -56,7 +56,7 @@ public class ContextXmlHandler extends DefaultHandler {
 				fileName.lastIndexOf("."));
 		directoryPath = fileName.substring(0,
 				fileName.lastIndexOf(File.separatorChar));
-		context = new Context(name, directoryPath);
+		context = new Context(name);
 		model.addContext(context);
 		if (isMainComponent) {
 			model.setMainComponent(context);
@@ -177,7 +177,7 @@ public class ContextXmlHandler extends DefaultHandler {
 		String name = attributes.getValue("name");
 		inInternalContext = true;
 
-		internalContext = new Context(name, directoryPath);
+		internalContext = new Context(name);
 		model.addContext(internalContext);
 		if (extendsNames.contains(name)) {
 			Extends.add(internalContext);

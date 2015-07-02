@@ -84,7 +84,7 @@ public class MachineXmlHandler extends DefaultHandler {
 				fileName.lastIndexOf("."));
 		directoryPath = fileName.substring(0,
 				fileName.lastIndexOf(File.separatorChar));
-		machine = new EventBMachine(name, directoryPath);
+		machine = new EventBMachine(name);
 		model.addMachine(machine);
 		if (isMainComponent) {
 			model.setMainComponent(machine);
@@ -378,7 +378,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		}
 		extractingContext = true;
 
-		internalContext = new Context(name, directoryPath);
+		internalContext = new Context(name);
 		model.addContext(internalContext);
 		if (seesNames.contains(name)) {
 			sees.add(internalContext);
