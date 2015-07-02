@@ -2,8 +2,6 @@ package de.prob.scripting;
 
 import com.google.inject.AbstractModule;
 
-import de.prob.testing.TestRunner;
-
 public class ScriptingModule extends AbstractModule {
 
 	@Override
@@ -11,7 +9,6 @@ public class ScriptingModule extends AbstractModule {
 		bind(Api.class);
 		bind(Downloader.class);
 		bind(ScriptEngineProvider.class);
-		bind(TestRunner.class);
 	}
 
 }

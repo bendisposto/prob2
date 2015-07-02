@@ -6,7 +6,6 @@ import de.prob.animator.AnimatorModule;
 import de.prob.cli.ModuleCli;
 import de.prob.scripting.ScriptingModule;
 import de.prob.statespace.ModelModule;
-import de.prob.web.WebModule;
 
 /**
  * This Guice {@link AbstractModule} contains all the configuration information
@@ -23,7 +22,6 @@ public class MainModule extends AbstractModule {
 		install(new ModuleCli());
 		install(new AnimatorModule());
 		install(new ModelModule());
-		install(new WebModule());
 		install(new ScriptingModule());
 	}
 }

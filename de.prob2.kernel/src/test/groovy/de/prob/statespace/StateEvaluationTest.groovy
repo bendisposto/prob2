@@ -35,25 +35,25 @@ class StateEvaluationTest extends Specification {
 
 	def "it is possible to evaluate an IEvalElement"() {
 		expect:
-		secondState.eval("waiting" as ClassicalB).getValue() == "{PID1}"
+		secondState.eval(new ClassicalB("waiting")).getValue() == "{PID1}"
 	}
 
 	def "it is possible to evaluate multiple IEvalElements"() {
 		expect:
-		secondState.eval("waiting" as ClassicalB, "ready" as ClassicalB).collect {it.getValue()} == ["{PID1}", "{}"]
+		secondState.eval(new ClassicalB("waiting"), new ClassicalB("ready")).collect {it.getValue()} == ["{PID1}", "{}"]
 	}
 
 	def "it is possible to evaluate a list of IEvalElements"() {
 		expect:
 		secondState.eval([
-			"waiting" as ClassicalB,
-			"ready" as ClassicalB
+			new ClassicalB("waiting"),
+			new ClassicalB("ready")
 		]).collect {it.getValue()} == ["{PID1}", "{}"]
 	}
 
 	def "if a result is cached, prolog doesn't necessarily have to be contacted"() {
 		when:
-		IEvalElement blah = "blah" as ClassicalB
+		IEvalElement blah = new ClassicalB("blah")
 		AbstractEvalResult blahres = new EvalResult("blah", [:])
 		firstState.values[blah] = blahres
 
