@@ -6,8 +6,8 @@ import de.prob.animator.domainobjects.*;
   and it does not result in an empty machine
 */
 
-c = api.eventb_load(dir+File.separator+"counter"+File.separator+"machine.bum.bum") as Trace
-s = c as StateSpace
+s = api.eventb_load(dir+File.separator+"counter"+File.separator+"machine.bum.bum") 
+c = s as Trace
 assert c.getCurrentState() == s.root
 assert c.getCurrentState().toString() == "root"
 c = c.anyEvent()

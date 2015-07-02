@@ -1,30 +1,32 @@
 package de.prob.model.eventb;
 
 import java.io.File;
+import java.util.Map;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
+import de.prob.animator.command.LoadEventBProjectCommand;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.theory.Theory;
+import de.prob.model.eventb.translate.EventBModelTranslator;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
+import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
 public class EventBModel extends AbstractModel {
 
-	private AbstractElement mainComponent;
 	private final ModelElementList<EventBMachine> machines = new ModelElementList<EventBMachine>();
 	private final ModelElementList<Context> contexts = new ModelElementList<Context>();
 
 	@Inject
-	public EventBModel(final Provider<StateSpace> stateSpaceProvider) {
+	public EventBModel(final StateSpaceProvider stateSpaceProvider) {
 		super(stateSpaceProvider);
 	}
 
@@ -43,27 +45,7 @@ public class EventBModel extends AbstractModel {
 	public void isFinished() {
 		addMachines(machines);
 		addContexts(contexts);
-		extractModelDir(modelFile, getMainComponentName());
 		freeze();
-	}
-
-	public void setMainComponent(final AbstractElement mainComponent) {
-		this.mainComponent = mainComponent;
-	}
-
-	@Override
-	public AbstractElement getMainComponent() {
-		return mainComponent;
-	}
-
-	public String getMainComponentName() {
-		if (mainComponent instanceof Context) {
-			return ((Context) mainComponent).getName();
-		}
-		if (mainComponent instanceof Machine) {
-			return ((Machine) mainComponent).getName();
-		}
-		return "";
 	}
 
 	@Override
@@ -108,7 +90,7 @@ public class EventBModel extends AbstractModel {
 	}
 
 	@Override
-	public boolean checkSyntax(String formula) {
+	public boolean checkSyntax(final String formula) {
 		try {
 			EventB element = (EventB) parseFormula(formula);
 			element.ensureParsed();
@@ -116,6 +98,14 @@ public class EventBModel extends AbstractModel {
 		} catch (EvaluationException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public StateSpace load(final AbstractElement mainComponent,
+			final Map<String, String> preferences) {
+		return stateSpaceProvider.loadFromCommand(this, mainComponent,
+				preferences, new LoadEventBProjectCommand(
+						new EventBModelTranslator(this, mainComponent)));
 	}
 
 }

@@ -9,23 +9,22 @@ import de.prob.animator.domainobjects.EvalResult
 import de.prob.animator.domainobjects.EventB
 import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.animator.domainobjects.WDError
-import de.prob.model.representation.AbstractModel
 import de.prob.scripting.ClassicalBFactory
 import de.prob.scripting.EventBFactory
 
 class TraceEvaluationTest extends Specification {
 
-	static AbstractModel m
+	static StateSpace s
 	Trace t
 
 	def setupSpec() {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
-		m = factory.load(path)
+		s = factory.extract(path).load([:])
 	}
 
 	def setup() {
-		t = new Trace(m)
+		t = new Trace(s)
 	}
 
 	def "when not initialised the result is IdentifierNotInitialised"() {
@@ -106,8 +105,8 @@ class TraceEvaluationTest extends Specification {
 		when:
 		def path = System.getProperties().get("user.dir")+"/groovyTests/Lift/lift0.bcm"
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
-		AbstractModel m = factory.load(path)
-		t = new Trace(m)
+		StateSpace s = factory.extract(path).load([:])
+		t = new Trace(s)
 		def Trace t = t.$setup_constants().$initialise_machine().up()
 		def x = t.eval("level" as EventB)
 

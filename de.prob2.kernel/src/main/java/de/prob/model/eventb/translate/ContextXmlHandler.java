@@ -46,8 +46,7 @@ public class ContextXmlHandler extends DefaultHandler {
 
 	private final Map<String, Map<String, EventBAxiom>> axiomCache = new HashMap<String, Map<String, EventBAxiom>>();
 
-	public ContextXmlHandler(final EventBModel model, final String fileName,
-			final boolean isMainComponent, final Set<IFormulaExtension> typeEnv) {
+	public ContextXmlHandler(final EventBModel model, final String fileName, final Set<IFormulaExtension> typeEnv) {
 		this.model = model;
 		this.typeEnv = typeEnv;
 
@@ -58,10 +57,7 @@ public class ContextXmlHandler extends DefaultHandler {
 				fileName.lastIndexOf(File.separatorChar));
 		context = new Context(name);
 		model.addContext(context);
-		if (isMainComponent) {
-			model.setMainComponent(context);
-		}
-
+		
 		axiomCache.put(name, new HashMap<String, EventBAxiom>());
 	}
 
@@ -216,6 +212,10 @@ public class ContextXmlHandler extends DefaultHandler {
 		ProofExtractor extractor = new ProofExtractor(context, directoryPath
 				+ File.separatorChar + context.getName());
 		context.addProofs(extractor.getProofs());
+	}
+	
+	public Context getContext() {
+		return context;
 	}
 
 }

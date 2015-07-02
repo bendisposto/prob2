@@ -5,9 +5,9 @@ import de.prob.prolog.term.*
 
 // Groovy script example for checking CSP assertion:
 
-CSPModel m = api.csp_load(dir+File.separator+"machines"+File.separator+"csp"+File.separator+"Deterministic1.csp")
-t = m as Trace
-s = t as StateSpace 
+s = api.csp_load(dir+File.separator+"machines"+File.separator+"csp"+File.separator+"Deterministic1.csp")
+t = s as Trace
+m = t as CSPModel
 x = new CSP("assert not NonDeterm3 :[ deterministic [F] ]",m) 
 y = new CSP("assert not NDet :[deterministic [FD]]",m)
 z = new CSP("assert not NDet1 :[deterministic [F]]",m)

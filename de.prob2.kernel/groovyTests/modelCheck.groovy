@@ -4,8 +4,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 model_check = { job ->
 	checker = new ModelChecker(job)
@@ -18,8 +17,7 @@ assert res instanceof ModelCheckOk
 
 s.animator.cli.shutdown();
 
-m = api.eventb_load(dir+File.separator+"machines"+File.separator+"InvalidModel"+File.separator+"createErrors.bcm")
-s = m as StateSpace
+s = api.eventb_load(dir+File.separator+"machines"+File.separator+"InvalidModel"+File.separator+"createErrors.bcm")
 
 res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkInvariantViolations(true)))
 assert res instanceof ModelCheckErrorUncovered

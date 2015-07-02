@@ -24,7 +24,6 @@ import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractFormulaElement;
-import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.ModelRep;
 import de.prob.statespace.AnimationSelector;
@@ -44,12 +43,12 @@ public class StateInspector extends AbstractAnimationBasedView {
 	List<IEvalElement> formulasForEvaluating = new ArrayList<IEvalElement>();
 	List<String> history = new ArrayList<String>();
 	Trace currentTrace;
-	AbstractModel currentModel;
+	StateSpace currentStateSpace;
 
 	@Inject
 	public StateInspector(final AnimationSelector animations) {
 		super(animations);
-		this.incrementalUpdate = false;
+		incrementalUpdate = false;
 		animations.registerAnimationChangeListener(this);
 	}
 
@@ -57,13 +56,13 @@ public class StateInspector extends AbstractAnimationBasedView {
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		if (currentModel != null && currentTrace != null) {
+		if (currentStateSpace != null && currentTrace != null) {
 
-			extractFormulas(currentModel);
+			extractFormulas(currentStateSpace);
 			Object values = calculateFormulas(currentTrace);
 			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
 					"components",
-					WebUtils.toJson(ModelRep.translate(currentModel)),
+					WebUtils.toJson(ModelRep.translate(currentStateSpace)),
 					"values", WebUtils.toJson(values), "history",
 					WebUtils.toJson(history)));
 		}
@@ -75,8 +74,8 @@ public class StateInspector extends AbstractAnimationBasedView {
 			history = history.subList(100, history.size());
 		}
 		history.add(code);
-		if (currentModel != null) {
-			Object eval = currentTrace.evalCurrent(currentModel
+		if (currentStateSpace != null) {
+			Object eval = currentTrace.evalCurrent(currentStateSpace.getModel()
 					.parseFormula(code));
 			return WebUtils.wrap("cmd", "StateInspector.result", "code",
 					unicode(code), "result",
@@ -89,13 +88,13 @@ public class StateInspector extends AbstractAnimationBasedView {
 	public Object registerFormula(final Map<String, String[]> params) {
 		String[] path = params.get("path[]");
 		List<String> listP = Arrays.asList(path);
-		if (currentModel != null) {
-			StateSpace s = currentModel.getStateSpace();
-			AbstractElement abstractElement = currentModel.get(listP);
+		if (currentStateSpace != null) {
+			AbstractElement abstractElement = currentStateSpace.getModel().get(
+					listP);
 			if (abstractElement instanceof AbstractFormulaElement) {
 				AbstractFormulaElement e = (AbstractFormulaElement) abstractElement;
-				if (!e.isSubscribed(s)) {
-					e.subscribe(s);
+				if (!e.isSubscribed(currentStateSpace)) {
+					e.subscribe(currentStateSpace);
 					formulasForEvaluating.add(e.getFormula());
 				}
 			}
@@ -107,13 +106,12 @@ public class StateInspector extends AbstractAnimationBasedView {
 	public Object deregisterFormula(final Map<String, String[]> params) {
 		String[] path = params.get("path[]");
 		List<String> listP = Arrays.asList(path);
-		if (currentModel != null) {
-			StateSpace s = currentModel.getStateSpace();
-			AbstractElement element = currentModel.get(listP);
+		if (currentStateSpace != null) {
+			AbstractElement element = currentStateSpace.getModel().get(listP);
 			if (element instanceof AbstractFormulaElement) {
 				AbstractFormulaElement e = (AbstractFormulaElement) element;
-				if (e.isSubscribed(s)) {
-					e.unsubscribe(s);
+				if (e.isSubscribed(currentStateSpace)) {
+					e.unsubscribe(currentStateSpace);
 					formulasForEvaluating.remove(e.getFormula());
 				}
 			}
@@ -132,22 +130,22 @@ public class StateInspector extends AbstractAnimationBasedView {
 	public void performTraceChange(final Trace trace) {
 		if (trace == null) {
 			currentTrace = null;
-			currentModel = null;
+			currentStateSpace = null;
 			submit(WebUtils.wrap("cmd", "StateInspector.clearInput"));
 			return;
 		}
 		currentTrace = trace;
-		AbstractModel newModel = trace.getModel();
-		if (!newModel.equals(currentModel)) {
-			currentModel = newModel;
-			extractFormulas(currentModel);
+		StateSpace s = trace.getStateSpace();
+		if (!s.equals(currentStateSpace)) {
+			currentStateSpace = s;
+			extractFormulas(currentStateSpace);
 
-			history = getCurrentHistory(currentModel.getModelDirPath());
+			history = new ArrayList<String>();
 
 			Object calculatedValues = calculateFormulas(currentTrace);
 			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
 					"components",
-					WebUtils.toJson(ModelRep.translate(currentModel)),
+					WebUtils.toJson(ModelRep.translate(currentStateSpace)),
 					"values", WebUtils.toJson(calculatedValues), "history",
 					WebUtils.toJson(history)));
 			return;
@@ -156,10 +154,6 @@ public class StateInspector extends AbstractAnimationBasedView {
 		Object calculatedValues = calculateFormulas(currentTrace);
 		submit(WebUtils.wrap("cmd", "StateInspector.updateValues", "values",
 				WebUtils.toJson(calculatedValues)));
-	}
-
-	private List<String> getCurrentHistory(final String modelDirPath) {
-		return new ArrayList<String>();
 	}
 
 	public Object calculateFormulas(final Trace t) {
@@ -203,10 +197,10 @@ public class StateInspector extends AbstractAnimationBasedView {
 		return StringEscapeUtils.escapeHtml(UnicodeTranslator.toUnicode(code));
 	}
 
-	private void extractFormulas(final AbstractModel m) {
+	private void extractFormulas(final StateSpace s) {
 		formulasForEvaluating = new ArrayList<IEvalElement>();
-		if (m.getFormalismType().equals(FormalismType.B)) {
-			extractFormulas(m, m.getStateSpace());
+		if (s.getModel().getFormalismType().equals(FormalismType.B)) {
+			extractFormulas(s.getModel(), s);
 		}
 	}
 

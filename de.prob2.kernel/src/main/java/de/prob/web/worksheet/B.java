@@ -10,7 +10,7 @@ import de.prob.animator.command.EvalstoreEvalCommand;
 import de.prob.animator.command.EvalstoreEvalCommand.EvalstoreResult;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalResult;
-import de.prob.model.representation.AbstractModel;
+import de.prob.statespace.StateSpace;
 
 public class B extends AbstractBox {
 
@@ -20,19 +20,19 @@ public class B extends AbstractBox {
 	@Override
 	public List<Object> render(final BindingsSnapshot snapshot) {
 		ScriptEngine groovy = owner.getGroovy();
-		AbstractModel model = (AbstractModel) groovy.getBindings(
-				ScriptContext.GLOBAL_SCOPE).get("model");
+		StateSpace s = (StateSpace) groovy.getBindings(
+				ScriptContext.GLOBAL_SCOPE).get("statespace");
 		Object store = groovy.getBindings(ScriptContext.GLOBAL_SCOPE).get(
 				"store");
 		if (store instanceof Long) {
 			Long storeid = (Long) store;
 			EvalstoreEvalCommand c = new EvalstoreEvalCommand(storeid,
 					new ClassicalB(content));
-			model.getStateSpace().execute(c);
+			s.execute(c);
 			EvalstoreResult r = c.getResult();
 			String value = r.getResult() instanceof EvalResult ? ((EvalResult) r
 					.getResult()).getValue() : "error";
-			return pack(makeHtml(id, value));
+					return pack(makeHtml(id, value));
 		} else {
 			return pack(makeHtml(id,
 					"*Could not find evaluation context. Maybe you need to load a model*"));

@@ -5,10 +5,10 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 import de.prob.Main
+import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.animator.domainobjects.CSP
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.model.representation.CSPModel
 import de.prob.scripting.ClassicalBFactory
 
@@ -22,7 +22,7 @@ class StateSpaceEvaluationTest extends Specification {
 	def setupSpec() {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
-		s = factory.load(path) as StateSpace
+		s = factory.extract(path).load([:])
 		root = s.getRoot()
 		firstState = root.$initialise_machine()
 	}

@@ -2,16 +2,17 @@ package de.prob.model.classicalb;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.NoContentProvider;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
+import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -20,6 +21,7 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
+import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -28,9 +30,10 @@ public class ClassicalBModel extends AbstractModel {
 	private ClassicalBMachine mainMachine = null;
 	private final HashSet<String> done = new HashSet<String>();
 	private BParser bparser;
+	private RecursiveMachineLoader rml;
 
 	@Inject
-	public ClassicalBModel(final Provider<StateSpace> ssProvider) {
+	public ClassicalBModel(final StateSpaceProvider ssProvider) {
 		super(ssProvider);
 	}
 
@@ -38,6 +41,7 @@ public class ClassicalBModel extends AbstractModel {
 			final RecursiveMachineLoader rml, final File modelFile,
 			final BParser bparser) {
 
+		this.rml = rml;
 		this.modelFile = modelFile;
 		this.bparser = bparser;
 
@@ -45,8 +49,6 @@ public class ClassicalBModel extends AbstractModel {
 
 		final DomBuilder d = new DomBuilder(false);
 		mainMachine = d.build(mainast);
-
-		extractModelDir(modelFile, mainMachine.getName());
 
 		graph.addVertex(mainMachine.getName());
 		ModelElementList<ClassicalBMachine> machines = new ModelElementList<ClassicalBMachine>();
@@ -84,11 +86,6 @@ public class ClassicalBModel extends AbstractModel {
 	}
 
 	@Override
-	public AbstractElement getMainComponent() {
-		return getMainMachine();
-	}
-
-	@Override
 	public IEvalElement parseFormula(final String formula) {
 		try {
 			return new ClassicalB(bparser.parse(BParser.FORMULA_PREFIX + " "
@@ -104,12 +101,19 @@ public class ClassicalBModel extends AbstractModel {
 	}
 
 	@Override
-	public boolean checkSyntax(String formula) {
+	public boolean checkSyntax(final String formula) {
 		try {
 			parseFormula(formula);
 			return true;
 		} catch (EvaluationException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public StateSpace load(final AbstractElement mainComponent,
+			final Map<String, String> preferences) {
+		return stateSpaceProvider.loadFromCommand(this, mainComponent,
+				preferences, new LoadBProjectCommand(rml, modelFile));
 	}
 }

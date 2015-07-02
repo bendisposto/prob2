@@ -1,6 +1,6 @@
 import de.prob.statespace.*
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch") as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 formula = "waiting \\/ ready" as ClassicalB
 assert !s.formulaRegistry.containsKey(formula)

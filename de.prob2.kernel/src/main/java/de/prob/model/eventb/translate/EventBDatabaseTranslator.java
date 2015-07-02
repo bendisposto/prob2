@@ -15,8 +15,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractElement;
 
 public class EventBDatabaseTranslator {
+
+	private AbstractElement mainComponent;
 
 	public EventBDatabaseTranslator(final EventBModel model,
 			final String fileName) throws FileNotFoundException {
@@ -46,17 +49,16 @@ public class EventBDatabaseTranslator {
 			}
 
 			DefaultHandler xmlHandler = null;
+			mainComponent = null;
 			if (fileName.endsWith(".bcc")) {
-				xmlHandler = new ContextXmlHandler(model, fullFileName, true,
-						typeEnv);
+				xmlHandler = new ContextXmlHandler(model, fullFileName, typeEnv);
+				mainComponent = ((ContextXmlHandler) xmlHandler).getContext();
 			} else {
-				xmlHandler = new MachineXmlHandler(model, fullFileName, true,
-						typeEnv);
+				xmlHandler = new MachineXmlHandler(model, fullFileName, typeEnv);
+				mainComponent = ((MachineXmlHandler) xmlHandler).getMachine();
 			}
 
 			saxParser.parse(modelFile, xmlHandler);
-
-			model.isFinished();
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,5 +70,9 @@ public class EventBDatabaseTranslator {
 				throw (FileNotFoundException) e;
 			}
 		}
+	}
+
+	public AbstractElement getMainComponent() {
+		return mainComponent;
 	}
 }

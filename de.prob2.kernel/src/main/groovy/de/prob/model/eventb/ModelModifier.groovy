@@ -1,21 +1,16 @@
 package de.prob.model.eventb
 
 import de.prob.Main
-import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.representation.Constant
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 import de.prob.model.representation.DependencyGraph.ERefType
-import de.prob.scripting.Api
 import de.prob.scripting.EventBFactory
-import de.prob.scripting.LoadClosures
 
 public class ModelModifier extends AbstractModifier {
 
 	EventBModel temp
-	Map<String, String> prefs
-	Closure loader
 	boolean startProB
 
 	/**
@@ -27,32 +22,14 @@ public class ModelModifier extends AbstractModifier {
 	 * @param model to be copied
 	 * @param startProB default = true
 	 */
-	def ModelModifier(EventBModel model, boolean startProB=true) {
+	def ModelModifier(EventBModel model) {
 		temp = deepCopy(model)
-		this.startProB = startProB
-		if (startProB) {
-			retrieveProBSettings(model);
-		}
 	}
 
-	def ModelModifier(boolean startProB=true) {
+	def ModelModifier() {
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
 		temp = factory.modelCreator.get()
-
-		this.startProB = startProB
-		if(startProB) {
-			retrieveProBSettings(temp)
-		}
 	}
-
-	private void retrieveProBSettings(EventBModel model) {
-		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
-		model.getStateSpace().execute(cmd)
-		prefs = cmd.getPreferences()
-		Api api = Main.getInjector().getInstance(Api.class)
-		loader = api.getSubscribeClosure(LoadClosures.EVENTB)
-	}
-
 	/**
 	 * @param model that is to be copied
 	 * @param startProB true, if the user wants to begin an instance of ProB when creating a model, false otherwise.
@@ -62,9 +39,9 @@ public class ModelModifier extends AbstractModifier {
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
 		EventBModel newModel = factory.modelCreator.get()
 
-		def mainComp = deepCopy(newModel, model.getMainComponent())
+		model.getMachines().each { deepCopy(newModel, it) }
+		model.getContexts().each { deepCopy(newModel, it) }
 		newModel.addTheories(new ModelElementList<Theory>(model.getChildrenOfType(Theory.class)))
-		newModel.setMainComponent(mainComp)
 		newModel
 	}
 
@@ -202,51 +179,15 @@ public class ModelModifier extends AbstractModifier {
 		newEvent
 	}
 
-	def resolveMainComponent(component) {
-		if (component instanceof EventBMachine || component instanceof Context) {
-			return component
-		}
-		if (component instanceof String) {
-			def comp = temp.getComponent(component)
-			if (comp != null) {
-				setMainComponent(comp)
-				return comp
-			}
-		}
-		throw new IllegalArgumentException("$component is an illegal main component for the specified model.")
-	}
-
 
 	/**
 	 * This method makes the model object currently being modified into an
 	 * immutable form.
 	 * @return EventBModel object created
 	 */
-	def EventBModel getModifiedModel(mainModel=temp.getMainComponent()) {
-		resolveMainComponent(mainModel)
+	def EventBModel getModifiedModel() {
 		temp.isFinished()
-		if (startProB) {
-			EventBFactory.loadModel(temp, prefs, loader)
-		}
 		return temp
-	}
-
-	/**
-	 * Change a given preference for the model in question
-	 * @param prefName the name of the preference
-	 * @param prefValue the new value
-	 */
-	def void changePreference(String prefName, String prefValue) {
-		prefs[prefName] = prefValue
-	}
-
-	/**
-	 * Specify which formulas are of interest by setting the closure that is to subscribe
-	 * them
-	 * @param loader that will load the variables of interest.
-	 */
-	def void setLoader(Closure loader) {
-		this.loader = loader
 	}
 
 	/**

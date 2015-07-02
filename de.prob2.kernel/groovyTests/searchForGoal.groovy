@@ -5,8 +5,7 @@ import de.prob.exception.ProBError
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 cmd = new SetBGoalCommand("1=1" as ClassicalB)
 s.execute(cmd)

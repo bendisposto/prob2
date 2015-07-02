@@ -4,12 +4,12 @@ import de.prob.model.eventb.ModelModifier
 import de.prob.statespace.*
 
 
-m = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
-assert m.getMainComponent() != null
-s = m as StateSpace
+s = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
+assert s.getMainComponent() != null
+m = s as EventBModel
 
 modelModifier = new ModelModifier(m)
-m.getStateSpace().animator.cli.shutdown()
+s.animator.cli.shutdown()
 
 // Currently do not support adding refinements to machines
 assert modelModifier.getContext("I-DONT-EXIST") == null
@@ -19,51 +19,55 @@ contextModifier = modelModifier.getContext("EmptyContext")
 
 block = contextModifier.addEnumeratedSet("mySet","x","y","z")
 m2 = modelModifier.getModifiedModel()
-t = m2 as Trace
+s = m2.load(m2.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("mySet")
 assert x.getValue() == "{x,y,z}"
 
 
 modelModifier = new ModelModifier(m2)
-m2.getStateSpace().animator.cli.shutdown()
+s.animator.cli.shutdown()
 contextModifier = modelModifier.getContext("EmptyContext")
 
 assert contextModifier.removeEnumeratedSet(block)
 m3 = modelModifier.getModifiedModel()
-t = m3 as Trace
+s = m3.load(m3.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("mySet")
 assert x instanceof ComputationNotCompletedResult
 
 modelModifier = new ModelModifier(m3)
-m3.getStateSpace().animator.cli.shutdown()
+s.animator.cli.shutdown()
 contextModifier = modelModifier.getContext("EmptyContext")
 
 constant = contextModifier.addConstant("one")
 set = contextModifier.addSet("set")
 axiom = contextModifier.addAxiom("set = {one}")
 m4 = modelModifier.getModifiedModel()
-t = m4 as Trace
+s = m4.load(m4.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("set")
 assert x.value == "{one}"
 
 modelModifier = new ModelModifier(m4)
-m4.getStateSpace().animator.cli.shutdown()
+s.animator.cli.shutdown()
 contextModifier = modelModifier.getContext("EmptyContext")
 
 assert contextModifier.removeConstant(constant)
 assert contextModifier.removeAxiom(axiom)
 assert contextModifier.removeSet(set)
 m5 = modelModifier.getModifiedModel()
-t = m5 as Trace
+s = m5.load(m5.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("set")
 assert x instanceof ComputationNotCompletedResult
 
 modelModifier = new ModelModifier(m5)
-m5.getStateSpace().animator.cli.shutdown()
+s.animator.cli.shutdown()
 machineModifier = modelModifier.getMachine("EmptyMachine")
 
 varBlock = machineModifier.addVariable("x", "x : NAT", "x := 0")
@@ -74,7 +78,8 @@ paramBlock = eventModifier.addParameter("y", "y : NAT")
 guard = eventModifier.addGuard("x + y < 10")
 action = eventModifier.addAction("x := x + y")
 m6 = modelModifier.getModifiedModel()
-t = m6 as Trace
+s = m6.load(m6.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 t = t.inc("y = 4")
 t = t.inc("y = 2")
@@ -86,7 +91,7 @@ assert x.value == "9"
 assert !t.canExecuteEvent("inc",["y = 1"])
 
 modelModifier = new ModelModifier(m6)
-m6.getStateSpace().animator.cli.shutdown()
+s.animator.cli.shutdown()
 machineModifier = modelModifier.getMachine("EmptyMachine")
 
 eventModifier = machineModifier.getEvent("inc")
@@ -97,36 +102,39 @@ assert eventModifier.removeAction(action)
 guard = eventModifier.addGuard("x < 4")
 action = eventModifier.addAction("x := x + 1")
 m7 = modelModifier.getModifiedModel()
-t = m7 as Trace
+s = m7.load(m7.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine().inc().inc().inc().inc()
 x = t.evalCurrent("x")
 assert x.value == "4"
 assert !t.canExecuteEvent("inc",[])
 
 modelModifier = new ModelModifier(m7)
-m7.getStateSpace().animator.cli.shutdown()
+s.animator.cli.shutdown()
 machineModifier = modelModifier.getMachine("EmptyMachine")
 
 assert machineModifier.removeEvent(eventModifier.getEvent())
 m8 = modelModifier.getModifiedModel()
-t = m8 as Trace
+s = m8.load(m8.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 assert !t.canExecuteEvent("inc", [])
 
 modelModifier = new ModelModifier(m8)
-m8.getStateSpace().animator.cli.shutdown()
+s.animator.cli.shutdown()
 machineModifier = modelModifier.getMachine("EmptyMachine")
 
 assert machineModifier.removeVariableBlock(varBlock)
 assert machineModifier.removeInvariant(invariant)
 m9 = modelModifier.getModifiedModel()
-t = m9 as Trace
+s = m9.load(m9.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("x")
 assert x instanceof ComputationNotCompletedResult
 
 modelModifier = new ModelModifier(m9)
-m9.getStateSpace().animator.cli.shutdown()
+s.animator.cli.shutdown()
 machineModifier = modelModifier.getMachine("EmptyMachine")
 
 xBlock = machineModifier.addVariable("x", "x : NAT", "x := 1")
@@ -136,10 +144,12 @@ act = xBlock.initialisationAction
 assert clonedInit.removeAction(act)
 clonedInit.addAction("x := x + 2")
 m10 = modelModifier.getModifiedModel()
-t = m10 as Trace
+s = m10.load(m10.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 t = t.hehe().hehe()
 x = t.evalCurrent("x")
 assert x.value == "5"
 
+s.animator.cli.shutdown()
 "the model API works correctly"

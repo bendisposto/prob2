@@ -74,8 +74,7 @@ public class MachineXmlHandler extends DefaultHandler {
 	private final Map<String, Map<String, EventBInvariant>> invariantCache = new HashMap<String, Map<String, EventBInvariant>>();
 	private final Map<String, Map<String, Event>> eventCache = new HashMap<String, Map<String, Event>>();
 
-	public MachineXmlHandler(final EventBModel model, final String fileName,
-			final boolean isMainComponent, final Set<IFormulaExtension> typeEnv) {
+	public MachineXmlHandler(final EventBModel model, final String fileName, final Set<IFormulaExtension> typeEnv) {
 		this.model = model;
 		this.typeEnv = typeEnv;
 
@@ -86,9 +85,6 @@ public class MachineXmlHandler extends DefaultHandler {
 				fileName.lastIndexOf(File.separatorChar));
 		machine = new EventBMachine(name);
 		model.addMachine(machine);
-		if (isMainComponent) {
-			model.setMainComponent(machine);
-		}
 
 		axiomCache.put(name, new HashMap<String, EventBAxiom>());
 		invariantCache.put(name, new HashMap<String, EventBInvariant>());
@@ -262,7 +258,7 @@ public class MachineXmlHandler extends DefaultHandler {
 				String fileName = directoryPath + File.separatorChar
 						+ machineName + ".bcm";
 				MachineXmlHandler handler = new MachineXmlHandler(model,
-						fileName, false, typeEnv);
+						fileName, typeEnv);
 				saxParser.parse(new File(fileName), handler);
 
 				axiomCache.putAll(handler.getAxiomCache());

@@ -69,9 +69,9 @@ mm.make {
 	}
 }
 
-m = mm.getModifiedModel("m1")
-s = m as StateSpace
-t = m as Trace
+m = mm.getModifiedModel()
+s = m.load(m.getComponent("m1"))
+t = s as Trace
 
 assert m.m1.variant.getExpression().getCode() == "2*a+b"
 assert m.m1.events.IL_in.type == CONVERGENT

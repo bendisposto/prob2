@@ -72,7 +72,7 @@ class TraceDecorator {
   
     TraceDecorator(delegate) {
         this.delegate = delegate
-        this.mch = delegate.getModel().getMainComponent()
+        this.mch = delegate.getStateSpace().getMainComponent()
     }
     def invokeMethod(String name, args) {
         def pred = ""
