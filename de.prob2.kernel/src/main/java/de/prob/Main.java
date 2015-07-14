@@ -129,6 +129,7 @@ public class Main {
 		} catch (ParseException exp) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("java -jar probcli.jar", options);
+			System.exit(-1);
 		}
 	}
 
