@@ -17,8 +17,7 @@ The source code of the current ProB release is located at http://github.com/bend
 Please report bugs and feature requests at https://probjira.atlassian.net
 
 # Setting up a development environment
-
-ProB 2.0 works with Java 6 on Mac OS, Windows and most Linux distributions. 
+ProB 2.0 works with Java 7 on Mac OS, Windows and most Linux distributions. 
 
 We assume, you have a fresh copy of Eclipse and an empty workspace at hand. We use Luna SR2. Furthermore, we assume that you have a recent version of gradle (http://www.gradle.org/) installed on your computer. Gradle 1.1 or newer will be sufficient.
 
