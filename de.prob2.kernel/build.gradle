@@ -181,7 +181,7 @@ task integrationtests(dependsOn: ['classes', 'downloadCli'], type:JavaExec){
 task tests(dependsOn: ['classes'], type:JavaExec){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
-	args = ['-test', 'groovyTests']
+	args = ['-script', 'groovyTests']
 }
 
 eclipse {
