@@ -22,6 +22,10 @@ public abstract class AbstractModel extends AbstractElement {
 	def AbstractModel(StateSpaceProvider stateSpaceProvider) {
 		this.stateSpaceProvider = stateSpaceProvider
 	}
+	
+	public String getModelDirPath() {
+		return modelDirPath;
+	}
 
 	public AbstractElement getComponent(final String name) {
 		return components.get(name);
