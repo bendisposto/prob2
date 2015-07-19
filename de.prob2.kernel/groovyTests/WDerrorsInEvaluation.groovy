@@ -10,7 +10,7 @@ t = t.$initialise_machine()
 wderror = t.evalCurrent("2 / 0")
 assert wderror instanceof EvaluationErrorResult
 assert wderror.getResult() == "NOT-WELL-DEFINED"
-assert wderror.getErrors() == ["division by zero 2/0;;", "division by zero 2/0;;", "division by zero 2/0;;"]
+assert wderror.getErrors() == ["division by zero 2/0;;"]
 
 // predicate
 wderror = t.evalCurrent("3 / 0 = 1")
