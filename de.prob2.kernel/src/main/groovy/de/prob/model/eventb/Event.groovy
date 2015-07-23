@@ -1,6 +1,6 @@
 package de.prob.model.eventb;
 
-import com.google.common.base.Objects
+import com.github.krukow.clj_lang.PersistentHashMap
 
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Action
@@ -10,67 +10,49 @@ import de.prob.model.representation.ModelElementList
 
 public class Event extends BEvent {
 
-	def EventBMachine parentMachine
 	def EventType type
-	def ModelElementList<Event> refines
-	def ModelElementList<EventBAction> actions
-	def ModelElementList<EventBGuard> guards
-	def ModelElementList<EventParameter> parameters
-	def ModelElementList<Witness> witnesses
 	def boolean extended
 
 	public enum EventType {
 		ORDINARY, CONVERGENT, ANTICIPATED
 	}
 
-	public Event(EventBMachine parentMachine, final String name, final EventType type, final boolean extended) {
-		super(name);
-		this.parentMachine = parentMachine
-		this.type = type;
+	public Event(final String name, final EventType type, final boolean extended) {
+		this(name, type, extended, PersistentHashMap.emptyMap())
+	}
+
+	private Event(final String name, final EventType type, final boolean extended, children) {
+		super(name, children)
+		this.type = type
 		this.extended = extended
 	}
 
-	public void addRefines(final ModelElementList<Event> refines) {
-		put(Event.class, refines);
-		this.refines = refines
+	def Event set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+		new Event(name, type, extended, children.assoc(clazz, elements))
 	}
 
-	public void addGuards(final ModelElementList<EventBGuard> guards) {
-		put(Guard.class, guards);
-		this.guards = guards
+	public ModelElementList<Event> getRefines() {
+		getChildrenOfType(Event.class)
 	}
 
-	public void addActions(final ModelElementList<EventBAction> actions) {
-		put(Action.class, actions);
-		this.actions = actions
+	public ModelElementList<EventBGuard> getGuards() {
+		getChildrenOfType(Guard.class)
 	}
 
-	public void addWitness(final ModelElementList<Witness> witness) {
-		put(Witness.class, witness);
-		this.witnesses = witness
+	public ModelElementList<EventBAction> getActions() {
+		getChildrenOfType(Action.class)
 	}
 
-	public void addParameters(final ModelElementList<EventParameter> parameters) {
-		put(EventParameter.class, parameters);
-		this.parameters = parameters
+	public ModelElementList<Witness> getWitnesses() {
+		getChildrenOfType(Witness.class)
+	}
+
+	public ModelElementList<EventParameter> getParameters() {
+		getChildrenOfType(EventParameter.class)
 	}
 
 	public EventType getType() {
 		return type;
-	}
-
-	@Override
-	public boolean equals(Object that) {
-		if (that instanceof Event) {
-			return this.parentMachine.getName() == that.getParentMachine().getName() &&
-			this.getName() == that.getName()
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(parentMachine.getName(), this.name)
 	}
 
 	@Override
@@ -99,25 +81,5 @@ public class Event extends BEvent {
 				sb.append("\t" + abstractElement.toString() + "\n");
 			}
 		}
-	}
-
-	def EventBAction getAction(String name) {
-		return actions[name]
-	}
-
-	def EventBGuard getGuard(String name) {
-		return guards[name]
-	}
-
-	def EventParameter getParameter(String name) {
-		return parameters[name]
-	}
-
-	def Event getRefinedEvent(String name) {
-		return refines[name]
-	}
-
-	def Witness getWitness(String name) {
-		return witnesses[name]
 	}
 }

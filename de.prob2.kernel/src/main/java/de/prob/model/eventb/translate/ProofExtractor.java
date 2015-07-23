@@ -33,7 +33,7 @@ public class ProofExtractor {
 	Map<String, String> descriptions;
 	Set<String> discharged;
 
-	ModelElementList<ProofObligation> proofs = new ModelElementList<ProofObligation>();
+	List<ProofObligation> proofs = new ArrayList<ProofObligation>();
 
 	public ProofExtractor(final Context c, final String baseFileName)
 			throws SAXException {
@@ -130,8 +130,8 @@ public class ProofExtractor {
 			if ("GRD".equals(type)) {
 				Event concreteEvent = m.getEvent(split[0]);
 				for (Event event : concreteEvent.getRefines()) {
-					if (event.getGuard(split[1]) != null) {
-						EventBGuard guard = event.getGuard(split[1]);
+					if (event.getGuards().getElement(split[1]) != null) {
+						EventBGuard guard = event.getGuards().getElement(split[1]);
 						elements.add(new Tuple2<String, String>("event", guard
 								.getParentEvent().getName()));
 						elements.add(new Tuple2<String, String>("guard", guard
@@ -162,7 +162,7 @@ public class ProofExtractor {
 							split[0]));
 				} else {
 					Event event = m.getEvent(split[0]);
-					if (event.getAction(split[1]) != null) {
+					if (event.getActions().getElement(split[1]) != null) {
 						elements.add(new Tuple2<String, String>("event", event
 								.getName()));
 						elements.add(new Tuple2<String, String>("action",
@@ -185,6 +185,6 @@ public class ProofExtractor {
 	}
 
 	public ModelElementList<ProofObligation> getProofs() {
-		return proofs;
+		return new ModelElementList<ProofObligation>(proofs);
 	}
 }

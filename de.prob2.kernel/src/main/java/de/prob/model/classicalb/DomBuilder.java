@@ -33,21 +33,27 @@ import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.model.representation.Action;
+import de.prob.model.representation.BEvent;
+import de.prob.model.representation.Constant;
+import de.prob.model.representation.Guard;
+import de.prob.model.representation.Invariant;
 import de.prob.model.representation.ModelElementList;
+import de.prob.model.representation.Variable;
 
 public class DomBuilder extends DepthFirstAdapter {
 
 	private static final EOF EOF = new EOF();
 	private String name;
-	private final ModelElementList<Parameter> parameters = new ModelElementList<Parameter>();
-	private final ModelElementList<Constraint> constraints = new ModelElementList<Constraint>();
-	private final ModelElementList<ClassicalBConstant> constants = new ModelElementList<ClassicalBConstant>();
-	private final ModelElementList<Property> properties = new ModelElementList<Property>();
-	private final ModelElementList<ClassicalBVariable> variables = new ModelElementList<ClassicalBVariable>();
-	private final ModelElementList<ClassicalBInvariant> invariants = new ModelElementList<ClassicalBInvariant>();
-	private final ModelElementList<de.prob.model.representation.Set> sets = new ModelElementList<de.prob.model.representation.Set>();
-	private final ModelElementList<Assertion> assertions = new ModelElementList<Assertion>();
-	private final ModelElementList<Operation> operations = new ModelElementList<Operation>();
+	private final List<Parameter> parameters = new ArrayList<Parameter>();
+	private final List<Constraint> constraints = new ArrayList<Constraint>();
+	private final List<ClassicalBConstant> constants = new ArrayList<ClassicalBConstant>();
+	private final List<Property> properties = new ArrayList<Property>();
+	private final List<ClassicalBVariable> variables = new ArrayList<ClassicalBVariable>();
+	private final List<ClassicalBInvariant> invariants = new ArrayList<ClassicalBInvariant>();
+	private final List<de.prob.model.representation.Set> sets = new ArrayList<de.prob.model.representation.Set>();
+	private final List<Assertion> assertions = new ArrayList<Assertion>();
+	private final List<Operation> operations = new ArrayList<Operation>();
 	private final boolean used;
 	private final Set<String> usedIds = new HashSet<String>();
 
@@ -67,15 +73,15 @@ public class DomBuilder extends DepthFirstAdapter {
 
 	public ClassicalBMachine getMachine() {
 		ClassicalBMachine machine = new ClassicalBMachine(name);
-		machine.addAssertions(assertions);
-		machine.addConstants(constants);
-		machine.addConstraints(constraints);
-		machine.addProperties(properties);
-		machine.addInvariants(invariants);
-		machine.addParameters(parameters);
-		machine.addSets(sets);
-		machine.addVariables(variables);
-		machine.addOperations(operations);
+		machine = machine.set(Assertion.class, new ModelElementList<Assertion>(assertions));
+		machine = machine.set(Constant.class, new ModelElementList<ClassicalBConstant>(constants));
+		machine = machine.set(Constraint.class, new ModelElementList<Constraint>(constraints));
+		machine = machine.set(Property.class, new ModelElementList<Property>(properties));
+		machine = machine.set(Invariant.class, new ModelElementList<ClassicalBInvariant>(invariants));
+		machine = machine.set(Parameter.class, new ModelElementList<Parameter>(parameters));
+		machine = machine.set(de.prob.model.representation.Set.class, new ModelElementList<de.prob.model.representation.Set>(sets));
+		machine = machine.set(Variable.class, new ModelElementList<ClassicalBVariable>(variables));
+		machine = machine.set(BEvent.class, new ModelElementList<Operation>(operations));
 		return machine;
 	}
 
@@ -159,7 +165,7 @@ public class DomBuilder extends DepthFirstAdapter {
 		final List<String> output = extractIdentifiers(node.getReturnValues());
 		Operation operation = new Operation(name, params, output);
 		PSubstitution body = node.getOperationBody();
-		ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
+		List<ClassicalBGuard> guards = new ArrayList<ClassicalBGuard>();
 		if (body instanceof ASelectSubstitution) {
 			PPredicate condition = ((ASelectSubstitution) body).getCondition();
 			List<PPredicate> predicates = getPredicates(condition);
@@ -175,10 +181,10 @@ public class DomBuilder extends DepthFirstAdapter {
 				guards.add(new ClassicalBGuard(createPredicateAST(pPredicate)));
 			}
 		}
-		ModelElementList<ClassicalBAction> actions = new ModelElementList<ClassicalBAction>();
+		List<ClassicalBAction> actions = new ArrayList<ClassicalBAction>();
 		actions.add(new ClassicalBAction(createSubstitutionAST(body)));
-		operation.addActions(actions);
-		operation.addGuards(guards);
+		operation = operation.set(Action.class,new ModelElementList<ClassicalBAction>(actions));
+		operation = operation.set(Guard.class, new ModelElementList<ClassicalBGuard>(guards));
 
 		operations.add(operation);
 	}

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.krukow.clj_lang.PersistentHashMap;
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.BParser;
@@ -27,32 +28,43 @@ import de.prob.statespace.StateSpace;
 
 public class ClassicalBModel extends AbstractModel {
 
-	private ClassicalBMachine mainMachine = null;
+	private final ClassicalBMachine mainMachine;
 	private final HashSet<String> done = new HashSet<String>();
-	private BParser bparser;
-	private RecursiveMachineLoader rml;
+	private final BParser bparser;
+	private final RecursiveMachineLoader rml;
 
 	@Inject
 	public ClassicalBModel(final StateSpaceProvider ssProvider) {
 		super(ssProvider);
+		this.mainMachine = null;
+		this.bparser = null;
+		this.rml = null;
 	}
 
-	public DependencyGraph initialize(final Start mainast,
+	ClassicalBModel(final StateSpaceProvider ssProvider, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
+			DependencyGraph graph,
+			PersistentHashMap<String, AbstractElement> components,
+			File modelFile,
+			BParser bparser,
+			RecursiveMachineLoader rml,
+			ClassicalBMachine mainMachine) {
+		super(ssProvider, children, graph, components, modelFile);
+		this.bparser = bparser;
+		this.rml = rml;
+		this.mainMachine = mainMachine;
+	}
+
+	public ClassicalBModel create(final Start mainast,
 			final RecursiveMachineLoader rml, final File modelFile,
 			final BParser bparser) {
-
-		this.rml = rml;
-		this.modelFile = modelFile;
-		this.bparser = bparser;
-
-		final DependencyGraph graph = new DependencyGraph();
+		DependencyGraph graph = new DependencyGraph();
 
 		final DomBuilder d = new DomBuilder(false);
-		mainMachine = d.build(mainast);
+		ClassicalBMachine mainMachine = d.build(mainast);
 
-		graph.addVertex(mainMachine.getName());
 		ModelElementList<ClassicalBMachine> machines = new ModelElementList<ClassicalBMachine>();
-		machines.add(mainMachine);
+		machines = machines.addElement(mainMachine);
+		graph = graph.addVertex(mainMachine.getName());
 
 		boolean fpReached;
 
@@ -62,23 +74,23 @@ public class ClassicalBModel extends AbstractModel {
 			for (final String machineName : vertices) {
 				final Start ast = rml.getParsedMachines().get(machineName);
 				if (!done.contains(machineName)) {
-					ast.apply(new DependencyWalker(machineName, machines,
-							graph, rml.getParsedMachines()));
+					DependencyWalker walker = new DependencyWalker(machineName, machines,
+							graph, rml.getParsedMachines());
+					graph = walker.getGraph();
+					machines = walker.getMachines();
+					ast.apply(walker);
 					done.add(machineName);
 					fpReached = false;
 				}
 			}
 		} while (!fpReached);
-		this.graph = graph;
 
-		put(Machine.class, machines);
 
 		for (ClassicalBMachine classicalBMachine : machines) {
-			components.put(classicalBMachine.getName(), classicalBMachine);
+			components = (PersistentHashMap<String, AbstractElement>) components.assoc(classicalBMachine.getName(), classicalBMachine);
 		}
 
-		freeze();
-		return graph;
+		return new ClassicalBModel(stateSpaceProvider, (PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>) children.assoc(Machine.class, machines) ,graph, components, modelFile, bparser, rml, mainMachine);
 	}
 
 	public ClassicalBMachine getMainMachine() {

@@ -18,20 +18,21 @@ import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.model.representation.DependencyGraph;
 import de.prob.model.representation.DependencyGraph.ERefType;
+import de.prob.model.representation.ModelElementList;
 
 public class DependencyWalker extends DepthFirstAdapter {
 
-	private final DependencyGraph graph;
+	private DependencyGraph graph;
 	private final String src;
 	private final Map<String, Start> map;
-	private final List<ClassicalBMachine> machines;
+	private ModelElementList<ClassicalBMachine> machines;
 
 	public DependencyWalker(final String machine,
-			final List<ClassicalBMachine> machines,
-			final DependencyGraph graph2, final Map<String, Start> map) {
+			final ModelElementList<ClassicalBMachine> machines,
+			final DependencyGraph graph, final Map<String, Start> map) {
 		src = machine;
 		this.machines = machines;
-		graph = graph2;
+		this.graph = graph;
 		this.map = map;
 	}
 
@@ -108,12 +109,16 @@ public class DependencyWalker extends DepthFirstAdapter {
 		final ClassicalBMachine newMachine = makeMachine(dest,
 				refType.equals(ERefType.USES));
 		final String name = newMachine.getName();
-		machines.add(newMachine);
-		graph.addEdge(src, name, refType);
+		machines = machines.addElement(newMachine);
+		graph = graph.addEdge(src, name, refType);
 	}
 
-	public List<ClassicalBMachine> getMachines() {
+	public ModelElementList<ClassicalBMachine> getMachines() {
 		return machines;
+	}
+
+	public DependencyGraph getGraph() {
+		return graph;
 	}
 
 }

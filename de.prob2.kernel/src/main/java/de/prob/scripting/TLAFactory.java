@@ -52,7 +52,7 @@ public class TLAFactory implements ModelFactory<ClassicalBModel> {
 		bparser.getDefinitions().addAll(translator.getBDefinitions());
 		try {
 			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
-			classicalBModel.initialize(ast, rml, f, bparser);
+			classicalBModel = classicalBModel.create(ast, rml, f, bparser);
 		} catch (BException e) {
 			throw new ModelTranslationError(e.getMessage(), e);
 		}

@@ -9,6 +9,8 @@ t0 = t0.$initialise_machine()
 s1 = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
 t1 = new Trace(s1)
 t1 = t1.$setup_constants().$initialise_machine()
+possible = t1.up().down().up().up()
+assert possible != null
 
 tt = new SyncedTraces([t0,t1], [new SyncedEvent("sync1").sync(t0,"new",[]).sync(t1,"up",[]), 
 	                            new SyncedEvent("sync2").sync(t0,"del",[]).sync(t1,"down",[])])

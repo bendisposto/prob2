@@ -1,6 +1,6 @@
 package de.prob.model.representation;
 
-import com.google.inject.Inject
+import com.github.krukow.clj_lang.PersistentHashMap
 
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.DependencyGraph.ERefType
@@ -11,24 +11,36 @@ import de.prob.statespace.StateSpace
 public abstract class AbstractModel extends AbstractElement {
 
 	protected final StateSpaceProvider stateSpaceProvider;
-	protected boolean dirty = false;
 	protected File modelFile;
 	protected String modelDirPath;
-	protected DependencyGraph graph = new DependencyGraph();
-	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
-	def static Closure subscribe = null
+	protected final DependencyGraph graph
+	protected PersistentHashMap<String,AbstractElement> components
 
-	@Inject
+	def AbstractModel(StateSpaceProvider stateSpaceProvider,
+	Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
+	DependencyGraph graph,
+	PersistentHashMap<String, AbstractElement> components,
+	File modelFile) {
+		super(children)
+		this.stateSpaceProvider = stateSpaceProvider
+		this.graph = graph
+		this.components = components
+		this.modelFile = modelFile
+	}
+
 	def AbstractModel(StateSpaceProvider stateSpaceProvider) {
 		this.stateSpaceProvider = stateSpaceProvider
+		this.graph = new DependencyGraph()
+		this.components = PersistentHashMap.emptyMap()
+		this.modelFile = null
 	}
 
 	public AbstractElement getComponent(final String name) {
-		return components.get(name);
+		return components.valAt(name)
 	}
 
 	public Map<String, AbstractElement> getComponents() {
-		return components;
+		return components
 	}
 
 	public DependencyGraph getGraph() {
@@ -64,19 +76,11 @@ public abstract class AbstractModel extends AbstractElement {
 	}
 
 	def getProperty(final String name) {
-		return components.get(name)
+		return components.valAt(name)
 	}
 
 	def getAt(final String name) {
-		return components.get(name)
-	}
-
-	def setDirty() {
-		dirty = true
-	}
-
-	def isDirty() {
-		return dirty
+		return components.valAt(name)
 	}
 
 	def AbstractElement get(List<String> path) {
@@ -84,10 +88,6 @@ public abstract class AbstractModel extends AbstractElement {
 			return null;
 		}
 		return Eval.x(this,"x.${path.join(".")}");
-	}
-
-	def Closure getClosure() {
-		return AbstractModel.subscribe
 	}
 
 	public StateSpace load(AbstractElement mainComponent) {

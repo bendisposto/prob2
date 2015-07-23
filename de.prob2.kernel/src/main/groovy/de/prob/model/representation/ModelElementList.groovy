@@ -1,6 +1,7 @@
 package de.prob.model.representation;
 
-import de.prob.animator.domainobjects.IEvalElement
+import com.github.krukow.clj_lang.PersistentHashMap
+import com.github.krukow.clj_lang.PersistentVector
 
 
 
@@ -16,19 +17,35 @@ import de.prob.animator.domainobjects.IEvalElement
  */
 public class ModelElementList<E> implements List<E> {
 
-	def List<E> list
-	def Map<String,E> keys
-	def frozen = false
+	def final PersistentVector<E> list
+	def final PersistentHashMap<String,E> keys
 
 	def ModelElementList() {
-		list = new ArrayList<E>()
-		keys = new HashMap<String,E>()
+		list = PersistentVector.emptyVector()
+		keys = PersistentHashMap.emptyMap()
 	}
 
-	def ModelElementList(elements) {
-		this()
-		addAll(elements)
+	def ModelElementList(List<E> elements) {
+		def list = PersistentVector.emptyVector()
+		def keys = PersistentHashMap.emptyMap()
+		elements.each { e ->
+			if(e.metaClass.respondsTo(e, "getName")) {
+				keys = keys.assoc(e.getName(),e)
+			}
+			if(e.metaClass.respondsTo(e, "getFormula")) {
+				keys = keys.assoc("_" + e.getFormula().getFormulaId().uuid,e)
+			}
+			list = list.cons(e)
+		}
+		this.list = list
+		this.keys = keys
 	}
+
+	private ModelElementList(PersistentVector list, PersistentHashMap keys) {
+		this.list = list
+		this.keys = keys
+	}
+
 
 	def getProperty(String prop) {
 		return keys[prop];
@@ -38,31 +55,44 @@ public class ModelElementList<E> implements List<E> {
 		return keys.containsKey(prop)
 	}
 
-	private calcAndAdd(E e) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
+	public ModelElementList<E> addElement(E e) {
+		def newkeys = keys
 		if(e.metaClass.respondsTo(e, "getName")) {
-			keys[e.getName()]=e
+			newkeys = newkeys.assoc(e.getName(),e)
 		}
 		if(e.metaClass.respondsTo(e, "getFormula")) {
-			keys["_" + e.getFormula().getFormulaId().uuid]=e
+			newkeys = newkeys.assoc("_" + e.getFormula().getFormulaId().uuid,e)
 		}
+		def newlist = list.assocN(list.size(), e)
+		return new ModelElementList<E>(newlist, newkeys)
 	}
 
-	private removeElement(E e) {
-		if (frozen) {
-			throw new IllegalModificationException()
+	public ModelElementList<E> addMultiple(Collection<? extends E> elements) {
+		def list = list
+		def keys = keys
+		elements.each {e ->
+			if(e.metaClass.respondsTo(e, "getName")) {
+				keys = keys.assoc(e.getName(),e)
+			}
+			if(e.metaClass.respondsTo(e, "getFormula")) {
+				keys = keys.assoc("_" + e.getFormula().getFormulaId().uuid,e)
+			}
+			list = list.assocN(list.size(), e)
 		}
+		return new ModelElementList<E>(list, keys)
+	}
 
+	public removeElement(E e) {
+		def newkeys = keys
 		if(e.metaClass.respondsTo(e, "getName")) {
-			keys.remove(e.getName())
+			newkeys = newkeys.without(e.getName())
 		}
 		if(e.metaClass.respondsTo(e, "getFormula")) {
 			def key = "_" + e.getFormula().getFormulaId().uuid
-			keys.remove(key)
+			newkeys = newkeys.without(key)
 		}
+		def newlist = list.remove(e)
+		return new ModelElementList<E>(newlist,newkeys)
 	}
 
 
@@ -75,49 +105,33 @@ public class ModelElementList<E> implements List<E> {
 	}
 
 	@Override
+	@Deprecated
 	public boolean add(E e) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
-		calcAndAdd(e)
-		return list.add(e)
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
+	@Deprecated
 	public void add(int index, E element) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
-		calcAndAdd(e)
-		list.add(index,element)
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
+	@Deprecated
 	public boolean addAll(Collection<? extends E> c) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
-		c.each { calcAndAdd(it) }
-		return list.addAll(c)
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
+	@Deprecated
 	public boolean addAll(int index, Collection<? extends E> c) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
-		c.each { calcAndAdd(it) }
-		return c.addAll(index,c)
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
+	@Deprecated
 	public void clear() {
-		keys.clear()
-		list.clear()
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
@@ -169,60 +183,33 @@ public class ModelElementList<E> implements List<E> {
 	}
 
 	@Override
+	@Deprecated
 	public boolean remove(Object o) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
-		removeElement(o)
-		return list.remove(o)
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
+	@Deprecated
 	public E remove(int index) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
-		removeElement(list.get(index))
-		return list.remove(index)
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
+	@Deprecated
 	public boolean removeAll(Collection<?> c) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
-		c.each { removeElement(it) }
-		return list.removeAll(c)
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
+	@Deprecated
 	public boolean retainAll(Collection<?> c) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
-		def toRemove = new HashSet<String>()
-		keys.each { k,v ->
-			if(!c.contains(v)) {
-				toRemove << k
-			}
-		}
-		toRemove.each { keys.remove(it) }
-		return list.retainAll(c)
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
+	@Deprecated
 	public E set(int index, E element) {
-		if (frozen) {
-			throw new IllegalModificationException()
-		}
-
-		removeElement(list.get(index))
-		calcAndAdd(element)
-		return list.set(index,element)
+		throw new UnsupportedOperationException()
 	}
 
 	@Override
@@ -232,10 +219,7 @@ public class ModelElementList<E> implements List<E> {
 
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
-		ModelElementList<E> newList = new ModelElementList<E>()
-		List<E> sub = list.subList(fromIndex, toIndex)
-		newList.addAll(sub)
-		return newList
+		return new ModelElementList<E>(list.subList(fromIndex,toIndex))
 	}
 
 	@Override
@@ -253,16 +237,6 @@ public class ModelElementList<E> implements List<E> {
 		return list.listIterator(index)
 	}
 
-	public List<IEvalElement> evalElements() {
-		List<IEvalElement> eval = new ArrayList<IEvalElement>()
-		list.each {
-			if(it.metaClass.respondsTo(it, "getEvaluate")) {
-				eval << it.getEvaluate()
-			}
-		}
-		return eval
-	}
-
 	@Override
 	public String toString() {
 		return list.toString();
@@ -274,21 +248,5 @@ public class ModelElementList<E> implements List<E> {
 
 	def getAt(String property) {
 		return keys[property]
-	}
-
-	/**
-	 *  Freezes all subelements of the list (if they are of type {@link AbstractElement}) and
-	 *  disallows further modification of the list. This essentially transforms a mutable list into
-	 *  an immutable instance of a list. Accessing elements of the list is allowed, but no further
-	 *  modification of the list is allowed.
-	 *
-	 */
-	def void freeze() {
-		frozen = true
-		list.each {
-			if(it instanceof AbstractElement) {
-				it.freeze()
-			}
-		}
 	}
 }

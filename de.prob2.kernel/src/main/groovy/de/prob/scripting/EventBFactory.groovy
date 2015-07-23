@@ -28,8 +28,7 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 	ModelTranslationError {
 		EventBModel model = modelCreator.get();
 		EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, getValidFileName(modelPath));
-		model.isFinished()
-		new ExtractedModel<EventBModel>(model,translator.getMainComponent())
+		new ExtractedModel<EventBModel>(translator.getModel(),translator.getMainComponent())
 	}
 
 	private String getValidFileName(String fileName) {
@@ -64,7 +63,6 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 		}
 
 		String componentName = file.getName().replaceAll("\\.eventb\$", "")
-		model.isFinished()
 		return ssProvider.loadFromCommand(model, new DummyElement(componentName), prefs, new LoadEventBFileCommand(loadcmd))
 	}
 
@@ -91,6 +89,7 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 			String name = modelPath.substring(modelPath.lastIndexOf(File.separatorChar.toString()) + 1, modelPath.lastIndexOf("."))
 			if (!model.getComponents().containsKey(name)) {
 				EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, modelPath);
+				model = translator.getModel()
 			}
 		}
 		return model
