@@ -1,6 +1,7 @@
 package de.prob.model.eventb;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
@@ -75,6 +76,12 @@ public class EventBModel extends AbstractModel {
 	public EventBModel addRelationship(final String element1, final String element2,
 			final ERefType relationship) {
 		return new EventBModel(stateSpaceProvider, children, graph.addEdge(element1, element2, relationship), components, modelFile);
+	}
+
+	@Override
+	public ERefType getRelationship(final String from, final String to) {
+		List<ERefType> relationships = graph.getRelationships(from, to);
+		return relationships.isEmpty() ? null : relationships.get(0);
 	}
 
 	@Override

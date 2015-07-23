@@ -76,9 +76,9 @@ public class ClassicalBModel extends AbstractModel {
 				if (!done.contains(machineName)) {
 					DependencyWalker walker = new DependencyWalker(machineName, machines,
 							graph, rml.getParsedMachines());
+					ast.apply(walker);
 					graph = walker.getGraph();
 					machines = walker.getMachines();
-					ast.apply(walker);
 					done.add(machineName);
 					fpReached = false;
 				}

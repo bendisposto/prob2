@@ -3,6 +3,7 @@ package de.prob.model.representation;
 import java.io.File;
 import java.util.Map;
 
+import com.github.krukow.clj_lang.PersistentHashMap;
 import com.google.inject.Inject;
 
 import de.prob.animator.command.LoadCSPCommand;
@@ -23,11 +24,15 @@ public class CSPModel extends AbstractModel {
 		super(ssProvider);
 	}
 
-	public void init(final String content, final File modelFile) {
+	public CSPModel(final StateSpaceProvider ssProvider, String content, File modelFile, PersistentHashMap<String, AbstractElement> components) {
+		super(ssProvider,
+				PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap(),
+				new DependencyGraph(), components, modelFile);
 		this.content = content;
-		this.modelFile = modelFile;
-		components
-				.put(modelFile.getName(), new CSPElement(modelFile.getName()));
+	}
+
+	public CSPModel create(final String content, final File modelFile) {
+		return new CSPModel(stateSpaceProvider, content, modelFile, (PersistentHashMap<String, AbstractElement>) components.assoc(modelFile.getName(), new CSPElement(modelFile.getName())));
 	}
 
 	public String getContent() {

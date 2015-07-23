@@ -397,7 +397,7 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	private void endContextExtraction() throws SAXException {
 		ModelElementList<EventBAxiom> axms = new ModelElementList<EventBAxiom>(inheritedAxioms);
-		axms.addMultiple(axioms);
+		axms = axms.addMultiple(axioms);
 		internalContext = internalContext.set(Axiom.class, axms);
 		internalContext = internalContext.set(Constant.class, new ModelElementList<EventBConstant>(constants));
 		internalContext = internalContext.set(Context.class, new ModelElementList<Context>(Extends));

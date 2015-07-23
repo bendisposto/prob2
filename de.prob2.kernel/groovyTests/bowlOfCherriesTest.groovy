@@ -2,7 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 import de.prob.model.eventb.translate.*
 
-mm = new ModelModifier()
+/*TODO mm = new ModelModifier()
 mm.make {
 	
 	machine(name: "bowl1") {
@@ -66,5 +66,5 @@ t = t.randomAnimation(10)
 //d = mtx.writeToRodin(m, "BowlOfCherries", dir)
 //d.deleteDir()
 
-s.animator.cli.shutdown();
+s.animator.cli.shutdown();*/
 "generate and animate a model"

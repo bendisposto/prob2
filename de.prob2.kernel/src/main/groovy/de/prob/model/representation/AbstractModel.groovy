@@ -17,7 +17,7 @@ public abstract class AbstractModel extends AbstractElement {
 	protected PersistentHashMap<String,AbstractElement> components
 
 	def AbstractModel(StateSpaceProvider stateSpaceProvider,
-	Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
+	PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
 	DependencyGraph graph,
 	PersistentHashMap<String, AbstractElement> components,
 	File modelFile) {

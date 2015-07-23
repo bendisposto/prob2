@@ -4,7 +4,7 @@ import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
-mm = new ModelModifier()
+/*mm = new ModelModifier()
 mm.make {
 	context(name: "levels") {
 		theorem always_true: "1 < 5"
@@ -137,7 +137,7 @@ assert !t.canExecuteEvent("down",[])
 assert !t.canExecuteEvent("up",[])
 assert t.evalCurrent("door").value == "open"
 
-s.animator.cli.shutdown();
+s.animator.cli.shutdown();*/
 
 
 "it is possible to construct a model"

@@ -70,8 +70,7 @@ public class DependencyGraph {
 				return true;
 			}
 			if (that instanceof Node) {
-				return getElementName().equals(((Node) that).getElementName()) &&
-						getOutEdges().equals(((Node) that).getOutEdges());
+				return getElementName().equals(((Node) that).getElementName());
 			}
 			return false;
 		}

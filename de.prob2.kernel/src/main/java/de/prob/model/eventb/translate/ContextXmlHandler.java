@@ -187,7 +187,7 @@ public class ContextXmlHandler extends DefaultHandler {
 
 	private void endInternalContextExtraction() throws SAXException {
 		ModelElementList<EventBAxiom> axms = new ModelElementList<EventBAxiom>(internalInheritedAxioms);
-		axms.addMultiple(internalAxioms);
+		axms = axms.addMultiple(internalAxioms);
 		internalContext = internalContext.set(Axiom.class, axms);
 		internalContext = internalContext.set(Constant.class, new ModelElementList<EventBConstant>(internalConstants));
 		internalContext = internalContext.set(Context.class, new ModelElementList<Context>(internalExtends));
