@@ -9,19 +9,24 @@ import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
 
 public class RecursiveOperatorDefinition extends AbstractElement implements
-		IOperatorDefinition {
+IOperatorDefinition {
 
 	private final EventB inductiveArgument;
-	private ModelElementList<RecursiveDefinitionCase> cases = new ModelElementList<RecursiveDefinitionCase>();
+	private final ModelElementList<RecursiveDefinitionCase> cases;
 
 	public RecursiveOperatorDefinition(final String inductiveArgument,
 			final Set<IFormulaExtension> typeEnv) {
 		this.inductiveArgument = new EventB(inductiveArgument, typeEnv);
+		this.cases = new ModelElementList<RecursiveDefinitionCase>();
 	}
 
-	public void addCases(final ModelElementList<RecursiveDefinitionCase> cases) {
-		put(RecursiveDefinitionCase.class, cases);
+	private RecursiveOperatorDefinition(final EventB inductiveArgument, ModelElementList<RecursiveDefinitionCase> cases) {
+		this.inductiveArgument = inductiveArgument;
 		this.cases = cases;
+	}
+
+	public RecursiveOperatorDefinition addCases(final ModelElementList<RecursiveDefinitionCase> cases) {
+		return new RecursiveOperatorDefinition(inductiveArgument, cases);
 	}
 
 	public ModelElementList<RecursiveDefinitionCase> getCases() {

@@ -47,6 +47,7 @@ public class EventBDatabaseTranslator {
 						workspacePath);
 				saxParser.parse(theoryFile, theoryHandler);
 				typeEnv = theoryHandler.getTypeEnv();
+				this.model = theoryHandler.getModel();
 			}
 
 			DefaultHandler xmlHandler = null;

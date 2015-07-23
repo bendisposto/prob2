@@ -53,8 +53,8 @@ public class TheoryXmlHandler extends DefaultHandler {
 
 	private final String workspacePath;
 	private final Set<IFormulaExtension> typeEnv = new HashSet<IFormulaExtension>();
-	private final EventBModel model;
-	private final ModelElementList<Theory> theories = new ModelElementList<Theory>();
+	private EventBModel model;
+	private ModelElementList<Theory> theories = new ModelElementList<Theory>();
 	private final HashMap<String, Theory> theoryMap = new HashMap<String, Theory>();
 
 	public TheoryXmlHandler(final EventBModel model, final String workspacePath) {
@@ -65,7 +65,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 	@Override
 	public void startElement(final String uri, final String localName,
 			final String qName, final Attributes attributes)
-			throws SAXException {
+					throws SAXException {
 		if (qName.equals("org.eventb.theory.core.scAvailableTheory")) {
 			String path = attributes
 					.getValue("org.eventb.theory.core.availableTheory");
@@ -79,7 +79,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 
 					TheoryExtractor extractor = new TheoryExtractor(path);
 					saxParser.parse(new File(workspacePath + path), extractor);
-					theories.add(extractor.getTheory());
+					theories = theories.addElement(extractor.getTheory());
 				} catch (ParserConfigurationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -88,7 +88,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 					e.printStackTrace();
 				}
 			} else {
-				theories.add(theoryMap.get(path));
+				theories = theories.addElement(theoryMap.get(path));
 			}
 		}
 	}
@@ -99,25 +99,29 @@ public class TheoryXmlHandler extends DefaultHandler {
 
 	@Override
 	public void endDocument() throws SAXException {
-		model.addTheories(theories);
+		model = model.set(Theory.class, theories);
+	}
+
+	public EventBModel getModel() {
+		return model;
 	}
 
 	class TheoryExtractor extends DefaultHandler {
 
-		private final Theory theory;
-		private final ModelElementList<Theory> imported = new ModelElementList<Theory>();
-		private final ModelElementList<Type> typeParameters = new ModelElementList<Type>();
-		private final ModelElementList<DataType> dataTypes = new ModelElementList<DataType>();
-		private final ModelElementList<Operator> operators = new ModelElementList<Operator>();
-		private final ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionsBlocks = new ModelElementList<AxiomaticDefinitionBlock>();
-		private final ModelElementList<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
-		private final ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
+		private Theory theory;
+		private ModelElementList<Theory> imported = new ModelElementList<Theory>();
+		private ModelElementList<Type> typeParameters = new ModelElementList<Type>();
+		private ModelElementList<DataType> dataTypes = new ModelElementList<DataType>();
+		private ModelElementList<Operator> operators = new ModelElementList<Operator>();
+		private ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionsBlocks = new ModelElementList<AxiomaticDefinitionBlock>();
+		private ModelElementList<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
+		private ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
 
 		// For adding DataType
 		private DataType dataType;
 		private ModelElementList<DataTypeConstructor> constructors;
 		private ModelElementList<Type> typeArguments; // Also used for axiomatic
-														// definition blocks
+		// definition blocks
 
 		// For adding DataType constructors
 		private DataTypeConstructor constructor;
@@ -187,7 +191,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 		@Override
 		public void startElement(final String uri, final String localName,
 				final String qName, final Attributes attributes)
-				throws SAXException {
+						throws SAXException {
 			if (qName.equals("org.eventb.theory.core.scTypeParameter")) {
 				addTypeParameter(attributes);
 			} else if (qName.equals("org.eventb.theory.core.useTheory")) {
@@ -269,7 +273,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 			String predicate = attributes.getValue("org.eventb.core.predicate");
 			String formula = attributes
 					.getValue("org.eventb.theory.core.formula");
-			rightHandSides.add(new RewriteRuleRHS(name, predicate, formula,
+			rightHandSides = rightHandSides.addElement(new RewriteRuleRHS(name, predicate, formula,
 					typeEnv));
 		}
 
@@ -286,13 +290,13 @@ public class TheoryXmlHandler extends DefaultHandler {
 					formula, typeEnv);
 
 			rightHandSides = new ModelElementList<RewriteRuleRHS>();
-			rewriteRules.add(rewriteRule);
+			rewriteRules = rewriteRules.addElement(rewriteRule);
 		}
 
 		private void addMetaVariable(final Attributes attributes) {
 			String name = attributes.getValue("name");
 			String type = attributes.getValue("org.eventb.core.type");
-			metaVars.add(new MetaVariable(name, type, typeEnv));
+			metaVars = metaVars.addElement(new MetaVariable(name, type, typeEnv));
 		}
 
 		private void beginProofRulesBlock(final Attributes attributes) {
@@ -306,14 +310,14 @@ public class TheoryXmlHandler extends DefaultHandler {
 			rewriteRules = new ModelElementList<RewriteRule>();
 			inferenceRules = new ModelElementList<InferenceRule>();
 
-			proofRules.add(block);
+			proofRules = proofRules.addElement(block);
 		}
 
 		private void addTheorem(final Attributes attributes) {
 			String label = attributes.getValue("org.eventb.core.label");
 			String predicate = attributes.getValue("org.eventb.core.predicate");
 
-			theorems.add(new EventBAxiom(label, predicate, true, typeEnv));
+			theorems = theorems.addElement(new EventBAxiom(label, predicate, true, typeEnv));
 		}
 
 		private void addAxiomaticDefinitionBlock(final Attributes attributes) {
@@ -323,12 +327,12 @@ public class TheoryXmlHandler extends DefaultHandler {
 			axiomaticOperators = new ModelElementList<Operator>();
 			definitionAxioms = new ModelElementList<EventBAxiom>();
 
-			axiomaticDefinitionsBlocks.add(axiomaticDefinitionBlock);
+			axiomaticDefinitionsBlocks = axiomaticDefinitionsBlocks.addElement(axiomaticDefinitionBlock);
 		}
 
 		private void beginAddingAxiomaticOperator(final Attributes attributes) {
 			axiomaticOperator = createOperator(attributes);
-			axiomaticOperators.add(axiomaticOperator);
+
 
 			opArgs = new ModelElementList<OperatorArgument>();
 		}
@@ -337,14 +341,14 @@ public class TheoryXmlHandler extends DefaultHandler {
 			String label = attributes.getValue("org.eventb.core.label");
 			String predicate = attributes.getValue("org.eventb.core.predicate");
 
-			definitionAxioms.add(new EventBAxiom(label, predicate, false,
+			definitionAxioms = definitionAxioms.addElement(new EventBAxiom(label, predicate, false,
 					typeEnv));
 		}
 
 		private void addOperatorArgument(final Attributes attributes) {
 			String identifier = attributes.getValue("name");
 			String type = attributes.getValue("org.eventb.core.type");
-			opArgs.add(new OperatorArgument(identifier, type, typeEnv));
+			opArgs = opArgs.addElement(new OperatorArgument(identifier, type, typeEnv));
 		}
 
 		private void addDirectDefinition(final Attributes attributes) {
@@ -358,7 +362,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 					.getValue("org.eventb.core.expression");
 			String formula = attributes
 					.getValue("org.eventb.theory.core.formula");
-			recursiveDefinitions.add(new RecursiveDefinitionCase(expression,
+			recursiveDefinitions = recursiveDefinitions.addElement(new RecursiveDefinitionCase(expression,
 					formula));
 		}
 
@@ -372,7 +376,6 @@ public class TheoryXmlHandler extends DefaultHandler {
 
 		private void beginAddingOperator(final Attributes attributes) {
 			operator = createOperator(attributes);
-			operators.add(operator);
 
 			opArgs = new ModelElementList<OperatorArgument>();
 		}
@@ -401,14 +404,12 @@ public class TheoryXmlHandler extends DefaultHandler {
 			String name = attributes.getValue("name");
 			String type = attributes.getValue("org.eventb.core.type");
 
-			destructors.add(new DataTypeDestructor(name, type));
+			destructors = destructors.addElement(new DataTypeDestructor(name, type));
 		}
 
 		private void beginAddingDataTypeConstructor(final Attributes attributes) {
 			String name = attributes.getValue("name");
 			constructor = new DataTypeConstructor(name);
-
-			constructors.add(constructor);
 
 			destructors = new ModelElementList<DataTypeDestructor>();
 		}
@@ -416,9 +417,6 @@ public class TheoryXmlHandler extends DefaultHandler {
 		private void beginAddingDataType(final Attributes attributes) {
 			String name = attributes.getValue("name");
 			dataType = new DataType(name);
-
-			dataTypes.add(dataType);
-
 			constructors = new ModelElementList<DataTypeConstructor>();
 			typeArguments = new ModelElementList<Type>();
 
@@ -429,7 +427,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 			String target = attributes.getValue("org.eventb.core.scTarget");
 			String path = target.substring(0, target.indexOf('|'));
 			if (theoryMap.containsKey(path)) {
-				imported.add(theoryMap.get(path));
+				imported = imported.addElement(theoryMap.get(path));
 			} else {
 				try {
 					SAXParserFactory parserFactory = SAXParserFactory
@@ -438,12 +436,10 @@ public class TheoryXmlHandler extends DefaultHandler {
 
 					TheoryExtractor extractor = new TheoryExtractor(path);
 					saxParser.parse(new File(workspacePath + path), extractor);
-					theories.add(extractor.getTheory());
+					theories = theories.addElement(extractor.getTheory());
 				} catch (ParserConfigurationException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -452,7 +448,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 		private void addTypeParameter(final Attributes attributes) {
 			String name = attributes.getValue("name");
 			Type p = new Type(name, typeEnv);
-			typeParameters.add(p);
+			typeParameters = typeParameters.addElement(p);
 		}
 
 		@Override
@@ -462,7 +458,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 				finishDataType();
 			} else if (qName
 					.equals("org.eventb.theory.core.scDatatypeConstructor")) {
-				constructor.addDestructors(destructors);
+				finishDataTypeConstructor();
 			} else if (qName
 					.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
 				finishOperator();
@@ -485,41 +481,44 @@ public class TheoryXmlHandler extends DefaultHandler {
 		}
 
 		private void finishAxiomaticDefinitionBlock() {
-			axiomaticDefinitionBlock.addDefinitionAxioms(definitionAxioms);
-			axiomaticDefinitionBlock.addOperators(axiomaticOperators);
-			axiomaticDefinitionBlock.addTypeParameters(typeArguments);
+			axiomaticDefinitionBlock = axiomaticDefinitionBlock.set(EventBAxiom.class, definitionAxioms);
+			axiomaticDefinitionBlock = axiomaticDefinitionBlock.set(Operator.class, axiomaticOperators);
+			axiomaticDefinitionBlock = axiomaticDefinitionBlock.set(Type.class, typeArguments);
 		}
 
 		private void finishInferenceRule() {
-			inferenceRules.add(new InferenceRule(given, infer));
+			inferenceRules = inferenceRules.addElement(new InferenceRule(given, infer));
 		}
 
 		private void finishRewriteRule() {
-			rewriteRule.addRightHandSide(rightHandSides);
+			rewriteRule = rewriteRule.addRightHandSide(rightHandSides);
 		}
 
 		private void finishProofRulesBlock() {
-			block.addInferenceRules(inferenceRules);
-			block.addMetaVariables(metaVars);
-			block.addRewriteRules(rewriteRules);
+			block = block.set(InferenceRule.class, inferenceRules);
+			block = block.set(MetaVariable.class, metaVars);
+			block = block.set(RewriteRule.class, rewriteRules);
 		}
 
 		private void finishRecursiveDefinition() {
-			((RecursiveOperatorDefinition) definition)
+			definition = ((RecursiveOperatorDefinition) definition)
 					.addCases(recursiveDefinitions);
 		}
 
 		private void finishAxiomaticOperator() {
-			axiomaticOperator.addArguments(opArgs);
+			axiomaticOperator = axiomaticOperator.addArguments(opArgs);
+			axiomaticOperators = axiomaticOperators.addElement(axiomaticOperator);
 
 			typeEnv.add(axiomaticOperator.getFormulaExtension());
 		}
 
 		private void finishOperator() {
-			operator.setDefinition(definition);
-			operator.addArguments(opArgs);
+			operator = operator.setDefinition(definition);
+			operator = operator.addArguments(opArgs);
 
 			typeEnv.add(operator.getFormulaExtension());
+
+			operators = operators.addElement(operator);
 
 			// Recursive definition cases have to be parsed after the formula
 			// extension for the operator is already defined
@@ -530,27 +529,34 @@ public class TheoryXmlHandler extends DefaultHandler {
 				recursiveDefinitions = null;
 			}
 		}
+		public void finishDataTypeConstructor() {
+			constructor = constructor.addDestructors(destructors);
+			constructors = constructors.addElement(constructor);
+		}
 
 		private void finishDataType() {
-			dataType.addConstructors(constructors);
-			dataType.addTypeArguments(typeArguments);
+			dataType = dataType.set(DataTypeConstructor.class, constructors);
+			dataType = dataType.set(Type.class, typeArguments);
 			Set<IFormulaExtension> newExts = dataType
 					.getFormulaExtensions(FormulaFactory.getInstance(typeEnv));
-			typeEnv.addAll(newExts);
 
+			dataTypes = dataTypes.addElement(dataType);
+			typeEnv.addAll(newExts);
 			dataType.parseElements(typeEnv);
 		}
 
 		@Override
 		public void endDocument() throws SAXException {
-			theory.addDataTypes(dataTypes);
-			theory.addImported(imported);
-			theory.addOperators(operators);
-			theory.addAxiomaticDefintionsBlocks(axiomaticDefinitionsBlocks);
-			theory.addProofRules(proofRules);
-			theory.addTheorems(theorems);
-			theory.addTypeParameters(typeParameters);
+			theory = theory.set(DataType.class, dataTypes);
+			theory = theory.set(Theory.class, imported);
+			theory = theory.set(Operator.class, operators);
+			theory = theory.set(AxiomaticDefinitionBlock.class, axiomaticDefinitionsBlocks);
+			theory = theory.set(ProofRulesBlock.class, proofRules);
+			theory = theory.set(EventBAxiom.class, theorems);
+			theory = theory.set(Type.class, typeParameters);
 		}
 	}
+
+
 
 }
