@@ -68,10 +68,7 @@ public class ModelElementList<E> implements List<E> {
 
 	public ModelElementList<E> removeElement(E e) {
 		def newkeys = removeMapping(keys, e)
-		def tlist = []
-		tlist.addAll(list)
-		tlist.remove(e)
-		def newlist = PersistentVector.create(tlist)
+		def newlist = removeE(list, e)
 		return new ModelElementList<E>(newlist,newkeys)
 	}
 
@@ -83,6 +80,16 @@ public class ModelElementList<E> implements List<E> {
 			return new ModelElementList<E>(newlist,newkeys)
 		}
 		this
+	}
+
+	private PersistentVector<E> removeE(PersistentVector<E> list, E e) {
+		def newlist = PersistentVector.emptyVector()
+		list.each {
+			if (e != it) {
+				newlist = newlist.assocN(newlist.size(), e)
+			}
+		}
+		newlist
 	}
 
 	private PersistentHashMap<String,E> addMapping(PersistentHashMap<String,E> keys, E e) {
