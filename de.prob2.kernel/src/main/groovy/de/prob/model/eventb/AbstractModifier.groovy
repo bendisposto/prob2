@@ -1,9 +1,8 @@
 package de.prob.model.eventb
 
-import groovy.lang.Closure;
 
 class AbstractModifier {
-	
+
 	protected Map validateProperties(Map properties, Map required) {
 		required.collectEntries { prop,type ->
 			if(!properties[prop]) {
@@ -16,22 +15,35 @@ class AbstractModifier {
 			}
 		}
 	}
-	
+
 	protected getDefinition(Map definition) {
 		new Definition(definition)
 	}
 
-	protected runClosure(Closure runClosure) {
+	protected AbstractModifier runClosure(Closure runClosure) {
 		// Create clone of closure for threading access.
 		Closure runClone = runClosure.clone()
 
+		def delegateH = new DelegateHelper(this)
 		// Set delegate of closure to this builder.
-		runClone.delegate = this
+		runClone.delegate = delegateH
 
 		// And only use this builder as the closure delegate.
 		runClone.resolveStrategy = Closure.DELEGATE_ONLY
 
 		// Run closure code.
 		runClone()
+
+		delegateH.getState()
+	}
+
+	class DelegateHelper {
+		def state
+		def DelegateHelper(state) {
+			this.state = state
+		}
+		def methodMissing(String name, args) {
+			state = state.invokeMethod(name, args)
+		}
 	}
 }

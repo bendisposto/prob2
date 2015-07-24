@@ -52,13 +52,23 @@ public class EventBModel extends AbstractModel {
 		return new EventB(formula);
 	}
 
+	public EventBModel set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+		return new EventBModel(stateSpaceProvider, assoc(clazz, elements), graph, components, modelFile);
+	}
+
 	public <T extends AbstractElement, S extends T> EventBModel addTo(Class<T> clazz, S element) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
 		return new EventBModel(stateSpaceProvider, assoc(clazz, list.addElement(element)), graph, components, modelFile);
 	}
 
-	public EventBModel set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
-		return new EventBModel(stateSpaceProvider, assoc(clazz, elements), graph, components, modelFile);
+	public <T extends AbstractElement, S extends T> EventBModel removeFrom(Class<T> clazz, S element) {
+		ModelElementList<T> list = getChildrenOfType(clazz);
+		return new EventBModel(stateSpaceProvider, assoc(clazz, list.removeElement(element)), graph, components, modelFile);
+	}
+
+	public <T extends AbstractElement, S extends T> EventBModel replaceIn(Class<T> clazz, S oldElement, S newElement) {
+		ModelElementList<T> list = getChildrenOfType(clazz);
+		return new EventBModel(stateSpaceProvider, assoc(clazz, list.replaceElement(oldElement, newElement)), graph, components, modelFile);
 	}
 
 	public EventBModel addMachine(final EventBMachine machine) {

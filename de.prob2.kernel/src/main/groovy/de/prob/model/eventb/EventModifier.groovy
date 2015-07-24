@@ -1,97 +1,90 @@
 package de.prob.model.eventb
 
 import de.prob.model.eventb.Event.EventType
+import de.prob.model.representation.Action
+import de.prob.model.representation.Guard
 
 
 
 
 class EventModifier extends AbstractModifier {
-	private actctr = 0
-	private grdctr = 0
+	private final actctr = 0
+	private final grdctr = 0
 	def Event event
 	boolean initialisation
 
-	def EventModifier(Event event, initialisation=false) {
-		this.event = event
+	def EventModifier(Event event, boolean initialisation=false) {
+		this(event,initialisation,0,0)
+	}
+
+	private EventModifier(Event event, boolean initialisation, int actctr, int grdctr) {
 		this.initialisation = initialisation
+		this.actctr = actctr
+		this.event = event
+		this.grdctr = grdctr
 	}
-	
-	private String genActLabel() {
-		return "ac" + actctr++
+
+	private EventModifier newEM(Event event) {
+		return new EventModifier(event, initialisation, actctr, grdctr)
 	}
-	
-	private String genGrdLabel() {
-		return "g" + grdctr++
-	}
-	
+
 	def EventModifier when(Map g) {
 		guards(g)
 	}
-	
+
 	def EventModifier when(String... g) {
 		guards(g)
 	}
-	
-	def EventModifier where(Map g) { 
+
+	def EventModifier where(Map g) {
 		guards(g)
 	}
-	
+
 	def EventModifier where(String... g) {
 		guards(g)
 	}
-	
+
 	def EventModifier guards(Map guards) {
+		EventModifier em = this
 		guards.each { k,v ->
-			guard(k,v)
+			em = em.guard(k,v)
 		}
-		this
+		em
 	}
-	
+
 	def EventModifier guards(String... grds) {
+		EventModifier em = this
 		grds.each {
-			guard(it)
+			em = em.guard(it)
 		}
-		this
+		em
 	}
-	
+
 	def EventModifier theorem(LinkedHashMap properties) {
 		guard(properties, true)
 	}
-	
+
 	def EventModifier theorem(String pred) {
-		guard(genGrdLabel(), pred, true)		
+		guard(pred, true)
+	}
+
+	def EventModifier guard(String pred, boolean theorem=false) {
+		def ctr = grdctr + 1
+		def em = guard("g$ctr", pred, theorem)
+		new EventModifier(em.event,em.initialisation,em.actctr,ctr)
 	}
 
 	def EventModifier guard(LinkedHashMap properties, boolean theorem=false) {
 		Definition prop = getDefinition(properties)
 		return guard(prop.label, prop.formula, theorem)
 	}
-	
-	def EventModifier guard(String pred, boolean theorem=false) {
-		guard(genGrdLabel(), pred, theorem)
-	}
 
 	def EventModifier guard(String name, String pred, boolean theorem=false) {
-		addGuard(name, pred, theorem)
-		this
-	}
-
-	/**
-	 * Add a guard to an event
-	 * @param predicate to be added as guard
-	 * @return {@link EventBGuard} that has been added to the event
-	 */
-	def EventBGuard addGuard(String predicate, boolean theorem=false) {
-		addGuard(genGrdLabel(), predicate, theorem)
-	}
-	
-	def EventBGuard addGuard(String name, String pred, boolean theorem=false) {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
 		}
-		def guard = new EventBGuard(event, name, pred, theorem, Collections.emptySet())
-		event.guards << guard
-		guard
+		def guard = new EventBGuard(name, pred, theorem, Collections.emptySet())
+		newEM(event.addTo(Guard.class, guard))
 	}
 
 	/**
@@ -99,30 +92,32 @@ class EventModifier extends AbstractModifier {
 	 * @param guard to be removed
 	 * @return whether or not the removal was successful
 	 */
-	def boolean removeGuard(EventBGuard guard) {
-		return event.guards.remove(guard)
+	def EventModifier removeGuard(EventBGuard guard) {
+		newEM(event.removeFrom(Guard.class, guard))
 	}
-	
+
 	def EventModifier then(Map acts) {
 		actions(acts)
 	}
-	
+
 	def EventModifier then(String... acts) {
 		actions(acts)
 	}
-	
+
 	def EventModifier actions(Map actions) {
+		EventModifier em = this
 		actions.each { k,v ->
-			action(k,v)
+			em = em.action(k,v)
 		}
-		this
+		em
 	}
-	
+
 	def EventModifier actions(String... actions) {
+		EventModifier em = this
 		actions.each {
-			action(it)
+			em = em.action(it)
 		}
-		this
+		em
 	}
 
 	def EventModifier action(LinkedHashMap properties) {
@@ -131,30 +126,14 @@ class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier action(String actionString) {
-		action(genActLabel(), actionString)
-		this
+		int ctr = actctr + 1
+		def em = action("a$ctr", actionString)
+		new EventModifier(em.event, em.initialisation, ctr, em.grdctr)
 	}
-	
+
 	def EventModifier action(String name, String action) {
-		addAction(name, action)
-		this
-	}
-	
-
-
-	/**
-	 * Add an action to an event
-	 * @param action to be added to the event
-	 * @return the {@link EventBAction} that has been added to the {@link Event}
-	 */
-	def EventBAction addAction(String action) {
-		addAction(genActLabel(), action)
-	}
-	
-	def EventBAction addAction(String name, String action) {
-		def a = new EventBAction(event, name, action, Collections.emptySet())
-		event.actions << a
-		a
+		def a = new EventBAction(name, action, Collections.emptySet())
+		newEM(event.addTo(Action.class, a))
 	}
 
 	/**
@@ -162,70 +141,49 @@ class EventModifier extends AbstractModifier {
 	 * @param action to be removed
 	 * @return whether or not the removal was successful
 	 */
-	def boolean removeAction(EventBAction action) {
-		return event.actions.remove(action)
+	def EventModifier removeAction(EventBAction action) {
+		newEM(event.removeFrom(Action.class, action))
 	}
-	
+
 	def EventModifier parameters(String... parameters) {
+		EventModifier em = this
 		parameters.each {
-			parameter(it)
+			em = em.parameter(it)
 		}
-		this
+		em
 	}
 
 	def EventModifier parameter(String parameter) {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot add parameter to initialisation.")
 		}
-		def param = new EventParameter(event, parameter)
-		event.parameters << param
-		this
+		def param = new EventParameter(parameter)
+		newEM(event.addTo(EventParameter.class, param))
 	}
 
-	/**
-	 * Add a parameter to an event
-	 * @param parameter to be added to the event
-	 * @return the {@link ParameterBlock} containing the elements added to the event
-	 */
-	def ParameterBlock addParameter(String parameter, String typingGuard) {
-		if (initialisation) {
-			throw new IllegalArgumentException("Cannot add parameter to initialisation.")
-		}
-		def param = new EventParameter(event, parameter)
-		event.parameters << param
-		def guard = addGuard(typingGuard)
-		new ParameterBlock(param, guard)
+	def EventModifier removeParameter(EventParameter parameter) {
+		newEM(event.removeFrom(EventParameter.class, parameter))
 	}
 
-	/**
-	 * Remove a parameter and its typing guard (contained in the {@link ParameterBlock})
-	 * from the event
-	 * @param block containing the elements to be removed
-	 * @return whether or not the removal was successful
-	 */
-	def boolean removeParameter(ParameterBlock block) {
-		def a = event.parameters.remove(block.parameter)
-		def b = event.guards.remove(block.typingGuard)
-		return a & b
-	}
-	
 	def EventModifier witness(Map properties) {
 		Map validated = validateProperties(properties, [for: String, with: String])
 		witness(validated.for, validated.with)
 	}
-	
+
 	def EventModifier witness(String name, String code) {
-		event.witnesses << new Witness(event, name, code, Collections.emptySet())
-		this
+		def w = new Witness(name, code, Collections.emptySet())
+		newEM(event.addTo(Witness.class, w))
 	}
-	
+
+	def EventModifier removeWitness(Witness w) {
+		newEM(event.removeFrom(Witness.class, w))
+	}
+
 	def EventModifier setType(EventType type) {
-		event.type = type
-		this
+		newEM(event.changeType(type))
 	}
 
 	def EventModifier make(Closure definition) {
 		runClosure definition
-		this
 	}
 }

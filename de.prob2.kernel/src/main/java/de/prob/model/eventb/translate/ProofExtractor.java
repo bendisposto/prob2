@@ -132,8 +132,7 @@ public class ProofExtractor {
 				for (Event event : concreteEvent.getRefines()) {
 					if (event.getGuards().getElement(split[1]) != null) {
 						EventBGuard guard = event.getGuards().getElement(split[1]);
-						elements.add(new Tuple2<String, String>("event", guard
-								.getParentEvent().getName()));
+						elements.add(new Tuple2<String, String>("event",event.getName()));
 						elements.add(new Tuple2<String, String>("guard", guard
 								.getName()));
 					}

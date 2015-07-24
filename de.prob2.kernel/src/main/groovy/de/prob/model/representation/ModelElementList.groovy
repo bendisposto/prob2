@@ -29,13 +29,8 @@ public class ModelElementList<E> implements List<E> {
 		def list = PersistentVector.emptyVector()
 		def keys = PersistentHashMap.emptyMap()
 		elements.each { e ->
-			if(e.metaClass.respondsTo(e, "getName")) {
-				keys = keys.assoc(e.getName(),e)
-			}
-			if(e.metaClass.respondsTo(e, "getFormula")) {
-				keys = keys.assoc("_" + e.getFormula().getFormulaId().uuid,e)
-			}
-			list = list.cons(e)
+			keys = addMapping(keys, e)
+			list = list.assocN(list.size(), e)
 		}
 		this.list = list
 		this.keys = keys
@@ -56,13 +51,7 @@ public class ModelElementList<E> implements List<E> {
 	}
 
 	public ModelElementList<E> addElement(E e) {
-		def newkeys = keys
-		if(e.metaClass.respondsTo(e, "getName")) {
-			newkeys = newkeys.assoc(e.getName(),e)
-		}
-		if(e.metaClass.respondsTo(e, "getFormula")) {
-			newkeys = newkeys.assoc("_" + e.getFormula().getFormulaId().uuid,e)
-		}
+		def newkeys = addMapping(keys, e)
 		def newlist = list.assocN(list.size(), e)
 		return new ModelElementList<E>(newlist, newkeys)
 	}
@@ -71,18 +60,43 @@ public class ModelElementList<E> implements List<E> {
 		def list = list
 		def keys = keys
 		elements.each {e ->
-			if(e.metaClass.respondsTo(e, "getName")) {
-				keys = keys.assoc(e.getName(),e)
-			}
-			if(e.metaClass.respondsTo(e, "getFormula")) {
-				keys = keys.assoc("_" + e.getFormula().getFormulaId().uuid,e)
-			}
+			keys = addMapping(keys, e)
 			list = list.assocN(list.size(), e)
 		}
 		return new ModelElementList<E>(list, keys)
 	}
 
-	public removeElement(E e) {
+	public ModelElementList<E> removeElement(E e) {
+		def newkeys = removeMapping(keys, e)
+		def tlist = []
+		tlist.addAll(list)
+		tlist.remove(e)
+		def newlist = PersistentVector.create(tlist)
+		return new ModelElementList<E>(newlist,newkeys)
+	}
+
+	public ModelElementList<E> replaceElement(E oldE, E newE) {
+		if (list.contains(oldE)) {
+			def newkeys = removeMapping(keys, oldE)
+			newkeys = addMapping(newkeys, oldE)
+			def newlist = list.assocN(list.indexOf(oldE),newE)
+			return new ModelElementList<E>(newlist,newkeys)
+		}
+		this
+	}
+
+	private PersistentHashMap<String,E> addMapping(PersistentHashMap<String,E> keys, E e) {
+		def newkeys = keys
+		if(e.metaClass.respondsTo(e, "getName")) {
+			newkeys = newkeys.assoc(e.getName(),e)
+		}
+		if(e.metaClass.respondsTo(e, "getFormula")) {
+			newkeys = newkeys.assoc("_" + e.getFormula().getFormulaId().uuid,e)
+		}
+		newkeys
+	}
+
+	private PersistentHashMap<String,E> removeMapping(PersistentHashMap<String,E> keys, E e) {
 		def newkeys = keys
 		if(e.metaClass.respondsTo(e, "getName")) {
 			newkeys = newkeys.without(e.getName())
@@ -91,10 +105,8 @@ public class ModelElementList<E> implements List<E> {
 			def key = "_" + e.getFormula().getFormulaId().uuid
 			newkeys = newkeys.without(key)
 		}
-		def newlist = list.remove(e)
-		return new ModelElementList<E>(newlist,newkeys)
+		newkeys
 	}
-
 
 	/**
 	 * @param name of the element to be retrieved

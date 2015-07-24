@@ -10,8 +10,8 @@ import de.prob.model.representation.ModelElementList
 
 public class Event extends BEvent {
 
-	def EventType type
-	def boolean extended
+	def final EventType type
+	def final boolean extended
 
 	public enum EventType {
 		ORDINARY, CONVERGENT, ANTICIPATED
@@ -28,7 +28,22 @@ public class Event extends BEvent {
 	}
 
 	def Event set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
-		new Event(name, type, extended, children.assoc(clazz, elements))
+		new Event(name, type, extended, assoc(clazz, elements))
+	}
+
+	def <T extends AbstractElement, S extends T> Event addTo(Class<T> clazz, S element) {
+		ModelElementList<T> list = getChildrenOfType(clazz)
+		return new Event(name, type, extended, assoc(clazz, list.addElement(element)))
+	}
+
+	def <T extends AbstractElement, S extends T> Event removeFrom(Class<T> clazz, S element) {
+		ModelElementList<T> list = getChildrenOfType(clazz)
+		return new Event(name, type, extended, assoc(clazz, list.removeElement(element)))
+	}
+
+	def <T extends AbstractElement, S extends T> Event replaceIn(Class<T> clazz, S oldElement, S newElement) {
+		ModelElementList<T> list = getChildrenOfType(clazz)
+		return new Event(name, type, extended, assoc(clazz, list.replaceElement(oldElement, newElement)))
 	}
 
 	public ModelElementList<Event> getRefines() {
@@ -53,6 +68,17 @@ public class Event extends BEvent {
 
 	public EventType getType() {
 		return type;
+	}
+
+	public Event changeType(EventType type) {
+		return new Event(name, type, extended, children)
+	}
+
+	public Event toggleExtended(boolean extended) {
+		if (extended == this.extended) {
+			return this
+		}
+		return new Event(name, type, extended, children)
 	}
 
 	@Override

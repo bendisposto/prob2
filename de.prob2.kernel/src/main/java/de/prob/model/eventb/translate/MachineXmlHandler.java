@@ -148,7 +148,7 @@ public class MachineXmlHandler extends DefaultHandler {
 	private void addWitness(final Attributes attributes) {
 		String name = attributes.getValue("org.eventb.core.label");
 		String predicate = attributes.getValue("org.eventb.core.predicate");
-		witnesses.add(new Witness(event, name, predicate, typeEnv));
+		witnesses.add(new Witness(name, predicate, typeEnv));
 	}
 
 	private void addRefinedEvent(final Attributes attributes) {
@@ -172,7 +172,7 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	private void addEventParameter(final Attributes attributes) {
 		String name = attributes.getValue("name");
-		parameters.add(new EventParameter(event, name));
+		parameters.add(new EventParameter(name));
 	}
 
 	private void addGuard(final Attributes attributes) {
@@ -180,13 +180,13 @@ public class MachineXmlHandler extends DefaultHandler {
 		String predicate = attributes.getValue("org.eventb.core.predicate");
 		boolean theorem = "true".equals(attributes
 				.getValue("org.eventb.core.theorem"));
-		guards.add(new EventBGuard(event, name, predicate, theorem, typeEnv));
+		guards.add(new EventBGuard(name, predicate, theorem, typeEnv));
 	}
 
 	private void addAction(final Attributes attributes) {
 		String name = attributes.getValue("org.eventb.core.label");
 		String assignment = attributes.getValue("org.eventb.core.assignment");
-		actions.add(new EventBAction(event, name, assignment, typeEnv));
+		actions.add(new EventBAction(name, assignment, typeEnv));
 	}
 
 	private void beginEventExtraction(final Attributes attributes) {

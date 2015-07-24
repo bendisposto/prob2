@@ -19,13 +19,23 @@ public class EventBMachine extends Machine {
 		super(name, children)
 	}
 
-	def <T extends AbstractElement> EventBMachine addTo(T element) {
-		def kids = children.get(T)
-		new EventBMachine(name, children.assoc(T, kids.addElement(element)))
-	}
-
 	def EventBMachine set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
 		new EventBMachine(name, children.assoc(clazz, elements))
+	}
+
+	def <T extends AbstractElement, S extends T> EventBMachine addTo(Class<T> clazz, S element) {
+		ModelElementList<T> list = getChildrenOfType(clazz)
+		return new EventBMachine(name, assoc(clazz, list.addElement(element)))
+	}
+
+	def <T extends AbstractElement, S extends T> EventBMachine removeFrom(Class<T> clazz, S element) {
+		ModelElementList<T> list = getChildrenOfType(clazz)
+		return new EventBMachine(name, assoc(clazz, list.removeElement(element)))
+	}
+
+	def <T extends AbstractElement, S extends T> EventBMachine replaceIn(Class<T> clazz, S oldElement, S newElement) {
+		ModelElementList<T> list = getChildrenOfType(clazz)
+		return new EventBMachine(name, assoc(clazz, list.replaceElement(oldElement, newElement)))
 	}
 
 	def ModelElementList<EventBMachine> getRefines() {
