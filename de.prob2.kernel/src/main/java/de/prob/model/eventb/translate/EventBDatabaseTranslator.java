@@ -35,7 +35,7 @@ public class EventBDatabaseTranslator {
 			String directory = fullFileName.substring(0,
 					fullFileName.lastIndexOf(File.separatorChar));
 			String workspacePath = directory.substring(0,
-					fullFileName.lastIndexOf(File.separatorChar));
+					directory.lastIndexOf(File.separatorChar));
 
 			File theoryFile = new File(directory + File.separator
 					+ "TheoryPath.tcl");
