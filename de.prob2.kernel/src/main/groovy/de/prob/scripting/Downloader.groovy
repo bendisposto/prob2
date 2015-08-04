@@ -25,7 +25,9 @@ class Downloader {
 	def download(address,target) {
 		def file = new FileOutputStream(target)
 		def out = new BufferedOutputStream(file)
-		out << new URL(address).openStream()
+		def conn = new URL(address).openConnection()
+		conn.setReadTimeout(1000)
+		out << conn.getInputStream()
 		out.close()
 	}
 
