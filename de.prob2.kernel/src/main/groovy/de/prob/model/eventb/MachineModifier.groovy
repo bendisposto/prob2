@@ -197,15 +197,14 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier initialisation(LinkedHashMap properties) {
 		if (properties["extended"] == true) {
-			properties["name"] = "INITIALISATION"
-			properties["refines"] = ["INITIALISATION"]
-			event(properties, {})
+			initialisation({},true)
 		}
 		this
 	}
 
-	def MachineModifier initialisation(Closure cls) {
-		event([name: "INITIALISATION"], cls)
+	def MachineModifier initialisation(Closure cls, boolean extended=false) {
+		def refines = machine.getRefines().isEmpty() ? [] : [machine.getRefines()[0].events.INITIALISATION]
+		event("INITIALISATION", refines, EventType.ORDINARY, extended, cls)
 	}
 
 	def MachineModifier refine(LinkedHashMap properties, Closure cls={}) {
@@ -216,25 +215,22 @@ class MachineModifier extends AbstractModifier {
 	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
 		validateProperties(properties, [name: String])
 
-		def refinedEvents = properties["refines"]
+		def refinedEvent = properties["refines"]
 		def refinedE  = []
-		if (refinedEvents) {
-			def props = validateProperties(properties, [refines: List])
-			refinedEvents = props["refines"]
-			assert refinedEvents.every { it instanceof String }
-			refinedE = refinedEvents.each { n ->
-				machine.getRefines().each { EventBMachine m ->
-					def e = m.getEvent(n)
-					if (e) {
-						refinedE << e
-					}
+		if (refinedEvent) {
+			def props = validateProperties(properties, [refines: String])
+			refinedEvent = props["refines"]
+			machine.getRefines().each { EventBMachine m ->
+				def e = m.getEvent(refinedEvent)
+				if (e) {
+					refinedE << e
 				}
 			}
 		}
 		def type = properties["type"] ?: EventType.ORDINARY
 
-		if (refinedEvents && refinedEvents.size() != refinedE.size()) {
-			throw new IllegalArgumentException("Tried to refine events $refinedEvents, but only found $refinedE")
+		if (refinedEvent && refinedE.size() != 1) {
+			throw new IllegalArgumentException("Tried to refine event $refinedEvent, but found $refinedE events")
 		}
 
 		event(properties["name"], refinedE, type, properties["extended"]  ?: false, cls)
@@ -244,6 +240,7 @@ class MachineModifier extends AbstractModifier {
 		def mm = removePOsForEvent(name)
 		def oldevent = machine.getEvent(name)
 		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, properties["extended"] == true)
+		event = event.set(Event.class, new ModelElementList<Event>(refinedEvents))
 		def em = new EventModifier(event, "INITIALISATION" == name).make(cls)
 		def m = mm.getMachine()
 		if (oldevent) {

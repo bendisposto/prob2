@@ -97,7 +97,6 @@ mm = mm.make {
 }
 
 model = mm.getModel()
-println model
 assert model.levels.axioms.always_true.isTheorem()
 
 lift0 = model.lift0
