@@ -1,22 +1,36 @@
 package de.prob.model.eventb
 
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.representation.Axiom
+import de.prob.model.representation.Constant
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 
 class ContextModifier extends AbstractModifier {
-	private axmctr = 0
-	Context context
+	private final axmctr
+	final Context context
 
 	def ContextModifier(Context context, List<Context> extended=[]) {
-		this.context = context
-		this.context.addExtends(new ModelElementList(extended))
+		this(context, 0)
 	}
+
+	def ContextModifier(Context context, int axmctr) {
+		this.context = context
+		this.axmctr = axmctr
+	}
+
+	def ContextModifier newCM(Context context) {
+		return new ContextModifier(context, axmctr)
+	}
+
+	def ContextModifier addExtends(List<Context> extendBlock) {
+		newCM(context.set(Context.class, new ModelElementList<Context>(extendBlock)))
+	}
+
 
 	def ContextModifier enumerated_set(HashMap properties) {
 		Map validated = validateProperties(properties, [name: String, constants: String[]])
 		addEnumeratedSet(validated["name"], validated["constants"])
-		this
 	}
 
 	/**
@@ -25,114 +39,68 @@ class ContextModifier extends AbstractModifier {
 	 * @param elements contained in the specified set
 	 * @return the {@link EnumeratedSetBlock} generated when creating the set
 	 */
-	def EnumeratedSetBlock addEnumeratedSet(String setName, String... elements) {
-		Set set = new Set(new EventB(setName))
-		context.sets << set
-		def constants = elements.collect {
-			new EventBConstant(it, false, null)
+	def ContextModifier addEnumeratedSet(String setName, String... elements) {
+		ContextModifier cm = set(setName)
+		elements.each {
+			cm = cm.constant(it)
 		}
-		context.constants.addAll(constants)
 		def elementString = elements.collect { "{$it}" }.join(",")
-		def axiom = "partition($setName,$elementString)"
-		def typingAxiom = addAxiom(axiom)
-		new EnumeratedSetBlock(set, constants, typingAxiom)
-	}
-
-	/**
-	 * Removes an enumerated set, all of the elements contained in the set,
-	 * and the typing axiom.
-	 * @param block containing the elements to be removed
-	 * @return whether or not the removal was successful
-	 */
-	def boolean removeEnumeratedSet(EnumeratedSetBlock block) {
-		def a = context.sets.remove(block.set)
-		def bs = block.constants.collect {
-			context.constants.remove(it)
-		}
-		def b = bs.inject(true, {x,y -> x && y})
-		def c = removeAxiom(block.typingAxiom)
-		return a && b && c
+		cm.axiom("partition($setName,$elementString)")
 	}
 
 	def ContextModifier set(String set) {
-		addSet(set)
-		this
-	}
-
-	/**
-	 * Add a carrier set to a context
-	 * @param set to be added
-	 * @return {@link BSet} added to the {@link Context}
-	 */
-	def Set addSet(String set) {
 		def bset = new Set(new EventB(set))
-		context.sets << bset
-		bset
+		new ContextModifier(context.addTo(Set.class, bset),axmctr)
 	}
 
 	/**
 	 * Remove a set from a context
 	 * @param set to be removed
-	 * @return whether or not the removal was successful
 	 */
-	def boolean removeSet(Set set) {
-		return context.sets.remove(set)
+	def ContextModifier removeSet(Set set) {
+		return newCM(context.removeFrom(Set.class, set))
 	}
 
 	def ContextModifier constants(String... constants) {
+		ContextModifier cm = this
 		constants.each {
-			constant(it)
+			cm = cm.constant(it)
 		}
-		this
-	}
-	
-	def ContextModifier constant(String identifier) {
-		addConstant(identifier)
-		this
+		cm
 	}
 
-	/**
-	 * Add a constant to a context
-	 * @param identifier to be added as a constant
-	 * @return the {@link EventBConstant} added to the {@link Context}
-	 */
-	def EventBConstant addConstant(String identifier) {
-		def constant = new EventBConstant(identifier, false, null)
-		context.constants << constant
-		constant
+	def ContextModifier constant(String identifier) {
+		newCM(context.addTo(Constant.class, new EventBConstant(identifier, false, null)))
 	}
 
 	/**
 	 * Remove a constant from the context
 	 * @param constant to be removed
-	 * @return whether or not the removal was successful
 	 */
-	def boolean removeConstant(EventBConstant constant) {
-		return context.constants.remove(constant)
+	def ContextModifier removeConstant(EventBConstant constant) {
+		return newCM(context.removeFrom(Constant.class, constant))
 	}
-	
-	def genAxmLabel() {
-		return "ax" + axmctr++
-	}
-	
+
 	def ContextModifier axioms(Map axioms) {
+		ContextModifier cm = this
 		axioms.each { k,v ->
-			axiom(k,v)
+			cm = cm.axiom(k,v)
 		}
-		this
+		cm
 	}
-	
+
 	def ContextModifier axioms(String... axioms) {
+		ContextModifier cm = this
 		axioms.each {
-			axiom(it)
+			cm = cm.axiom(it)
 		}
-		this
+		cm
 	}
-	
+
 	def ContextModifier theorem(String thm) {
 		axiom(thm, true)
 	}
-		
+
 	def ContextModifier theorem(Map props) {
 		axiom(props, true)
 	}
@@ -141,31 +109,15 @@ class ContextModifier extends AbstractModifier {
 		Definition prop = getDefinition(props)
 		return axiom(prop.label, prop.formula, theorem)
 	}
-	
+
 	def ContextModifier axiom(String pred, boolean theorem=false) {
-		axiom(genAxmLabel(), pred, theorem)
+		int ctr = axmctr + 1
+		new ContextModifier(axiom("a$ctr", pred, theorem).getContext(),ctr)
 	}
 
-	def ContextModifier axiom(String name, String pred, boolean theorem=false) {
-		addAxiom(name, pred, theorem)
-		this
-	}
-
-
-	def EventBAxiom addAxiom(String predicate, boolean theorem=false) {
-		addAxiom(genAxmLabel(), predicate, theorem)
-	}
-	
-	/**
-	 * Add an axiom to a context
-	 * @param predicate to be added as an axiom
-	 * @return {@link EventBAxiom} added to the {@link Context}
-	 */
-	def EventBAxiom addAxiom(String name, String predicate, boolean theorem=false) {
+	def ContextModifier axiom(String name, String predicate, boolean theorem=false) {
 		def axiom = new EventBAxiom(name, predicate, theorem, Collections.emptySet())
-		context.axioms << axiom
-		context.allAxioms << axiom
-		axiom
+		newCM(context.addTo(Axiom.class, axiom))
 	}
 
 	/**
@@ -173,18 +125,12 @@ class ContextModifier extends AbstractModifier {
 	 * @param axiom to be removed
 	 * @return whether or not the removal was successful
 	 */
-	def boolean removeAxiom(EventBAxiom axiom) {
-		def a = context.allAxioms.remove(axiom)
-		def b = context.axioms.remove(axiom)
-		if(a && b) {
-			context.proofs.clear()
-		}
-		return a && b
+	def ContextModifier removeAxiom(EventBAxiom axiom) {
+		return newCM(context.removeFrom(Axiom.class, axiom))
 	}
 
 	def ContextModifier make(Closure definition) {
 		runClosure definition
-		this
 	}
 
 }

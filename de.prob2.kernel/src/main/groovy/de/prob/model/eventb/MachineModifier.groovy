@@ -79,15 +79,15 @@ class MachineModifier extends AbstractModifier {
 	def MachineModifier var_block(String name, String invariant, String init) {
 		MachineModifier mm = variable(name)
 		mm = mm.invariant(invariant)
-		// TODO
-		this
+		mm = mm.initialisation({ action init })
+		mm
 	}
 
 	def MachineModifier var_block(String name, Map inv, Map init) {
-		variable(name)
-		invariant(inv)
-		initialisation({ action init })
-		this
+		MachineModifier mm = variable(name)
+		mm = mm.invariant(inv)
+		mm = mm.initialisation({ action init })
+		mm
 	}
 
 	def MachineModifier removeVariable(EventBVariable variable) {

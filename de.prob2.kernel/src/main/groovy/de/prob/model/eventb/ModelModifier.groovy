@@ -43,7 +43,7 @@ public class ModelModifier extends AbstractModifier {
 			model.addRelationship(name, co, ERefType.EXTENDS)
 			ctx
 		}
-		def cm = new ContextModifier(c, extended).make(definition)
+		def cm = new ContextModifier(c).addExtends(extended).make(definition)
 		model = oldcontext ? model.replaceIn(Context.class, oldcontext, cm.getContext()) :
 				model.addTo(Context.class, cm.getContext())
 		new ModelModifier(model)

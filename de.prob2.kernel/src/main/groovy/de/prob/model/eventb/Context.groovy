@@ -29,6 +29,21 @@ public class Context extends AbstractElement {
 		new Context(name, children.assoc(clazz, elements))
 	}
 
+	public <T extends AbstractElement, S extends T> Context addTo(Class<T> clazz, S element) {
+		ModelElementList<T> list = getChildrenOfType(clazz);
+		return new Context(name, assoc(clazz, list.addElement(element)));
+	}
+
+	public <T extends AbstractElement, S extends T> Context removeFrom(Class<T> clazz, S element) {
+		ModelElementList<T> list = getChildrenOfType(clazz);
+		return new Context(name, assoc(clazz, list.removeElement(element)));
+	}
+
+	public <T extends AbstractElement, S extends T> Context replaceIn(Class<T> clazz, S oldElement, S newElement) {
+		ModelElementList<T> list = getChildrenOfType(clazz);
+		return new Context(name, assoc(clazz, list.replaceElement(oldElement, newElement)));
+	}
+
 	def ModelElementList<Context> getExtends() {
 		getChildrenOfType(Context)
 	}
