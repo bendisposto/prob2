@@ -38,7 +38,7 @@ class MachineModifier extends AbstractModifier {
 	EventBModel model
 
 	def MachineModifier(EventBMachine machine) {
-		this(machine, 0)
+		this(machine, -1)
 	}
 
 	private MachineModifier(EventBMachine machine, int invctr) {

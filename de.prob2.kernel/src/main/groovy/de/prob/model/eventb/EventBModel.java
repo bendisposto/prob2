@@ -58,7 +58,13 @@ public class EventBModel extends AbstractModel {
 
 	public <T extends AbstractElement, S extends T> EventBModel addTo(Class<T> clazz, S element) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
-		return new EventBModel(stateSpaceProvider, assoc(clazz, list.addElement(element)), graph, components, modelFile);
+		PersistentHashMap<String, AbstractElement> comps = components;
+		if (clazz == Machine.class && element instanceof EventBMachine) {
+			comps = (PersistentHashMap<String, AbstractElement>) comps.assoc(((EventBMachine) element).getName(), element);
+		} else if(clazz == Context.class && element instanceof Context) {
+			comps = (PersistentHashMap<String, AbstractElement>) comps.assoc(((Context) element).getName(), element);
+		}
+		return new EventBModel(stateSpaceProvider, assoc(clazz, list.addElement(element)), graph, comps, modelFile);
 	}
 
 	public <T extends AbstractElement, S extends T> EventBModel removeFrom(Class<T> clazz, S element) {
@@ -68,7 +74,15 @@ public class EventBModel extends AbstractModel {
 
 	public <T extends AbstractElement, S extends T> EventBModel replaceIn(Class<T> clazz, S oldElement, S newElement) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
-		return new EventBModel(stateSpaceProvider, assoc(clazz, list.replaceElement(oldElement, newElement)), graph, components, modelFile);
+		PersistentHashMap<String, AbstractElement> comps = components;
+		if (clazz == Machine.class && oldElement instanceof EventBMachine && newElement instanceof EventBMachine) {
+			comps = (PersistentHashMap<String, AbstractElement>) comps.without(((Machine) oldElement).getName());
+			comps = (PersistentHashMap<String, AbstractElement>) comps.assoc(((Machine) newElement).getName(), newElement);
+		} else if (clazz == Context.class && oldElement instanceof Context && newElement instanceof Context) {
+			comps = (PersistentHashMap<String, AbstractElement>) comps.without(((Context) oldElement).getName());
+			comps = (PersistentHashMap<String, AbstractElement>) comps.assoc(((Context) newElement).getName(), newElement);
+		}
+		return new EventBModel(stateSpaceProvider, assoc(clazz, list.replaceElement(oldElement, newElement)), graph, comps, modelFile);
 	}
 
 	public EventBModel addMachine(final EventBMachine machine) {

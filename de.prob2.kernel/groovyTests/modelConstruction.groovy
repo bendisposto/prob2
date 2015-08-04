@@ -4,8 +4,8 @@ import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
-/*mm = new ModelModifier()
-mm.make {
+mm = new ModelModifier()
+mm = mm.make {
 	context(name: "levels") {
 		theorem always_true: "1 < 5"
 		constants "TOP", "BOTTOM"
@@ -96,9 +96,11 @@ mm.make {
 	}
 }
 
-assert mm.temp.levels.axioms.always_true.isTheorem()
+model = mm.getModel()
+println model
+assert model.levels.axioms.always_true.isTheorem()
 
-lift0 = mm.temp.lift0
+lift0 = model.lift0
 assert lift0 != null
 assert lift0.variables.level != null
 assert lift0.invariants.collect { it.getName() } == ["inv_level","i0","always_true","also_always_true","i1"]
@@ -112,15 +114,13 @@ init.actions.act_level.getCode().getCode() == "level := 1"
 init.actions.ac0.getCode().getCode() == "door_open := FALSE"
 assert lift0.events.down.guards.always_true.isTheorem()
 
-assert mm.temp.door.Extends[0].getName() == "IDoNothing"
-
-m = mm.getModifiedModel()
+assert model.door.getExtends()[0].getName() == "IDoNothing"
 
 //mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "MyLift", dir)
 //d.deleteDir()
 
-s = m.load(m.lift1)
+s = model.load(model.lift1)
 t = s as Trace
 
 t = t.$setup_constants()
@@ -137,7 +137,7 @@ assert !t.canExecuteEvent("down",[])
 assert !t.canExecuteEvent("up",[])
 assert t.evalCurrent("door").value == "open"
 
-s.animator.cli.shutdown();*/
+s.animator.cli.shutdown();
 
 
 "it is possible to construct a model"

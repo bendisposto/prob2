@@ -11,7 +11,7 @@ class ContextModifier extends AbstractModifier {
 	final Context context
 
 	def ContextModifier(Context context, List<Context> extended=[]) {
-		this(context, 0)
+		this(context, -1)
 	}
 
 	def ContextModifier(Context context, int axmctr) {

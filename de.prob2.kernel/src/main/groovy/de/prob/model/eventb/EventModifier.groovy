@@ -8,13 +8,13 @@ import de.prob.model.representation.Guard
 
 
 class EventModifier extends AbstractModifier {
-	private final actctr = 0
-	private final grdctr = 0
+	private final actctr
+	private final grdctr
 	def Event event
 	boolean initialisation
 
 	def EventModifier(Event event, boolean initialisation=false) {
-		this(event,initialisation,0,0)
+		this(event,initialisation,-1,-1)
 	}
 
 	private EventModifier(Event event, boolean initialisation, int actctr, int grdctr) {
@@ -127,7 +127,7 @@ class EventModifier extends AbstractModifier {
 
 	def EventModifier action(String actionString) {
 		int ctr = actctr + 1
-		def em = action("a$ctr", actionString)
+		def em = action("ac$ctr", actionString)
 		new EventModifier(em.event, em.initialisation, ctr, em.grdctr)
 	}
 
