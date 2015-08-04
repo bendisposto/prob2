@@ -171,17 +171,13 @@ def os_extension() {
 }
 
 // run integration tests after downloading fresh CLI from Nightly Build
-task integrationtests(dependsOn: ['classes', 'downloadCli'], type:JavaExec){
-	main = 'de.prob.Main'
-	classpath = sourceSets.main.runtimeClasspath
-	args = ['-test', 'groovyTests']
-}
+task integrationtests(dependsOn: ['downloadCli','tests']);
 
 // run integration tests WITHOUT downloading fresh CLI from Nightly Build
 task tests(dependsOn: ['classes'], type:JavaExec){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
-	args = ['-test', 'groovyTests']
+	args = ['-script', 'groovyTests']
 }
 
 eclipse {

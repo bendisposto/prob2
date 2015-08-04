@@ -34,6 +34,10 @@ public abstract class AbstractModel extends AbstractElement {
 		this.components = PersistentHashMap.emptyMap()
 		this.modelFile = null
 	}
+	
+	public String getModelDirPath() {
+		return modelDirPath;
+	}
 
 	public AbstractElement getComponent(final String name) {
 		return components.valAt(name)
