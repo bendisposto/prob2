@@ -75,7 +75,7 @@ public class ModelElementList<E> implements List<E> {
 	public ModelElementList<E> replaceElement(E oldE, E newE) {
 		if (list.contains(oldE)) {
 			def newkeys = removeMapping(keys, oldE)
-			newkeys = addMapping(newkeys, oldE)
+			newkeys = addMapping(newkeys, newE)
 			def newlist = list.assocN(list.indexOf(oldE),newE)
 			return new ModelElementList<E>(newlist,newkeys)
 		}

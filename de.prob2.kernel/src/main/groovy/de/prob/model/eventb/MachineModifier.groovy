@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 import de.prob.model.eventb.Event.EventType
+import de.prob.model.representation.BEvent
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
@@ -35,7 +36,6 @@ class MachineModifier extends AbstractModifier {
 	private final int invctr
 	EventBMachine machine
 	EventBModel model
-	private eventModifiers = [:]
 
 	def MachineModifier(EventBMachine machine) {
 		this(machine, 0)
@@ -68,7 +68,7 @@ class MachineModifier extends AbstractModifier {
 
 	/** adds a variable */
 	def MachineModifier variable(String varName) {
-		newMM(machine.addTo(Variable.class, new EventBVariable(it, null)))
+		newMM(machine.addTo(Variable.class, new EventBVariable(varName, null)))
 	}
 
 	def MachineModifier var_block(LinkedHashMap properties) {
@@ -195,16 +195,11 @@ class MachineModifier extends AbstractModifier {
 		newMM(machine.removeFrom(Variant.class, variant))
 	}
 
-	def EventModifier getInitialisation(boolean extended=false) {
-		def refinedEvent = machine.refines.isEmpty() ? null : machine.refines[0].events.INITIALISATION
-		getEvent("INITIALISATION", extended, refinedEvent)
-	}
-
 	def MachineModifier initialisation(LinkedHashMap properties) {
 		if (properties["extended"] == true) {
 			properties["name"] = "INITIALISATION"
 			properties["refines"] = ["INITIALISATION"]
-			event(properties, cls)
+			event(properties, {})
 		}
 		this
 	}
@@ -242,56 +237,21 @@ class MachineModifier extends AbstractModifier {
 			throw new IllegalArgumentException("Tried to refine events $refinedEvents, but only found $refinedE")
 		}
 
-		event(properties["name"], refinedE, type, properties["extended"], cls)
+		event(properties["name"], refinedE, type, properties["extended"]  ?: false, cls)
 	}
 
 	def MachineModifier event(String name, List<Event> refinedEvents, type, boolean extended, Closure cls={}) {
+		def mm = removePOsForEvent(name)
 		def oldevent = machine.getEvent(name)
-		def event = oldevent.changeType(type).toggleExtended(extended) ?: new Event(name, type, properties["extended"] == true)
+		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, properties["extended"] == true)
 		def em = new EventModifier(event, "INITIALISATION" == name).make(cls)
-		def m = oldevent ? machine.replaceIn(Event.class, oldevent, em.getEvent()) : machine.addTo(Event.class, em.getEvent())
-		return newMM(m)
-	}
-
-	/**
-	 * This method searches for the {@link Event} with the specified name in the
-	 * {@link EventBMachine}. If found, an {@link EventModifier} is created to allow the
-	 * modification of the specified event. Otherwise, an {@link Event} is added to the
-	 * machine via {@link #addEvent(String)}
-	 * @param name of event to be added
-	 * @return an {@link EventModifier} to modify the specified {@link Event}
-	 */
-	def EventModifier getEvent(String name, boolean extended= false, Event refinedEvent= null) {
-		if (eventModifiers[name]) {
-			return eventModifiers[name]
+		def m = mm.getMachine()
+		if (oldevent) {
+			m = m.replaceIn(BEvent.class, oldevent, em.getEvent())
+		} else {
+			m = m.addTo(BEvent.class, em.getEvent())
 		}
-		if (machine.events.hasProperty(name)) {
-			def x = new EventModifier(machine.events.getProperty(name), name == "INITIALISATION")
-			eventModifiers[name] = x
-			return x
-		}
-		eventModifiers[name] = addEvent(name, extended, refinedEvent)
-		eventModifiers[name]
-	}
-
-	/**
-	 * Creates a new {@link Event} object and adds it to the machine.
-	 * An {@link EventModifier} object is then created and returned to allow
-	 * the modification of the specified {@link Event}.
-	 * @param name of event to be added
-	 * @return an {@link EventModifier} to modify the specified {@link Event}
-	 */
-	def EventModifier addEvent(String name, boolean extended=false, Event refinedEvent=null) {
-		removePOsForEvent(name)
-		Event event = new Event(machine, name, EventType.ORDINARY, false)
-		event.addActions(new ModelElementList<EventBAction>())
-		event.addGuards(new ModelElementList<EventBGuard>())
-		event.addParameters(new ModelElementList<EventParameter>())
-		def refines = refinedEvent ? [refinedEvent]: []
-		event.addRefines(new ModelElementList<Event>(refines))
-		event.addWitness(new ModelElementList<Witness>())
-		machine.events << event
-		new EventModifier(event, name == "INITIALISATION")
+		newMM(m)
 	}
 
 	/**
@@ -301,16 +261,13 @@ class MachineModifier extends AbstractModifier {
 	 * has the same name, this will be overwritten.
 	 * @param event to be duplicated
 	 * @param newName of the cloned event
-	 * @return {@link EventModifier} object of the duplicated event to allow
-	 * for further modification
 	 */
-	def EventModifier duplicateEvent(Event event, String newName) {
-		removePOsForEvent(newName)
-		Event event2 = ModelModifier.cloneEvent(machine, event, newName)
-		machine.events << event2
-		def modifier = new EventModifier(event2)
-		eventModifiers[newName] = modifier
-		return modifier
+	def MachineModifier duplicateEvent(Event event, String newName) {
+		MachineModifier mm = removePOsForEvent(newName)
+		Event event2 = new Event(newName, event.type, event.extended, event.children)
+		def oldE = mm.getMachine().events.getElement(newName)
+		def m = oldE ? mm.getMachine().replaceIn(BEvent.class, oldE, event2) : mm.getMachine().addTo(BEvent.class, event2)
+		return newMM(m)
 	}
 
 	/**
@@ -319,17 +276,18 @@ class MachineModifier extends AbstractModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def MachineModifier removeEvent(Event event) {
-		removePOsForEvent(event.name)
-		return machine.events.remove(event)
+		MachineModifier mm = removePOsForEvent(event.name)
+		newMM(mm.getMachine().removeFrom(BEvent.class, event))
 	}
 
-	def removePOsForEvent(String name) {
-		def iterator = machine.proofs.iterator()
-		while(iterator.hasNext()) {
-			if(iterator.next().name.startsWith(name)) {
-				iterator.remove()
+	def MachineModifier removePOsForEvent(String name) {
+		def proofs = machine.getProofs()
+		proofs.each {
+			if (it.name.startsWith(name)) {
+				proofs = proofs.removeElement(it)
 			}
 		}
+		newMM(machine.set(ProofObligation.class, proofs))
 	}
 
 	def MachineModifier make(Closure definition) {

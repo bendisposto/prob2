@@ -7,7 +7,6 @@ class ContextModifierTest extends Specification {
 	ContextModifier modifier
 
 	def setup() {
-		def model = new EventBModel(null)
 		def context = new Context("MyContext")
 		modifier = new ContextModifier(context)
 	}

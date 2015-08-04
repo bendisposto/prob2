@@ -42,7 +42,8 @@ class AbstractModifier {
 		def DelegateHelper(state) {
 			this.state = state
 		}
-		def methodMissing(String name, args) {
+
+		def invokeMethod(String name, args) {
 			state = state.invokeMethod(name, args)
 		}
 	}

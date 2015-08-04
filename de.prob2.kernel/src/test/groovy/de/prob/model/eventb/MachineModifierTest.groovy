@@ -1,144 +1,119 @@
 package de.prob.model.eventb
 
 import spock.lang.Specification
-import de.prob.model.representation.ModelElementList
 
 class MachineModifierTest extends Specification {
-	def EventBMachine machine
 	def MachineModifier modifier
-	def model
 
 	def setup() {
-		model = new EventBModel(null)
-		machine = new EventBMachine("myMachine")
-		machine.addEvents(new ModelElementList<Event>())
-		machine.addInvariants(new ModelElementList<EventBInvariant>(), new ModelElementList<EventBInvariant>())
-		machine.addProofs(new ModelElementList<ProofObligation>())
-		machine.addRefines(new ModelElementList<EventBMachine>())
-		machine.addSees(new ModelElementList<Context>())
-		machine.addVariables(new ModelElementList<EventBVariable>())
-		machine.addVariant(new ModelElementList<Variant>())
+		def machine = new EventBMachine("myMachine")
 
-		modifier = new MachineModifier(machine, [], [])
-		modifier.addEvent("INITIALISATION")
+		modifier = new MachineModifier(machine)
+	}
+
+	def "it is possible to at an intialisation"() {
+		when:
+		modifier = modifier.initialisation { action "x := 1" }
+
+		then:
+		def init = modifier.getMachine().events.INITIALISATION
+		init != null
+		!init.actions.isEmpty()
 	}
 
 	def "it is possible to add a variable"() {
 		when:
-		VariableBlock block = modifier.addVariable("x", "x : NAT", "x := 0")
+		modifier = modifier.var_block("x", "x : NAT", "x := 0")
 
 		then:
-		machine.variables.contains(block.variable) &&
-				machine.invariants.contains(block.typingInvariant) &&
-				machine.events.INITIALISATION.actions.contains(block.initialisationAction)
+		modifier.getMachine().variables[0].getName() == "x"
+		modifier.getMachine().invariants[0].getPredicate().getCode() == "x : NAT"
+		def init = modifier.getMachine().events.INITIALISATION
+		init != null
+		def actions = modifier.getMachine().events.INITIALISATION.getActions()
+		!actions.isEmpty()
 	}
 
 	def "it is possible to remove a variable block once added"() {
 		when:
-		VariableBlock block = modifier.addVariable("x", "x : NAT", "x := 0")
-		def removed = modifier.removeVariableBlock(block)
+		modifier = modifier.variable("x")
+		def var = modifier.getMachine().variables[0]
+		modifier = modifier.removeVariable(var)
 
 		then:
-		removed == true
-	}
-
-	def "it is possible to remove a variable after a deep copy"() {
-		when:
-		VariableBlock block = modifier.addVariable("x", "x : NAT", "x := 0")
-		EventBMachine machine2 = ModelModifier.deepCopy(model, machine)
-		def contained1 = machine2.variables.contains(block.variable)
-		def contained2 = machine2.invariants.contains(block.typingInvariant)
-		def contained3 = machine2.events.INITIALISATION.actions.contains(block.initialisationAction)
-		MachineModifier mod2 = new MachineModifier(machine2)
-		def removed = mod2.removeVariableBlock(block)
-
-		then:
-		removed && contained1 && contained2 && contained3 &&
-				!machine2.variables.contains(block.variable) &&
-				!machine2.invariants.contains(block.typingInvariant) &&
-				!machine2.events.INITIALISATION.actions.contains(block.initialisationAction)
+		var != null
+		modifier.getMachine().variables.isEmpty()
 	}
 
 	def "it is possible to add an invariant"() {
 		when:
-		def invariant = modifier.addInvariant("x < 5")
+		modifier = modifier.invariant("x < 5")
 
 		then:
-		machine.invariants.contains(invariant)
+		modifier.getMachine().invariants[0].getPredicate().getCode() == "x < 5"
 	}
 
 	def "it is possible to remove an invariant once added"() {
 		when:
-		def invariant = modifier.addInvariant("x < 5")
-		def removed = modifier.removeInvariant(invariant)
+		modifier = modifier.invariant("x < 5")
+		def inv = modifier.getMachine().invariants[0]
+		modifier = modifier.removeInvariant(inv)
 
 		then:
-		removed
+		inv != null
+		modifier.getMachine().invariants.isEmpty()
 	}
 
-	def "it is possible to remove an invariant after a deep copy"() {
+	def "it is possible to modify an existing event"() {
 		when:
-		def invariant = modifier.addInvariant("x < 5")
-		EventBMachine machine2 = ModelModifier.deepCopy(model, machine)
-		def contained = machine2.invariants.contains(invariant)
-		def mod2 = new MachineModifier(machine2)
-		def removed = mod2.removeInvariant(invariant)
+		modifier = modifier.var_block("x", "x : NAT", "x := 0")
+		modifier = modifier.event(name: "INITIALISATION") {
+			action "x := 1"
+		}
 
 		then:
-		removed && contained && !machine2.invariants.contains(invariant)
+		modifier.machine.events.INITIALISATION.actions.collect {
+			it.getCode().getCode()
+		} == ["x := 0", "x := 1"]
 	}
 
-	def "it is possible to get an existing event and modify it"() {
+	def "when an event doesn't exist, it can be added"() {
 		when:
-		VariableBlock block = modifier.addVariable("x", "x : NAT", "x := 0")
-		EventModifier init = modifier.getEvent("INITIALISATION")
-		def action = init.getEvent().actions[0]
-		init.removeAction(action)
-		def action2 = init.addAction("x := 1")
+		def contained = modifier.getMachine().events.hasProperty("SomeEvent")
+		modifier = modifier.event(name: "SomeEvent") {}
 
 		then:
-		machine.events.INITIALISATION.actions.contains(action2)
-	}
-
-	def "when an event doesn't exist, 'getting' it will add a new event"() {
-		when:
-		def contained = machine.events.hasProperty("SomeEvent")
-		def event = modifier.getEvent("SomeEvent")
-
-		then:
-		!contained & machine.events.hasProperty("SomeEvent")
+		!contained
+		modifier.getMachine().events[0].getName() == "SomeEvent"
 	}
 
 	def "it is possible to remove an event after adding it"() {
 		when:
-		def newEventM = modifier.addEvent("SomeEvent")
-		newEventM.addParameter("x", "x : NAT")
-		newEventM.addAction("x := 1")
-		def removed = modifier.removeEvent(newEventM.getEvent())
+		modifier = modifier.event(name: "SomeEvent") {
+			parameter "x"
+			guard "x : NAT"
+			action "x := 1"
+		}
+		def event = modifier.getMachine().events[0]
+		modifier = modifier.removeEvent(event)
 
 		then:
-		removed
-	}
-
-	def "it is possible to remove an even after a deep copy"() {
-		when:
-		def newEventM = modifier.addEvent("SomeEvent")
-		newEventM.addParameter("x", "x : NAT")
-		newEventM.addAction("x := 1")
-		EventBMachine machine2 = ModelModifier.deepCopy(model, machine)
-		def contained = machine2.events.contains(newEventM.getEvent())
-		def mod2 = new MachineModifier(machine2)
-		def removed = mod2.removeEvent(newEventM.getEvent())
-
-		then:
-		contained & removed
+		event != null
+		modifier.getMachine().events.isEmpty()
 	}
 
 	def "it is possible to duplicate an event and add its duplicate to the machine"() {
 		when:
-		def newEventM = modifier.duplicateEvent(machine.events.INITIALISATION, "init2")
+		modifier = modifier.event(name: "event1") {
+			action "x := 2"
+		}
+		modifier = modifier.duplicateEvent(modifier.getMachine().events.event1, "event2")
 
 		then:
-		machine.events.contains(newEventM.getEvent())
+		def event1 = modifier.getMachine().events.event1
+		def event2 = modifier.getMachine().events.event2
+		event1.getName() == "event1"
+		event2.getName() == "event2"
+		event1.getActions() == event2.getActions()
 	}
 }

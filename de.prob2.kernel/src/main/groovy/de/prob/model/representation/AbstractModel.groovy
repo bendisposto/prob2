@@ -12,7 +12,6 @@ public abstract class AbstractModel extends AbstractElement {
 
 	protected final StateSpaceProvider stateSpaceProvider;
 	protected File modelFile;
-	protected String modelDirPath;
 	protected final DependencyGraph graph
 	protected PersistentHashMap<String,AbstractElement> components
 
@@ -33,10 +32,6 @@ public abstract class AbstractModel extends AbstractElement {
 		this.graph = new DependencyGraph()
 		this.components = PersistentHashMap.emptyMap()
 		this.modelFile = null
-	}
-	
-	public String getModelDirPath() {
-		return modelDirPath;
 	}
 
 	public AbstractElement getComponent(final String name) {
