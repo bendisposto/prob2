@@ -208,7 +208,7 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier refine(LinkedHashMap properties, Closure cls={}) {
-		properties["refines"] = [properties["name"]]
+		properties["refines"] = properties["name"]
 		event(properties, cls)
 	}
 
