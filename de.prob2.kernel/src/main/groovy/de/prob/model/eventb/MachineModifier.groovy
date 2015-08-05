@@ -90,6 +90,11 @@ class MachineModifier extends AbstractModifier {
 		mm
 	}
 
+	def MachineModifier removeVariable(String name) {
+		def var = machine.variables.getElement(name)
+		var ? removeVariable(var) : this
+	}
+
 	def MachineModifier removeVariable(EventBVariable variable) {
 		newMM(machine.removeFrom(Variable.class, variable))
 	}
@@ -168,6 +173,11 @@ class MachineModifier extends AbstractModifier {
 		machine = machine.addTo(Invariant.class, invariant)
 		machine = machine.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs))
 		newMM(machine)
+	}
+
+	def MachineModifier removeInvariant(String name) {
+		def axm = machine.invariants.getElement(name)
+		axm ? removeInvariant(axm) : this
 	}
 
 	/**
@@ -256,15 +266,24 @@ class MachineModifier extends AbstractModifier {
 	 * the specified event for copying. The new {@link Event} object will
 	 * have the specified name. If an existing {@link Event} in the machine
 	 * has the same name, this will be overwritten.
-	 * @param event to be duplicated
+	 * @param name of the event to be duplicated
 	 * @param newName of the cloned event
 	 */
-	def MachineModifier duplicateEvent(Event event, String newName) {
+	def MachineModifier duplicateEvent(String eventName, String newName) {
 		MachineModifier mm = removePOsForEvent(newName)
+		Event event = machine.getEvent(eventName)
+		if (!event) {
+			throw new IllegalArgumentException("Can only duplicate an event that exists! Event with name $eventName was not found.")
+		}
 		Event event2 = new Event(newName, event.type, event.extended, event.children)
 		def oldE = mm.getMachine().events.getElement(newName)
 		def m = oldE ? mm.getMachine().replaceIn(BEvent.class, oldE, event2) : mm.getMachine().addTo(BEvent.class, event2)
 		return newMM(m)
+	}
+
+	def MachineModifier removeEvent(String name) {
+		def evt = machine.events.getElement(name)
+		evt ? removeEvent(evt) : this
 	}
 
 	/**

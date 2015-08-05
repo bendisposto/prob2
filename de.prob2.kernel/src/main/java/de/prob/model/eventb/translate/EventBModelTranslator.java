@@ -28,13 +28,13 @@ public class EventBModelTranslator {
 			final AbstractElement mainComponent) {
 		this.model = model;
 
-		for (Machine machine : extractMachineHierarchy(mainComponent)) {
+		for (Machine machine : extractMachineHierarchy(mainComponent, model)) {
 			EventBMachine ebM = (EventBMachine) machine;
 			machineTranslators.add(new EventBMachineTranslator(ebM));
 			proofObligations.addAll(ebM.getProofs());
 		}
 
-		for (Context context : extractContextHierarchy(mainComponent)) {
+		for (Context context : extractContextHierarchy(mainComponent, model)) {
 			contextTranslators.add(new ContextTranslator(context));
 			proofObligations.addAll(context.getProofs());
 		}
@@ -44,7 +44,7 @@ public class EventBModelTranslator {
 	}
 
 	public List<EventBMachine> extractMachineHierarchy(
-			final AbstractElement mainComponent) {
+			final AbstractElement mainComponent, EventBModel model) {
 		if (mainComponent instanceof Context) {
 			return Collections.emptyList();
 		}
@@ -52,39 +52,41 @@ public class EventBModelTranslator {
 		if (mainComponent instanceof EventBMachine) {
 			EventBMachine machine = (EventBMachine) mainComponent;
 			machines.add(machine);
-			machines.addAll(extractMachines(machine));
+			machines.addAll(extractMachines(machine, model));
 		}
 		return machines;
 	}
 
-	private List<EventBMachine> extractMachines(final EventBMachine machine) {
+	private List<EventBMachine> extractMachines(final EventBMachine machine, EventBModel model) {
 		if (machine.getRefines().isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<EventBMachine> machines = new ArrayList<EventBMachine>();
 		for (EventBMachine eventBMachine : machine.getRefines()) {
-			machines.add(eventBMachine);
-			machines.addAll(extractMachines(eventBMachine));
+			EventBMachine refinedMachine = model.getMachine(eventBMachine.getName());
+			machines.add(refinedMachine);
+			machines.addAll(extractMachines(refinedMachine, model));
 		}
 		return machines;
 	}
 
 	public List<Context> extractContextHierarchy(
-			final AbstractElement mainComponent) {
+			final AbstractElement mainComponent, EventBModel model) {
 		if (mainComponent instanceof Context) {
-			return extractContextHierarchy((Context) mainComponent);
+			return extractContextHierarchy((Context) mainComponent, model);
 		}
 		if (mainComponent instanceof EventBMachine) {
-			return extractContextHierarchy((EventBMachine) mainComponent);
+			return extractContextHierarchy((EventBMachine) mainComponent, model);
 		}
 		return Collections.emptyList();
 	}
 
-	private List<Context> extractContextHierarchy(final EventBMachine machine) {
+	private List<Context> extractContextHierarchy(final EventBMachine machine, EventBModel model) {
 		List<Context> contexts = new ArrayList<Context>();
 		for (Context c : machine.getSees()) {
-			contexts.add(c);
-			List<Context> contextHierarchy = extractContextHierarchy(c);
+			Context seenContext = model.getContext(c.getName());
+			contexts.add(seenContext);
+			List<Context> contextHierarchy = extractContextHierarchy(seenContext, model);
 			for (Context context : contextHierarchy) {
 				if (!contexts.contains(context)) {
 					contexts.add(context);
@@ -94,12 +96,13 @@ public class EventBModelTranslator {
 		return contexts;
 	}
 
-	private List<Context> extractContextHierarchy(final Context context) {
+	private List<Context> extractContextHierarchy(final Context context, EventBModel model) {
 		List<Context> contexts = new ArrayList<Context>();
 		contexts.add(context);
 		for (Context c : context.getExtends()) {
-			contexts.add(c);
-			List<Context> contextHierarchy = extractContextHierarchy(c);
+			Context extendedContext = model.getContext(c.getName());
+			contexts.add(extendedContext);
+			List<Context> contextHierarchy = extractContextHierarchy(extendedContext, model);
 			for (Context c2 : contextHierarchy) {
 				if (!contexts.contains(c2)) {
 					contexts.add(c2);

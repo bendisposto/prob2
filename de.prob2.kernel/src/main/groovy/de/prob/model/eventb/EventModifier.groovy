@@ -87,6 +87,11 @@ class EventModifier extends AbstractModifier {
 		newEM(event.addTo(Guard.class, guard))
 	}
 
+	def EventModifier removeGuard(String name) {
+		def grd = event.guards.getElement(name)
+		removeGuard(grd)
+	}
+
 	/**
 	 * Remove a guard from an event
 	 * @param guard to be removed
@@ -136,6 +141,11 @@ class EventModifier extends AbstractModifier {
 		newEM(event.addTo(Action.class, a))
 	}
 
+	def EventModifier removeAction(String name) {
+		def act = event.actions.getElement(name)
+		removeAction(act)
+	}
+
 	/**
 	 * Remove an action from an event
 	 * @param action to be removed
@@ -159,6 +169,11 @@ class EventModifier extends AbstractModifier {
 		}
 		def param = new EventParameter(parameter)
 		newEM(event.addTo(EventParameter.class, param))
+	}
+
+	def EventModifier removeParameter(String name) {
+		def param = event.parameters.getElement(name)
+		param ? removeParameter(param) : this
 	}
 
 	def EventModifier removeParameter(EventParameter parameter) {

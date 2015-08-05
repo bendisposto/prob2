@@ -53,6 +53,11 @@ class ContextModifier extends AbstractModifier {
 		new ContextModifier(context.addTo(Set.class, bset),axmctr)
 	}
 
+	def ContextModifier removeSet(String setName) {
+		def set = context.sets.getElement(setName)
+		set ? removeSet(set) : this
+	}
+
 	/**
 	 * Remove a set from a context
 	 * @param set to be removed
@@ -73,12 +78,18 @@ class ContextModifier extends AbstractModifier {
 		newCM(context.addTo(Constant.class, new EventBConstant(identifier, false, null)))
 	}
 
+	def ContextModifier removeConstant(String name) {
+		def cst = context.constants.getElement(name)
+		cst ? removeConstant(cst) : this
+	}
+
 	/**
 	 * Remove a constant from the context
 	 * @param constant to be removed
 	 */
 	def ContextModifier removeConstant(EventBConstant constant) {
-		return newCM(context.removeFrom(Constant.class, constant))
+		def ctx = context.removeFrom(Constant.class, constant)
+		return newCM(ctx)
 	}
 
 	def ContextModifier axioms(Map axioms) {
@@ -120,13 +131,20 @@ class ContextModifier extends AbstractModifier {
 		newCM(context.addTo(Axiom.class, axiom))
 	}
 
+	def ContextModifier removeAxiom(String name) {
+		def axm = context.axioms.getElement(name)
+		axm ? removeAxiom(axm) : this
+	}
+
 	/**
 	 * Remove an axiom from a context
 	 * @param axiom to be removed
 	 * @return whether or not the removal was successful
 	 */
 	def ContextModifier removeAxiom(EventBAxiom axiom) {
-		return newCM(context.removeFrom(Axiom.class, axiom))
+		def ctx = context.removeFrom(Axiom.class, axiom)
+		def axms = ctx.axioms
+		return newCM(ctx)
 	}
 
 	def ContextModifier make(Closure definition) {

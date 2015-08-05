@@ -85,8 +85,8 @@ public class ModelElementList<E> implements List<E> {
 	private PersistentVector<E> removeE(PersistentVector<E> list, E e) {
 		def newlist = PersistentVector.emptyVector()
 		list.each {
-			if (e != it) {
-				newlist = newlist.assocN(newlist.size(), e)
+			if (it != e) {
+				newlist = newlist.assocN(newlist.size(), it)
 			}
 		}
 		newlist

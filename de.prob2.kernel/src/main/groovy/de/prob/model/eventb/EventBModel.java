@@ -126,4 +126,12 @@ public class EventBModel extends AbstractModel {
 		return e;
 	}
 
+	public EventBMachine getMachine(String name) {
+		return (EventBMachine) getChildrenOfType(Machine.class).getElement(name);
+	}
+
+	public Context getContext(String name) {
+		return getChildrenOfType(Context.class).getElement(name);
+	}
+
 }
