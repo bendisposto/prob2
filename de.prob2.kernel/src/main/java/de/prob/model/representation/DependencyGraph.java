@@ -171,6 +171,21 @@ public class DependencyGraph {
 		return set;
 	}
 
+	public Set<Edge> getOutEdges(String name) {
+		Node node = graph.valAt(name);
+		return node.getOutEdges();
+	}
+
+	public Set<Edge> getIncomingEdges(String name) {
+		HashSet<Edge> set = new HashSet<Edge>();
+		for (Edge edge : getEdges()) {
+			if (edge.getTo().getElementName().equals(name)) {
+				set.add(edge);
+			}
+		}
+		return set;
+	}
+
 	/**
 	 *
 	 * @param from
