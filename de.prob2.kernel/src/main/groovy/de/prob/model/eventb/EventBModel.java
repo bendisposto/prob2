@@ -27,12 +27,12 @@ public class EventBModel extends AbstractModel {
 	@Inject
 	public EventBModel(final StateSpaceProvider stateSpaceProvider) {
 		this(stateSpaceProvider, PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap(), new DependencyGraph(),
-				PersistentHashMap.<String, AbstractElement>emptyMap(), null);
+				null);
 	}
 
 	private EventBModel(StateSpaceProvider stateSpaceProvider, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
-			DependencyGraph graph, PersistentHashMap<String, AbstractElement> components, File modelFile) {
-		super(stateSpaceProvider, children, graph, components, modelFile);
+			DependencyGraph graph, File modelFile) {
+		super(stateSpaceProvider, children, graph, modelFile);
 	}
 
 	public ModelElementList<Machine> getMachines() {
@@ -44,7 +44,7 @@ public class EventBModel extends AbstractModel {
 	}
 
 	public EventBModel setModelFile(final File modelFile) {
-		return new EventBModel(stateSpaceProvider, children, graph, components, modelFile);
+		return new EventBModel(stateSpaceProvider, children, graph, modelFile);
 	}
 
 	@Override
@@ -53,53 +53,38 @@ public class EventBModel extends AbstractModel {
 	}
 
 	public EventBModel set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
-		return new EventBModel(stateSpaceProvider, assoc(clazz, elements), graph, components, modelFile);
+		return new EventBModel(stateSpaceProvider, assoc(clazz, elements), graph, modelFile);
 	}
 
 	public <T extends AbstractElement, S extends T> EventBModel addTo(Class<T> clazz, S element) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
-		PersistentHashMap<String, AbstractElement> comps = components;
-		if (clazz == Machine.class && element instanceof EventBMachine) {
-			comps = (PersistentHashMap<String, AbstractElement>) comps.assoc(((EventBMachine) element).getName(), element);
-		} else if(clazz == Context.class && element instanceof Context) {
-			comps = (PersistentHashMap<String, AbstractElement>) comps.assoc(((Context) element).getName(), element);
-		}
-		return new EventBModel(stateSpaceProvider, assoc(clazz, list.addElement(element)), graph, comps, modelFile);
+		return new EventBModel(stateSpaceProvider, assoc(clazz, list.addElement(element)), graph, modelFile);
 	}
 
 	public <T extends AbstractElement, S extends T> EventBModel removeFrom(Class<T> clazz, S element) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
-		return new EventBModel(stateSpaceProvider, assoc(clazz, list.removeElement(element)), graph, components, modelFile);
+		return new EventBModel(stateSpaceProvider, assoc(clazz, list.removeElement(element)), graph, modelFile);
 	}
 
 	public <T extends AbstractElement, S extends T> EventBModel replaceIn(Class<T> clazz, S oldElement, S newElement) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
-		PersistentHashMap<String, AbstractElement> comps = components;
-		if (clazz == Machine.class && oldElement instanceof EventBMachine && newElement instanceof EventBMachine) {
-			comps = (PersistentHashMap<String, AbstractElement>) comps.without(((Machine) oldElement).getName());
-			comps = (PersistentHashMap<String, AbstractElement>) comps.assoc(((Machine) newElement).getName(), newElement);
-		} else if (clazz == Context.class && oldElement instanceof Context && newElement instanceof Context) {
-			comps = (PersistentHashMap<String, AbstractElement>) comps.without(((Context) oldElement).getName());
-			comps = (PersistentHashMap<String, AbstractElement>) comps.assoc(((Context) newElement).getName(), newElement);
-		}
-		return new EventBModel(stateSpaceProvider, assoc(clazz, list.replaceElement(oldElement, newElement)), graph, comps, modelFile);
+		return new EventBModel(stateSpaceProvider, assoc(clazz, list.replaceElement(oldElement, newElement)), graph, modelFile);
 	}
 
 	public EventBModel addMachine(final EventBMachine machine) {
 		ModelElementList<Machine> list = getChildrenOfType(Machine.class);
-		return new EventBModel(stateSpaceProvider, assoc(Machine.class, list.addElement(machine)), graph.addVertex(machine.getName()),
-				(PersistentHashMap<String, AbstractElement>) components.assoc(machine.getName(), machine), modelFile);
+		return new EventBModel(stateSpaceProvider, assoc(Machine.class, list.addElement(machine)), graph.addVertex(machine.getName()), modelFile);
 	}
 
 	public EventBModel addContext(final Context context) {
 		ModelElementList<Context> list = getChildrenOfType(Context.class);
 		return new EventBModel(stateSpaceProvider, assoc(Context.class, list.addElement(context)), graph.addVertex(context.getName()),
-				(PersistentHashMap<String, AbstractElement>) components.assoc(context.getName(), context), modelFile);
+				modelFile);
 	}
 
 	public EventBModel addRelationship(final String element1, final String element2,
 			final ERefType relationship) {
-		return new EventBModel(stateSpaceProvider, children, graph.addEdge(element1, element2, relationship), components, modelFile);
+		return new EventBModel(stateSpaceProvider, children, graph.addEdge(element1, element2, relationship),modelFile);
 	}
 
 	@Override
@@ -130,6 +115,15 @@ public class EventBModel extends AbstractModel {
 		return stateSpaceProvider.loadFromCommand(this, mainComponent,
 				preferences, new LoadEventBProjectCommand(
 						new EventBModelTranslator(this, mainComponent)));
+	}
+
+	@Override
+	public AbstractElement getComponent(String name) {
+		AbstractElement e = getChildrenOfType(Context.class).getElement(name);
+		if (e == null) {
+			e = getChildrenOfType(Machine.class).getElement(name);
+		}
+		return e;
 	}
 
 }

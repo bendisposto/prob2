@@ -13,34 +13,24 @@ public abstract class AbstractModel extends AbstractElement {
 	protected final StateSpaceProvider stateSpaceProvider;
 	protected File modelFile;
 	protected final DependencyGraph graph
-	protected PersistentHashMap<String,AbstractElement> components
 
 	def AbstractModel(StateSpaceProvider stateSpaceProvider,
 	PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
 	DependencyGraph graph,
-	PersistentHashMap<String, AbstractElement> components,
 	File modelFile) {
 		super(children)
 		this.stateSpaceProvider = stateSpaceProvider
 		this.graph = graph
-		this.components = components
 		this.modelFile = modelFile
 	}
 
 	def AbstractModel(StateSpaceProvider stateSpaceProvider) {
 		this.stateSpaceProvider = stateSpaceProvider
 		this.graph = new DependencyGraph()
-		this.components = PersistentHashMap.emptyMap()
 		this.modelFile = null
 	}
 
-	public AbstractElement getComponent(final String name) {
-		return components.valAt(name)
-	}
-
-	public Map<String, AbstractElement> getComponents() {
-		return components
-	}
+	public abstract AbstractElement getComponent(final String name);
 
 	public DependencyGraph getGraph() {
 		return graph;
@@ -75,11 +65,11 @@ public abstract class AbstractModel extends AbstractElement {
 	}
 
 	def getProperty(final String name) {
-		return components.valAt(name)
+		return getComponent(name)
 	}
 
 	def getAt(final String name) {
-		return components.valAt(name)
+		return getComponent(name)
 	}
 
 	def AbstractElement get(List<String> path) {

@@ -3,43 +3,48 @@ import de.prob.exception.ProBError
 import de.prob.model.eventb.ModelModifier
 import de.prob.statespace.*
 
-
-/*s = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
+/*
+s = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
 assert s.getMainComponent() != null
 m = s as EventBModel
-
-modelModifier = new ModelModifier(m)
 s.animator.cli.shutdown()
 
-// Currently do not support adding refinements to machines
-assert modelModifier.getContext("I-DONT-EXIST") == null
-assert modelModifier.getMachine("I-DONT-EXIST") == null
+mm = new ModelModifier(m).make {
+	context(name: "EmptyContext") {
+		enumerated_set(name: "mySet", constants: ["x", "y", "z"])
+	}
+}
 
-contextModifier = modelModifier.getContext("EmptyContext")
-
-block = contextModifier.addEnumeratedSet("mySet","x","y","z")
-m2 = modelModifier.getModifiedModel()
+m2 = mm.getModel()
+println m2.EmptyContext.children
 s = m2.load(m2.EmptyMachine)
 t = s as Trace
+t = t.$setup_constants()
 t = t.$initialise_machine()
 x = t.evalCurrent("mySet")
 assert x.getValue() == "{x,y,z}"
-
-
-modelModifier = new ModelModifier(m2)
 s.animator.cli.shutdown()
-contextModifier = modelModifier.getContext("EmptyContext")
 
-assert contextModifier.removeEnumeratedSet(block)
-m3 = modelModifier.getModifiedModel()
+
+mm = mm.make {
+	context(name: "EmptyContext") {
+		removeSet(m2.EmptyContext.sets.mySet)
+		m2.EmptyContext.constants.each {
+			remove(it)
+		}
+	}
+}
+
+m3 = mm.getModel()
 s = m3.load(m3.EmptyMachine)
 t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("mySet")
 assert x instanceof ComputationNotCompletedResult
-
-modelModifier = new ModelModifier(m3)
 s.animator.cli.shutdown()
+/*
+modelModifier = new ModelModifier(m3)
+
 contextModifier = modelModifier.getContext("EmptyContext")
 
 constant = contextModifier.addConstant("one")

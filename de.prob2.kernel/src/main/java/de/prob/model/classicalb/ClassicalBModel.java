@@ -43,12 +43,11 @@ public class ClassicalBModel extends AbstractModel {
 
 	ClassicalBModel(final StateSpaceProvider ssProvider, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
 			DependencyGraph graph,
-			PersistentHashMap<String, AbstractElement> components,
 			File modelFile,
 			BParser bparser,
 			RecursiveMachineLoader rml,
 			ClassicalBMachine mainMachine) {
-		super(ssProvider, children, graph, components, modelFile);
+		super(ssProvider, children, graph, modelFile);
 		this.bparser = bparser;
 		this.rml = rml;
 		this.mainMachine = mainMachine;
@@ -85,12 +84,7 @@ public class ClassicalBModel extends AbstractModel {
 			}
 		} while (!fpReached);
 
-
-		for (ClassicalBMachine classicalBMachine : machines) {
-			components = (PersistentHashMap<String, AbstractElement>) components.assoc(classicalBMachine.getName(), classicalBMachine);
-		}
-
-		return new ClassicalBModel(stateSpaceProvider, (PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>) children.assoc(Machine.class, machines) ,graph, components, modelFile, bparser, rml, mainMachine);
+		return new ClassicalBModel(stateSpaceProvider, (PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>) children.assoc(Machine.class, machines) ,graph, modelFile, bparser, rml, mainMachine);
 	}
 
 	public ClassicalBMachine getMainMachine() {
@@ -127,5 +121,10 @@ public class ClassicalBModel extends AbstractModel {
 			final Map<String, String> preferences) {
 		return stateSpaceProvider.loadFromCommand(this, mainComponent,
 				preferences, new LoadBProjectCommand(rml, modelFile));
+	}
+
+	@Override
+	public AbstractElement getComponent(String name) {
+		return getChildrenOfType(Machine.class).getElement(name);
 	}
 }
