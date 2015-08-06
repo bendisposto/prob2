@@ -10,17 +10,13 @@ class ContextModifier extends AbstractModifier {
 	private final axmctr
 	final Context context
 
-	def ContextModifier(Context context, List<Context> extended=[]) {
-		this(context, -1)
-	}
-
-	def ContextModifier(Context context, int axmctr) {
+	def ContextModifier(Context context) {
 		this.context = context
-		this.axmctr = axmctr
+		this.axmctr = extractCounter("axm", context.axioms)
 	}
 
 	def ContextModifier newCM(Context context) {
-		return new ContextModifier(context, axmctr)
+		return new ContextModifier(context)
 	}
 
 	def ContextModifier addExtends(List<Context> extendBlock) {
@@ -50,7 +46,7 @@ class ContextModifier extends AbstractModifier {
 
 	def ContextModifier set(String set) {
 		def bset = new Set(new EventB(set))
-		new ContextModifier(context.addTo(Set.class, bset),axmctr)
+		new ContextModifier(context.addTo(Set.class, bset))
 	}
 
 	def ContextModifier removeSet(String setName) {
@@ -123,7 +119,7 @@ class ContextModifier extends AbstractModifier {
 
 	def ContextModifier axiom(String pred, boolean theorem=false) {
 		int ctr = axmctr + 1
-		new ContextModifier(axiom("a$ctr", pred, theorem).getContext(),ctr)
+		axiom("axm$ctr", pred, theorem)
 	}
 
 	def ContextModifier axiom(String name, String predicate, boolean theorem=false) {

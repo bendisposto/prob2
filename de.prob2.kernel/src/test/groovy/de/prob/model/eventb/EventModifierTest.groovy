@@ -67,4 +67,28 @@ class EventModifierTest extends Specification {
 		then:
 		modifier.getEvent().parameters.isEmpty()
 	}
+
+	def "guard names are generated correctly"() {
+		when:
+		modifier = modifier.guard(grd4: "1 = 1")
+		modifier = modifier.guard("2 = 2")
+		modifier = modifier.guard(grd10: "3 = 3")
+		modifier = modifier.guard("4 = 4")
+		modifier = modifier.guard("5 = 5")
+
+		then:
+		modifier.getEvent().guards.collect { it.getName() } == ["grd4","grd5","grd10","grd11","grd12"]
+	}
+
+	def "action names are generated correctly"() {
+		when:
+		modifier = modifier.action(act4: "1 = 1")
+		modifier = modifier.action("2 = 2")
+		modifier = modifier.action(act10: "3 = 3")
+		modifier = modifier.action("4 = 4")
+		modifier = modifier.action("5 = 5")
+
+		then:
+		modifier.getEvent().actions.collect { it.getName() } == ["act4","act5","act10","act11","act12"]
+	}
 }

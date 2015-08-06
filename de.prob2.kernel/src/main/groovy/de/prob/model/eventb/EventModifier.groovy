@@ -13,19 +13,15 @@ class EventModifier extends AbstractModifier {
 	def Event event
 	boolean initialisation
 
-	def EventModifier(Event event, boolean initialisation=false) {
-		this(event,initialisation,-1,-1)
-	}
-
-	private EventModifier(Event event, boolean initialisation, int actctr, int grdctr) {
+	private EventModifier(Event event, boolean initialisation=false) {
 		this.initialisation = initialisation
-		this.actctr = actctr
+		this.actctr = extractCounter("act",event.actions)
 		this.event = event
-		this.grdctr = grdctr
+		this.grdctr = extractCounter("grd",event.guards)
 	}
 
 	private EventModifier newEM(Event event) {
-		return new EventModifier(event, initialisation, actctr, grdctr)
+		return new EventModifier(event, initialisation)
 	}
 
 	def EventModifier when(Map g) {
@@ -70,8 +66,7 @@ class EventModifier extends AbstractModifier {
 
 	def EventModifier guard(String pred, boolean theorem=false) {
 		def ctr = grdctr + 1
-		def em = guard("g$ctr", pred, theorem)
-		new EventModifier(em.event,em.initialisation,em.actctr,ctr)
+		guard("grd$ctr", pred, theorem)
 	}
 
 	def EventModifier guard(LinkedHashMap properties, boolean theorem=false) {
@@ -132,8 +127,7 @@ class EventModifier extends AbstractModifier {
 
 	def EventModifier action(String actionString) {
 		int ctr = actctr + 1
-		def em = action("ac$ctr", actionString)
-		new EventModifier(em.event, em.initialisation, ctr, em.grdctr)
+		action("act$ctr", actionString)
 	}
 
 	def EventModifier action(String name, String action) {

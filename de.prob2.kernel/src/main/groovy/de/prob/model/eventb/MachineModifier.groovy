@@ -38,16 +38,12 @@ class MachineModifier extends AbstractModifier {
 	EventBModel model
 
 	def MachineModifier(EventBMachine machine) {
-		this(machine, -1)
-	}
-
-	private MachineModifier(EventBMachine machine, int invctr) {
 		this.machine = machine
-		this.invctr = invctr
+		this.invctr = extractCounter("inv", machine.invariants)
 	}
 
 	private newMM(EventBMachine machine) {
-		new MachineModifier(machine, invctr)
+		new MachineModifier(machine)
 	}
 
 	def MachineModifier addSees(List<Context> seenContexts) {
@@ -161,7 +157,7 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier invariant(String pred, boolean theorem=false) {
 		int ctr = invctr + 1
-		new MachineModifier(invariant("i$ctr", pred, theorem).getMachine(),ctr)
+		invariant("inv$ctr", pred, theorem)
 	}
 
 	def MachineModifier invariant(String name, String predicate, boolean theorem=false) {

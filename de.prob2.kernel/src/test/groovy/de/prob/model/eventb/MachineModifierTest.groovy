@@ -107,7 +107,7 @@ class MachineModifierTest extends Specification {
 		modifier = modifier.event(name: "event1") {
 			action "x := 2"
 		}
-		modifier = modifier.duplicateEvent(modifier.getMachine().events.event1, "event2")
+		modifier = modifier.duplicateEvent("event1", "event2")
 
 		then:
 		def event1 = modifier.getMachine().events.event1
@@ -115,5 +115,17 @@ class MachineModifierTest extends Specification {
 		event1.getName() == "event1"
 		event2.getName() == "event2"
 		event1.getActions() == event2.getActions()
+	}
+
+	def "invariant names are generated correctly"() {
+		when:
+		modifier = modifier.invariant(inv4: "1 = 1")
+		modifier = modifier.invariant("2 = 2")
+		modifier = modifier.invariant(inv10: "3 = 3")
+		modifier = modifier.invariant("4 = 4")
+		modifier = modifier.invariant("5 = 5")
+
+		then:
+		modifier.getMachine().invariants.collect { it.getName() } == ["inv4","inv5","inv10","inv11","inv12"]
 	}
 }

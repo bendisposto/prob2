@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 
+
 class AbstractModifier {
 
 	protected Map validateProperties(Map properties, Map required) {
@@ -18,6 +19,20 @@ class AbstractModifier {
 
 	protected getDefinition(Map definition) {
 		new Definition(definition)
+	}
+
+	def static int extractCounter(String prefix, List elements) {
+		int counter = -1
+		elements.each { e ->
+			if (e.getName() ==~ "$prefix[0-9]+") {
+				def str = e.getName().replace(prefix, "")
+				int cnt = str as Integer
+				if (cnt > counter) {
+					counter = cnt
+				}
+			}
+		}
+		counter
 	}
 
 	protected AbstractModifier runClosure(Closure runClosure) {

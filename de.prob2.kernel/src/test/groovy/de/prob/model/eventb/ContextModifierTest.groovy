@@ -95,4 +95,16 @@ class ContextModifierTest extends Specification {
 		modifier.getContext().constants.size() == 0
 	}
 
+	def "names for axiom generation are correct"() {
+		when:
+		modifier = modifier.axiom(axm4: "1 = 1")
+		modifier = modifier.axiom("2 = 2")
+		modifier = modifier.axiom(axm10: "3 = 3")
+		modifier = modifier.axiom("4 = 4")
+		modifier = modifier.axiom("5 = 5")
+
+		then:
+		modifier.getContext().axioms.collect { it.getName() } == ["axm4", "axm5", "axm10", "axm11", "axm12"]
+	}
+
 }
