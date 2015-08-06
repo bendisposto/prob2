@@ -2,8 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 import de.prob.model.eventb.translate.*
 
-mm = new ModelModifier()
-mm.make {
+mm = new ModelModifier().make {
 	
 	machine(name: "bowl1") {
 		var_block name: "size",
@@ -56,7 +55,7 @@ mm.make {
 	}
 }
 
-m = mm.getModifiedModel()
+m = mm.getModel()
 s = m.load(m.bowl2)
 t = s as Trace
 

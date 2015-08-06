@@ -1,47 +1,37 @@
 package de.prob.model.eventb.theory;
 
+import com.github.krukow.clj_lang.PersistentHashMap;
+
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
-import de.prob.model.representation.Variable;
 
 public class ProofRulesBlock extends AbstractElement {
 
 	private final String name;
-	private ModelElementList<RewriteRule> rewriteRules = new ModelElementList<RewriteRule>();
-	private ModelElementList<MetaVariable> metaVariables = new ModelElementList<MetaVariable>();
-	private ModelElementList<InferenceRule> inferenceRules = new ModelElementList<InferenceRule>();
 
 	public ProofRulesBlock(final String name) {
 		this.name = name;
 	}
 
-	public void addRewriteRules(final ModelElementList<RewriteRule> rewriteRules) {
-		put(RewriteRule.class, rewriteRules);
-		this.rewriteRules = rewriteRules;
+	public ProofRulesBlock(final String name, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
+		super(children);
+		this.name = name;
 	}
 
-	public void addMetaVariables(
-			final ModelElementList<MetaVariable> metaVariables) {
-		put(Variable.class, metaVariables);
-		this.metaVariables = metaVariables;
-	}
-
-	public void addInferenceRules(
-			final ModelElementList<InferenceRule> inferenceRules) {
-		put(InferenceRule.class, inferenceRules);
-		this.inferenceRules = inferenceRules;
+	public ProofRulesBlock set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+		return new ProofRulesBlock(name, assoc(clazz, elements));
 	}
 
 	public ModelElementList<RewriteRule> getRewriteRules() {
-		return rewriteRules;
+		return getChildrenOfType(RewriteRule.class);
 	}
 
 	public ModelElementList<InferenceRule> getInferenceRules() {
-		return inferenceRules;
+		return getChildrenOfType(InferenceRule.class);
 	}
 
 	public ModelElementList<MetaVariable> getMetaVariables() {
-		return metaVariables;
+		return getChildrenOfType(MetaVariable.class);
 	}
 
 	public String getName() {

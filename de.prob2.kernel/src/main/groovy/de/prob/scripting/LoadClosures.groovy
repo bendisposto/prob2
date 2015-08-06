@@ -10,7 +10,7 @@ class LoadClosures {
 	def static Closure<Object> EVENTB =  {StateSpace s ->
 		def vars = new HashSet<String>()
 		def mt = new EventBModelTranslator(s.getModel(), s.getMainComponent())
-		mt.extractMachineHierarchy(s.getModel()).reverse().each {
+		mt.extractMachineHierarchy(s.getMainComponent(), s.getModel()).reverse().each {
 			it.getVariables().each {
 				if (!vars.contains(it.getName())) {
 					it.subscribe(s)
@@ -19,7 +19,7 @@ class LoadClosures {
 			}
 		}
 		def cs = new HashSet<String>()
-		mt.extractContextHierarchy(s.getModel()).reverse().each {
+		mt.extractContextHierarchy(s.getMainComponent(), s.getModel()).reverse().each {
 			it.getConstants().each {
 				if (!cs.contains(it.getName())) {
 					it.subscribe(s)

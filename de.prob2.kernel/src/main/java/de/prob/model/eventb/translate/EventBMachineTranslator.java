@@ -111,7 +111,7 @@ public class EventBMachineTranslator {
 		List<PPredicate> invs = new ArrayList<PPredicate>();
 		List<PPredicate> thms = new ArrayList<PPredicate>();
 
-		List<EventBInvariant> allInvs = machine.getAllInvariants();
+		List<EventBInvariant> allInvs = machine.getInvariants();
 		for (EventBInvariant ebInv : allInvs) {
 			PPredicate ppred = (PPredicate) ((EventB) ebInv.getPredicate())
 					.getAst();

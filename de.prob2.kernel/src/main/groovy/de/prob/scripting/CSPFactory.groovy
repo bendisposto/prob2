@@ -19,7 +19,7 @@ class CSPFactory implements ModelFactory<CSPModel> {
 	public ExtractedModel<CSPModel> extract(final String modelPath) throws IOException, ModelTranslationError {
 		CSPModel cspModel = modelCreator.get()
 		File f = new File(modelPath)
-		cspModel.init(f.getText(),f)
+		cspModel = cspModel.create(f.getText(),f)
 		return new ExtractedModel<CSPModel>(cspModel, cspModel.getComponent(f.getName()));
 	}
 }

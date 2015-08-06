@@ -1,34 +1,26 @@
 package de.prob.model.eventb.theory;
 
+import com.github.krukow.clj_lang.PersistentHashMap;
+
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.Axiom;
 import de.prob.model.representation.ModelElementList;
 
 public class AxiomaticDefinitionBlock extends AbstractElement {
 
 	private final String name;
-	private ModelElementList<Type> typeParameters;
-	private ModelElementList<Operator> operators;
-	private ModelElementList<EventBAxiom> axioms;
 
 	public AxiomaticDefinitionBlock(final String name) {
 		this.name = name;
 	}
 
-	public void addTypeParameters(final ModelElementList<Type> typeParameters) {
-		put(Type.class, typeParameters);
-		this.typeParameters = typeParameters;
+	private AxiomaticDefinitionBlock(final String name, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
+		super(children);
+		this.name = name;
 	}
 
-	public void addOperators(final ModelElementList<Operator> operators) {
-		put(Operator.class, operators);
-		this.operators = operators;
-	}
-
-	public void addDefinitionAxioms(final ModelElementList<EventBAxiom> axioms) {
-		put(Axiom.class, axioms);
-		this.axioms = axioms;
+	public AxiomaticDefinitionBlock set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+		return new AxiomaticDefinitionBlock(name, assoc(clazz, elements));
 	}
 
 	public String getName() {
@@ -36,15 +28,15 @@ public class AxiomaticDefinitionBlock extends AbstractElement {
 	}
 
 	public ModelElementList<Type> getTypeParameters() {
-		return typeParameters;
+		return getChildrenOfType(Type.class);
 	}
 
 	public ModelElementList<Operator> getOperators() {
-		return operators;
+		return getChildrenOfType(Operator.class);
 	}
 
 	public ModelElementList<EventBAxiom> getAxioms() {
-		return axioms;
+		return getChildrenOfType(EventBAxiom.class);
 	}
 
 }

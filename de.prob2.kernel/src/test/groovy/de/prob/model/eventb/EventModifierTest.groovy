@@ -1,8 +1,8 @@
 package de.prob.model.eventb
 
 import spock.lang.Specification
+import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event.EventType
-import de.prob.model.representation.ModelElementList
 
 class EventModifierTest extends Specification {
 
@@ -10,100 +10,85 @@ class EventModifierTest extends Specification {
 	def EventModifier modifier
 
 	def setup() {
-		event = new Event(null, "myEvent", EventType.ORDINARY, false)
-		event.addRefines(new ModelElementList<Event>())
-		event.addActions(new ModelElementList<EventBAction>())
-		event.addGuards(new ModelElementList<EventBGuard>())
-		event.addWitness(new ModelElementList<Witness>())
-		event.addParameters(new ModelElementList<EventParameter>())
+		event = new Event("myEvent", EventType.ORDINARY, false)
 		modifier = new EventModifier(event)
 	}
 
 	def "it is possible to add a guard"() {
 		when:
-		def guard = modifier.addGuard("x : NAT")
+		def modifier = modifier.guard("x : NAT")
 
 		then:
-		event.guards.contains(guard)
+		modifier.getEvent().guards[0].getPredicate().toUnicode() == new EventB("x : NAT").toUnicode()
 	}
 
 	def "it is possible to remove a guard once added"() {
 		when:
-		def guard = modifier.addGuard("x : NAT")
-		def removed = modifier.removeGuard(guard)
+		def modifier = modifier.guard("x : NAT")
+		def grd = modifier.getEvent().guards[0]
+		modifier = modifier.removeGuard(grd)
 
 		then:
-		removed == true
-	}
-
-	def "it is possible to remove a guard after performing a deep copy"() {
-		when:
-		def guard = modifier.addGuard("x : NAT")
-		def event2 = ModelModifier.deepCopy(null, event)
-		def contained = event2.guards.contains(guard)
-		def mod2 = new EventModifier(event2)
-		def removed = mod2.removeGuard(guard)
-
-		then:
-		contained == true && removed == true && !event2.guards.contains(guard)
+		modifier.getEvent().guards.isEmpty()
 	}
 
 	def "it is possible to add an action"() {
 		when:
-		def action = modifier.addAction("x := 3")
+		def modifier = modifier.action("x := 3")
 
 		then:
-		event.actions.contains(action)
+		modifier.getEvent().actions[0].getCode().toUnicode() == new EventB("x := 3").toUnicode()
 	}
 
 	def "it is possible to remove an action once added"() {
 		when:
-		def action = modifier.addAction("x := 3")
-		def removed = modifier.removeAction(action)
+		def modifier = modifier.action("x := 3")
+		def action = modifier.getEvent().actions[0]
+		modifier = modifier.removeAction(action)
 
 		then:
-		removed == true
+		modifier.getEvent().actions.isEmpty()
 	}
 
-	def "it is possible to remove an action after performing a deep copy"() {
+	def "it is possible to add a parameter"() {
 		when:
-		def action = modifier.addAction("x := 3")
-		def event2 = ModelModifier.deepCopy(null, event)
-		def contained = event2.actions.contains(action)
-		def mod2 = new EventModifier(event2)
-		def removed = mod2.removeAction(action)
+		def modifier = modifier.parameter("x")
 
 		then:
-		contained == true && removed == true && !event2.actions.contains(action)
-	}
-
-	def "it is possible to add a parameter and its typing guard"() {
-		when:
-		def paramBlock = modifier.addParameter("x", "x : {1,2,3}")
-
-		then:
-		event.parameters.contains(paramBlock.parameter) && event.guards.contains(paramBlock.typingGuard)
+		modifier.getEvent().parameters[0].name == "x"
 	}
 
 	def "it is possible to remove a parameter block once added"() {
 		when:
-		def paramBlock = modifier.addParameter("x", "x : {1,2,3}")
-		def removed = modifier.removeParameter(paramBlock)
+		def modifier = modifier.parameter("x")
+		def p = modifier.getEvent().parameters[0]
+		modifier = modifier.removeParameter(p)
 
 		then:
-		removed == true
+		modifier.getEvent().parameters.isEmpty()
 	}
 
-	def "it is possible to remove a parameter after performing a deep copy"() {
+	def "guard names are generated correctly"() {
 		when:
-		def paramBlock = modifier.addParameter("x", "x : {1,2,3}")
-		def event2 = ModelModifier.deepCopy(null, event)
-		def contained1 = event2.parameters.contains(paramBlock.parameter)
-		def contained2 = event2.guards.contains(paramBlock.typingGuard)
-		def mod2 = new EventModifier(event2)
-		def removed = mod2.removeParameter(paramBlock)
+		modifier = modifier.guard(grd4: "1 = 1")
+		modifier = modifier.guard("2 = 2")
+		modifier = modifier.guard(grd10: "3 = 3")
+		modifier = modifier.guard("4 = 4")
+		modifier = modifier.guard("5 = 5")
 
 		then:
-		removed && contained1 && contained2 && !event2.parameters.contains(paramBlock.parameter) && !event2.guards.contains(paramBlock.typingGuard)
+		modifier.getEvent().guards.collect { it.getName() } == ["grd4","grd5","grd10","grd11","grd12"]
+	}
+
+	def "action names are generated correctly"() {
+		when:
+		modifier = modifier.action(act4: "1 = 1")
+		modifier = modifier.action("2 = 2")
+		modifier = modifier.action(act10: "3 = 3")
+		modifier = modifier.action("4 = 4")
+		modifier = modifier.action("5 = 5")
+
+		then:
+		modifier.getEvent().actions.collect { it.getName() } == ["act4","act5","act10","act11","act12"]
 	}
 }

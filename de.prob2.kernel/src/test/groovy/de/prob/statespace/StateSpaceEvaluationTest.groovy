@@ -77,7 +77,7 @@ class StateSpaceEvaluationTest extends Specification {
 	def "csp formulas cannot be subscribed"() {
 		when:
 		CSPModel m = new CSPModel(null);
-		m.init("some content", new File("somedir"+File.separator+"someotherdir"+File.separator+"myfile.csp"))
+		m = m.create("some content", new File("somedir"+File.separator+"someotherdir"+File.separator+"myfile.csp"))
 		CSP csp = new CSP("some formula", m)
 		def subscriber1 = "subscriber1"
 		def success = s.subscribe(subscriber1, csp)
@@ -139,7 +139,7 @@ class StateSpaceEvaluationTest extends Specification {
 	def "multiple csp formulas cannot be subscribed"() {
 		when:
 		CSPModel m = new CSPModel(null);
-		m.init("some content", new File("somedir"+File.separator+"someotherdir"+File.separator+"myfile.csp"))
+		m = m.create("some content", new File("somedir"+File.separator+"someotherdir"+File.separator+"myfile.csp"))
 		CSP csp = new CSP("some formula", m)
 		CSP csp2 = new CSP("some formula2", m)
 		def subscriber1 = "subscriber1"

@@ -23,7 +23,6 @@ import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBConstant;
-import de.prob.model.representation.Axiom;
 import de.prob.model.representation.Set;
 import de.prob.util.Tuple2;
 
@@ -87,13 +86,12 @@ public class ContextTranslator {
 		List<PPredicate> axioms = new ArrayList<PPredicate>();
 		List<PPredicate> thms = new ArrayList<PPredicate>();
 
-		for (Axiom axiom : context.getAllAxioms()) {
-			EventBAxiom ebAx = (EventBAxiom) axiom;
-			PPredicate ppred = (PPredicate) ((EventB) ebAx.getPredicate())
+		for (EventBAxiom axiom : context.getAxioms()) {
+			PPredicate ppred = (PPredicate) ((EventB) axiom.getPredicate())
 					.getAst();
 			nodeInfos.put(ppred, new Tuple2<String, String>(context.getName(),
-					ebAx.getName()));
-			if (ebAx.isTheorem()) {
+					axiom.getName()));
+			if (axiom.isTheorem()) {
 				thms.add(ppred);
 			} else {
 				axioms.add(ppred);

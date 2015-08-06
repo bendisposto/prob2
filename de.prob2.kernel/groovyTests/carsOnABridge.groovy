@@ -5,6 +5,7 @@ import static de.prob.model.eventb.Event.EventType.CONVERGENT
 import static de.prob.model.eventb.Event.EventType.ANTICIPATED
 
 // You can change the model you are testing here.
+/*TODO
 mm = new ModelModifier()
 mm.make {
 	context(name: "cd") {
@@ -82,5 +83,5 @@ t = t.randomAnimation(10)
 //d = mtx.writeToRodin(m, "cars", "/tmp")
 //d.deleteDir()
 
-s.animator.cli.shutdown();
+s.animator.cli.shutdown();*/
 "testing convergent and anticipated events"
