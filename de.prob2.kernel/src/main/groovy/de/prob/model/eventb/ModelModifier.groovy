@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 import de.prob.Main
+import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Machine
 import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.scripting.EventBFactory
@@ -50,13 +51,16 @@ public class ModelModifier extends AbstractModifier {
 	}
 
 	def ModelModifier machine(HashMap properties, Closure definition) {
-		validateProperties(properties, [name: String])
+		def props = validateProperties(properties, [name: String, refines: [List,[]], sees: [List,[]], comment: [String,null]])
 		def model = this.model
-		def name = properties["name"]
+		def name = props["name"]
 		def oldmachine = model.getMachines().getElement(name)
-		def m = oldmachine ?: new EventBMachine(name)
+		EventBMachine m = oldmachine ?: new EventBMachine(name)
+		if (props["comment"]) {
+			m = m.addTo(ElementComment.class, new ElementComment(props["comment"]))
+		}
 
-		def refines = properties["refines"] ?: []
+		def refines = props["refines"]
 		def refined = refines.collect { ma ->
 			EventBMachine machine = model.getMachines().getElement(ma)
 			if (machine == null) {
@@ -66,7 +70,7 @@ public class ModelModifier extends AbstractModifier {
 			machine
 		}
 
-		def sees = properties["sees"] ?: []
+		def sees = props["sees"]
 		def seenContexts = sees.collect { c ->
 			Context context = model.getContexts().getElement(c)
 			if (context == null) {
@@ -85,31 +89,11 @@ public class ModelModifier extends AbstractModifier {
 		runClosure definition
 	}
 
-	//	/**
-	//	 * Finds the machine with the specified name and returns a {@link MachineModifier} object
-	//	 * to allow the modification of the machine elements.
-	//	 * @param machineName of the machine to be modified
-	//	 * @return a {@link MachineModifier} object to allow the modification of machine with name
-	//	 * 	machineName or <code>null</code>, if the specified machine does not exist
-	//	 */
-	//	def MachineModifier getMachine(String machineName) {
-	//		if (temp.getMachines().hasProperty(machineName)) {
-	//			def machine = temp.getMachines().getElement(machineName)
-	//			return new MachineModifier(machine, machine.getSees(), machine.getRefines())
-	//		}
-	//	}
-	//
-	//	/**
-	//	 * Finds the context with the specified name and returns a {@link ContextModifier} object
-	//	 * to allow the modification of the context elements.
-	//	 * @param contextName of the context to be modified
-	//	 * @return a {@link ContextModifier} object to allow the modification of context with name
-	//	 * 	contextName or <code>null</code>, if the specified context does not exist
-	//	 */
-	//	def ContextModifier getContext(String contextName) {
-	//		if (temp.getContexts().hasProperty(contextName)) {
-	//			def ctx = temp.getContexts().getElement(contextName)
-	//			return new ContextModifier(ctx, ctx.getExtends())
-	//		}
-	//	}
+	def ModelModifier replaceContext(EventBMachine oldContext, EventBMachine newContext) {
+		new ModelModifier(model.replaceIn(Context.class, oldContext, newContext))
+	}
+
+	def ModelModifier replaceMachine(EventBMachine oldMachine, EventBMachine newMachine) {
+		new ModelModifier(model.replaceIn(Machine.class, oldMachine, newMachine))
+	}
 }

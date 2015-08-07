@@ -11,4 +11,8 @@ public class IllegalModificationException extends RuntimeException {
 		super(
 				"The Model element that you are attempting to modify has been frozen and can therefore no longer be modified.");
 	}
+
+	public IllegalModificationException(final String message) {
+		super(message);
+	}
 }

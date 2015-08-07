@@ -1,14 +1,16 @@
 package de.prob.model.eventb
 
 import de.prob.model.eventb.Event.EventType
+<<<<<<< HEAD
+import de.prob.model.eventb.algorithm.AlgorithmTranslator
 import de.prob.model.eventb.algorithm.Block
+=======
 import de.prob.model.representation.BEvent
-import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
+>>>>>>> develop
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Variable
-
 
 /**
  * The {@link MachineModifier} provides an API to programmatically modify or
@@ -39,7 +41,6 @@ class MachineModifier extends AbstractModifier {
 	private final int invctr
 	EventBMachine machine
 	EventBModel model
-	private eventModifiers = [:]
 
 	def MachineModifier(EventBMachine machine) {
 		this.machine = machine
@@ -197,11 +198,6 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier variant(String expression) {
-		setVariant(expression)
-		return this
-	}
-
-	def Variant setVariant(String expression) {
 		def variant = new Variant(expression, Collections.emptySet())
 		newMM(machine.set(Variant.class, new ModelElementList([variant])))
 	}
@@ -228,12 +224,12 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
-		def props = validateProperties(properties, [name: String, refines: [String, null],
-			extended: [Boolean, false], comment: [String, null], type: [EventType, EventType.ORDINARY]])
+		validateProperties(properties, [name: String])
 
 		def refinedEvent = properties["refines"]
 		def refinedE  = []
 		if (refinedEvent) {
+			def props = validateProperties(properties, [refines: String])
 			refinedEvent = props["refines"]
 			machine.getRefines().each { EventBMachine m ->
 				def e = m.getEvent(refinedEvent)
@@ -242,22 +238,20 @@ class MachineModifier extends AbstractModifier {
 				}
 			}
 		}
+		def type = properties["type"] ?: EventType.ORDINARY
 
 		if (refinedEvent && refinedE.size() != 1) {
 			throw new IllegalArgumentException("Tried to refine event $refinedEvent, but found $refinedE events")
 		}
 
-		event(props["name"], refinedE, props["type"],props["extended"], cls, props["comment"])
+		event(properties["name"], refinedE, type, properties["extended"]  ?: false, cls)
 	}
 
-	def MachineModifier event(String name, List<Event> refinedEvents, EventType type, boolean extended, Closure cls={}, String comment=null) {
+	def MachineModifier event(String name, List<Event> refinedEvents, type, boolean extended, Closure cls={}) {
 		def mm = removePOsForEvent(name)
 		def oldevent = machine.getEvent(name)
 		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, properties["extended"] == true)
 		event = event.set(Event.class, new ModelElementList<Event>(refinedEvents))
-		if (comment) {
-			event = event.addTo(ElementComment.class, new ElementComment(comment))
-		}
 		def em = new EventModifier(event, "INITIALISATION" == name).make(cls)
 		def m = mm.getMachine()
 		if (oldevent) {
@@ -313,18 +307,14 @@ class MachineModifier extends AbstractModifier {
 		newMM(machine.set(ProofObligation.class, proofs))
 	}
 
-	def MachineModifier addComment(String comment) {
-		newMM(machine.addTo(ElementComment.class, new ElementComment(comment)))
-	}
-
-	def MachineModifier algorithm(Closure definition) {
-		newMM(machine.addTo(Block.class, new Block().make(definition)))
-	}
-
 	def MachineModifier make(Closure definition) {
 		runClosure definition
 	}
 
+	def MachineModifier algorithm(Closure definition) {
+		new AlgorithmTranslator(this).create(new Block().make(definition))
+		this
+	}
 
 
 }
