@@ -6,7 +6,6 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.check.ModelCheckingOptions.Options;
 import de.prob.exception.ProBError;
 import de.prob.statespace.StateSpace;
-import de.prob.web.views.ModelCheckingUI;
 
 /**
  * This {@link IModelCheckJob} performs consistency checking on a given
@@ -23,7 +22,7 @@ public class ConsistencyChecker implements IModelCheckJob {
 
 	private final StateSpace s;
 	private final String jobId;
-	private final ModelCheckingUI ui;
+	private final IModelCheckListener ui;
 	private final ModelCheckingJob job;
 	private final IEvalElement goal;
 	private final ModelCheckingOptions options;
@@ -73,7 +72,7 @@ public class ConsistencyChecker implements IModelCheckJob {
 	 */
 	public ConsistencyChecker(final StateSpace s,
 			final ModelCheckingOptions options, final IEvalElement goal,
-			final ModelCheckingUI ui) {
+			final IModelCheckListener ui) {
 		this.s = s;
 		this.options = options;
 		this.goal = goal;

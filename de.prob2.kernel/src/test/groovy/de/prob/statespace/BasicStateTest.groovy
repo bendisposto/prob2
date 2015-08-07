@@ -5,6 +5,7 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 import de.prob.Main
+import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.StateError
 import de.prob.model.representation.CSPModel
 import de.prob.scripting.ClassicalBFactory
@@ -20,7 +21,7 @@ class BasicStateTest extends Specification {
 	def setupSpec() {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
-		s = factory.load(path) as StateSpace
+		s = factory.extract(path).load([:])
 		root = s.getRoot()
 		firstState = root.$initialise_machine()
 		secondState = firstState.new("pp=PID1")
@@ -314,6 +315,8 @@ class BasicStateTest extends Specification {
 
 	def "explore changes all the values"() {
 		setup:
+		def f = new ClassicalB("1+2")
+		s.subscribe(root, [f])
 		root.transitions = []
 		root.values = [:]
 		root.initialised = true
@@ -325,6 +328,7 @@ class BasicStateTest extends Specification {
 		]
 		root.transitionsWithTimeout = new HashSet<String>(["blah"])
 		root.explored = false
+
 
 		when:
 		root.explore()
@@ -339,5 +343,8 @@ class BasicStateTest extends Specification {
 		root.stateErrors.isEmpty()
 		root.transitionsWithTimeout.isEmpty()
 		root.explored == true
+
+		cleanup:
+		s.unsubscribe(root, f)
 	}
 }

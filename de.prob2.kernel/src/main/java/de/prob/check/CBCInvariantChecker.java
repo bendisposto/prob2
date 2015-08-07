@@ -4,7 +4,6 @@ import java.util.List;
 
 import de.prob.animator.command.ConstraintBasedInvariantCheckCommand;
 import de.prob.statespace.StateSpace;
-import de.prob.web.views.ModelCheckingUI;
 
 /**
  * This {@link IModelCheckJob} performs constraint based invariant checking on a
@@ -20,7 +19,7 @@ public class CBCInvariantChecker implements IModelCheckJob {
 
 	private final ConstraintBasedInvariantCheckCommand command;
 	private final StateSpace s;
-	private final ModelCheckingUI ui;
+	private final IModelCheckListener ui;
 	private final String jobId;
 
 	/**
@@ -62,7 +61,7 @@ public class CBCInvariantChecker implements IModelCheckJob {
 	 *            changes, or null if not
 	 */
 	public CBCInvariantChecker(final StateSpace s,
-			final List<String> eventNames, final ModelCheckingUI ui) {
+			final List<String> eventNames, final IModelCheckListener ui) {
 		this.s = s;
 		this.ui = ui;
 		jobId = ModelChecker.generateJobId();

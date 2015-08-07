@@ -1,54 +1,44 @@
 package de.prob.model.representation;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Map;
 
+import com.github.krukow.clj_lang.PersistentHashMap;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
+import de.prob.animator.command.LoadCSPCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.prolog.output.PrologTermStringOutput;
+import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
 public class CSPModel extends AbstractModel {
 
 	private String content;
+	private CSPElement mainComponent;
 
 	@Inject
-	public CSPModel(final Provider<StateSpace> ssProvider) {
+	public CSPModel(final StateSpaceProvider ssProvider) {
 		super(ssProvider);
 	}
 
-	public void init(final String content, final File modelFile) {
+	public CSPModel(final StateSpaceProvider ssProvider, String content, File modelFile, CSPElement mainComponent) {
+		super(ssProvider,
+				PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap(),
+				new DependencyGraph(), modelFile);
 		this.content = content;
-		this.modelFile = modelFile;
-		extractModelDir(modelFile, "CSP_MODEL");
+		this.mainComponent = mainComponent;
+	}
+
+	public CSPModel create(final String content, final File modelFile) {
+		return new CSPModel(stateSpaceProvider, content, modelFile, new CSPElement(modelFile.getName()));
 	}
 
 	public String getContent() {
 		return content;
-	}
-
-	@Override
-	public AbstractElement getComponent(final String name) {
-		if (name.equals(modelFile.getName())) {
-			return getMainComponent();
-		}
-		return null;
-	}
-
-	@Override
-	public Map<String, AbstractElement> getComponents() {
-		return Collections.emptyMap();
-	}
-
-	@Override
-	public AbstractElement getMainComponent() {
-		return new CSPElement(modelFile.getName());
 	}
 
 	@Override
@@ -71,6 +61,21 @@ public class CSPModel extends AbstractModel {
 		} catch (EvaluationException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public StateSpace load(final AbstractElement mainComponent,
+			final Map<String, String> preferences) {
+		return stateSpaceProvider.loadFromCommand(this, mainComponent,
+				preferences, new LoadCSPCommand(modelFile.getAbsolutePath()));
+	}
+
+	@Override
+	public AbstractElement getComponent(String name) {
+		if (mainComponent != null && name != null && name.equals(mainComponent.getName())) {
+			return mainComponent;
+		}
+		return null;
 	}
 
 }

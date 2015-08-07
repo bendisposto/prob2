@@ -198,8 +198,7 @@ public class Transition {
 		}
 		evaluate();
 		List<String> predicates = new ArrayList<String>();
-		AbstractElement mainComponent = stateSpace.getModel()
-				.getMainComponent();
+		AbstractElement mainComponent = stateSpace.getMainComponent();
 		List<String> params = new ArrayList<String>();
 		if (mainComponent instanceof ClassicalBMachine) {
 			Operation op = ((ClassicalBMachine) mainComponent)

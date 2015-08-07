@@ -15,10 +15,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractElement;
 
 public class EventBDatabaseTranslator {
 
-	public EventBDatabaseTranslator(final EventBModel model,
+	private AbstractElement mainComponent;
+	private EventBModel model;
+
+	public EventBDatabaseTranslator(EventBModel model,
 			final String fileName) throws FileNotFoundException {
 		try {
 			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
@@ -26,12 +30,12 @@ public class EventBDatabaseTranslator {
 
 			File modelFile = new File(fileName);
 			String fullFileName = modelFile.getAbsolutePath();
-			model.setModelFile(modelFile);
+			this.model = model.setModelFile(modelFile);
 
 			String directory = fullFileName.substring(0,
 					fullFileName.lastIndexOf(File.separatorChar));
 			String workspacePath = directory.substring(0,
-					fullFileName.lastIndexOf(File.separatorChar));
+					directory.lastIndexOf(File.separatorChar));
 
 			File theoryFile = new File(directory + File.separator
 					+ "TheoryPath.tcl");
@@ -43,20 +47,22 @@ public class EventBDatabaseTranslator {
 						workspacePath);
 				saxParser.parse(theoryFile, theoryHandler);
 				typeEnv = theoryHandler.getTypeEnv();
+				this.model = theoryHandler.getModel();
 			}
 
 			DefaultHandler xmlHandler = null;
+			mainComponent = null;
 			if (fileName.endsWith(".bcc")) {
-				xmlHandler = new ContextXmlHandler(model, fullFileName, true,
-						typeEnv);
+				xmlHandler = new ContextXmlHandler(this.model, fullFileName, typeEnv);
+				saxParser.parse(modelFile, xmlHandler);
+				mainComponent = ((ContextXmlHandler) xmlHandler).getContext();
+				this.model = ((ContextXmlHandler) xmlHandler).getModel();
 			} else {
-				xmlHandler = new MachineXmlHandler(model, fullFileName, true,
-						typeEnv);
+				xmlHandler = new MachineXmlHandler(this.model, fullFileName, typeEnv);
+				saxParser.parse(modelFile, xmlHandler);
+				mainComponent = ((MachineXmlHandler) xmlHandler).getMachine();
+				this.model = ((MachineXmlHandler) xmlHandler).getModel();
 			}
-
-			saxParser.parse(modelFile, xmlHandler);
-
-			model.isFinished();
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,5 +74,13 @@ public class EventBDatabaseTranslator {
 				throw (FileNotFoundException) e;
 			}
 		}
+	}
+
+	public AbstractElement getMainComponent() {
+		return mainComponent;
+	}
+
+	public EventBModel getModel() {
+		return model;
 	}
 }

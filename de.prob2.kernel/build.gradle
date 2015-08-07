@@ -8,7 +8,7 @@ project.group = 'de.prob2'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
-project.version = '2.0.0-milestone-28-SNAPSHOT'
+project.version = '2.0.0-milestone-29-SNAPSHOT'
 
 repositories {
 	maven {
@@ -30,46 +30,22 @@ def parser_version = '2.4.37'
 
 dependencies {
 
- 	//groovy 'org.codehaus.groovy:groovy-all:2.0.5'
-
 	compile 'com.google.guava:guava:18.0'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
-//	compile 'commons-io:commons-io:2.4' // Apache Licence 2.0
 
 	// Used for escaping HTML and Unicode symbols within Java strings
 	compile 'commons-lang:commons-lang:2.6'
 
 	compile 'org.codehaus.groovy:groovy-all:2.3.0' // Apache Licence 2.0
-	//	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
-	//	compile 'jline:jline:0.9.94' // BSD
-
-	// dependency for Worksheets
-	compile 'org.pegdown:pegdown:1.1.0' // Apache Licence 2.0    Used for Worksheet
 
 	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
-	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
 	compile 'org.slf4j:slf4j-api:1.6.1' // MIT
 	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
 	compile 'ch.qos.logback:logback-classic:0.9.29' // EPL
 
-    compile(group: 'org.eventb', name: 'org.eventb.core.ast', version: '3.0.0')
-
-//	compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' // Rodin
-
-//	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
-	// If you consider to update or downgrade jetty ... just don't
-	// it'll make you puke
-	compile 'org.eclipse.jetty:jetty-io:8.1.8.v20121106' // EPL
-	compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106' // EPL
-	compile 'org.eclipse.jetty:jetty-servlet:8.1.8.v20121106' // EPL
-	compile 'org.eclipse.jetty:jetty-util:8.1.8.v20121106' // EPL
-	compile 'org.eclipse.jetty:jetty-webapp:8.1.8.v20121106' // EPL
-
-	// Dependencies for LtlPatterns
-	compile 'org.antlr:antlr4-runtime:4.0'
-	compile 'de.prob:ltl-dsl:1.0.0'
+  compile(group: 'org.eventb', name: 'org.eventb.core.ast', version: '3.0.0')
 
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "bparser", version: parser_version , changing: true
@@ -92,13 +68,11 @@ dependencies {
 
 	compile 'junit:junit:4.8.2'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
-	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
 
 	compile 'com.github.krukow:clj-ds:0.0.4'
 
 	testCompile 'org.mockito:mockito-core:1.8.5'
 	testCompile "org.gebish:geb-spock:0.9.1"
-	testCompile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.26.0'
 
 }
 
@@ -197,17 +171,13 @@ def os_extension() {
 }
 
 // run integration tests after downloading fresh CLI from Nightly Build
-task integrationtests(dependsOn: ['classes', 'downloadCli'], type:JavaExec){
-	main = 'de.prob.Main'
-	classpath = sourceSets.main.runtimeClasspath
-	args = ['-test', 'groovyTests']
-}
+task integrationtests(dependsOn: ['downloadCli','tests']);
 
 // run integration tests WITHOUT downloading fresh CLI from Nightly Build
 task tests(dependsOn: ['classes'], type:JavaExec){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
-	args = ['-test', 'groovyTests']
+	args = ['-script', 'groovyTests']
 }
 
 eclipse {

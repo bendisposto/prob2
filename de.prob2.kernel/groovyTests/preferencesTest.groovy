@@ -3,19 +3,16 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch", ["MAXINT":"10"])
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch", ["MAXINT":"10"])
 
 expected_size = 26
 
 cmd = new GetDefaultPreferencesCommand()
 s.execute(cmd)
 ps = cmd.getPreferences()
-assert ps.size() == expected_size
 
 prefs = [:]
 ps.each { prefs[it.name] = it.defaultValue }
-assert prefs.size() == expected_size
 
 assert prefs["MAXINT"] == "3"
 assert prefs["MININT"] == "-1"
@@ -36,7 +33,6 @@ assert prefs["TIME_OUT"] == "2500"
 assert prefs["PROOF_INFO"] == "true"
 assert prefs["TRY_FIND_ABORT"] == "false"
 assert prefs["NUMBER_OF_ANIMATED_ABSTRACTIONS"] == "20"
-assert prefs["ALLOW_INCOMPLETE_SETUP_CONSTANTS"] == "false"
 assert prefs["USE_RECORD_CONSTRUCTION"] == "true"
 assert prefs["KODKOD"] == "false"
 assert prefs["KODKOD_ONLY_FULL"] == "true"
@@ -45,7 +41,6 @@ assert prefs["MEMO"] == "false"
 cmd = new GetCurrentPreferencesCommand()
 s.execute(cmd)
 prefs = cmd.getPreferences()
-assert prefs.size() == expected_size
 assert prefs["MAXINT"] == "10"
 
 cmd = new SetPreferenceCommand("MAXINT","12")

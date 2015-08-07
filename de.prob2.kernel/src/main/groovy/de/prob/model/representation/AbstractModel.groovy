@@ -1,48 +1,36 @@
 package de.prob.model.representation;
 
-import com.google.inject.Inject
-import com.google.inject.Provider
+import com.github.krukow.clj_lang.PersistentHashMap
 
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.DependencyGraph.ERefType
+import de.prob.scripting.StateSpaceProvider
 import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
-import de.prob.statespace.Trace
 
 public abstract class AbstractModel extends AbstractElement {
 
-	private StateSpace stateSpace = null;
-	private final Provider<StateSpace> stateSpaceProvider;
-	protected boolean dirty = false;
+	protected final StateSpaceProvider stateSpaceProvider;
 	protected File modelFile;
-	protected String modelDirPath;
-	protected DependencyGraph graph = new DependencyGraph();
-	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
-	def static Closure subscribe = null
+	protected final DependencyGraph graph
 
-	@Inject
-	def AbstractModel(Provider<StateSpace> stateSpaceProvider) {
+	def AbstractModel(StateSpaceProvider stateSpaceProvider,
+	PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
+	DependencyGraph graph,
+	File modelFile) {
+		super(children)
 		this.stateSpaceProvider = stateSpaceProvider
+		this.graph = graph
+		this.modelFile = modelFile
 	}
 
-	/**
-	 * @return StateSpace object associated with this AbstractModel instance
-	 */
-	public StateSpace getStateSpace() {
-		if (stateSpace == null) {
-			stateSpace = stateSpaceProvider.get();
-			stateSpace.setModel(this);
-		}
-		return stateSpace;
+	def AbstractModel(StateSpaceProvider stateSpaceProvider) {
+		this.stateSpaceProvider = stateSpaceProvider
+		this.graph = new DependencyGraph()
+		this.modelFile = null
 	}
 
-	public AbstractElement getComponent(final String name) {
-		return components.get(name);
-	}
-
-	public Map<String, AbstractElement> getComponents() {
-		return components;
-	}
+	public abstract AbstractElement getComponent(final String name);
 
 	public DependencyGraph getGraph() {
 		return graph;
@@ -66,55 +54,22 @@ public abstract class AbstractModel extends AbstractElement {
 		return graph.toString();
 	}
 
-	public Object asType(final Class<?> className) {
-		if (className.getSimpleName().equals("StateSpace")) {
-			return getStateSpace();
-		}
-		if (className.getSimpleName().equals("Trace")) {
-			return new Trace(getStateSpace());
-		}
-		throw new ClassCastException("No element of type " + className
-		+ " found.");
-	}
-
-	public abstract AbstractElement getMainComponent();
-
 	public abstract IEvalElement parseFormula(String formula);
-	
+
 	public abstract boolean checkSyntax(String formula);
 
 	public abstract FormalismType getFormalismType();
-
-	protected void extractModelDir(File modelFile, String dirName) {
-		if (modelFile == null) {
-			return;
-		}
-		modelDirPath = modelFile.absolutePath.substring(0, modelFile.absolutePath.lastIndexOf(File.separator)+1) + dirName + File.separator
-		new File(modelDirPath).mkdir()
-	}
 
 	public File getModelFile() {
 		return modelFile;
 	}
 
-	public String getModelDirPath() {
-		return modelDirPath;
-	}
-
 	def getProperty(final String name) {
-		return components.get(name)
+		return getComponent(name)
 	}
 
 	def getAt(final String name) {
-		return components.get(name)
-	}
-
-	def setDirty() {
-		dirty = true
-	}
-
-	def isDirty() {
-		return dirty
+		return getComponent(name)
 	}
 
 	def AbstractElement get(List<String> path) {
@@ -124,7 +79,9 @@ public abstract class AbstractModel extends AbstractElement {
 		return Eval.x(this,"x.${path.join(".")}");
 	}
 
-	def Closure getClosure() {
-		return AbstractModel.subscribe
+	public StateSpace load(AbstractElement mainComponent) {
+		load(mainComponent, [:])
 	}
+
+	public abstract StateSpace load(AbstractElement mainComponent, Map<String,String> preferences);
 }

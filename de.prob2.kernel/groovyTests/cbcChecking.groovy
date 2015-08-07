@@ -2,8 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 import de.prob.check.*
 
-m = api.eventb_load(dir + File.separator + "machines" + File.separator + "InvalidModel" + File.separator +"createErrors.bcm")
-s = m as StateSpace
+s = api.eventb_load(dir + File.separator + "machines" + File.separator + "InvalidModel" + File.separator +"createErrors.bcm")
 
 model_check = { job ->
 	checker = new ModelChecker(job)
@@ -36,8 +35,7 @@ assert res.message == "No Invariant violation was found"
 
 s.animator.cli.shutdown();
 
-m = api.eventb_load(dir + File.separator + "Time" + File.separator +"clock.bcm")
-s = m as StateSpace
+s = api.eventb_load(dir + File.separator + "Time" + File.separator +"clock.bcm")
 
 res = model_check(new CBCInvariantChecker(s))
 assert res instanceof CBCInvariantViolationFound

@@ -2,8 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
-s = m as StateSpace
+s = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
 t = new Trace(s)
 t = t.$setup_constants()
 t = t.$initialise_machine()

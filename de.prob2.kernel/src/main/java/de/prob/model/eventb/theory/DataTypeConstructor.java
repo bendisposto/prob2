@@ -4,6 +4,8 @@ import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
+import com.github.krukow.clj_lang.PersistentHashMap;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
@@ -12,17 +14,21 @@ public class DataTypeConstructor extends AbstractElement {
 
 	private final String identifierString;
 	private final EventB identifier;
-	private ModelElementList<DataTypeDestructor> destructors = new ModelElementList<DataTypeDestructor>();
 
 	public DataTypeConstructor(final String identifier) {
 		identifierString = identifier;
 		this.identifier = new EventB(identifier);
 	}
 
-	public void addDestructors(
+	private DataTypeConstructor(final String identifier, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
+		super(children);
+		identifierString = identifier;
+		this.identifier = new EventB(identifier);
+	}
+
+	public DataTypeConstructor addDestructors(
 			final ModelElementList<DataTypeDestructor> destructors) {
-		put(DataTypeDestructor.class, destructors);
-		this.destructors = destructors;
+		return new DataTypeConstructor(identifierString, assoc(DataTypeDestructor.class, destructors));
 	}
 
 	public EventB getIdentifier() {
@@ -30,7 +36,7 @@ public class DataTypeConstructor extends AbstractElement {
 	}
 
 	public ModelElementList<DataTypeDestructor> getDestructors() {
-		return destructors;
+		return getChildrenOfType(DataTypeDestructor.class);
 	}
 
 	@Override
@@ -62,7 +68,7 @@ public class DataTypeConstructor extends AbstractElement {
 	}
 
 	public void parseElements(final Set<IFormulaExtension> typeEnv) {
-		for (DataTypeDestructor dest : destructors) {
+		for (DataTypeDestructor dest : getDestructors()) {
 			dest.parseElements(typeEnv);
 		}
 	}

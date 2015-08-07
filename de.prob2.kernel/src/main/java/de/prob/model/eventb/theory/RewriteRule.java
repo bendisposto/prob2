@@ -15,23 +15,29 @@ public class RewriteRule extends AbstractElement {
 	private final String applicability;
 	private final boolean complete;
 	private final String desc;
-	private ModelElementList<RewriteRuleRHS> rightHandSideRules = new ModelElementList<RewriteRuleRHS>();
+	private final ModelElementList<RewriteRuleRHS> rightHandSideRules;
 	private final EventB formula;
 
 	public RewriteRule(final String name, final String applicability,
 			final boolean complete, final String desc, final String formula,
 			final Set<IFormulaExtension> typeEnv) {
+		this(name, applicability, complete, desc, new EventB(formula, typeEnv), new ModelElementList<RewriteRuleRHS>());
+	}
+
+	public RewriteRule(final String name, final String applicability,
+			final boolean complete, final String desc, final EventB formula,
+			ModelElementList<RewriteRuleRHS> rightHandSideRules) {
 		this.name = name;
 		this.applicability = applicability;
 		this.complete = complete;
 		this.desc = desc;
-		this.formula = new EventB(formula, typeEnv);
+		this.formula = formula;
+		this.rightHandSideRules = rightHandSideRules;
 	}
 
-	public void addRightHandSide(
+	public RewriteRule addRightHandSide(
 			final ModelElementList<RewriteRuleRHS> rightHandSides) {
-		put(RewriteRuleRHS.class, rightHandSides);
-		rightHandSideRules = rightHandSides;
+		return new RewriteRule(name, applicability, complete, desc, formula, rightHandSides);
 	}
 
 	public ModelElementList<RewriteRuleRHS> getRightHandSideRules() {

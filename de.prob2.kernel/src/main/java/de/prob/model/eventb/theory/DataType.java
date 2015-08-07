@@ -7,6 +7,8 @@ import org.eventb.core.ast.datatype.IDatatype;
 import org.eventb.core.ast.datatype.IDatatypeBuilder;
 import org.eventb.core.ast.extension.IFormulaExtension;
 
+import com.github.krukow.clj_lang.PersistentHashMap;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
@@ -15,23 +17,20 @@ public class DataType extends AbstractElement {
 
 	final String identifierString;
 	private final EventB identifier;
-	private ModelElementList<Type> typeArguments = new ModelElementList<Type>();
-	private ModelElementList<DataTypeConstructor> dataTypeConstructors = new ModelElementList<DataTypeConstructor>();
 
 	public DataType(final String identifier) {
 		identifierString = identifier;
 		this.identifier = new EventB(identifier);
 	}
 
-	public void addTypeArguments(final ModelElementList<Type> arguments) {
-		put(Type.class, arguments);
-		typeArguments = arguments;
+	private DataType(final String identifier, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
+		super(children);
+		identifierString = identifier;
+		this.identifier = new EventB(identifier);
 	}
 
-	public void addConstructors(
-			final ModelElementList<DataTypeConstructor> constructors) {
-		put(DataTypeConstructor.class, constructors);
-		dataTypeConstructors = constructors;
+	public DataType set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+		return new DataType(identifierString, assoc(clazz, elements));
 	}
 
 	public EventB getTypeIdentifier() {
@@ -39,11 +38,11 @@ public class DataType extends AbstractElement {
 	}
 
 	public ModelElementList<DataTypeConstructor> getDataTypeConstructors() {
-		return dataTypeConstructors;
+		return getChildrenOfType(DataTypeConstructor.class);
 	}
 
 	public ModelElementList<Type> getTypeArguments() {
-		return typeArguments;
+		return getChildrenOfType(Type.class);
 	}
 
 	@Override
@@ -68,14 +67,14 @@ public class DataType extends AbstractElement {
 	}
 
 	public void parseElements(final Set<IFormulaExtension> typeEnv) {
-		for (DataTypeConstructor cons : dataTypeConstructors) {
+		for (DataTypeConstructor cons : getDataTypeConstructors()) {
 			cons.parseElements(typeEnv);
 		}
 	}
 
 	public Set<IFormulaExtension> getFormulaExtensions(final FormulaFactory ff) {
 		IDatatypeBuilder builder = ff.makeDatatypeBuilder(identifierString);
-		for (DataTypeConstructor c : dataTypeConstructors) {
+		for (DataTypeConstructor c : getDataTypeConstructors()) {
 			builder.addConstructor(c.getUnicode());
 		}
 

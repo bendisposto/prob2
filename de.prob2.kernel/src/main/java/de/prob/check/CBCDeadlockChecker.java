@@ -4,7 +4,6 @@ import de.prob.animator.command.ConstraintBasedDeadlockCheckCommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.StateSpace;
-import de.prob.web.views.ModelCheckingUI;
 
 /**
  * This {@link IModelCheckJob} performs constraint based deadlock checking on
@@ -20,7 +19,7 @@ import de.prob.web.views.ModelCheckingUI;
 public class CBCDeadlockChecker implements IModelCheckJob {
 
 	private final StateSpace s;
-	private final ModelCheckingUI ui;
+	private final IModelCheckListener ui;
 	private final ConstraintBasedDeadlockCheckCommand job;
 	String jobId;
 
@@ -61,7 +60,7 @@ public class CBCDeadlockChecker implements IModelCheckJob {
 	 *            communicate with the UI or <code>null</code> if not.
 	 */
 	public CBCDeadlockChecker(final StateSpace s,
-			final IEvalElement constraint, final ModelCheckingUI ui) {
+			final IEvalElement constraint, final IModelCheckListener ui) {
 		this.s = s;
 		job = new ConstraintBasedDeadlockCheckCommand(s, constraint);
 		this.ui = ui;

@@ -2,8 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 cmd = new SimpleTextCommand("compute_operations_for_state(root,Transitions)","Transitions")
 s.execute(cmd)

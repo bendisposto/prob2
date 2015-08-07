@@ -2,13 +2,13 @@ package de.prob.animator.command;
 
 import de.prob.animator.domainobjects.LTL;
 import de.prob.check.CheckInterrupted;
+import de.prob.check.IModelCheckListener;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.LTLNotYetFinished;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.StateSpace;
-import de.prob.web.views.ModelCheckingUI;
 
 public class LTLCheckingJob extends AbstractCommand {
 
@@ -17,14 +17,14 @@ public class LTLCheckingJob extends AbstractCommand {
 	private final StateSpace s;
 	private final LTL formula;
 	private final String jobId;
-	private final ModelCheckingUI ui;
+	private final IModelCheckListener ui;
 
 	private IModelCheckingResult res;
 	private LtlCheckingCommand cmd;
 	private long time = -1;
 
 	public LTLCheckingJob(final StateSpace s, final LTL formula,
-			final String jobId, final ModelCheckingUI ui) {
+			final String jobId, final IModelCheckListener ui) {
 		this.s = s;
 		this.formula = formula;
 		this.jobId = jobId;

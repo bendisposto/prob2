@@ -8,8 +8,7 @@ import de.prob.unicode.UnicodeTranslator;
 toUnicode = { str -> UnicodeTranslator.toUnicode(str) }
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 t = new Trace(s)
 t = t.$initialise_machine()
 
