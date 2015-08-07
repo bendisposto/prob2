@@ -1,7 +1,7 @@
 package de.prob.model.eventb.algorithm
 
+import static de.prob.unicode.UnicodeTranslator.toUnicode
 import de.prob.model.representation.IllegalModificationException
-
 
 class If extends Statement {
 	def final String condition
@@ -49,9 +49,14 @@ class If extends Statement {
 		}
 		new If(condition, Then, new Block().make(definition))
 	}
+
 	def If make(Closure definition) {
 		If i = runClosure(definition)
 		i = i.Then ? i : new If(i.condition, new Block(), i.Else)
 		i.Else ? i : new If(i.condition, i.Then, new Block())
+	}
+
+	def String toString() {
+		"if (${toUnicode(condition)}):"
 	}
 }

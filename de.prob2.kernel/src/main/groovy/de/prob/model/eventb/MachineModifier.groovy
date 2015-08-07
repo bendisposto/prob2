@@ -3,10 +3,12 @@ package de.prob.model.eventb
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.algorithm.Block
 import de.prob.model.representation.BEvent
+import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Variable
+
 
 /**
  * The {@link MachineModifier} provides an API to programmatically modify or
@@ -226,12 +228,12 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
-		validateProperties(properties, [name: String])
+		def props = validateProperties(properties, [name: String, refines: [String, null],
+			extended: [Boolean, false], comment: [String, null], type: [EventType, EventType.ORDINARY]])
 
 		def refinedEvent = properties["refines"]
 		def refinedE  = []
 		if (refinedEvent) {
-			def props = validateProperties(properties, [refines: String])
 			refinedEvent = props["refines"]
 			machine.getRefines().each { EventBMachine m ->
 				def e = m.getEvent(refinedEvent)
@@ -240,20 +242,22 @@ class MachineModifier extends AbstractModifier {
 				}
 			}
 		}
-		def type = properties["type"] ?: EventType.ORDINARY
 
 		if (refinedEvent && refinedE.size() != 1) {
 			throw new IllegalArgumentException("Tried to refine event $refinedEvent, but found $refinedE events")
 		}
 
-		event(properties["name"], refinedE, type, properties["extended"]  ?: false, cls)
+		event(props["name"], refinedE, props["type"],props["extended"], cls, props["comment"])
 	}
 
-	def MachineModifier event(String name, List<Event> refinedEvents, type, boolean extended, Closure cls={}) {
+	def MachineModifier event(String name, List<Event> refinedEvents, EventType type, boolean extended, Closure cls={}, String comment=null) {
 		def mm = removePOsForEvent(name)
 		def oldevent = machine.getEvent(name)
 		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, properties["extended"] == true)
 		event = event.set(Event.class, new ModelElementList<Event>(refinedEvents))
+		if (comment) {
+			event = event.addTo(ElementComment.class, new ElementComment(comment))
+		}
 		def em = new EventModifier(event, "INITIALISATION" == name).make(cls)
 		def m = mm.getMachine()
 		if (oldevent) {
@@ -307,6 +311,10 @@ class MachineModifier extends AbstractModifier {
 			}
 		}
 		newMM(machine.set(ProofObligation.class, proofs))
+	}
+
+	def MachineModifier addComment(String comment) {
+		newMM(machine.addTo(ElementComment.class, new ElementComment(comment)))
 	}
 
 	def MachineModifier algorithm(Closure definition) {

@@ -5,6 +5,7 @@ import de.prob.model.eventb.Context
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
+import de.prob.model.representation.ElementComment
 
 public class ModelToXML {
 
@@ -33,12 +34,14 @@ public class ModelToXML {
 	}
 
 	def extractMachine(EventBMachine m, String directoryPath) {
+		String comment = m.getChildrenOfType(ElementComment.class).collect { it.getComment() }.iterator().join("\n")
 		String fileName = directoryPath + File.separator + m.getName() + ".bum"
 		new File(fileName).withWriter("UTF-8") { writer ->
 			MarkupBuilder xml = new MarkupBuilder(writer);
 
 			xml.mkp.xmlDeclaration(version: "1.0", encoding: "UTF-8", standalone: "no")
-			xml.'org.eventb.core.machineFile'('org.eventb.core.configuration': "org.eventb.core.fwd", version:"5") {
+			xml.'org.eventb.core.machineFile'('org.eventb.core.configuration': "org.eventb.core.fwd", version:"5",
+			'org.eventb.core.comment': comment) {
 				m.sees.each {
 					xml.'org.eventb.core.seesContext'(name: genName(), 'org.eventb.core.target': it.getName())
 				}
@@ -68,10 +71,12 @@ public class ModelToXML {
 				: e.type == Event.EventType.CONVERGENT ? "1"
 				: "2"
 		def extended = e.isExtended()
+		String comment = e.getChildrenOfType(ElementComment.class).collect { it.getComment() }.iterator().join("\n")
 		xml.'org.eventb.core.event'(name: genName(),
 		'org.eventb.core.convergence': convergence,
 		'org.eventb.core.extended': extended,
-		'org.eventb.core.label': e.getName()
+		'org.eventb.core.label': e.getName(),
+		'org.eventb.core.comment': comment
 		) {
 			if (!e.getName().equals("INITIALISATION")) {
 				e.refines.each {

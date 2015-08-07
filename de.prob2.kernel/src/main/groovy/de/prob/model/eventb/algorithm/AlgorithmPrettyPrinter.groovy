@@ -28,16 +28,16 @@ class AlgorithmPrettyPrinter {
 	}
 
 	def printStatement(While statement, StringBuilder sb, String indent) {
-		writeLine(sb,indent,"while (${toUnicode(statement.condition)}):")
+		writeLine(sb,indent,statement.toString())
 		printBlock(statement.block, sb, indent)
 	}
 
 	def printStatement(Assignments statement, StringBuilder sb, String indent) {
-		writeLine(sb,indent,toUnicode(statement.assignments.iterator().join(" || ")))
+		writeLine(sb,indent,statement.toString())
 	}
 
 	def printStatement(If statement, StringBuilder sb, String indent) {
-		writeLine(sb,indent, "if (${toUnicode(statement.condition)}):")
+		writeLine(sb,indent, statement.toString())
 		printBlock(statement.Then, sb, indent)
 		if (statement.Else.statements) {
 			writeLine(sb,indent,"else:")
@@ -46,7 +46,7 @@ class AlgorithmPrettyPrinter {
 	}
 
 	def printStatement(Assertion statement, StringBuilder sb, String indent) {
-		writeLine(sb,indent, "assert ${toUnicode(statement.assertion)}")
+		writeLine(sb,indent,statement.toString())
 	}
 
 	def writeLine(StringBuilder sb, String indent, String line) {

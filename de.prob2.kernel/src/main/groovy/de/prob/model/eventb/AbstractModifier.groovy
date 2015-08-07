@@ -5,15 +5,30 @@ package de.prob.model.eventb
 class AbstractModifier {
 
 	protected Map validateProperties(Map properties, Map required) {
-		required.collectEntries { prop,type ->
-			if(!properties[prop]) {
-				throw new IllegalArgumentException("Could not find required property $prop in definition")
+		required.collectEntries { String prop,type ->
+			if (type instanceof List && type.size() == 2) {
+				return validateOptionalProperty(properties, prop, type)
 			}
-			try {
-				return [prop, properties[prop].asType(type)]
-			} catch(Exception e) {
-				throw new IllegalArgumentException("Expected property $prop to have type $type")
+			if (type instanceof Class) {
+				return validateRequiredProperty(properties, prop, type)
 			}
+			throw new IllegalArgumentException("incorrect properties: values must be either a class or a tuple with two elements")
+		}
+	}
+
+	protected validateOptionalProperty(LinkedHashMap properties, String property, List type) {
+		if (properties[property]) {
+			return [property, properties[property].asType(type[0])]
+		} else {
+			return [property, type[1]]
+		}
+	}
+
+	protected validateRequiredProperty(LinkedHashMap properties, String property, Class type) {
+		if (properties[property]) {
+			return [property, properties[property].asType(type)]
+		} else {
+			throw new IllegalArgumentException("Expected property $property to have type $type")
 		}
 	}
 

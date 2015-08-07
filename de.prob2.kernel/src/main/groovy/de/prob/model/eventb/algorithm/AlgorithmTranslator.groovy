@@ -25,6 +25,7 @@ class AlgorithmTranslator {
 		machineM = new MachineModifier(machine)
 		machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
 		machine.getChildrenOfType(Block.class).each { Block b ->
+			machineM = machineM.addComment(new AlgorithmPrettyPrinter(b).prettyPrint())
 			nextpc = translate(nextpc, b)
 		}
 		machineM = machineM.event(name: "evt$nextpc") {
@@ -66,7 +67,7 @@ class AlgorithmTranslator {
 		def name = "evt${pc}_enter_while"
 		def npc = pc + 1
 		def exitpc = nextpc(pc, statement)
-		machineM = machineM.event(name: name) {
+		machineM = machineM.event(name: name, comment: statement.toString()) {
 			guard("pc = $pc")
 			guard(statement.condition)
 			action("pc := $npc")
@@ -90,7 +91,7 @@ class AlgorithmTranslator {
 		def name = "evt${pc}_if"
 		def npc = pc + 1
 		def exitpc = nextpc(pc, statement)
-		machineM = machineM.event(name: name) {
+		machineM = machineM.event(name: name, comment: statement.toString()) {
 			guard("pc = $pc")
 			guard(statement.condition)
 			action("pc := $npc")
@@ -121,7 +122,7 @@ class AlgorithmTranslator {
 	def int translate(int pc, Assignments statement) {
 		def name = "evt$pc"
 		def nextpc = pc + 1
-		machineM = machineM.event(name: name) {
+		machineM = machineM.event(name: name, comment: statement.toString()) {
 			guard("pc = $pc")
 			action("pc := $nextpc")
 			actions(statement.assignments as String[])
@@ -132,7 +133,7 @@ class AlgorithmTranslator {
 	def int translate(int pc, Assertion statement) {
 		def name = "evt$pc"
 		def nextpc = pc + 1
-		machineM = machineM.event(name: name) {
+		machineM = machineM.event(name: name, comment: statement.toString()) {
 			guard("pc = $pc")
 			theorem(statement.assertion)
 			action("pc := $nextpc")

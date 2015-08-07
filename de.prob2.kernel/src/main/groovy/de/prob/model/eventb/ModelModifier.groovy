@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 import de.prob.Main
+import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Machine
 import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.scripting.EventBFactory
@@ -50,13 +51,16 @@ public class ModelModifier extends AbstractModifier {
 	}
 
 	def ModelModifier machine(HashMap properties, Closure definition) {
-		validateProperties(properties, [name: String])
+		def props = validateProperties(properties, [name: String, refines: [List,[]], sees: [List,[]], comment: [String,null]])
 		def model = this.model
-		def name = properties["name"]
+		def name = props["name"]
 		def oldmachine = model.getMachines().getElement(name)
-		def m = oldmachine ?: new EventBMachine(name)
+		EventBMachine m = oldmachine ?: new EventBMachine(name)
+		if (props["comment"]) {
+			m = m.addTo(ElementComment.class, new ElementComment(props["comment"]))
+		}
 
-		def refines = properties["refines"] ?: []
+		def refines = props["refines"]
 		def refined = refines.collect { ma ->
 			EventBMachine machine = model.getMachines().getElement(ma)
 			if (machine == null) {
@@ -66,7 +70,7 @@ public class ModelModifier extends AbstractModifier {
 			machine
 		}
 
-		def sees = properties["sees"] ?: []
+		def sees = props["sees"]
 		def seenContexts = sees.collect { c ->
 			Context context = model.getContexts().getElement(c)
 			if (context == null) {
