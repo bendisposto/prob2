@@ -1,6 +1,6 @@
 package de.prob.model.eventb.algorithm
 
-class Assignments implements Statement {
+class Assignments extends Statement {
 	List<String> assignments
 
 	def Assignments(List<String> assignments) {

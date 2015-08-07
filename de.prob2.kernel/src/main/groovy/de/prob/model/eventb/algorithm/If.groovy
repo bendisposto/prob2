@@ -3,10 +3,10 @@ package de.prob.model.eventb.algorithm
 import de.prob.model.representation.IllegalModificationException
 
 
-class If implements Statement {
-	def String condition
-	def Block Then
-	def Block Else
+class If extends Statement {
+	def final String condition
+	def final Block Then
+	def final Block Else
 
 	def If(String condition) {
 		this.condition = condition
@@ -22,53 +22,36 @@ class If implements Statement {
 		if(Then != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		Then = new Block([
+		new If(condition, new Block([
 			new Assignments(assignments as List)
-		])
-		this
+		]), Else)
 	}
 
 	def If Then(Closure definition) {
 		if(Then != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		Then = new Block().make definition
-		this
+		new If(condition, new Block().make(definition), Else)
 	}
 
 	def If Else(String... assignments) {
 		if(Else != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		Else = new Block([
+		new If(condition, Then, new Block([
 			new Assignments(assignments as List)
-		])
-		this
+		]))
 	}
 
 	def If Else(Closure definition) {
 		if(Else != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		Else = new Block().make definition
-		this
+		new If(condition, Then, new Block().make(definition))
 	}
 	def If make(Closure definition) {
-		// Create clone of closure for threading access.
-		Closure runClone = definition.clone()
-
-		// Set delegate of closure to this builder.
-		runClone.delegate = this
-
-		// And only use this builder as the closure delegate.
-		runClone.resolveStrategy = Closure.DELEGATE_ONLY
-
-		// Run closure code.
-		runClone()
-
-		// ensure that Then and Else are set
-		Then = Then ?: new Block()
-		Else = Else ?: new Block()
-		this
+		If i = runClosure(definition)
+		i = i.Then ? i : new If(i.condition, new Block(), i.Else)
+		i.Else ? i : new If(i.condition, i.Then, new Block())
 	}
 }

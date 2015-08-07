@@ -1,10 +1,14 @@
 package de.prob.model.eventb
 
 import de.prob.model.eventb.Event.EventType
+<<<<<<< HEAD
+import de.prob.model.eventb.algorithm.AlgorithmTranslator
 import de.prob.model.eventb.algorithm.Block
+=======
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
+>>>>>>> develop
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Variable
 
@@ -37,7 +41,6 @@ class MachineModifier extends AbstractModifier {
 	private final int invctr
 	EventBMachine machine
 	EventBModel model
-	private eventModifiers = [:]
 
 	def MachineModifier(EventBMachine machine) {
 		this.machine = machine
@@ -195,11 +198,6 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier variant(String expression) {
-		setVariant(expression)
-		return this
-	}
-
-	def Variant setVariant(String expression) {
 		def variant = new Variant(expression, Collections.emptySet())
 		newMM(machine.set(Variant.class, new ModelElementList([variant])))
 	}
@@ -309,14 +307,14 @@ class MachineModifier extends AbstractModifier {
 		newMM(machine.set(ProofObligation.class, proofs))
 	}
 
-	def MachineModifier algorithm(Closure definition) {
-		newMM(machine.addTo(Block.class, new Block().make(definition)))
-	}
-
 	def MachineModifier make(Closure definition) {
 		runClosure definition
 	}
 
+	def MachineModifier algorithm(Closure definition) {
+		new AlgorithmTranslator(this).create(new Block().make(definition))
+		this
+	}
 
 
 }

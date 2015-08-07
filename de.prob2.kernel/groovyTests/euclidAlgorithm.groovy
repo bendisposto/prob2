@@ -1,5 +1,6 @@
 import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
+import de.prob.model.eventb.algorithm.AlgorithmTranslator
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
@@ -22,9 +23,7 @@ end
  */
 
 
-mm = new ModelModifier()
-//mm.startProB = false
-mm.make {
+mm = new ModelModifier().make {
 	
 	context(name: "definitions") {
 		constants "Divides", "IsGCD"
@@ -70,7 +69,9 @@ def actions(evt) {
 	evt.actions.collect { it.getCode().getCode() }
 }
 
-m = mm.getModifiedModel("euclid")
+m = mm.getModel()
+m = new AlgorithmTranslator(m).run()
+
 
 e = m.euclid
 
@@ -116,7 +117,7 @@ assert guards(evt6) == ["pc = 6"]
 assert actions(evt6) == []
 
 //m = api.eventb_load("/tmp/Euclid/euclid.bcm")
-s = m as StateSpace
+s = m.load(m.euclid)
 t = s as Trace
 t = t.$setup_constants().$initialise_machine()
 //t = t.$initialise_machine()

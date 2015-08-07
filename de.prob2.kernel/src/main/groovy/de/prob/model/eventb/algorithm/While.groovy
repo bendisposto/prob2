@@ -1,6 +1,6 @@
 package de.prob.model.eventb.algorithm
 
-class While implements Statement {
+class While extends Statement {
 	def String condition
 	def Block block
 

@@ -1,19 +1,36 @@
 package de.prob.model.eventb.algorithm
 
+import de.prob.model.eventb.EventBMachine
+import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
+import de.prob.model.representation.Machine
 
 class AlgorithmTranslator {
+	def EventBModel model
 	def MachineModifier machineM
 
-	def AlgorithmTranslator(MachineModifier machineM) {
-		this.machineM = machineM
+	def AlgorithmTranslator(EventBModel model) {
+		this.model = model
 	}
 
-	def MachineModifier create(Block block) {
-		machineM.var_block("pc", "pc : NAT", "pc := 0")
-		def nextpc = translate(0, block)
-		machineM.addEvent("evt$nextpc").guard("pc = $nextpc")
-		machineM
+	def EventBModel run() {
+		model.getMachines().each { oldM ->
+			model = model.replaceIn(Machine.class, oldM, runAlgorithm(oldM))
+		}
+		model
+	}
+
+	def EventBMachine runAlgorithm(EventBMachine machine) {
+		def nextpc = 0
+		machineM = new MachineModifier(machine)
+		machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
+		machine.getChildrenOfType(Block.class).each { Block b ->
+			nextpc = translate(nextpc, b)
+		}
+		machineM = machineM.event(name: "evt$nextpc") {
+			guard("pc = $nextpc")
+		}
+		machineM.getMachine()
 	}
 
 	def int nextpc(int pc, Assertion s) {
@@ -49,19 +66,23 @@ class AlgorithmTranslator {
 		def name = "evt${pc}_enter_while"
 		def npc = pc + 1
 		def exitpc = nextpc(pc, statement)
-		machineM.addEvent(name)
-				.guard("pc = $pc")
-				.guard(statement.condition)
-				.action("pc := $npc")
+		machineM = machineM.event(name: name) {
+			guard("pc = $pc")
+			guard(statement.condition)
+			action("pc := $npc")
+		}
+
 		npc = translate(npc, statement.block)
-		machineM.addEvent("evt${npc}_loop")
-				.guard("pc = $npc")
-				.action("pc := $pc")
+		machineM = machineM.event(name: "evt${npc}_loop") {
+			guard("pc = $npc")
+			action("pc := $pc")
+		}
 		name = "evt${pc}_exit_while"
-		machineM.addEvent(name)
-				.guard("pc = $pc")
-				.guard("not(${statement.condition})")
-				.action("pc := $exitpc")
+		machineM = machineM.event(name: name) {
+			guard("pc = $pc")
+			guard("not(${statement.condition})")
+			action("pc := $exitpc")
+		}
 		exitpc
 	}
 
@@ -69,47 +90,53 @@ class AlgorithmTranslator {
 		def name = "evt${pc}_if"
 		def npc = pc + 1
 		def exitpc = nextpc(pc, statement)
-		machineM.addEvent(name)
-				.guard("pc = $pc")
-				.guard(statement.condition)
-				.action("pc := $npc")
+		machineM = machineM.event(name: name) {
+			guard("pc = $pc")
+			guard(statement.condition)
+			action("pc := $npc")
+		}
 		npc = translate(npc, statement.Then)
 		if (statement.Else.statements.isEmpty()) {
-			machineM.addEvent("evt${pc}_else")
-					.guard("pc = $pc")
-					.guard("not(${statement.condition})")
-					.action("pc := $npc")
+			machineM = machineM.event(name: "evt${pc}_else") {
+				guard("pc = $pc")
+				guard("not(${statement.condition})")
+				action("pc := $npc")
+			}
 			return npc
 		}
 
-		machineM.addEvent("evt${npc}_exit_if")
-				.guard("pc = $npc")
-				.action("pc := $exitpc")
+		machineM = machineM.event(name: "evt${npc}_exit_if") {
+			guard("pc = $npc")
+			action("pc := $exitpc")
+		}
 		npc = npc + 1
-		machineM.addEvent("evt${pc}_else")
-				.guard("pc = $pc")
-				.guard("not(${statement.condition})")
-				.action("pc := $npc")
+		machineM = machineM.event(name: "evt${pc}_else") {
+			guard("pc = $pc")
+			guard("not(${statement.condition})")
+			action("pc := $npc")
+		}
 		translate(npc, statement.Else)
 	}
 
 	def int translate(int pc, Assignments statement) {
 		def name = "evt$pc"
 		def nextpc = pc + 1
-		def eventM = machineM.addEvent(name)
-				.guard("pc = $pc")
-				.action("pc := $nextpc")
-		statement.assignments.each { eventM.action(it) }
+		machineM = machineM.event(name: name) {
+			guard("pc = $pc")
+			action("pc := $nextpc")
+			actions(statement.assignments as String[])
+		}
 		nextpc
 	}
 
 	def int translate(int pc, Assertion statement) {
 		def name = "evt$pc"
 		def nextpc = pc + 1
-		machineM.addEvent(name)
-				.guard("pc = $pc")
-				.theorem(statement.assertion)
-				.action("pc := $nextpc")
+		machineM = machineM.event(name: name) {
+			guard("pc = $pc")
+			theorem(statement.assertion)
+			action("pc := $nextpc")
+		}
 		nextpc
 	}
 }

@@ -85,31 +85,11 @@ public class ModelModifier extends AbstractModifier {
 		runClosure definition
 	}
 
-	//	/**
-	//	 * Finds the machine with the specified name and returns a {@link MachineModifier} object
-	//	 * to allow the modification of the machine elements.
-	//	 * @param machineName of the machine to be modified
-	//	 * @return a {@link MachineModifier} object to allow the modification of machine with name
-	//	 * 	machineName or <code>null</code>, if the specified machine does not exist
-	//	 */
-	//	def MachineModifier getMachine(String machineName) {
-	//		if (temp.getMachines().hasProperty(machineName)) {
-	//			def machine = temp.getMachines().getElement(machineName)
-	//			return new MachineModifier(machine, machine.getSees(), machine.getRefines())
-	//		}
-	//	}
-	//
-	//	/**
-	//	 * Finds the context with the specified name and returns a {@link ContextModifier} object
-	//	 * to allow the modification of the context elements.
-	//	 * @param contextName of the context to be modified
-	//	 * @return a {@link ContextModifier} object to allow the modification of context with name
-	//	 * 	contextName or <code>null</code>, if the specified context does not exist
-	//	 */
-	//	def ContextModifier getContext(String contextName) {
-	//		if (temp.getContexts().hasProperty(contextName)) {
-	//			def ctx = temp.getContexts().getElement(contextName)
-	//			return new ContextModifier(ctx, ctx.getExtends())
-	//		}
-	//	}
+	def ModelModifier replaceContext(EventBMachine oldContext, EventBMachine newContext) {
+		new ModelModifier(model.replaceIn(Context.class, oldContext, newContext))
+	}
+
+	def ModelModifier replaceMachine(EventBMachine oldMachine, EventBMachine newMachine) {
+		new ModelModifier(model.replaceIn(Machine.class, oldMachine, newMachine))
+	}
 }
