@@ -18,8 +18,8 @@ class BlockConstruction extends Specification {
 		when:
 		def b = new Block().make { Assign("x := 1", "y := 2") }
 		then:
-		b.statements.size() == 2
-		b.statements.collect { it.assignment } == ["x := 1", "y := 2"]
+		b.statements[0] instanceof Assignments
+		b.statements[0].assignments == ["x := 1", "y := 2"]
 	}
 
 	def "it is possible to create assertions"() {

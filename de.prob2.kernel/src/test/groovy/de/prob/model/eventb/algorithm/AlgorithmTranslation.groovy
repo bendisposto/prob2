@@ -24,9 +24,10 @@ class AlgorithmTranslation extends Specification {
 
 	def "translate an if without an else"() {
 		when:
-		mm.algorithm {
+		mm = mm.algorithm {
 			If("x < 0") { Then("x := 0") }
 		}
+		def m = new AlgorithmTranslator(null).runAlgorithm(mm.getMachine())
 
 		then:
 		def e = m.events
@@ -55,7 +56,7 @@ class AlgorithmTranslation extends Specification {
 				Else("x := 2")
 			}
 		})
-		def a = new AlgorithmTranslator(mm)
+		def a = new AlgorithmTranslator(null)
 
 		then:
 		a.nextpc(0, b) == 4
@@ -66,12 +67,13 @@ class AlgorithmTranslation extends Specification {
 
 	def "translate an if with an else"() {
 		when:
-		mm.algorithm {
+		mm = mm.algorithm {
 			If("x < 0") {
 				Then("x := 0")
 				Else("x := 2")
 			}
 		}
+		def m = new AlgorithmTranslator(null).runAlgorithm(mm.getMachine())
 
 		then:
 		def e = m.events
@@ -102,9 +104,10 @@ class AlgorithmTranslation extends Specification {
 
 	def "translate a while loop"() {
 		when:
-		mm.algorithm {
+		mm = mm.algorithm {
 			While("x < 0") { Assign("x := 0") }
 		}
+		def m = new AlgorithmTranslator(null).runAlgorithm(mm.getMachine())
 
 		then:
 		def e = m.events

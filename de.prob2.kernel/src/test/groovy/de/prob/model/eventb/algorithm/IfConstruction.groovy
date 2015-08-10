@@ -23,8 +23,8 @@ class IfConstruction extends Specification {
 			Else("x := 5")
 		}
 		then:
-		s.Then.statements.collect { it.assignment } == ["x := 2", "y := 5", "z := 4"]
-		s.Else.statements.collect { it.assignment } == ["x := 5"]
+		s.Then.statements[0].assignments == ["x := 2", "y := 5", "z := 4"]
+		s.Else.statements[0].assignments == ["x := 5"]
 	}
 
 	def "it is possible to construct an If with closures"() {
