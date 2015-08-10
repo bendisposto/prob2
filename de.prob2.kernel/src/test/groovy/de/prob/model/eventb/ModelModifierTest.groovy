@@ -106,4 +106,31 @@ class ModelModifierTest extends Specification {
 		model1.c2.getExtends() == [model1.c1]
 		model2.c2.getExtends() == [model2.c1]
 	}
+
+	def "it is possible to easily refine a machine"() {
+		when:
+		def mm = new ModelModifier().make {
+			machine(name: "Lift") {
+				var_block "level", "level : 0..5", "level := 0"
+				event(name: "up") {
+					when "level < 5"
+					then "level := level + 1"
+				}
+				event(name: "down") {
+					when "level > 0"
+					then "level := level - 1"
+				}
+			}
+
+			refine("Lift", "Lift2")
+		}
+		def model = mm.getModel()
+
+		then:
+		model.getRelationship("Lift2","Lift") == ERefType.REFINES
+		model.Lift.variables == model.Lift2.variables
+		model.Lift2.events.INITIALISATION.isExtended()
+		model.Lift2.events.up.isExtended()
+		model.Lift2.events.down.isExtended()
+	}
 }
