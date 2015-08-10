@@ -3,6 +3,7 @@ package de.prob.model.eventb.algorithm
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
+import de.prob.model.eventb.Variant
 import de.prob.model.representation.Machine
 
 class AlgorithmTranslator {
@@ -64,21 +65,28 @@ class AlgorithmTranslator {
 	}
 
 	def int translate(int pc, While statement) {
-		def name = "evt${pc}_enter_while"
+		def enter_while_name = "evt${pc}_enter_while"
 		def npc = pc + 1
 		def exitpc = nextpc(pc, statement)
-		machineM = machineM.event(name: name, comment: statement.toString()) {
+		machineM = machineM.event(name: enter_while_name, comment: statement.toString()) {
 			guard("pc = $pc")
 			guard(statement.condition)
 			action("pc := $npc")
 		}
 
 		npc = translate(npc, statement.block)
-		machineM = machineM.event(name: "evt${npc}_loop") {
+		def loop_name = "evt${npc}_loop"
+		machineM = machineM.event(name: loop_name) {
 			guard("pc = $npc")
 			action("pc := $pc")
 		}
-		name = "evt${pc}_exit_while"
+		if (statement.variant) {
+			def machine = machineM.getMachine()
+			def loopInfo = new LoopInformation(new Variant(statement.variant, Collections.emptySet()), machine.events.getElement(enter_while_name), machine.events.getElement(loop_name), pc, npc)
+			machineM = new MachineModifier(machine.addTo(LoopInformation.class, loopInfo))
+		}
+
+		def name = "evt${pc}_exit_while"
 		machineM = machineM.event(name: name) {
 			guard("pc = $pc")
 			guard("not(${statement.condition})")

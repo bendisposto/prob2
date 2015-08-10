@@ -111,12 +111,14 @@ public class ModelModifier extends AbstractModifier {
 			throw new IllegalArgumentException("Can only refine an existing machine in the model")
 		}
 
-		ModelModifier modelM = machine(name: refinementName, refines: machineName) {
+		def comment = m.getChildrenOfType(ElementComment.class) ? m.getChildrenOfType(ElementComment.class).collect { it.comment }.join("\n") : null
+		ModelModifier modelM = machine(name: refinementName, refines: machineName, comment: comment) {
 			m.variables.each {
 				variable(it)
 			}
 			m.events.each { Event e ->
-				refine(name: e.getName(), extended: true) {}
+				refine(name: e.getName(), extended: true,
+				comment: e.getChildrenOfType(ElementComment.class) ? e.getChildrenOfType(ElementComment.class).collect { it.comment }.join("\n") : null) {}
 			}
 		}
 		modelM

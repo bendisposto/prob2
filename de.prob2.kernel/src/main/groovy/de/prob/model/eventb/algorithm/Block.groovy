@@ -17,7 +17,12 @@ class Block extends AbstractElement {
 	}
 
 	def Block While(String condition, Closure definition) {
-		new Block(statements.addElement(new While(condition, new Block().make(definition))))
+		new Block(statements.addElement(new While(condition, null, new Block().make(definition))))
+	}
+
+	def Block While(LinkedHashMap properties, String condition, Closure definition) {
+		def props = validateProperties(properties, [variant: [String,null]])
+		new Block(statements.addElement(new While(condition, props.variant, new Block().make(definition))))
 	}
 
 	def Block Assert(String condition) {
@@ -43,5 +48,34 @@ class Block extends AbstractElement {
 		runClone()
 
 		delegateH.getState()
+	}
+
+	// TODO consolidate these methods in a Util class
+	protected Map validateProperties(Map properties, Map required) {
+		required.collectEntries { String prop,type ->
+			if (type instanceof List && type.size() == 2) {
+				return validateOptionalProperty(properties, prop, type)
+			}
+			if (type instanceof Class) {
+				return validateRequiredProperty(properties, prop, type)
+			}
+			throw new IllegalArgumentException("incorrect properties: values must be either a class or a tuple with two elements")
+		}
+	}
+
+	protected validateOptionalProperty(LinkedHashMap properties, String property, List type) {
+		if (properties[property]) {
+			return [property, properties[property].asType(type[0])]
+		} else {
+			return [property, type[1]]
+		}
+	}
+
+	protected validateRequiredProperty(LinkedHashMap properties, String property, Class type) {
+		if (properties[property]) {
+			return [property, properties[property].asType(type)]
+		} else {
+			throw new IllegalArgumentException("Expected property $property to have type $type")
+		}
 	}
 }

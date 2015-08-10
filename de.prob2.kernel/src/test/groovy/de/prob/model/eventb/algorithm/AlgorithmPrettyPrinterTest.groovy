@@ -31,6 +31,15 @@ class AlgorithmPrettyPrinterTest extends Specification {
 		}) == "while (x < 1):\n  y \u2254 2 \u2225 z \u2254 3\n"
 	}
 
+	def "while loop with variant"() {
+		expect:
+		evalAndPrint({
+			While("x < 1", variant: "0 - x") {
+				Assign("x := x + 1")
+			}
+		}) == "while (x < 1):\n  variant: 0 \u2212 x\n  x \u2254 x + 1\n"
+	}
+
 	def "pretty print euclid"() {
 		expect:
 		evalAndPrint({

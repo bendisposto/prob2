@@ -12,16 +12,26 @@ class EventModifier extends AbstractModifier {
 	private final grdctr
 	def Event event
 	boolean initialisation
+	def Event refinedEvent
 
-	private EventModifier(Event event, boolean initialisation=false) {
-		this.initialisation = initialisation
-		this.actctr = extractCounter("act",event.actions)
+	private EventModifier(Event event, boolean initialisation=false, Event refinedEvent) {
 		this.event = event
-		this.grdctr = extractCounter("grd",event.guards)
+		this.initialisation = initialisation
+		this.refinedEvent = refinedEvent
+		def actions = []
+		def guards = []
+		if (refinedEvent) {
+			actions.addAll(refinedEvent.actions)
+			guards.addAll(refinedEvent.guards)
+		}
+		actions.addAll(event.actions)
+		guards.addAll(event.guards)
+		this.actctr = extractCounter("act",actions)
+		this.grdctr = extractCounter("grd",guards)
 	}
 
 	private EventModifier newEM(Event event) {
-		return new EventModifier(event, initialisation)
+		return new EventModifier(event, initialisation, refinedEvent)
 	}
 
 	def EventModifier when(Map g) {

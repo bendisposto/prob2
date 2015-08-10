@@ -211,9 +211,9 @@ class MachineModifier extends AbstractModifier {
 		newMM(machine.removeFrom(Variant.class, variant))
 	}
 
-	def MachineModifier initialisation(LinkedHashMap properties) {
+	def MachineModifier initialisation(LinkedHashMap properties, Closure cls={}) {
 		if (properties["extended"] == true) {
-			initialisation({},true)
+			return initialisation(cls,true)
 		}
 		this
 	}
@@ -259,7 +259,7 @@ class MachineModifier extends AbstractModifier {
 		if (comment) {
 			event = event.addTo(ElementComment.class, new ElementComment(comment))
 		}
-		def em = new EventModifier(event, "INITIALISATION" == name).make(cls)
+		def em = new EventModifier(event, "INITIALISATION" == name, refinedEvents.isEmpty() ? null : refinedEvents[0]).make(cls)
 		def m = mm.getMachine()
 		if (oldevent) {
 			m = m.replaceIn(BEvent.class, oldevent, em.getEvent())

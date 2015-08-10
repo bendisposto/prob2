@@ -84,28 +84,28 @@ public class ModelToXML {
 					'org.eventb.core.target': it.getName())
 				}
 			}
-			if (!extended) {
-				e.parameters.each {
-					xml.'org.eventb.core.parameter'(name: genName(),
-					'org.eventb.core.identifier': it.getName())
-				}
-				e.guards.each {
-					xml.'org.eventb.core.guard'(name: genName(),
-					'org.eventb.core.label': it.getName(),
-					'org.eventb.core.predicate': it.getPredicate().toUnicode(),
-					'org.eventb.core.theorem': it.isTheorem())
-				}
-				e.witnesses.each {
-					xml.'org.eventb.core.witness'(name: genName(),
-					'org.eventb.core.label': it.getName(),
-					'org.eventb.core.predicate': it.getPredicate().toUnicode())
-				}
-				e.actions.each {
-					xml.'org.eventb.core.action'(name: genName(),
-					'org.eventb.core.assignment': it.getCode().toUnicode(),
-					'org.eventb.core.label': it.getName())
-				}
+
+			e.parameters.each {
+				xml.'org.eventb.core.parameter'(name: genName(),
+				'org.eventb.core.identifier': it.getName())
 			}
+			e.guards.each {
+				xml.'org.eventb.core.guard'(name: genName(),
+				'org.eventb.core.label': it.getName(),
+				'org.eventb.core.predicate': it.getPredicate().toUnicode(),
+				'org.eventb.core.theorem': it.isTheorem())
+			}
+			e.witnesses.each {
+				xml.'org.eventb.core.witness'(name: genName(),
+				'org.eventb.core.label': it.getName(),
+				'org.eventb.core.predicate': it.getPredicate().toUnicode())
+			}
+			e.actions.each {
+				xml.'org.eventb.core.action'(name: genName(),
+				'org.eventb.core.assignment': it.getCode().toUnicode(),
+				'org.eventb.core.label': it.getName())
+			}
+
 		}
 	}
 
