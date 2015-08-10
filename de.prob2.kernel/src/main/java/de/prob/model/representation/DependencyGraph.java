@@ -64,6 +64,10 @@ public class DependencyGraph {
 			return new Node(elementName, outEdges.cons(edge));
 		}
 
+		public Node removeEdge(final Edge edge) {
+			return new Node(elementName, outEdges.disjoin(edge));
+		}
+
 		@Override
 		public boolean equals(final Object that) {
 			if (this == that) {
@@ -210,6 +214,16 @@ public class DependencyGraph {
 		return new DependencyGraph(newgraph.assoc(from, f.addEdge(e)));
 	}
 
+	public DependencyGraph removeEdge(String from, String to,
+			ERefType relationship) {
+		Node f = graph.valAt(from);
+		Node t = graph.valAt(to);
+		if (f == null || t == null) {
+			throw new IllegalArgumentException("Nodes must be specified in order to be deleted.");
+		}
+		return new DependencyGraph(graph.assoc(from, f.removeEdge(new Edge(f, t, relationship))));
+	}
+
 	/**
 	 * @param from
 	 *            source node
@@ -257,5 +271,7 @@ public class DependencyGraph {
 		}
 		return sb.toString();
 	}
+
+
 
 }

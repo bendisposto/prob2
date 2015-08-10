@@ -55,12 +55,12 @@ mm = mm.make {
 		axiom this_is_true: "1 = 1"
 	}
 	
-	context(name: "door", extends: ["IDoNothing"]) {
+	context(name: "door", extends: "IDoNothing") {
 		enumerated_set name: "door_state",
 		               constants: ["open", "closed"]
 	}
 	
-	machine(name: "lift1", refines: ["lift0"], sees: ["door","levels"]) {
+	machine(name: "lift1", refines: "lift0", sees: ["door","levels"]) {
 		variables "door", "level"
 		invariants "door : door_state",
 				   "level : BOTTOM..TOP"

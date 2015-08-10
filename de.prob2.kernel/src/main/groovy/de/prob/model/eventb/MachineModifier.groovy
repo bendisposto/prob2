@@ -50,12 +50,12 @@ class MachineModifier extends AbstractModifier {
 		new MachineModifier(machine)
 	}
 
-	def MachineModifier addSees(List<Context> seenContexts) {
-		newMM(machine.set(Context.class, new ModelElementList<Context>(seenContexts)))
+	def MachineModifier setSees(ModelElementList<Context> seenContexts) {
+		newMM(machine.set(Context.class, seenContexts))
 	}
 
-	def MachineModifier addRefines(List<EventBMachine> refines) {
-		newMM(machine.set(Machine.class, new ModelElementList<EventBMachine>(refines)))
+	def MachineModifier setRefines(EventBMachine refined) {
+		newMM(machine.set(Machine.class, new ModelElementList<EventBMachine>([refined])))
 	}
 
 	def MachineModifier variables(String... variables) {
@@ -66,9 +66,12 @@ class MachineModifier extends AbstractModifier {
 		mm
 	}
 
-	/** adds a variable */
 	def MachineModifier variable(String varName) {
-		newMM(machine.addTo(Variable.class, new EventBVariable(varName, null)))
+		variable(new EventBVariable(varName, null))
+	}
+
+	def MachineModifier variable(EventBVariable variable) {
+		newMM(machine.addTo(Variable.class, variable))
 	}
 
 	def MachineModifier var_block(LinkedHashMap properties) {
@@ -197,12 +200,10 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier variant(String expression) {
-		setVariant(expression)
-		return this
+		variant(new Variant(expression, Collections.emptySet()))
 	}
 
-	def Variant setVariant(String expression) {
-		def variant = new Variant(expression, Collections.emptySet())
+	def MachineModifier variant(Variant variant) {
 		newMM(machine.set(Variant.class, new ModelElementList([variant])))
 	}
 
@@ -253,7 +254,7 @@ class MachineModifier extends AbstractModifier {
 	def MachineModifier event(String name, List<Event> refinedEvents, EventType type, boolean extended, Closure cls={}, String comment=null) {
 		def mm = removePOsForEvent(name)
 		def oldevent = machine.getEvent(name)
-		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, properties["extended"] == true)
+		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, extended)
 		event = event.set(Event.class, new ModelElementList<Event>(refinedEvents))
 		if (comment) {
 			event = event.addTo(ElementComment.class, new ElementComment(comment))

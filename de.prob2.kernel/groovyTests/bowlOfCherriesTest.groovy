@@ -30,7 +30,7 @@ mm = new ModelModifier().make {
 		               constants: (1..50).collect { it < 10 ? "c0$it" : "c$it" }
 	}
 	
-	machine(name: "bowl2", sees: ["Cherries"], refines: ["bowl1"]) {
+	machine(name: "bowl2", sees: ["Cherries"], refines: "bowl1") {
 		var_block name: "bowl",
 		          invariant: "bowl <: cherries",
 				  init: "bowl := {}"

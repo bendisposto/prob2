@@ -19,8 +19,8 @@ class ContextModifier extends AbstractModifier {
 		return new ContextModifier(context)
 	}
 
-	def ContextModifier addExtends(List<Context> extendBlock) {
-		newCM(context.set(Context.class, new ModelElementList<Context>(extendBlock)))
+	def ContextModifier setExtends(Context extended) {
+		newCM(context.set(Context.class, new ModelElementList<Context>([extended])))
 	}
 
 

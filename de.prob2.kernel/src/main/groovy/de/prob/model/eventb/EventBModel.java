@@ -87,6 +87,11 @@ public class EventBModel extends AbstractModel {
 		return new EventBModel(stateSpaceProvider, children, graph.addEdge(element1, element2, relationship),modelFile);
 	}
 
+	public EventBModel removeRelationship(final String element1, final String element2,
+			final ERefType relationship) {
+		return new EventBModel(stateSpaceProvider, children, graph.removeEdge(element1, element2, relationship), modelFile);
+	}
+
 	@Override
 	public ERefType getRelationship(final String from, final String to) {
 		List<ERefType> relationships = graph.getRelationships(from, to);
