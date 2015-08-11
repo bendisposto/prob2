@@ -1,6 +1,6 @@
 :- dynamic parserVersionNum/1, parserVersionStr/1, parseResult/5.
 :- dynamic module/4.
-'parserVersionStr'('0.6.0.1').
+'parserVersionStr'('0.6.1.1').
 'parseResult'('ok','',0,0,0).
 :- dynamic channel/2, bindval/3, agent/3.
 :- dynamic agent_curry/3, symbol/4.
@@ -11,8 +11,9 @@
 :- dynamic comment/2.
 :- dynamic assertBool/1, assertRef/5, assertTauPrio/6.
 :- dynamic assertModelCheckExt/4, assertModelCheck/3.
-'parserVersionNum'([0,10,0,1]).
-'parserVersionStr'('CSPM-Frontent-0.10.0.1').
+:- dynamic assertLtl/4, assertCtl/4.
+'parserVersionNum'([0,10,1,2]).
+'parserVersionStr'('CSPM-Frontent-0.10.1.2').
 'channel'('a','type'('dotTupleType'(['setExp'('rangeClosed'('int'(1),'int'(10)))]))).
 'bindval'('NonDeterm2','prefix'('src_span'(3,14,3,17,50,3),[],'dotTuple'(['a','int'(1)]),'prefix'('src_span'(3,21,3,24,57,3),[],'dotTuple'(['a','int'(2)]),'\x5c\'('[]'('val_of'('P','src_span'(3,30,3,31,66,1)),'val_of'('Q','src_span'(3,35,3,36,71,1)),'src_span_operator'('no_loc_info_available','src_span'(3,32,3,34,68,2))),'closure'(['a']),'src_span_operator'('no_loc_info_available','src_span'(3,38,3,39,74,1))),'src_span'(3,25,3,27,60,24)),'src_span'(3,18,3,20,53,31)),'src_span'(3,1,3,45,37,44)).
 'assertModelCheckExt'('True','val_of'('NonDeterm2','src_span'(4,12,4,22,93,10)),'Deterministic','FD').

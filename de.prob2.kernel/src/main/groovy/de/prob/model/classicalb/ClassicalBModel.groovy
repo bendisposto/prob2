@@ -1,30 +1,25 @@
 package de.prob.model.classicalb;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.github.krukow.clj_lang.PersistentHashMap
+import com.google.inject.Inject
 
-import com.github.krukow.clj_lang.PersistentHashMap;
-import com.google.inject.Inject;
-
-import de.be4.classicalb.core.parser.BParser;
-import de.be4.classicalb.core.parser.NoContentProvider;
-import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
-import de.be4.classicalb.core.parser.exceptions.BException;
-import de.be4.classicalb.core.parser.node.Start;
-import de.prob.animator.command.LoadBProjectCommand;
-import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.EvaluationException;
-import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.DependencyGraph;
-import de.prob.model.representation.Machine;
-import de.prob.model.representation.ModelElementList;
-import de.prob.scripting.StateSpaceProvider;
-import de.prob.statespace.FormalismType;
-import de.prob.statespace.StateSpace;
+import de.be4.classicalb.core.parser.BParser
+import de.be4.classicalb.core.parser.NoContentProvider
+import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
+import de.be4.classicalb.core.parser.exceptions.BException
+import de.be4.classicalb.core.parser.node.Start
+import de.prob.animator.command.LoadBProjectCommand
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.EvaluationException
+import de.prob.animator.domainobjects.IEvalElement
+import de.prob.model.representation.AbstractElement
+import de.prob.model.representation.AbstractModel
+import de.prob.model.representation.DependencyGraph
+import de.prob.model.representation.Machine
+import de.prob.model.representation.ModelElementList
+import de.prob.scripting.StateSpaceProvider
+import de.prob.statespace.FormalismType
+import de.prob.statespace.StateSpace
 
 public class ClassicalBModel extends AbstractModel {
 
@@ -35,18 +30,18 @@ public class ClassicalBModel extends AbstractModel {
 
 	@Inject
 	public ClassicalBModel(final StateSpaceProvider ssProvider) {
-		super(ssProvider);
+		super(ssProvider, PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap(), new DependencyGraph(), null);
 		this.mainMachine = null;
 		this.bparser = null;
 		this.rml = null;
 	}
 
-	ClassicalBModel(final StateSpaceProvider ssProvider, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
-			DependencyGraph graph,
-			File modelFile,
-			BParser bparser,
-			RecursiveMachineLoader rml,
-			ClassicalBMachine mainMachine) {
+	public ClassicalBModel(final StateSpaceProvider ssProvider, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
+	DependencyGraph graph,
+	File modelFile,
+	BParser bparser,
+	RecursiveMachineLoader rml,
+	ClassicalBMachine mainMachine) {
 		super(ssProvider, children, graph, modelFile);
 		this.bparser = bparser;
 		this.rml = rml;
@@ -65,9 +60,9 @@ public class ClassicalBModel extends AbstractModel {
 		machines = machines.addElement(mainMachine);
 		graph = graph.addVertex(mainMachine.getName());
 
-		boolean fpReached;
+		boolean fpReached = false;
 
-		do {
+		while(!fpReached) {
 			fpReached = true;
 			final Set<String> vertices = graph.getVertices();
 			for (final String machineName : vertices) {
@@ -82,9 +77,9 @@ public class ClassicalBModel extends AbstractModel {
 					fpReached = false;
 				}
 			}
-		} while (!fpReached);
+		}
 
-		return new ClassicalBModel(stateSpaceProvider, (PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>) children.assoc(Machine.class, machines) ,graph, modelFile, bparser, rml, mainMachine);
+		return new ClassicalBModel(stateSpaceProvider, assoc(Machine.class, machines) ,graph, modelFile, bparser, rml, mainMachine);
 	}
 
 	public ClassicalBMachine getMainMachine() {
@@ -126,5 +121,18 @@ public class ClassicalBModel extends AbstractModel {
 	@Override
 	public AbstractElement getComponent(String name) {
 		return getChildrenOfType(Machine.class).getElement(name);
+	}
+
+	@Override
+	public Object getProperty(String name) {
+		def component = getComponent(name);
+		if (component) {
+			return component
+		}
+		return super.getProperty(name);
+	}
+
+	public Object getAt(String name) {
+		getComponent(name);
 	}
 }

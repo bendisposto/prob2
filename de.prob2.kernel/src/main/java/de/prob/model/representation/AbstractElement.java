@@ -21,7 +21,7 @@ public abstract class AbstractElement {
 	protected final PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children;
 
 	public AbstractElement() {
-		children = PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap();
+		this(PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap());
 	}
 
 	public AbstractElement(
@@ -47,6 +47,15 @@ public abstract class AbstractElement {
 			return new ModelElementList<T>();
 		}
 		return (ModelElementList<T>) list;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T extends AbstractElement, S extends T> ModelElementList<S> getChildrenAndCast(Class<T> key, Class<S> realType) {
+		ModelElementList<? extends AbstractElement> list = children.get(key);
+		if (list == null) {
+			return new ModelElementList<S>();
+		}
+		return (ModelElementList<S>) list;
 	}
 
 	public PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>assoc(

@@ -1,37 +1,33 @@
 package de.prob.model.eventb;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
+import com.github.krukow.clj_lang.PersistentHashMap
+import com.google.inject.Inject
 
-import com.github.krukow.clj_lang.PersistentHashMap;
-import com.google.inject.Inject;
-
-import de.prob.animator.command.LoadEventBProjectCommand;
-import de.prob.animator.domainobjects.EvaluationException;
-import de.prob.animator.domainobjects.EventB;
-import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.eventb.translate.EventBModelTranslator;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.DependencyGraph;
-import de.prob.model.representation.DependencyGraph.ERefType;
-import de.prob.model.representation.Machine;
-import de.prob.model.representation.ModelElementList;
-import de.prob.scripting.StateSpaceProvider;
-import de.prob.statespace.FormalismType;
-import de.prob.statespace.StateSpace;
+import de.prob.animator.command.LoadEventBProjectCommand
+import de.prob.animator.domainobjects.EvaluationException
+import de.prob.animator.domainobjects.EventB
+import de.prob.animator.domainobjects.IEvalElement
+import de.prob.model.eventb.translate.EventBModelTranslator
+import de.prob.model.representation.AbstractElement
+import de.prob.model.representation.AbstractModel
+import de.prob.model.representation.DependencyGraph
+import de.prob.model.representation.Machine
+import de.prob.model.representation.ModelElementList
+import de.prob.model.representation.DependencyGraph.ERefType
+import de.prob.scripting.StateSpaceProvider
+import de.prob.statespace.FormalismType
+import de.prob.statespace.StateSpace
 
 public class EventBModel extends AbstractModel {
 
 	@Inject
 	public EventBModel(final StateSpaceProvider stateSpaceProvider) {
 		this(stateSpaceProvider, PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap(), new DependencyGraph(),
-				null);
+		null);
 	}
 
 	private EventBModel(StateSpaceProvider stateSpaceProvider, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
-			DependencyGraph graph, File modelFile) {
+	DependencyGraph graph, File modelFile) {
 		super(stateSpaceProvider, children, graph, modelFile);
 	}
 
@@ -56,17 +52,17 @@ public class EventBModel extends AbstractModel {
 		return new EventBModel(stateSpaceProvider, assoc(clazz, elements), graph, modelFile);
 	}
 
-	public <T extends AbstractElement, S extends T> EventBModel addTo(Class<T> clazz, S element) {
+	public <T extends AbstractElement> EventBModel addTo(Class<T> clazz, T element) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
 		return new EventBModel(stateSpaceProvider, assoc(clazz, list.addElement(element)), graph, modelFile);
 	}
 
-	public <T extends AbstractElement, S extends T> EventBModel removeFrom(Class<T> clazz, S element) {
+	public <T extends AbstractElement> EventBModel removeFrom(Class<T> clazz, T element) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
 		return new EventBModel(stateSpaceProvider, assoc(clazz, list.removeElement(element)), graph, modelFile);
 	}
 
-	public <T extends AbstractElement, S extends T> EventBModel replaceIn(Class<T> clazz, S oldElement, S newElement) {
+	public <T extends AbstractElement> EventBModel replaceIn(Class<T> clazz, T oldElement, T newElement) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
 		return new EventBModel(stateSpaceProvider, assoc(clazz, list.replaceElement(oldElement, newElement)), graph, modelFile);
 	}
@@ -119,7 +115,7 @@ public class EventBModel extends AbstractModel {
 			final Map<String, String> preferences) {
 		return stateSpaceProvider.loadFromCommand(this, mainComponent,
 				preferences, new LoadEventBProjectCommand(
-						new EventBModelTranslator(this, mainComponent)));
+				new EventBModelTranslator(this, mainComponent)));
 	}
 
 	@Override
@@ -137,6 +133,19 @@ public class EventBModel extends AbstractModel {
 
 	public Context getContext(String name) {
 		return getChildrenOfType(Context.class).getElement(name);
+	}
+
+	@Override
+	public Object getProperty(String name) {
+		def component = getComponent(name);
+		if (component) {
+			return component
+		}
+		return super.getProperty(name);
+	}
+
+	public Object getAt(String name) {
+		getComponent(name);
 	}
 
 }
