@@ -18,7 +18,6 @@ class StateSpaceEvaluationTest extends Specification {
 	static StateSpace s
 	static State root
 	static State firstState
-
 	def setupSpec() {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
@@ -26,12 +25,10 @@ class StateSpaceEvaluationTest extends Specification {
 		root = s.getRoot()
 		firstState = root.$initialise_machine()
 	}
-
 	def setup() {
 		s.formulaRegistry.clear()
 		s.subscribedFormulas.clear()
 	}
-
 	def "it is possible to evaluate formulas in a state"() {
 		expect:
 		s.eval(firstState, [
@@ -39,14 +36,12 @@ class StateSpaceEvaluationTest extends Specification {
 			new ClassicalB("ready")
 		]).collect { it.getValue() } == ["{}", "{}"]
 	}
-
 	def "it is possible for someone to subscribe to a formula"() {
 		when:
 		def formula = new ClassicalB("waiting /\\ ready")
 		boolean before = s.formulaRegistry.containsKey(formula)
 		def subscriber = "I am a subscriber!"
 		def success = s.subscribe(subscriber, formula)
-
 		then:
 		!before
 		success
@@ -54,7 +49,6 @@ class StateSpaceEvaluationTest extends Specification {
 		s.formulaRegistry[formula].containsKey(subscriber)
 		s.subscribedFormulas.contains(formula)
 	}
-
 	def "it is possible for multiple people to subscribe to the same formula"() {
 		when:
 		def formula = new ClassicalB("waiting \\/ ready")
@@ -63,7 +57,6 @@ class StateSpaceEvaluationTest extends Specification {
 		def subscriber2 = "I am also a subscriber!"
 		def success = s.subscribe(subscriber1, formula)
 		def success2 = s.subscribe(subscriber2, formula)
-
 		then:
 		!before // it didn't have it before
 		success
@@ -81,7 +74,6 @@ class StateSpaceEvaluationTest extends Specification {
 		CSP csp = new CSP("some formula", m)
 		def subscriber1 = "subscriber1"
 		def success = s.subscribe(subscriber1, csp)
-
 		then:
 		!success
 		!s.formulaRegistry.containsKey(csp)
@@ -96,7 +88,6 @@ class StateSpaceEvaluationTest extends Specification {
 		boolean before2 = s.formulaRegistry.containsKey(formula2)
 		def subscriber = "I am a subscriber!"
 		def success = s.subscribe(subscriber, [formula, formula2])
-
 		then:
 		!before
 		!before2
@@ -108,7 +99,6 @@ class StateSpaceEvaluationTest extends Specification {
 		s.formulaRegistry[formula2].containsKey(subscriber)
 		s.subscribedFormulas.contains(formula2)
 	}
-
 	def "it is possible for multiple people to subscribe to the same multiple formulas"() {
 		when:
 		def formula = new ClassicalB("card(ready)+card(waiting)")
@@ -119,7 +109,6 @@ class StateSpaceEvaluationTest extends Specification {
 		def subscriber2 = "I am also a subscriber!"
 		def success = s.subscribe(subscriber1, [formula, formula2])
 		def success2 = s.subscribe(subscriber2, [formula, formula2])
-
 		then:
 		!before
 		!before2
@@ -129,7 +118,6 @@ class StateSpaceEvaluationTest extends Specification {
 		s.formulaRegistry[formula].containsKey(subscriber1)
 		s.formulaRegistry[formula].containsKey(subscriber2)
 		s.subscribedFormulas.contains(formula)
-
 		s.formulaRegistry.containsKey(formula2)
 		s.formulaRegistry[formula2].containsKey(subscriber1)
 		s.formulaRegistry[formula2].containsKey(subscriber2)
@@ -138,13 +126,13 @@ class StateSpaceEvaluationTest extends Specification {
 
 	def "multiple csp formulas cannot be subscribed"() {
 		when:
-		CSPModel m = new CSPModel(null);
+		true
+		CSPModel m = Main.getInjector().getInstance(CSPModel.class);
 		m = m.create("some content", new File("somedir"+File.separator+"someotherdir"+File.separator+"myfile.csp"))
 		CSP csp = new CSP("some formula", m)
 		CSP csp2 = new CSP("some formula2", m)
 		def subscriber1 = "subscriber1"
 		def success = s.subscribe(subscriber1, [csp, csp2])
-
 		then:
 		!success
 		!s.formulaRegistry.containsKey(csp)
@@ -162,7 +150,6 @@ class StateSpaceEvaluationTest extends Specification {
 		def formula = new ClassicalB("card(waiting) + 1")
 		s.subscribe("mmm",formula)
 		def values = s.valuesAt(firstState)
-
 		then:
 		values.containsKey(formula)
 		values[formula].getValue() == "1"
@@ -181,7 +168,6 @@ class StateSpaceEvaluationTest extends Specification {
 		def before2 = s.formulaRegistry[formula].containsKey(subscriber)
 		subscriber = null
 		System.gc()
-
 		then:
 		success
 		before
@@ -201,7 +187,6 @@ class StateSpaceEvaluationTest extends Specification {
 		def success = s.subscribe(subscriber, formula)
 		def before = s.isSubscribed(formula)
 		s.formulaRegistry[formula].remove(subscriber) // this will happen at some point if the subscriber is cleaned up by the garbage collector
-
 		then:
 		success
 		before
@@ -215,7 +200,6 @@ class StateSpaceEvaluationTest extends Specification {
 		def success = s.subscribe(subscriber, formula)
 		def before = s.isSubscribed(formula)
 		def success2 = s.unsubscribe(subscriber, formula)
-
 		then:
 		success
 		success2
@@ -229,7 +213,6 @@ class StateSpaceEvaluationTest extends Specification {
 		def formula = new ClassicalB("card(ready) + card(active) + 7")
 		def success = s.subscribe(subscriber, formula)
 		def success2 = s.subscribe(subscriber2, formula)
-
 		then:
 		success
 		success2
@@ -248,7 +231,6 @@ class StateSpaceEvaluationTest extends Specification {
 		def success = s.subscribe(subscriber, formula)
 		def before = s.getSubscribedFormulas() == [formula] as Set
 		s.formulaRegistry.remove(formula)
-
 		then:
 		success
 		before
@@ -262,7 +244,6 @@ class StateSpaceEvaluationTest extends Specification {
 		def success = s.subscribe(subscriber, formula)
 		def before = s.getSubscribedFormulas() == [formula] as Set
 		s.formulaRegistry[formula].remove(subscriber)
-
 		then:
 		success
 		before
@@ -286,7 +267,6 @@ class StateSpaceEvaluationTest extends Specification {
 		]
 		s.subscribe("I'm a subscriber!",[ready])
 		Map<State, Map<IEvalElement, AbstractEvalResult>> result = s.evaluateForGivenStates(states, [waiting, ready, active])
-
 		then:
 		result[root] == null // ignored because it is not initialised
 		def statesWOroot = states.findAll { it != root}

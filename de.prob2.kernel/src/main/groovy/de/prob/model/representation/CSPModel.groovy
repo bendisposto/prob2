@@ -1,19 +1,16 @@
 package de.prob.model.representation;
 
-import java.io.File;
-import java.util.Map;
+import com.github.krukow.clj_lang.PersistentHashMap
+import com.google.inject.Inject
 
-import com.github.krukow.clj_lang.PersistentHashMap;
-import com.google.inject.Inject;
-
-import de.prob.animator.command.LoadCSPCommand;
-import de.prob.animator.domainobjects.CSP;
-import de.prob.animator.domainobjects.EvaluationException;
-import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.prolog.output.PrologTermStringOutput;
-import de.prob.scripting.StateSpaceProvider;
-import de.prob.statespace.FormalismType;
-import de.prob.statespace.StateSpace;
+import de.prob.animator.command.LoadCSPCommand
+import de.prob.animator.domainobjects.CSP
+import de.prob.animator.domainobjects.EvaluationException
+import de.prob.animator.domainobjects.IEvalElement
+import de.prob.prolog.output.PrologTermStringOutput
+import de.prob.scripting.StateSpaceProvider
+import de.prob.statespace.FormalismType
+import de.prob.statespace.StateSpace
 
 public class CSPModel extends AbstractModel {
 
@@ -22,12 +19,14 @@ public class CSPModel extends AbstractModel {
 
 	@Inject
 	public CSPModel(final StateSpaceProvider ssProvider) {
-		super(ssProvider);
+		super(ssProvider,
+				PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap(),
+				new DependencyGraph(),
+				null);
 	}
 
 	public CSPModel(final StateSpaceProvider ssProvider, String content, File modelFile, CSPElement mainComponent) {
-		super(ssProvider,
-				PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap(),
+		super(ssProvider,PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap(),
 				new DependencyGraph(), modelFile);
 		this.content = content;
 		this.mainComponent = mainComponent;
@@ -77,5 +76,19 @@ public class CSPModel extends AbstractModel {
 		}
 		return null;
 	}
+	
+	@Override
+	public Object getProperty(String name) {
+		def component = getComponent(name);
+		if (component) {
+			return component
+		}
+		return super.getProperty(name);
+	}
+
+	public Object getAt(String name) {
+		getComponent(name);
+	}
+
 
 }
