@@ -22,18 +22,13 @@ end
  * 
  */
 
-
 mm = new ModelModifier().make {
 	
 	context(name: "definitions") {
 		constants "Divides", "IsGCD"
 		
-		axioms "Divides = {i↦j ∣ ∃k·k∈0‥j ∧ j = i∗k}",
-		       """IsGCD = {i↦j↦k ∣ i↦j ∈ Divides ∧ i↦k ∈ Divides ∧
-			   (∀r· r ∈ (0‥j ∪ 0‥k)
-			   ⇒  (r↦j ∈ Divides ∧ r↦k ∈ Divides ⇒ r↦i ∈ Divides)
-			   )
-			   }"""
+		axioms "Divides = {i|->j ∣ #k.k:0..j & j = i∗k}",
+		       """IsGCD = {i|->j|->k | i|->j : Divides & i|->k : Divides & (!r. r : (0..j \\/ 0..k) => (r|->j : Divides & r|->k : Divides => r|->i : Divides) ) }"""
 		}
 	
 	context(name: "limits") {
