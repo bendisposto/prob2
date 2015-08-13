@@ -8,6 +8,7 @@ import de.be4.classicalb.core.parser.NoContentProvider
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.be4.classicalb.core.parser.node.Start
+import de.be4.classicalb.core.parser.node.TIdentifierLiteral
 import de.prob.animator.command.LoadBProjectCommand
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvaluationException
@@ -24,7 +25,6 @@ import de.prob.statespace.StateSpace
 public class ClassicalBModel extends AbstractModel {
 
 	private final ClassicalBMachine mainMachine;
-	private final HashSet<String> done = new HashSet<String>();
 	private final BParser bparser;
 	private final RecursiveMachineLoader rml;
 
@@ -53,30 +53,37 @@ public class ClassicalBModel extends AbstractModel {
 			final BParser bparser) {
 		DependencyGraph graph = new DependencyGraph();
 
-		final DomBuilder d = new DomBuilder(false);
+		final DomBuilder d = new DomBuilder(null);
 		ClassicalBMachine mainMachine = d.build(mainast);
 
 		ModelElementList<ClassicalBMachine> machines = new ModelElementList<ClassicalBMachine>();
 		machines = machines.addElement(mainMachine);
 		graph = graph.addVertex(mainMachine.getName());
 
+
+		final Set<LinkedList<TIdentifierLiteral>> vertices = new HashSet<LinkedList<TIdentifierLiteral>>();
+		vertices.add(d.getMachineId())
+		final Set<LinkedList<TIdentifierLiteral>> done = new HashSet<LinkedList<TIdentifierLiteral>>();
 		boolean fpReached = false;
 
 		while(!fpReached) {
 			fpReached = true;
-			final Set<String> vertices = graph.getVertices();
-			for (final String machineName : vertices) {
+			Set<LinkedList<TIdentifierLiteral>> newVertices = new HashSet<LinkedList<TIdentifierLiteral>>()
+			for (final LinkedList<TIdentifierLiteral> machineId : vertices) {
+				String machineName = machineId.getLast().getText();
 				final Start ast = rml.getParsedMachines().get(machineName);
-				if (!done.contains(machineName)) {
-					DependencyWalker walker = new DependencyWalker(machineName, machines,
+				if (!done.contains(machineId)) {
+					DependencyWalker walker = new DependencyWalker(machineId, machines,
 							graph, rml.getParsedMachines());
 					ast.apply(walker);
 					graph = walker.getGraph();
 					machines = walker.getMachines();
-					done.add(machineName);
+					newVertices.addAll(walker.getMachineIds());
+					done.add(machineId);
 					fpReached = false;
 				}
 			}
+			vertices.addAll(newVertices)
 		}
 
 		return new ClassicalBModel(stateSpaceProvider, assoc(Machine.class, machines) ,graph, modelFile, bparser, rml, mainMachine);

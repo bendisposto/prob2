@@ -30,7 +30,7 @@ class SpockDomWalkerTest extends Specification {
           END
 		"""
 		def ast = parse(testmachine)
-		machine = new DomBuilder(false).build(ast)
+		machine = new DomBuilder(null).build(ast)
 	}
 
 	def "testing that variables are handled correctly"() {

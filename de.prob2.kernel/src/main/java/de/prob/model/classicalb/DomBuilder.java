@@ -54,11 +54,12 @@ public class DomBuilder extends DepthFirstAdapter {
 	private final List<de.prob.model.representation.Set> sets = new ArrayList<de.prob.model.representation.Set>();
 	private final List<Assertion> assertions = new ArrayList<Assertion>();
 	private final List<Operation> operations = new ArrayList<Operation>();
-	private final boolean used;
 	private final Set<String> usedIds = new HashSet<String>();
+	private String prefix;
+	private LinkedList<TIdentifierLiteral> machineId;
 
-	public DomBuilder(final boolean used) {
-		this.used = used;
+	public DomBuilder(final String prefix) {
+		this.prefix = prefix;
 	}
 
 	@Override
@@ -69,6 +70,10 @@ public class DomBuilder extends DepthFirstAdapter {
 	public ClassicalBMachine build(final Start ast) {
 		((Start) ast.clone()).apply(this);
 		return getMachine();
+	}
+
+	public LinkedList<TIdentifierLiteral> getMachineId() {
+		return machineId;
 	}
 
 	public ClassicalBMachine getMachine() {
@@ -88,6 +93,10 @@ public class DomBuilder extends DepthFirstAdapter {
 	@Override
 	public void outAMachineHeader(final AMachineHeader node) {
 		name = extractIdentifierName(node.getName());
+		machineId = node.getName();
+		if (prefix != null && !prefix.equals(name)) {
+			name = prefix + "." + name;
+		}
 		for (PExpression expression : node.getParameters()) {
 			parameters.add(new Parameter(createExpressionAST(expression)));
 		}
@@ -120,7 +129,7 @@ public class DomBuilder extends DepthFirstAdapter {
 	@Override
 	public void outAVariablesMachineClause(final AVariablesMachineClause node) {
 		for (PExpression pExpression : node.getIdentifiers()) {
-			if (used) {
+			if (prefix != null) {
 				usedIds.add(((AIdentifierExpression) pExpression)
 						.getIdentifier().get(0).getText());
 			}
@@ -159,7 +168,10 @@ public class DomBuilder extends DepthFirstAdapter {
 
 	@Override
 	public void inAOperation(final AOperation node) {
-		final String name = extractIdentifierName(node.getOpName());
+		String name = extractIdentifierName(node.getOpName());
+		if (prefix != null && !prefix.equals(name)) {
+			name = prefix + "." + name;
+		}
 		LinkedList<PExpression> paramIds = node.getParameters();
 		final List<String> params = extractIdentifiers(paramIds);
 		final List<String> output = extractIdentifiers(node.getReturnValues());
@@ -257,12 +269,12 @@ public class DomBuilder extends DepthFirstAdapter {
 	private class RenameIdentifiers extends DepthFirstAdapter {
 		@Override
 		public void inAIdentifierExpression(final AIdentifierExpression node) {
-			if (used) {
+			if (prefix != null) {
 				String id = node.getIdentifier().get(0).getText();
 
 				if (usedIds.contains(id)) {
 					node.getIdentifier().set(0,
-							new TIdentifierLiteral(name + "." + id));
+							new TIdentifierLiteral(prefix + "." + id));
 				}
 			}
 		}
