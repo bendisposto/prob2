@@ -21,10 +21,10 @@ public abstract class AbstractModel extends AbstractElement {
 	protected File modelFile;
 	protected final DependencyGraph graph;
 
-	public AbstractModel(StateSpaceProvider stateSpaceProvider,
+	public AbstractModel(
+			StateSpaceProvider stateSpaceProvider,
 			PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children,
-			DependencyGraph graph,
-			File modelFile) {
+			DependencyGraph graph, File modelFile) {
 		super(children);
 		this.stateSpaceProvider = stateSpaceProvider;
 		this.graph = graph;
@@ -54,8 +54,25 @@ public abstract class AbstractModel extends AbstractElement {
 		return graph.toString();
 	}
 
+	/**
+	 * Will parse a formula including information specific to the model at hand.
+	 * Will throw a {@link RuntimeException} if parsing is not successful.
+	 *
+	 * @param formula
+	 *            to be parsed
+	 * @return a valid formula
+	 */
 	public abstract IEvalElement parseFormula(String formula);
 
+	/**
+	 * Will check the syntax of a formula to see if it is valid in the scope of
+	 * this model.
+	 * 
+	 * @param formula
+	 *            to be checked
+	 * @return whether or not the formula in question has valid syntax in the
+	 *         scope of this model
+	 */
 	public abstract boolean checkSyntax(String formula);
 
 	public abstract FormalismType getFormalismType();
@@ -85,15 +102,16 @@ public abstract class AbstractModel extends AbstractElement {
 	}
 
 	public AbstractElement get(List<String> path) {
-		if(path.isEmpty()) {
+		if (path.isEmpty()) {
 			return null;
 		}
-		return  (AbstractElement) Eval.x(this,"x.${path.join('.')}");
+		return (AbstractElement) Eval.x(this, "x.${path.join('.')}");
 	}
 
 	public StateSpace load(AbstractElement mainComponent) {
 		return load(mainComponent, new HashMap<String, String>());
 	}
 
-	public abstract StateSpace load(AbstractElement mainComponent, Map<String,String> preferences);
+	public abstract StateSpace load(AbstractElement mainComponent,
+			Map<String, String> preferences);
 }
