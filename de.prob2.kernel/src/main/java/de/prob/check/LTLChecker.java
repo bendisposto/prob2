@@ -1,7 +1,9 @@
 package de.prob.check;
 
+import de.be4.ltl.core.parser.LtlParseException;
 import de.prob.animator.command.LTLCheckingJob;
 import de.prob.animator.domainobjects.LTL;
+import de.prob.model.eventb.EventBModel;
 import de.prob.statespace.StateSpace;
 
 public class LTLChecker implements IModelCheckJob {
@@ -10,6 +12,12 @@ public class LTLChecker implements IModelCheckJob {
 	private final IModelCheckListener ui;
 	private final String jobId;
 	private final LTLCheckingJob job;
+
+	public LTLChecker(final StateSpace s, final String formula)
+			throws LtlParseException {
+		this(s, s.getModel() instanceof EventBModel ? LTL.parseEventB(formula)
+				: new LTL(formula));
+	}
 
 	public LTLChecker(final StateSpace s, final LTL formula) {
 		this(s, formula, null);
