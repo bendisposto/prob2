@@ -20,10 +20,6 @@ repositories {
 		name "sonatype snapshots"
 		url "https://oss.sonatype.org/content/repositories/snapshots"
 	}
-	maven {
-		name "cobra"
-		url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-	}
 }
 
 
@@ -54,7 +50,7 @@ dependencies {
 
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
-  compile(group: 'org.eventb', name: 'org.eventb.core.ast', version: '3.0.0')
+  compile(group: 'de.hhu.stups', name: 'rodin-ast', version: '3.2.0-SNAPSHOT')
 
 	compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
