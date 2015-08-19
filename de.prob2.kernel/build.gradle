@@ -8,6 +8,8 @@ project.group = 'de.hhu.stups'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+
+
 def gradle_version = '1.0-rc-3'
 
 project.version = '2.0.0-SNAPSHOT'
@@ -194,6 +196,10 @@ task deploy(type: Copy, dependsOn: build) {
     from configurations.runtime
 }
 
+
+javadoc {
+	failOnError = false
+}
 
 tasks.eclipse.dependsOn createBuildConstants
 
