@@ -4,7 +4,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
 
-project.group = 'de.prob2'
+project.group = 'de.hhu.stups'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
@@ -94,9 +94,6 @@ version=${project.version}"""
 
 
 compileGroovy { dependsOn= [createBuildConstants]}
-
-
-
 
 
 test.doFirst { systemProperties['integrationtest'] = 'true' }
@@ -198,3 +195,75 @@ task deploy(type: Copy, dependsOn: build) {
 
 
 tasks.eclipse.dependsOn createBuildConstants
+
+if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+
+println "Configuring deployment for ${ project.name }"
+
+apply plugin: 'signing'
+
+task javadocJar(type: Jar) {
+	 classifier = 'javadoc'
+	 from javadoc
+}
+
+task sourcesJar(type: Jar) {
+	 classifier = 'sources'
+	 from sourceSets.main.allSource
+}
+
+artifacts {
+	 archives javadocJar, sourcesJar
+}
+
+
+signing {
+	 sign configurations.archives
+}
+
+uploadArchives {
+ repositories {
+	 mavenDeployer {
+		 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+		 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+			 authentication(userName: ossrhUsername, password: ossrhPassword)
+		 }
+
+		 snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+			 authentication(userName: ossrhUsername, password: ossrhPassword)
+		 }
+
+		 pom.project {
+			 name "prob2-kernel"
+			 packaging 'jar'
+			 // optionally artifactId can be defined here
+			 description 'The ProB 2.0 Kernel'
+			 url 'http://www.prob2.de'
+
+			 licenses {
+				 license {
+					 name 'Eclipse Public License, Version 1.0'
+					 url 'http://www.eclipse.org/org/documents/epl-v10.html'
+				 }
+			 }
+
+			 scm {
+				 connection 'scm:git:git://github.com/bendisposto/prob2.git'
+				 developerConnection 'scm:git:git@github.com:bendisposto/prob2.git'
+				 url 'https://github.com/bendisposto/prob2'
+			 }
+
+
+			 developers {
+				 developer {
+					 id 'bendisposto'
+					 name 'Jens Bendisposto'
+					 email 'jens@bendisposto.de'
+				 }
+			 }
+		 }
+	 }
+ }
+}
+}
