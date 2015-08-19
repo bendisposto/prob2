@@ -7,13 +7,13 @@ import de.prob.model.representation.Guard
 
 
 
-class EventModifier extends AbstractModifier {
+public class EventModifier extends AbstractModifier {
 	private final actctr
 	private final grdctr
 	def Event event
 	boolean initialisation
 
-	private EventModifier(Event event, boolean initialisation=false) {
+	public EventModifier(Event event, boolean initialisation=false) {
 		this.initialisation = initialisation
 		this.actctr = extractCounter("act",event.actions)
 		this.event = event
