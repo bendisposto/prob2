@@ -24,7 +24,7 @@ class ClassicalBModelTest extends Specification {
 		ast = bparser.parseFile(model,false)
 		def RecursiveMachineLoader rml = new RecursiveMachineLoader(model.getParent(),bparser.getContentProvider())
 		rml.loadAllMachines(model, ast, null, bparser.getDefinitions(),
-				bparser.getPragmas());
+				);
 		c = c.create(ast, rml, model, bparser)
 		graph = c.getGraph()
 	}
