@@ -97,8 +97,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 			final RecursiveMachineLoader rml = new RecursiveMachineLoader(
 					directory, contentProvider);
 
-			rml.loadAllMachines(f, ast, null, bparser.getDefinitions(),
-					bparser.getPragmas());
+			rml.loadAllMachines(f, ast, null, bparser.getDefinitions());
 			logger.trace("Done parsing '{}'", f.getAbsolutePath());
 			return rml;
 		} catch (BException e) {

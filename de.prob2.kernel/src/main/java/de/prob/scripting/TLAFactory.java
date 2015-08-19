@@ -79,8 +79,7 @@ public class TLAFactory implements ModelFactory<ClassicalBModel> {
 		final RecursiveMachineLoader rml = new RecursiveMachineLoader(
 				f.getParent(), bparser.getContentProvider());
 
-		rml.loadAllMachines(f, ast, null, bparser.getDefinitions(),
-				bparser.getPragmas());
+		rml.loadAllMachines(f, ast, null, bparser.getDefinitions());
 
 		logger.trace("Done parsing '{}'", f.getAbsolutePath());
 		return rml;
