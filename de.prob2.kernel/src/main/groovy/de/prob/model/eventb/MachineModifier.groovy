@@ -10,6 +10,7 @@ import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Variable
 
 
+
 /**
  * The {@link MachineModifier} provides an API to programmatically modify or
  * construct {@link EventBMachine}s. Basic elements can be added to the machine
@@ -219,7 +220,7 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier initialisation(Closure cls, boolean extended=false) {
-		def refines = machine.getRefines().isEmpty() ? [] : [machine.getRefines()[0].events.INITIALISATION]
+		def refines = machine.getRefines().isEmpty() ? null : "INITIALISATION"
 		event("INITIALISATION", refines, EventType.ORDINARY, extended, cls)
 	}
 
@@ -230,36 +231,23 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
 		def props = validateProperties(properties, [name: String, refines: [String, null],
-			extended: [Boolean, false], comment: [String, null], type: [EventType, EventType.ORDINARY]])
+			extended: [Boolean, false], comment: [String, null], type: [
+				EventType,
+				EventType.ORDINARY
+			]])
 
-		def refinedEvent = properties["refines"]
-		def refinedE  = []
-		if (refinedEvent) {
-			refinedEvent = props["refines"]
-			machine.getRefines().each { EventBMachine m ->
-				def e = m.getEvent(refinedEvent)
-				if (e) {
-					refinedE << e
-				}
-			}
-		}
-
-		if (refinedEvent && refinedE.size() != 1) {
-			throw new IllegalArgumentException("Tried to refine event $refinedEvent, but found $refinedE events")
-		}
-
-		event(props["name"], refinedE, props["type"],props["extended"], cls, props["comment"])
+		event(props["name"], props["refines"], props["type"],props["extended"], cls, props["comment"])
 	}
 
-	def MachineModifier event(String name, List<Event> refinedEvents, EventType type, boolean extended, Closure cls={}, String comment=null) {
+	def MachineModifier event(String name, String refinedEvent, EventType type, boolean extended, Closure cls={}, String comment=null) {
 		def mm = removePOsForEvent(name)
 		def oldevent = machine.getEvent(name)
 		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, extended)
-		event = event.set(Event.class, new ModelElementList<Event>(refinedEvents))
 		if (comment) {
 			event = event.addTo(ElementComment.class, new ElementComment(comment))
 		}
 		def em = new EventModifier(event, "INITIALISATION" == name).make(cls)
+		em = refinedEvent ? em.refines(refinedEvent) : em
 		def m = mm.getMachine()
 		if (oldevent) {
 			m = m.replaceIn(BEvent.class, oldevent, em.getEvent())

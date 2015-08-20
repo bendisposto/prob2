@@ -3,6 +3,7 @@ package de.prob.model.eventb
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.Action
 import de.prob.model.representation.Guard
+import de.prob.model.representation.ModelElementList
 
 
 
@@ -22,6 +23,12 @@ class EventModifier extends AbstractModifier {
 
 	private EventModifier newEM(Event event) {
 		return new EventModifier(event, initialisation)
+	}
+
+	def EventModifier refines(String name) {
+		return newEM(event.set(Event.class, new ModelElementList<Event>([
+			new Event(name, EventType.ORDINARY, false)
+		])))
 	}
 
 	def EventModifier when(Map g) {
