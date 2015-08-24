@@ -161,6 +161,27 @@ public class GraphConstructionTest extends Specification {
 		def graph = new AlgorithmGraph(n.getAlgorithm())
 
 		then:
-		println graph
+		print graph
+		node(graph, 0, CombinedBranch).branches.collect { it.getConditions() } == [
+			["u /= 0", "u < v"],
+			["u /= 0", "not(u < v)"],
+			["not(u /= 0)"]
+		]
+		node(graph, 1, Node).getStatements() == [
+			new Assignments(["u := v", "v := u"])
+		]
+		node(graph, 2, Node).getStatements() == [
+			new Assignments(["u := u - v"])
+		]
+		node(graph, 3, Node).getStatements() == [
+			new Assertion("u|->m|->n : IsGCD")
+		]
+		node(graph, 4, Nil)
+
+		edge(graph, 0, 1, "--[u /= 0, u < v]-->")
+		edge(graph, 0, 2, "--[u /= 0, not(u < v)]-->")
+		edge(graph, 2, 0, "-->")
+		edge(graph, 0, 3, "--[not(u /= 0)]-->")
+		edge(graph, 3, 4, "-->")
 	}
 }

@@ -51,6 +51,13 @@ public class AlgorithmGraph {
 		addEdge(pc, nPc, "-- ${node.notCondition} -->")
 	}
 
+	def addEdges(int pc, CombinedBranch node) {
+		node.branches.each { BranchCondition cond ->
+			int newPc = addNode(cond.getOutNode())
+			addEdge(pc, newPc, "--${cond.getConditions().toString()}-->")
+		}
+	}
+
 	def addEdges(int pc, Graft node) {
 		int topc = addNode(node.getOutNode())
 		addEdge(pc, topc, "-->")

@@ -37,7 +37,7 @@ class AlgorithmToGraph {
 
 		INode end1 = getEndNode(yesNode)
 		INode end2 = getEndNode(noNode)
-		Graft graft = new Graft(end1, end2, extractGraph(rest))
+		Graft graft = new Graft(extractGraph(rest))
 		end1.setEndNode(graft)
 		end2.setEndNode(graft)
 
@@ -60,3 +60,4 @@ class AlgorithmToGraph {
 		return new Node([assignments], extractGraph(rest))
 	}
 }
+
