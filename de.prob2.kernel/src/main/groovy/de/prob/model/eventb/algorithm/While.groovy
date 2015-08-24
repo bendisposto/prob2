@@ -1,7 +1,5 @@
 package de.prob.model.eventb.algorithm
 
-import static de.prob.unicode.UnicodeTranslator.toUnicode
-
 class While extends Statement {
 	def String condition
 	def String variant
@@ -15,5 +13,19 @@ class While extends Statement {
 
 	def String toString() {
 		"while (${toUnicode(condition)}):"
+	}
+
+	@Override
+	public boolean equals(Object that) {
+		if (that instanceof While) {
+			return this.condition.equals(that.getCondition()) &&
+			this.block.equals(that.getBlock())
+		}
+		return false
+	}
+
+	@Override
+	public int hashCode() {
+		return this.condition.hashCode() * 7 + this.block.hashCode() * 13;
 	}
 }
