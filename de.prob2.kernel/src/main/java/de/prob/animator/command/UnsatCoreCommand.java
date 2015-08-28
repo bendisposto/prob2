@@ -28,6 +28,8 @@ public class UnsatCoreCommand extends AbstractCommand {
 			boolean minimumCore) {
 		if (minimumCore)
 			realCommand = new UnsatMinimalCoreCommand(pred, fixedPreds);
+		else 
+			realCommand = new UnsatRegularCoreCommand(pred, fixedPreds);
 	}
 
 	@Override
