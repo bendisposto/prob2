@@ -26,6 +26,7 @@ import de.prob.statespace.Trace;
 public class ExecuteUntilCommand extends AbstractCommand implements
 		IStateSpaceModifier, ITraceDescription {
 
+	private static final String PROLOG_COMMAND_NAME = "generate_trace_until_condition_fulfilled";
 	private static final String TRACE_VARIABLE = "Trace";
 	private static final String RESULT_VARIABLE = "Result";
 	private final List<Transition> resultTrace = new ArrayList<Transition>();
@@ -43,7 +44,7 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
-		pout.openTerm("generate_trace_until_condition_fulfilled");
+		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.printAtomOrNumber(this.startstate.getId());
 		condition.printProlog(pout);
 		pout.printVariable(TRACE_VARIABLE);

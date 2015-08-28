@@ -6,6 +6,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public class SerializeStateCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "serialize";
 	private final String id;
 	private String state;
 
@@ -21,7 +22,7 @@ public class SerializeStateCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("serialize").printAtomOrNumber(id).printVariable("State")
+		pto.openTerm(PROLOG_COMMAND_NAME).printAtomOrNumber(id).printVariable("State")
 				.closeTerm();
 	}
 

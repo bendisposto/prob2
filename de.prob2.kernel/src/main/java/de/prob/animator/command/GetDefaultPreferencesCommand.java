@@ -28,6 +28,7 @@ import de.prob.prolog.term.PrologTerm;
  */
 public final class GetDefaultPreferencesCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "list_eclipse_preferences";
 	Logger logger = LoggerFactory.getLogger(GetDefaultPreferencesCommand.class);
 	private static final String PREFS_VARIABLE = "Prefs";
 	private List<ProBPreference> prefs;
@@ -58,7 +59,7 @@ public final class GetDefaultPreferencesCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("list_eclipse_preferences").printVariable(PREFS_VARIABLE)
+		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(PREFS_VARIABLE)
 				.closeTerm();
 	}
 }

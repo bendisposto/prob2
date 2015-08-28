@@ -19,6 +19,8 @@ import de.prob.statespace.Trace;
 public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 		ITraceDescription, IStateSpaceModifier {
 
+	private static final String PROLOG_COMMAND_NAME = "find_trace_from_node_to_node";
+
 	Logger logger = LoggerFactory.getLogger(FindTraceBetweenNodesCommand.class);
 
 	private static final String TRACE = "Trace";
@@ -37,7 +39,7 @@ public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("find_trace_from_node_to_node");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtomOrNumber(sourceId);
 		pto.printAtomOrNumber(destId);
 		pto.printVariable(TRACE);

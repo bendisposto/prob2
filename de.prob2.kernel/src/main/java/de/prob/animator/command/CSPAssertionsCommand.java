@@ -43,6 +43,8 @@ import de.prob.prolog.term.PrologTerm;
 
 public class CSPAssertionsCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "check_csp_assertions";
+
 	Logger logger = LoggerFactory.getLogger(CSPAssertionsCommand.class);
 
 	private static final String RESULT_VARIABLE = "Results";
@@ -92,7 +94,7 @@ public class CSPAssertionsCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
-		pout.openTerm("check_csp_assertions");
+		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.openList();
 
 		// print parsed expressions/predicates

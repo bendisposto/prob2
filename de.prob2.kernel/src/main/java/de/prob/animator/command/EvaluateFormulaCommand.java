@@ -17,6 +17,8 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class EvaluateFormulaCommand extends EvaluationCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "evaluate_formula";
+
 	Logger logger = LoggerFactory.getLogger(EvaluateFormulaCommand.class);
 
 	private static final String EVALUATE_RESULT_VARIABLE = "Res";
@@ -37,7 +39,7 @@ public class EvaluateFormulaCommand extends EvaluationCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
-		pout.openTerm("evaluate_formula");
+		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.printAtomOrNumber(stateId);
 
 		pout.openTerm("eval");

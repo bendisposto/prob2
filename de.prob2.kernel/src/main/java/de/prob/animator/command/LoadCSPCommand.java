@@ -6,6 +6,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public class LoadCSPCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "load_cspm_spec_from_cspm_file";
 	private final String path;
 
 	public LoadCSPCommand(final String path) {
@@ -14,7 +15,7 @@ public class LoadCSPCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("load_cspm_spec_from_cspm_file");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtom(path);
 		pto.closeTerm();
 	}

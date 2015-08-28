@@ -7,6 +7,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public class LoadEventBProjectCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "load_event_b_project";
 	private final EventBModelTranslator translator;
 
 	public LoadEventBProjectCommand(final EventBModelTranslator translator) {
@@ -15,7 +16,9 @@ public class LoadEventBProjectCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		translator.printProlog(pto);
+		pto.closeTerm();
 	}
 
 	@Override

@@ -19,6 +19,8 @@ import de.prob.statespace.Transition;
 public class GetShortestTraceCommand extends AbstractCommand implements
 		ITraceDescription, IStateSpaceModifier {
 
+	private static final String PROLOG_COMMAND_NAME = "find_trace_to_node";
+
 	Logger logger = LoggerFactory.getLogger(GetShortestTraceCommand.class);
 
 	private static final String TRACE = "Trace";
@@ -35,7 +37,7 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("find_trace_to_node");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtomOrNumber(stateId);
 		pto.printVariable(TRACE);
 		pto.closeTerm();

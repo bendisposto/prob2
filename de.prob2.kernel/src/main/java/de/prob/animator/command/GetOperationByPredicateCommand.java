@@ -33,6 +33,7 @@ import de.prob.statespace.StateSpace;
 public final class GetOperationByPredicateCommand extends AbstractCommand
 		implements IStateSpaceModifier {
 
+	private static final String PROLOG_COMMAND_NAME = "prob2_execute_custom_operations";
 	Logger logger = LoggerFactory
 			.getLogger(GetOperationByPredicateCommand.class);
 	private static final String NEW_STATE_ID_VARIABLE = "NewStateID";
@@ -70,7 +71,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	 */
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("prob2_execute_custom_operations")
+		pto.openTerm(PROLOG_COMMAND_NAME)
 				.printAtomOrNumber(stateId).printAtom(name);
 		evalElement.printProlog(pto);
 		pto.printNumber(nrOfSolutions);

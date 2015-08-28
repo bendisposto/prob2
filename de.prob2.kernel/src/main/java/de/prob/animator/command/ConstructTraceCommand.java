@@ -37,6 +37,7 @@ import de.prob.statespace.Trace;
 public final class ConstructTraceCommand extends AbstractCommand implements
 		IStateSpaceModifier, ITraceDescription {
 
+	private static final String PROLOG_COMMAND_NAME = "prob2_construct_trace";
 	Logger logger = LoggerFactory.getLogger(ConstructTraceCommand.class);
 	private static final String RESULT_VARIABLE = "Res";
 	private static final String ERRORS = "Errors";
@@ -99,7 +100,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 	 */
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("prob2_construct_trace")
+		pto.openTerm(PROLOG_COMMAND_NAME)
 				.printAtomOrNumber(stateId.getId());
 		pto.openList();
 		for (String n : name) {

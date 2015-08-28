@@ -9,6 +9,8 @@ import de.prob.prolog.term.PrologTerm;
 
 public class GetVersionCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "get_version";
+
 	private String major, minor, service, qualifier, svnrevision,
 			lastchangeddate, prologinfo;
 
@@ -22,7 +24,7 @@ public class GetVersionCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_version").printVariable(VAR_MAJOR)
+		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(VAR_MAJOR)
 				.printVariable(VAR_MINOR).printVariable(VAR_SERVICE)
 				.printVariable(VAR_QUALIFIER).printVariable(VAR_REVISION)
 				.printVariable(VAR_CHANGEDATE).printVariable(VAR_PROLOGVERSION)

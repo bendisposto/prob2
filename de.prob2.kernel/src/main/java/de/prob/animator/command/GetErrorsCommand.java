@@ -15,6 +15,7 @@ import de.prob.prolog.term.PrologTerm;
  * 
  */
 public class GetErrorsCommand extends AbstractCommand {
+	private static final String PROLOG_COMMAND_NAME = "get_error_messages";
 	public static final String ERRORS_VARIABLE = "Errors";
 	public static final String WARNINGS_ONLY_VARIABLE = "WarningsOnly";
 	private List<String> errors;
@@ -31,7 +32,7 @@ public class GetErrorsCommand extends AbstractCommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		errors = Collections.emptyList();
-		pto.openTerm("get_error_messages").printVariable(WARNINGS_ONLY_VARIABLE).printVariable(ERRORS_VARIABLE)
+		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(WARNINGS_ONLY_VARIABLE).printVariable(ERRORS_VARIABLE)
 				.closeTerm();
 	}
 

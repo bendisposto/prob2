@@ -39,7 +39,7 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedInvariantCheckCommand.class);
 
-	private static final String COMMAND_NAME = "prob2_invariant_check";
+	private static final String PROLOG_COMMAND_NAME = "prob2_invariant_check";
 	private static final String RESULT_VARIABLE = "R";
 
 	private final Collection<String> events;
@@ -73,7 +73,7 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm(COMMAND_NAME);
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		if (events != null && !events.isEmpty()) {
 			pto.openTerm("ops");
 			pto.openList();

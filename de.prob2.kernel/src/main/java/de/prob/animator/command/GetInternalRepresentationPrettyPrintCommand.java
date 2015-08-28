@@ -5,6 +5,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
 public class GetInternalRepresentationPrettyPrintCommand extends AbstractCommand {
+	private static final String PROLOG_COMMAND_NAME = "get_pretty_print";
 	public static final String VARIABLE = "PP";
 	private String pp;
 
@@ -17,7 +18,7 @@ public class GetInternalRepresentationPrettyPrintCommand extends AbstractCommand
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_pretty_print").printVariable(VARIABLE)
+		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(VARIABLE)
 				.closeTerm();
 	}
 

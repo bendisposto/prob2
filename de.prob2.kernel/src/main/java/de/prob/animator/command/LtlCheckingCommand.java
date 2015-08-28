@@ -27,6 +27,7 @@ import de.prob.statespace.Transition;
 public final class LtlCheckingCommand extends EvaluationCommand implements
 		IStateSpaceModifier {
 
+	private static final String PROLOG_COMMAND_NAME = "prob2_do_ltl_modelcheck";
 	private static final String VARIABLE_NAME_RESULT = "R";
 	private static final String VARIABLE_NAME_ERRORS = "Errors";
 
@@ -123,7 +124,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("prob2_do_ltl_modelcheck");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		evalElement.printProlog(pto);
 		pto.printNumber(max);
 		pto.printVariable(VARIABLE_NAME_RESULT);
