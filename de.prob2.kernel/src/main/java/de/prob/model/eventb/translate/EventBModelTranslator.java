@@ -127,6 +127,7 @@ public class EventBModelTranslator {
 		}
 
 		ASTProlog printer = new ASTProlog(pto, labelPrinter);
+		pto.openTerm("load_event_b_project");
 		pto.openList();
 		for (Node node : machineNodes) {
 			node.apply(printer);
@@ -155,6 +156,7 @@ public class EventBModelTranslator {
 		pto.closeList();
 
 		pto.printVariable("_Error");
+		pto.closeTerm();
 	}
 
 	private void printPragmas(final IPrologTermOutput pto) {
