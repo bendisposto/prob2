@@ -28,9 +28,6 @@ class GraphOptimizer {
 
 	def INode optimize(Node node) {
 		seen.add(node)
-		if (node.getStatements().isEmpty()) {
-			return check(node.getOutNode())
-		}
 		Node n = new Node(node.getStatements(), check(node.getOutNode()))
 		translation[node] = n
 		n

@@ -7,6 +7,7 @@ import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
+
 class AlgorithmToGraph {
 
 	INode node
@@ -19,15 +20,23 @@ class AlgorithmToGraph {
 		if (stmts.hasNext()) {
 			return extractNode(stmts.next(), stmts)
 		}
-		return new Node([], new Nil())
+		return new Nil()
 	}
 
 	def INode extractNode(While whileStmt, Iterator<Statement> rest) {
 		INode body = extractGraph(whileStmt.block.statements.iterator())
-		INode endN = getEndNode(body)
+		Branch b
 
-		Branch b = new Branch(whileStmt, body, extractGraph(rest))
-		endN.setEndNode(b)
+		if (body instanceof Nil) {
+			body = new Node([], new Nil())
+			b = new Branch(whileStmt, body, extractGraph(rest))
+			body.setEndNode(b)
+		} else {
+			INode endN = getEndNode(body)
+			b = new Branch(whileStmt, body, extractGraph(rest))
+			endN.setEndNode(b)
+		}
+
 		return b
 	}
 
@@ -35,11 +44,20 @@ class AlgorithmToGraph {
 		INode yesNode = extractGraph(ifStmt.Then.statements.iterator())
 		INode noNode = extractGraph(ifStmt.Else.statements.iterator())
 
-		INode end1 = getEndNode(yesNode)
-		INode end2 = getEndNode(noNode)
 		Graft graft = new Graft(extractGraph(rest))
-		end1.setEndNode(graft)
-		end2.setEndNode(graft)
+		if (yesNode instanceof Nil) {
+			yesNode = graft
+		} else {
+			INode end1 = getEndNode(yesNode)
+			end1.setEndNode(graft)
+		}
+
+		if (noNode instanceof Nil) {
+			noNode = graft
+		} else {
+			INode end2 = getEndNode(noNode)
+			end2.setEndNode(graft)
+		}
 
 		return new Branch(ifStmt, yesNode, noNode)
 	}
