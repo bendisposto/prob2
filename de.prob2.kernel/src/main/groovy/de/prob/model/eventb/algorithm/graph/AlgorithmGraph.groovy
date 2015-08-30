@@ -41,30 +41,48 @@ public class AlgorithmGraph {
 
 	def addEdges(int pc, Node node) {
 		int topc = addNode(node.getOutNode())
-		addEdge(pc, topc, "-->")
+		addEdge(pc, topc, null)
 	}
 
 	def addEdges(int pc, Branch node) {
 		int yPc = addNode(node.getYesNode())
-		addEdge(pc, yPc, "-- ${node.condition} -->")
+		addEdge(pc, yPc, new BranchCondition([node.condition], [node.statement], null))
 		int nPc = addNode(node.getNoNode())
-		addEdge(pc, nPc, "-- ${node.notCondition} -->")
+		addEdge(pc, nPc, new BranchCondition([node.notCondition], [node.statement], null))
 	}
 
 	def addEdges(int pc, CombinedBranch node) {
 		node.branches.each { BranchCondition cond ->
 			int newPc = addNode(cond.getOutNode())
-			addEdge(pc, newPc, "--${cond.getConditions().toString()}-->")
+			addEdge(pc, newPc, cond)
 		}
 	}
 
 	def addEdges(int pc, Graft node) {
 		int topc = addNode(node.getOutNode())
-		addEdge(pc, topc, "-->")
+		addEdge(pc, topc, null)
+	}
+
+	def Set<Edge> getOutEdges(int nodeId) {
+		return edges.get(nodeId)
+	}
+
+	def Set<Edge> getInEdges(int nodeId) {
+		Set<Edge> edges = new HashSet<Edge>()
+		edges.each { k, ed ->
+			if (ed.to == nodeId) {
+				edges.add(ed)
+			}
+		}
+		edges
 	}
 
 	@Override
 	public String toString() {
 		return "Nodes: $nodes \n Edges: $edges"
+	}
+
+	public int size() {
+		return pc
 	}
 }

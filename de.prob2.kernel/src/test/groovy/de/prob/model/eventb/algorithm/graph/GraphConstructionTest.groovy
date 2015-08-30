@@ -29,6 +29,7 @@ public class GraphConstructionTest extends Specification {
 
 		then:
 		node(graph, 0, Nil)
+		graph.size() == 1
 	}
 
 	def "one assignment block has one node"() {
@@ -41,6 +42,7 @@ public class GraphConstructionTest extends Specification {
 		]
 		node(graph, 1, Nil)
 		edge(graph, 0,1,"-->")
+		graph.size() == 2
 	}
 
 	def "one assert block has one node"() {
@@ -53,6 +55,7 @@ public class GraphConstructionTest extends Specification {
 		]
 		node(graph, 1, Nil)
 		edge(graph, 0, 1,"-->")
+		graph.size() == 2
 	}
 
 	def "an empty if has empty nodes"() {
@@ -72,6 +75,7 @@ public class GraphConstructionTest extends Specification {
 		edge(graph, 0, 1, "-- x < 4 -->")
 		edge(graph, 0, 1, "-- not(x < 4) -->")
 		edge(graph, 1, 2, "-->")
+		graph.size() == 3
 	}
 
 	def "an if with then has 4 nodes"() {
@@ -84,6 +88,7 @@ public class GraphConstructionTest extends Specification {
 		})
 
 		then:
+		graph.size() == 4
 		node(graph, 0, Branch).condition == "x < 4"
 		node(graph, 1, Node).getStatements() == [new Assignments(["x := 1"])]
 		node(graph, 2, Graft)

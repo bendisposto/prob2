@@ -4,12 +4,12 @@ package de.prob.model.eventb.algorithm.graph;
 public class Edge {
 	def Integer from
 	def Integer to
-	def String rep
+	def BranchCondition condition
 
-	def Edge(Integer from, Integer to, String rep) {
+	def Edge(Integer from, Integer to, BranchCondition condition) {
 		this.from = from
 		this.to = to
-		this.rep = rep
+		this.condition = condition
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class Edge {
 		if (that instanceof Edge) {
 			return from.equals(that.getFrom()) &&
 			to.equals(that.getTo()) &&
-			rep.equals(that.getRep())
+			condition.equals(that.getCondition())
 		}
 		return false
 	}
@@ -29,6 +29,6 @@ public class Edge {
 
 	@Override
 	public String toString() {
-		return "${from}${rep}${to}"
+		return condition ? "--${condition.getConditions().toString}-->" : "-->"
 	}
 }
