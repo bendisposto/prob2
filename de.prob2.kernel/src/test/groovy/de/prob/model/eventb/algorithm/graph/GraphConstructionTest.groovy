@@ -14,52 +14,66 @@ public class GraphConstructionTest extends Specification {
 		return new AlgorithmGraph(g.getNode())
 	}
 
-	def node(AlgorithmGraph graph, int index, Class clazz) {
-		assert graph.nodes[index].getClass() == clazz
+	def EventInfo node(AlgorithmGraph graph, int index) {
 		graph.nodes[index]
 	}
 
-	def edge(AlgorithmGraph graph, int from, int to, String rep) {
-		return graph.edges[from].contains(new Edge(from, to, rep))
+	def conditions(AlgorithmGraph graph, int index) {
+		EventInfo n = graph.nodes[index]
+		n.conditions.collectEntries { pc, b ->
+			[pc, b.conditions]
+		}
 	}
 
-	def "empty has one node"() {
+	def print(graph) {
+		println "nodes: $graph"
+		println "nodes->info: ${graph.nodeToInfoMapping}"
+		println "nodes->pc: ${graph.nodeToPcMapping}\n"
+	}
+
+	def "empty is empty"() {
 		when:
+		def DEBUG = false
 		def graph = graph({})
 
 		then:
-		node(graph, 0, Nil)
-		graph.size() == 1
+		if (DEBUG) print(graph)
+		graph.nodes.isEmpty()
+		graph.size() == 0
 	}
 
-	def "one assignment block has one node"() {
+	def "one assignment block has two nodes"() {
 		when:
+		def DEBUG = false
 		def graph = graph({ Assign("x := 1", "y := 1") })
 
 		then:
-		node(graph, 0, Node).getStatements() == [
-			new Assignments(["x := 1", "y := 1"])
+		if (DEBUG) print(graph)
+		conditions(graph, 0) == [0: []]
+		node(graph, 0).actions == [
+			new Assignments(["x := 1", "y := 1"]),
+			new Assignments(["pc := 1"])
 		]
-		node(graph, 1, Nil)
-		edge(graph, 0,1,"-->")
+		conditions(graph, 1) == [1: []]
+		node(graph, 1).actions.isEmpty()
 		graph.size() == 2
 	}
 
-	def "one assert block has one node"() {
+	def "one assert block is empty but has assertions"() {
 		when:
+		def DEBUG = false
 		def graph = graph({ Assert("x = 1") })
 
 		then:
-		node(graph, 0, Node).getStatements() == [
-			new Assertion("x = 1")
-		]
-		node(graph, 1, Nil)
-		edge(graph, 0, 1,"-->")
-		graph.size() == 2
+		if (DEBUG) print(graph)
+		conditions(graph, 0) == [0: []]
+		node(graph, 0).actions.isEmpty()
+		graph.assertions == [0: new Assertion("x = 1")]
 	}
 
-	def "an empty if has empty nodes"() {
+	def "an empty if has only one node"() {
 		when:
+		def DEBUG = false
 		def graph = graph({
 			If("x < 4") {
 				Then {}
@@ -68,18 +82,14 @@ public class GraphConstructionTest extends Specification {
 		})
 
 		then:
-		node(graph, 0, Branch).condition == "x < 4"
-		node(graph, 1, Graft)
-		node(graph, 2, Nil)
-
-		edge(graph, 0, 1, "-- x < 4 -->")
-		edge(graph, 0, 1, "-- not(x < 4) -->")
-		edge(graph, 1, 2, "-->")
-		graph.size() == 3
+		if (DEBUG) print(graph)
+		conditions(graph, 0) == [0: ["(x < 4) or (not(x < 4))"]]
+		node(graph, 0).actions == []
 	}
 
-	def "an if with then has 4 nodes"() {
+	def "an if with then has 2 nodes"() {
 		when:
+		def DEBUG = false
 		def graph = graph({
 			If("x < 4") {
 				Then("x := 1")
@@ -88,20 +98,20 @@ public class GraphConstructionTest extends Specification {
 		})
 
 		then:
-		graph.size() == 4
-		node(graph, 0, Branch).condition == "x < 4"
-		node(graph, 1, Node).getStatements() == [new Assignments(["x := 1"])]
-		node(graph, 2, Graft)
-		node(graph, 3, Nil)
-
-		edge(graph, 0, 1, "-- x < 4 -->")
-		edge(graph, 0, 2, "-- not(x < 4) -->")
-		edge(graph, 1, 2, "-->")
-		edge(graph, 2, 3, "-->")
+		if (DEBUG) print(graph)
+		graph.size() == 2
+		conditions(graph, 0) == [0: ["x < 4"]]
+		node(graph, 0).actions == [
+			new Assignments(["x := 1"]),
+			new Assignments(["pc := 1"])
+		]
+		conditions(graph, 1) == [0:["not(x < 4)"], 1:[]]
+		node(graph, 1).actions == []
 	}
 
-	def "an if with else has 4 nodes"() {
+	def "an if with else has 3 nodes"() {
 		when:
+		def DEBUG = false
 		def graph = graph({
 			If("x < 4") {
 				Then {}
@@ -110,87 +120,91 @@ public class GraphConstructionTest extends Specification {
 		})
 
 		then:
-		node(graph, 0, Branch).condition == "x < 4"
-		node(graph, 1, Graft)
-		node(graph, 2, Nil)
-		node(graph, 3, Node).getStatements() == [new Assignments(["x := 1"])]
-
-		edge(graph, 0, 1, "-- x < 4 -->")
-		edge(graph, 0, 3, "-- not(x < 4) -->")
-		edge(graph, 1, 2, "-->")
-		edge(graph, 3, 1, "-->")
+		if (DEBUG) print(graph)
+		graph.size() == 2
+		conditions(graph, 0) == [0: ["x < 4"], 1:[]]
+		node(graph, 0).actions == []
+		conditions(graph, 1) == [0:["not(x < 4)"]]
+		node(graph, 1).actions == [
+			new Assignments(["x := 1"]),
+			new Assignments(["pc := 1"])
+		]
 	}
 
-	def "an empty while has 3 nodes"() {
+	def "an empty while has 2 nodes"() {
 		when:
+		def DEBUG = false
 		def graph = graph({
 			While("x < 4") {
 			}
 		})
 
 		then:
-		node(graph, 0, Branch).condition == "x < 4"
-		node(graph, 1, Node).getStatements().isEmpty()
-		node(graph, 2, Nil)
-
-		edge(graph, 0, 1, "-- x < 4 -->")
-		edge(graph, 1, 0, "-->")
-		edge(graph, 0, 2, "-- not(x < 4) -->")
+		if (DEBUG) print(graph)
+		graph.size() == 2
+		conditions(graph, 0) == [0: ["x < 4"]]
+		node(graph, 0).actions == [new Assignments(["pc := 0"])]
+		conditions(graph, 1) == [0: ["not(x < 4)"]]
+		node(graph, 1).actions == []
 	}
 
-	def "a while with one stmt has 3 nodes"() {
+	def "a while with one stmt"() {
 		when:
+		def DEBUG = false
 		def graph = graph({
 			While("x < 4") { Assign("x := 2") }
 		})
 
 		then:
-		node(graph, 0, Branch).condition == "x < 4"
-		node(graph, 1, Node).getStatements() == [new Assignments(["x := 2"])]
-		node(graph, 2, Nil)
-
-		edge(graph, 0, 1, "-- x < 4 -->")
-		edge(graph, 1, 0, "-->")
-		edge(graph, 0, 2, "-- not(x < 4) -->")
+		if (DEBUG) print(graph)
+		graph.size() == 2
+		conditions(graph,0) == [0: ["x < 4"]]
+		node(graph, 0).actions == [
+			new Assignments(["x := 2"]),
+			new Assignments(["pc := 0"])
+		]
+		conditions(graph, 1) == [0: ["not(x < 4)"]]
+		node(graph, 1).actions == []
 	}
 
-	def "euclid"() {
-		when:
-		def graph = graph({
-			While("u /= 0") {
-				If ("u < v") { Then("u := v", "v := u") }
-				Assign("u := u - v")
-			}
-			Assert("u|->m|->n : IsGCD")
-		})
-
-		then:
-		node(graph, 0, Branch).condition == "u /= 0"
-		node(graph, 1, Branch).condition == "u < v"
-		node(graph, 2, Node).getStatements() == [
-			new Assignments(["u := v", "v := u"])
-		]
-		node(graph, 3, Graft)
-		node(graph, 4, Node).getStatements() == [
-			new Assignments(["u := u - v"])
-		]
-		node(graph, 5, Node).getStatements() == [
-			new Assertion("u|->m|->n : IsGCD")
-		]
-		node(graph, 6, Nil)
-
-		edge(graph, 0, 1, "-- u /= 0 -->")
-		edge(graph, 0, 5, "-- not(u /= 0) -->")
-		edge(graph, 1, 2, "-- u < v -->")
-		edge(graph, 1, 3, "-- not(u < v) -->")
-		edge(graph, 2, 3, "-->")
-		edge(graph, 3, 4, "-->")
-		edge(graph, 4, 0, "-->")
-		edge(graph, 5, 6, "-->")
-	}
+	/*
+	 def "euclid"() {
+	 when:
+	 def graph = graph({
+	 While("u /= 0") {
+	 If ("u < v") { Then("u := v", "v := u") }
+	 Assign("u := u - v")
+	 }
+	 Assert("u|->m|->n : IsGCD")
+	 })
+	 then:
+	 if (DEBUG) print(graph)
+	 node(graph, 0, Branch).condition == "u /= 0"
+	 node(graph, 1, Branch).condition == "u < v"
+	 node(graph, 2, Node).getStatements() == [
+	 new Assignments(["u := v", "v := u"])
+	 ]
+	 node(graph, 3, Graft)
+	 node(graph, 4, Node).getStatements() == [
+	 new Assignments(["u := u - v"])
+	 ]
+	 node(graph, 5, Node).getStatements() == [
+	 new Assertion("u|->m|->n : IsGCD")
+	 ]
+	 node(graph, 6, Nil)
+	 edge(graph, 0, 1, "-- u /= 0 -->")
+	 edge(graph, 0, 5, "-- not(u /= 0) -->")
+	 edge(graph, 1, 2, "-- u < v -->")
+	 edge(graph, 1, 3, "-- not(u < v) -->")
+	 edge(graph, 2, 3, "-->")
+	 edge(graph, 3, 4, "-->")
+	 edge(graph, 4, 0, "-->")
+	 edge(graph, 5, 6, "-->")
+	 }*/
 
 	def "optimized euclid"() {
 		when:
+		def DEBUG = true
 		def b = new Block().make {
 			While("u /= 0") {
 				If ("u < v") { Then("u := v", "v := u") }
@@ -202,26 +216,23 @@ public class GraphConstructionTest extends Specification {
 		def graph = new AlgorithmGraph(n.getAlgorithm())
 
 		then:
-		node(graph, 0, CombinedBranch).branches.collect { it.getConditions() } == [
-			["u /= 0", "u < v"],
-			["u /= 0", "not(u < v)"],
-			["not(u /= 0)"]
+		if (DEBUG) print(graph)
+		conditions(graph, 0) == [0: ["u /= 0", "u < v"]]
+		node(graph, 0).actions == [
+			new Assignments(["u := v", "v := u"]),
+			new Assignments(["pc := 1"])
 		]
-		node(graph, 1, Node).getStatements() == [
-			new Assignments(["u := v", "v := u"])
+		conditions(graph, 1) == [0: ["u /= 0", "not(u < v)"], 1:[]]
+		node(graph, 1).actions == [
+			new Assignments(["u := u - v"]),
+			new Assignments(["pc := 0"])
 		]
-		node(graph, 2, Node).getStatements() == [
-			new Assignments(["u := u - v"])
+		conditions(graph, 2) == [0: ["not(u /= 0)"]]
+		node(graph, 2).actions == [
+			new Assertion("u|->m|->n : IsGCD"),
+			new Assignments(["pc := 2"])
 		]
-		node(graph, 3, Node).getStatements() == [
-			new Assertion("u|->m|->n : IsGCD")
-		]
-		node(graph, 4, Nil)
-
-		edge(graph, 0, 1, "--[u /= 0, u < v]-->")
-		edge(graph, 0, 2, "--[u /= 0, not(u < v)]-->")
-		edge(graph, 2, 0, "-->")
-		edge(graph, 0, 3, "--[not(u /= 0)]-->")
-		edge(graph, 3, 4, "-->")
+		conditions(graph, 3) == [2: []]
+		node(graph, 3).actions == []
 	}
 }

@@ -20,7 +20,7 @@ public class CombinedBranch implements INode {
 
 	@Override
 	public List<Statement> getStatements() {
-		HashSet<Statement> stmts
+		HashSet<Statement> stmts  = new HashSet<Statement>()
 		branches.each { stmts.addAll(it.getStatements()) }
 		stmts as List
 	}
@@ -28,5 +28,10 @@ public class CombinedBranch implements INode {
 	@Override
 	public void setEndNode(INode node) {
 		throw new IllegalArgumentException("Cannot set the end node for a combined branch")
+	}
+
+	@Override
+	public String toString() {
+		return getStatements().toString()
 	}
 }

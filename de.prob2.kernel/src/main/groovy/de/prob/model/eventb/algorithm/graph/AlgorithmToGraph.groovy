@@ -44,19 +44,19 @@ class AlgorithmToGraph {
 		INode yesNode = extractGraph(ifStmt.Then.statements.iterator())
 		INode noNode = extractGraph(ifStmt.Else.statements.iterator())
 
-		Graft graft = new Graft(extractGraph(rest))
+		INode g = extractGraph(rest)
 		if (yesNode instanceof Nil) {
-			yesNode = graft
+			yesNode = g
 		} else {
 			INode end1 = getEndNode(yesNode)
-			end1.setEndNode(graft)
+			end1.setEndNode(g)
 		}
 
 		if (noNode instanceof Nil) {
-			noNode = graft
+			noNode = g
 		} else {
 			INode end2 = getEndNode(noNode)
-			end2.setEndNode(graft)
+			end2.setEndNode(g)
 		}
 
 		return new Branch(ifStmt, yesNode, noNode)
@@ -71,7 +71,7 @@ class AlgorithmToGraph {
 	}
 
 	def INode extractNode(Assertion assertion, Iterator<Statement> rest) {
-		return new Node([assertion], extractGraph(rest))
+		return new AssertNode(assertion, extractGraph(rest))
 	}
 
 	def INode extractNode(Assignments assignments, Iterator<Statement> rest) {
