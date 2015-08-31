@@ -1,9 +1,11 @@
 package de.prob.model.eventb.algorithm.graph
 
+import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Statement
 
 class Graft implements INode {
 	def INode outNode
+	def List<Assertion> assertions = []
 
 	def Graft(INode outNode) {
 		this.outNode = outNode
@@ -27,5 +29,10 @@ class Graft implements INode {
 	@Override
 	public String toString() {
 		return "*";
+	}
+
+	@Override
+	public void addAssertion(Assertion assertion) {
+		assertions.add(assertion)
 	}
 }

@@ -1,8 +1,11 @@
 package de.prob.model.eventb.algorithm.graph;
 
+import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Statement
 
 public class Nil implements INode {
+
+	def List<Assertion> assertions = []
 
 	@Override
 	public INode getOutNode() {
@@ -22,5 +25,10 @@ public class Nil implements INode {
 	@Override
 	public String toString() {
 		return "Nil"
+	}
+
+	@Override
+	public void addAssertion(Assertion assertion) {
+		assertions.add(assertion)
 	}
 }

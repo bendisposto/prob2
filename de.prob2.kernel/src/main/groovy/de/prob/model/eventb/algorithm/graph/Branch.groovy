@@ -1,5 +1,6 @@
 package de.prob.model.eventb.algorithm.graph
 
+import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Statement
 
 class Branch implements INode {
@@ -8,6 +9,7 @@ class Branch implements INode {
 	def INode yesNode
 	def INode noNode
 	def Statement statement
+	def List<Assertion> assertions = []
 
 	def Branch(Statement statement, INode yesNode, INode noNode) {
 		this.statement = statement
@@ -34,5 +36,10 @@ class Branch implements INode {
 	@Override
 	public String toString() {
 		return statement.toString()
+	}
+
+	@Override
+	public void addAssertion(Assertion assertion) {
+		assertions.add(assertion)
 	}
 }

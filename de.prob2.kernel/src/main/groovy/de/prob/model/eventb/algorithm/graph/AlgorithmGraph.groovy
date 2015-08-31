@@ -20,8 +20,10 @@ public class AlgorithmGraph {
 		if (node instanceof Node) {
 			addNode(node, false)
 			getInfo(node).addEdge(startpc, new BranchCondition([], [], node))
-		} else if (node instanceof Branch || node instanceof CombinedBranch || node instanceof AssertNode) {
+		} else if (node instanceof Branch || node instanceof CombinedBranch) {
 			addNode(node, false)
+		} else if (node instanceof Nil) {
+			addAssertions(node, 0)
 		}
 	}
 
@@ -45,6 +47,10 @@ public class AlgorithmGraph {
 			return nodeToPcMapping.get(node)
 		}
 		def pc = getPC(increasePC)
+		node.getAssertions().each {
+			assertions.put(pc, it)
+		}
+
 		if (increasePC || node instanceof Branch || node instanceof CombinedBranch) {
 			nodeToPcMapping[node] = pc
 		}
@@ -57,6 +63,12 @@ public class AlgorithmGraph {
 		}
 		addEdges(pc, node)
 		pc
+	}
+
+	def addAssertions(INode node, int pc) {
+		node.getAssertions().each {
+			assertions.put(pc, it)
+		}
 	}
 
 	def addEdges(int pc, Nil node) {
@@ -86,25 +98,12 @@ public class AlgorithmGraph {
 		}
 	}
 
-	def addEdges(int pc, AssertNode node) {
-		int topc = addNode(node.getOutNode(), false)
-		getInfo(node.getOutNode()).addEdge(topc, new BranchCondition([], [], node.getOutNode()))
-		assertions[topc] = node.getAssertion()
-	}
-
 	def addEdges(int pc, Graft node) {
 		int topc = addNode(node.getOutNode())
 		getInfo(node.getOutNode()).addEdge(topc, new BranchCondition([], [], node.getOutNode()))
 		getInfo(node).addActions([
 			new Assignments(["pc := $topc"])
 		])
-	}
-
-	def outNode(INode node) {
-		if (node.getOutNode() instanceof AssertNode) {
-			return node.getOutNode().getOutNode()
-		}
-		return node.getOutNode()
 	}
 
 	@Override

@@ -71,7 +71,9 @@ class AlgorithmToGraph {
 	}
 
 	def INode extractNode(Assertion assertion, Iterator<Statement> rest) {
-		return new AssertNode(assertion, extractGraph(rest))
+		INode node = extractGraph(rest)
+		node.addAssertion(assertion)
+		return node
 	}
 
 	def INode extractNode(Assignments assignments, Iterator<Statement> rest) {

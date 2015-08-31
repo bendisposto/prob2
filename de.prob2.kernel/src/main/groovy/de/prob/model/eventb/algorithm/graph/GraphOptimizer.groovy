@@ -75,13 +75,6 @@ class GraphOptimizer {
 		return node
 	}
 
-	def INode optimize(AssertNode node) {
-		seen.add(node)
-		AssertNode n = new AssertNode(node.getAssertion(), check(node.getOutNode()))
-		translation[node] = n
-		n
-	}
-
 	def INode optimize(Graft node) {
 		seen.add(node)
 		INode outNode = check(node.getOutNode()) // eliminate Grafts to decrease number of events
@@ -133,17 +126,6 @@ class GraphOptimizer {
 
 	def void update(Nil node) {
 		seen.add(node)
-	}
-
-	def void update(AssertNode node) {
-		if (seen.contains(node)) {
-			return
-		}
-		if (toUpdate.contains(node.getOutNode())) {
-			node.setEndNode(translation.get(node.getOutNode()))
-		}
-		seen.add(node)
-		update(node.getOutNode())
 	}
 
 	def void update(Graft node) {
