@@ -9,7 +9,7 @@ import de.prob.model.eventb.algorithm.Assignments
 public class AlgorithmGraph {
 
 	def List<EventInfo> nodes = new ArrayList<EventInfo>()
-	def Map<Integer, Assertion> assertions = new HashMap<Integer, Assertion>()
+	def Map<Integer, List<Assertion>> assertions = new HashMap<Integer, List<Assertion>>()
 	private Map<INode, EventInfo> nodeToInfoMapping = new HashMap<INode, EventInfo>()
 	private Map<INode, Integer> nodeToPcMapping = new HashMap<INode, Integer>()
 	int pc
@@ -47,9 +47,7 @@ public class AlgorithmGraph {
 			return nodeToPcMapping.get(node)
 		}
 		def pc = getPC(increasePC)
-		node.getAssertions().each {
-			assertions.put(pc, it)
-		}
+		addAssertions(node, pc)
 
 		if (increasePC || node instanceof Branch || node instanceof CombinedBranch) {
 			nodeToPcMapping[node] = pc
@@ -66,9 +64,8 @@ public class AlgorithmGraph {
 	}
 
 	def addAssertions(INode node, int pc) {
-		node.getAssertions().each {
-			assertions.put(pc, it)
-		}
+		assertions[pc] = assertions[pc] ? assertions[pc] : []
+		assertions[pc].addAll(node.getAssertions())
 	}
 
 	def addEdges(int pc, Nil node) {

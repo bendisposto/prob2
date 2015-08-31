@@ -39,26 +39,21 @@ class AlgorithmTranslator2 {
 
 	def translate(Block b) {
 		AlgorithmGraph g = new AlgorithmGraph(new GraphOptimizer(new AlgorithmToGraph(b).getNode()).getAlgorithm())
-		g.assertions.each { pc, Assertion assertion ->
-			machineM = machineM.invariant("pc = $pc => ${assertion.assertion}")
+		g.assertions.each { pc, List<Assertion> assertion ->
+			assertion.each { a ->
+				machineM = machineM.invariant("pc = $pc => ${a.assertion}")
+			}
 		}
 		g.nodes.each { EventInfo ev ->
-			machineM = machineM.event(name: "evt${namectr++}") {
-				Map<Integer, BranchCondition> bcs = ev.conditions
-				if (bcs.size() == 1) {
-					bcs.each { pc, BranchCondition cond ->
-						guard("pc = $pc")
-						cond.getConditions().each { guard(it) }
-					}
-				} else {
-					guard(bcs.collect { pc, BranchCondition cond ->
-						def conditions = cond.getConditions()
-						conditions ? "(pc = $pc & ${conditions.iterator().join(' & ')})" : "(pc = $pc)"
-					}.iterator().join(' or '))
-				}
-				ev.actions.each { Assignments a ->
-					a.assignments.each { String assign ->
-						action(assign)
+			Map<Integer, BranchCondition> bcs = ev.conditions
+			bcs.each { pc, BranchCondition cond ->
+				machineM = machineM.event(name: "evt${namectr++}") {
+					guard("pc = $pc")
+					cond.getConditions().each { guard(it) }
+					ev.actions.each { Assignments a ->
+						a.assignments.each { String assign ->
+							action(assign)
+						}
 					}
 				}
 			}

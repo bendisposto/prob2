@@ -2,6 +2,7 @@ package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
 import spock.lang.Specification
+import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
 
@@ -67,6 +68,7 @@ public class GraphConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.nodes.isEmpty()
 		graph.size() == 0
+		graph.assertions == [0: [new Assertion("x = 1")]]
 	}
 
 	def "an empty if has only one node"() {
@@ -206,6 +208,7 @@ public class GraphConstructionTest extends Specification {
 		def b = new Block().make {
 			While("u /= 0") {
 				If ("u < v") { Then("u := v", "v := u") }
+				Assert("u > v")
 				Assign("u := u - v")
 			}
 			Assert("u|->m|->n : IsGCD")
@@ -215,6 +218,7 @@ public class GraphConstructionTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
+		graph.assertions == [1: new Assertion("u < v"), 2: new Assertion("u|->m|->n : IsGCD")]
 		conditions(graph, 0) == [0: ["u /= 0", "u < v"]]
 		node(graph, 0).actions == [
 			new Assignments(["u := v", "v := u"]),
@@ -226,6 +230,8 @@ public class GraphConstructionTest extends Specification {
 			new Assignments(["pc := 0"])
 		]
 		conditions(graph, 2) == [0: ["not(u /= 0)"]]
-		node(graph, 2).actions == []
+		node(graph, 2).actions == [new Assignments(["pc := 2"])]
+		conditions(graph, 3) == [2: []]
+		node(graph, 3).actions == []
 	}
 }
