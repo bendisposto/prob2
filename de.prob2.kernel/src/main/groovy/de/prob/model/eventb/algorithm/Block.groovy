@@ -21,7 +21,7 @@ class Block extends AbstractElement {
 	}
 
 	def Block While(LinkedHashMap properties, String condition, Closure definition) {
-		def props = validateProperties(properties, [variant: [String,null]])
+		def props = validateProperties(properties, [variant: [String, null]])
 		new Block(statements.addElement(new While(condition, props.variant, new Block().make(definition))))
 	}
 
@@ -65,7 +65,10 @@ class Block extends AbstractElement {
 
 	protected validateOptionalProperty(LinkedHashMap properties, String property, List type) {
 		if (properties[property]) {
-			return [property, properties[property].asType(type[0])]
+			return [
+				property,
+				properties[property].asType(type[0])
+			]
 		} else {
 			return [property, type[1]]
 		}
@@ -73,9 +76,25 @@ class Block extends AbstractElement {
 
 	protected validateRequiredProperty(LinkedHashMap properties, String property, Class type) {
 		if (properties[property]) {
-			return [property, properties[property].asType(type)]
+			return [
+				property,
+				properties[property].asType(type)
+			]
 		} else {
 			throw new IllegalArgumentException("Expected property $property to have type $type")
 		}
+	}
+
+	@Override
+	public boolean equals(Object that) {
+		if (that instanceof While) {
+			return this.statements.equals(that.getStatements())
+		}
+		return false
+	}
+
+	@Override
+	public int hashCode() {
+		return this.statements.hashCode() * 7
 	}
 }

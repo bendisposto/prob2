@@ -2,6 +2,7 @@ package de.prob.model.eventb.algorithm;
 
 import de.prob.model.eventb.DelegateHelper
 import de.prob.model.representation.AbstractElement
+import de.prob.unicode.UnicodeTranslator
 
 abstract class Statement extends AbstractElement {
 
@@ -20,5 +21,9 @@ abstract class Statement extends AbstractElement {
 		runClone()
 
 		delegateH.getState()
+	}
+
+	def String toUnicode(code) {
+		UnicodeTranslator.toAscii(code)
 	}
 }

@@ -1,6 +1,5 @@
 package de.prob.model.eventb.algorithm
 
-import static de.prob.unicode.UnicodeTranslator.toUnicode
 import de.prob.model.representation.IllegalModificationException
 
 class If extends Statement {
@@ -58,5 +57,20 @@ class If extends Statement {
 
 	def String toString() {
 		"if (${toUnicode(condition)}):"
+	}
+
+	@Override
+	public boolean equals(Object that) {
+		if (that instanceof If) {
+			return this.condition.equals(that.getCondition()) &&
+			this.Then.equals(that.getThen()) &&
+			this.Else.equals(that.getElse())
+		}
+		return false
+	}
+
+	@Override
+	public int hashCode() {
+		return this.condition.hashCode() * 7 + this.Then.hashCode() * 13 + this.Else.hashCode() * 17
 	}
 }
