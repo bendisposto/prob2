@@ -42,24 +42,36 @@ class AlgorithmToGraph {
 
 	def INode extractNode(If ifStmt, Iterator<Statement> rest) {
 		INode yesNode = extractGraph(ifStmt.Then.statements.iterator())
+		List<BranchCondition> branches = combineBranches(yesNode, ifStmt, ifStmt.condition)
 		INode noNode = extractGraph(ifStmt.Else.statements.iterator())
+		branches.addAll(combineBranches(noNode, ifStmt, "not(${ifStmt.condition})"))
 
-		INode g = extractGraph(rest)
-		if (yesNode instanceof Nil) {
-			yesNode = g
-		} else {
-			INode end1 = getEndNode(yesNode)
-			end1.setEndNode(g)
+		INode restOfGraph = extractGraph(rest)
+		branches.each { BranchCondition cond ->
+			if (cond.getOutNode() instanceof Nil) {
+				cond.setOutNode(restOfGraph)
+			} else {
+				INode end = getEndNode(cond)
+				end.setEndNode(restOfGraph)
+			}
 		}
+		return new CombinedBranch(branches)
+	}
 
-		if (noNode instanceof Nil) {
-			noNode = g
+	def List<BranchCondition> combineBranches(INode node, Statement statement, String condition) {
+		List<BranchCondition> branches = []
+		if (node instanceof CombinedBranch) {
+			node.branches.each {
+				List<Statement> statements = [statement]
+				List<String> conditions = [condition]
+				conditions.addAll(node.getConditions())
+				statements.addAll(node.getStatements())
+				branches.add(new BranchCondition(conditions, statements, b.getOutNode()))
+			}
 		} else {
-			INode end2 = getEndNode(noNode)
-			end2.setEndNode(g)
+			branches.add(new BranchCondition([condition], [statement], node))
 		}
-
-		return new Branch(ifStmt, yesNode, noNode)
+		branches
 	}
 
 	def INode getEndNode(INode node) {
