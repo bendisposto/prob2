@@ -5,15 +5,17 @@ import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.algorithm.graph.AlgorithmGraph
 import de.prob.model.eventb.algorithm.graph.AlgorithmToGraph
-import de.prob.model.eventb.algorithm.graph.Edge
+import de.prob.model.eventb.algorithm.graph.BranchCondition
+import de.prob.model.eventb.algorithm.graph.EventInfo
 import de.prob.model.eventb.algorithm.graph.GraphOptimizer
 import de.prob.model.representation.Machine
 
 class AlgorithmTranslator2 {
 	def EventBModel model
 	def MachineModifier machineM
+	def namectr = 0
 
-	def AlgorithmTranslator(EventBModel model) {
+	def AlgorithmTranslator2(EventBModel model) {
 		this.model = model
 	}
 
@@ -32,15 +34,33 @@ class AlgorithmTranslator2 {
 			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
 			translate(block[0])
 		}
+		machineM.getMachine()
 	}
 
 	def translate(Block b) {
 		AlgorithmGraph g = new AlgorithmGraph(new GraphOptimizer(new AlgorithmToGraph(b).getNode()).getAlgorithm())
-		Set<Edge> done = new HashSet<Edge>()
-		for (int i; i < g.size(); i++) {
-			Set<Edge> edges = g.getOutEdges(i)
-			edges.each { Edge e ->
-				done.add(e)
+		g.assertions.each { pc, Assertion assertion ->
+			machineM = machineM.invariant("pc = $pc => ${assertion.assertion}")
+		}
+		g.nodes.each { EventInfo ev ->
+			machineM = machineM.event(name: "evt${namectr++}") {
+				Map<Integer, BranchCondition> bcs = ev.conditions
+				if (bcs.size() == 1) {
+					bcs.each { pc, BranchCondition cond ->
+						guard("pc = $pc")
+						cond.getConditions().each { guard(it) }
+					}
+				} else {
+					guard(bcs.collect { pc, BranchCondition cond ->
+						def conditions = cond.getConditions()
+						conditions ? "(pc = $pc & ${conditions.iterator().join(' & ')})" : "(pc = $pc)"
+					}.iterator().join(' or '))
+				}
+				ev.actions.each { Assignments a ->
+					a.assignments.each { String assign ->
+						action(assign)
+					}
+				}
 			}
 		}
 	}

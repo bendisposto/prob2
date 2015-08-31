@@ -1,6 +1,6 @@
 import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
-import de.prob.model.eventb.algorithm.AlgorithmTranslator
+import de.prob.model.eventb.algorithm.AlgorithmTranslator2
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
@@ -65,9 +65,9 @@ def actions(evt) {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m).run()
+m = new AlgorithmTranslator2(m).run()
 
-
+/*
 e = m.euclid
 
 evt0_enter_while = e.events.evt0_enter_while
@@ -155,10 +155,10 @@ assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
 assert t.evalCurrent("v|->m|->n : IsGCD").value == "TRUE"
 t = t.evt5()
 assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
-
+*/
 //mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "Euclid", "/tmp")
 //d.deleteDir()
 
-s.animator.cli.shutdown();
+//s.animator.cli.shutdown();
 "generate and animate a model"
