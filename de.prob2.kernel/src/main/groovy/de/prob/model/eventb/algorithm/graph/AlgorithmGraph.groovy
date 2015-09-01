@@ -20,10 +20,9 @@ public class AlgorithmGraph {
 		if (node instanceof Node) {
 			addNode(node, false)
 			getInfo(node).addEdge(startpc, new BranchCondition([], [], node))
+			addAssertions(node, startpc)
 		} else if (node instanceof Branch || node instanceof CombinedBranch) {
 			addNode(node, false)
-		} else if (node instanceof Nil) {
-			addAssertions(node, 0)
 		}
 	}
 
@@ -47,7 +46,6 @@ public class AlgorithmGraph {
 			return nodeToPcMapping.get(node)
 		}
 		def pc = getPC(increasePC)
-		addAssertions(node, pc)
 
 		if (increasePC || node instanceof Branch || node instanceof CombinedBranch) {
 			nodeToPcMapping[node] = pc
@@ -65,7 +63,11 @@ public class AlgorithmGraph {
 
 	def addAssertions(INode node, int pc) {
 		assertions[pc] = assertions[pc] ? assertions[pc] : []
-		assertions[pc].addAll(node.getAssertions())
+		node.getAssertions().each { Assertion a ->
+			if (!assertions[pc].contains(a)) {
+				assertions[pc] << a
+			}
+		}
 	}
 
 	def addEdges(int pc, Nil node) {
@@ -74,6 +76,7 @@ public class AlgorithmGraph {
 	def addEdges(int pc, Node node) {
 		int topc = addNode(node.getOutNode())
 		getInfo(node.getOutNode()).addEdge(topc, new BranchCondition([], [], node.getOutNode()))
+		addAssertions(node.getOutNode(), topc)
 		EventInfo info = getInfo(node)
 		info.addActions(node.getStatements())
 		info.addActions([
@@ -89,9 +92,11 @@ public class AlgorithmGraph {
 	}
 
 	def addEdges(int pc, CombinedBranch node) {
+		addAssertions(node, pc)
 		node.branches.each { BranchCondition cond ->
-			addNode(cond.getOutNode(), false)
+			int topc = addNode(cond.getOutNode(), false)
 			getInfo(cond.getOutNode()).addEdge(pc, cond)
+			addAssertions(cond.getOutNode(), topc)
 		}
 	}
 

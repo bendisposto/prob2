@@ -25,18 +25,25 @@ class AlgorithmToGraph {
 
 	def INode extractNode(While whileStmt, Iterator<Statement> rest) {
 		INode body = extractGraph(whileStmt.block.statements.iterator())
-		Branch b
+		INode restOfGraph = extractGraph(rest)
+		List<BranchCondition> branches = combineBranches(body, whileStmt, whileStmt.condition)
+		List<BranchCondition> branches2 = combineBranches(restOfGraph, whileStmt, "not(${whileStmt.condition})")
+		List<BranchCondition> combinedBranches = []
+		combinedBranches.addAll(branches)
+		combinedBranches.addAll(branches2)
+		CombinedBranch b = new CombinedBranch(combinedBranches)
 
-		if (body instanceof Nil) {
-			body = new Node([], new Nil())
-			b = new Branch(whileStmt, body, extractGraph(rest))
-			body.setEndNode(b)
-		} else {
-			INode endN = getEndNode(body)
-			b = new Branch(whileStmt, body, extractGraph(rest))
-			endN.setEndNode(b)
+		branches.collect { BranchCondition cond ->
+			if (cond.getOutNode() instanceof Nil) {
+				body = new Node([], new Nil())
+				cond.setOutNode(body)
+				return body
+			} else {
+				return getEndNode(cond)
+			}
+		}.each { INode node ->
+			node.setEndNode(b)
 		}
-
 		return b
 	}
 
@@ -61,12 +68,12 @@ class AlgorithmToGraph {
 	def List<BranchCondition> combineBranches(INode node, Statement statement, String condition) {
 		List<BranchCondition> branches = []
 		if (node instanceof CombinedBranch) {
-			node.branches.each {
+			node.branches.each { BranchCondition cond ->
 				List<Statement> statements = [statement]
 				List<String> conditions = [condition]
-				conditions.addAll(node.getConditions())
-				statements.addAll(node.getStatements())
-				branches.add(new BranchCondition(conditions, statements, b.getOutNode()))
+				conditions.addAll(cond.getConditions())
+				statements.addAll(cond.getStatements())
+				branches.add(new BranchCondition(conditions, statements, cond.getOutNode()))
 			}
 		} else {
 			branches.add(new BranchCondition([condition], [statement], node))
@@ -84,6 +91,9 @@ class AlgorithmToGraph {
 
 	def INode extractNode(Assertion assertion, Iterator<Statement> rest) {
 		INode node = extractGraph(rest)
+		if (node instanceof Nil) {
+			node = new Node([], new Nil())
+		}
 		node.addAssertion(assertion)
 		return node
 	}
