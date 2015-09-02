@@ -48,8 +48,9 @@ class AlgorithmTranslator2 {
 			Map<Integer, BranchCondition> bcs = ev.conditions
 			bcs.each { pc, BranchCondition cond ->
 				machineM = machineM.event(name: "evt${namectr++}") {
-					guard("pc = $pc")
-					cond.getConditions().each { guard(it) }
+					def ctr = 0
+					guard("grd${ctr++}","pc = $pc")
+					cond.condAndStmts().each { guard("grd${ctr++}", it.getFirst(), false, it.getSecond().toString()) }
 					ev.actions.each { Assignments a ->
 						a.assignments.each { String assign ->
 							action(assign)

@@ -2,6 +2,7 @@ package de.prob.model.eventb.algorithm.graph
 
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Statement
+import de.prob.util.Tuple2
 
 public class BranchCondition implements INode {
 	def List<String> conditions
@@ -38,5 +39,13 @@ public class BranchCondition implements INode {
 	@Override
 	public void addAssertion(Assertion assertion) {
 		assertions.add(assertion)
+	}
+
+	public List<Tuple2<String, Statement>> condAndStmts() {
+		List<Tuple2<String, Statement>> conds = []
+		conditions.eachWithIndex { item, index ->
+			conds.add(new Tuple2<String,Statement>(item, statements[index]))
+		}
+		conds
 	}
 }
