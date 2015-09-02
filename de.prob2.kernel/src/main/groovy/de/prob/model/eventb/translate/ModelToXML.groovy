@@ -93,7 +93,8 @@ public class ModelToXML {
 					xml.'org.eventb.core.guard'(name: genName(),
 					'org.eventb.core.label': it.getName(),
 					'org.eventb.core.predicate': it.getPredicate().toUnicode(),
-					'org.eventb.core.theorem': it.isTheorem())
+					'org.eventb.core.theorem': it.isTheorem(),
+					'org.eventb.core.comment': it.getComment())
 				}
 				e.witnesses.each {
 					xml.'org.eventb.core.witness'(name: genName(),
