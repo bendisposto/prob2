@@ -20,7 +20,7 @@ public class AlgorithmGraph {
 			addNode(node, false)
 			getInfo(node).addEdge(startpc, new BranchCondition([], [], node))
 			addAssertions(node, startpc)
-		} else if (node instanceof CombinedBranch) {
+		} else if (node instanceof Branch) {
 			addNode(node, false)
 		}
 	}
@@ -46,7 +46,7 @@ public class AlgorithmGraph {
 		}
 		def pc = getPC(increasePC)
 
-		if (increasePC || node instanceof CombinedBranch) {
+		if (increasePC || node instanceof Branch) {
 			nodeToPcMapping[node] = pc
 		}
 		if (node instanceof Node || node instanceof Nil) {
@@ -83,7 +83,7 @@ public class AlgorithmGraph {
 		])
 	}
 
-	def addEdges(int pc, CombinedBranch node) {
+	def addEdges(int pc, Branch node) {
 		addAssertions(node, pc)
 		node.branches.each { BranchCondition cond ->
 			if (cond.getOutNode().assertions) {

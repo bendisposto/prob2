@@ -31,7 +31,7 @@ class AlgorithmToGraph {
 		List<BranchCondition> combinedBranches = []
 		combinedBranches.addAll(branches)
 		combinedBranches.addAll(branches2)
-		CombinedBranch b = new CombinedBranch(combinedBranches)
+		Branch b = new Branch(combinedBranches)
 
 		branches.collect { BranchCondition cond ->
 			if (cond.getOutNode() instanceof Nil) {
@@ -62,12 +62,12 @@ class AlgorithmToGraph {
 				end.setEndNode(restOfGraph)
 			}
 		}
-		return new CombinedBranch(branches)
+		return new Branch(branches)
 	}
 
 	def List<BranchCondition> combineBranches(INode node, Statement statement, String condition) {
 		List<BranchCondition> branches = []
-		if (node instanceof CombinedBranch) {
+		if (node instanceof Branch) {
 			node.branches.each { BranchCondition cond ->
 				List<Statement> statements = [statement]
 				List<String> conditions = [condition]

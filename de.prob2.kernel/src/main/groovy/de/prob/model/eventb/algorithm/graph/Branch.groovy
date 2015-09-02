@@ -3,12 +3,12 @@ package de.prob.model.eventb.algorithm.graph
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Statement
 
-public class CombinedBranch implements INode {
+public class Branch implements INode {
 
 	List<BranchCondition> branches
 	def List<Assertion> assertions = []
 
-	def CombinedBranch(List<BranchCondition> branches) {
+	def Branch(List<BranchCondition> branches) {
 		this.branches = branches
 	}
 

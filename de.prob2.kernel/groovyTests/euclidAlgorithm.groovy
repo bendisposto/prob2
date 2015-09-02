@@ -49,6 +49,7 @@ mm = new ModelModifier().make {
 				If("u < v") {
 					Then("u := v", "v := u")
 				}
+				Assert("u > v")
 				Assign("u := u - v")
 			}
 			Assert("v|->m|->n : IsGCD")//"TRUE = TRUE")
