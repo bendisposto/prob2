@@ -1,6 +1,5 @@
 package de.prob.model.eventb.algorithm.graph;
 
-
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 
@@ -21,7 +20,7 @@ public class AlgorithmGraph {
 			addNode(node, false)
 			getInfo(node).addEdge(startpc, new BranchCondition([], [], node))
 			addAssertions(node, startpc)
-		} else if (node instanceof Branch || node instanceof CombinedBranch) {
+		} else if (node instanceof CombinedBranch) {
 			addNode(node, false)
 		}
 	}
@@ -47,7 +46,7 @@ public class AlgorithmGraph {
 		}
 		def pc = getPC(increasePC)
 
-		if (increasePC || node instanceof Branch || node instanceof CombinedBranch) {
+		if (increasePC || node instanceof CombinedBranch) {
 			nodeToPcMapping[node] = pc
 		}
 		if (node instanceof Node || node instanceof Nil) {
@@ -84,13 +83,6 @@ public class AlgorithmGraph {
 		])
 	}
 
-	def addEdges(int pc, Branch node) {
-		addNode(node.getYesNode(), false)
-		getInfo(node.getYesNode()).addEdge(pc, new BranchCondition([node.condition], [node.statement], node.getYesNode()))
-		addNode(node.getNoNode(), false)
-		getInfo(node.getNoNode()).addEdge(pc, new BranchCondition([node.notCondition], [node.statement], node.getNoNode()))
-	}
-
 	def addEdges(int pc, CombinedBranch node) {
 		addAssertions(node, pc)
 		node.branches.each { BranchCondition cond ->
@@ -103,14 +95,6 @@ public class AlgorithmGraph {
 			addNode(cond.getOutNode(), false)
 			getInfo(cond.getOutNode()).addEdge(pc, cond)
 		}
-	}
-
-	def addEdges(int pc, Graft node) {
-		int topc = addNode(node.getOutNode())
-		getInfo(node.getOutNode()).addEdge(topc, new BranchCondition([], [], node.getOutNode()))
-		getInfo(node).addActions([
-			new Assignments(["pc := $topc"])
-		])
 	}
 
 	@Override
