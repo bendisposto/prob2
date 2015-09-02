@@ -140,7 +140,7 @@ public class GraphConstructionTest extends Specification {
 
 	def "an assert in between whiles"() {
 		when:
-		def DEBUG = true
+		def DEBUG = false
 		def graph = graph({
 			Assign("x := 1")
 			Assert("x = 1")
@@ -168,7 +168,7 @@ public class GraphConstructionTest extends Specification {
 
 	def "an assert between ifs"() {
 		when:
-		def DEBUG = true
+		def DEBUG = false
 		def graph = graph({
 			Assign("x := 1")
 			Assert("x > 0")
@@ -195,6 +195,30 @@ public class GraphConstructionTest extends Specification {
 		conditions(graph, 3) == [3: []]
 		actions(graph, 3) == ["pc := 4"]
 		conditions(graph, 4) == [4: []]
+	}
+
+	def "two decrementers"() {
+		when:
+		def DEBUG = true
+		def graph = graph({
+			While("x > 0") { Assign("x := x - 1") }
+			Assert("x = 0")
+			While("y > 0") { Assign("y := y - 1") }
+			Assert("y = 0")
+		})
+
+		then:
+		if (DEBUG) print(graph)
+		graph.size() == 4
+		conditions(graph, 0) == [0: ["x > 0"]]
+		actions(graph, 0) == ["x := x - 1", "pc := 0"]
+		conditions(graph, 1) == [0: ["not(x > 0)", "y > 0"], 1: ["y > 0"]]
+		actions(graph, 1) == ["y := y - 1", "pc := 1"]
+		conditions(graph, 2) == [0: ["not(x > 0)", "not(y > 0)"], 1:["not(y > 0)"]]
+		actions(graph, 2) == ["pc := 2"]
+		conditions(graph, 3) == [2: []]
+		actions(graph, 3) == []
+		assertions(graph) == [0: [], 1:["x = 0"], 2:["y = 0"]]
 	}
 
 	def "an empty if has only one node"() {
