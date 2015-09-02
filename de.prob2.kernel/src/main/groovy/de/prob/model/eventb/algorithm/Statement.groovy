@@ -24,6 +24,6 @@ abstract class Statement extends AbstractElement {
 	}
 
 	def String toUnicode(code) {
-		UnicodeTranslator.toAscii(code)
+		UnicodeTranslator.toUnicode(code)
 	}
 }

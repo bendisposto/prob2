@@ -30,6 +30,7 @@ class AlgorithmTranslator2 {
 		machineM = new MachineModifier(machine)
 		List<Block> block = machine.getChildrenOfType(Block.class)
 		if (block.size() == 1) {
+			machineM = machineM.addComment(new AlgorithmPrettyPrinter(block[0]).prettyPrint())
 			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
 			translate(block[0])
 		}
