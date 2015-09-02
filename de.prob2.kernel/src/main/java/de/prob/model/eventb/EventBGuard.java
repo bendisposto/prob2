@@ -13,13 +13,20 @@ public class EventBGuard extends Guard {
 
 	private final String name;
 	private final boolean theorem;
+	private String comment;
 
-	public EventBGuard(final String name,
-			final String code, final boolean theorem,
-			final Set<IFormulaExtension> typeEnv) {
+	public EventBGuard(final String name, final String code,
+			final boolean theorem, final Set<IFormulaExtension> typeEnv) {
+		this(name, code, theorem, typeEnv, "");
+	}
+
+	public EventBGuard(final String name, final String code,
+			final boolean theorem, final Set<IFormulaExtension> typeEnv,
+			String comment) {
 		super(new EventB(code, typeEnv));
 		this.name = name;
 		this.theorem = theorem;
+		this.comment = comment;
 	}
 
 	public String getName() {
@@ -28,6 +35,10 @@ public class EventBGuard extends Guard {
 
 	public boolean isTheorem() {
 		return theorem;
+	}
+
+	public String getComment() {
+		return comment;
 	}
 
 	@Override

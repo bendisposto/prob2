@@ -33,9 +33,9 @@ import de.prob.unicode.UnicodeTranslator;
 
 /**
  * Representation of an Event-B formula
- * 
+ *
  * @author joy
- * 
+ *
  */
 public class EventB extends AbstractEvalElement implements IBEvalElement {
 
@@ -234,5 +234,9 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		TranslatingVisitor v = new TranslatingVisitor();
 		getAst().apply(v);
 		return v.getResult();
+	}
+
+	public Set<IFormulaExtension> getTypes() {
+		return types;
 	}
 }

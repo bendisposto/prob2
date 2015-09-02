@@ -8,6 +8,7 @@ import de.prob.model.representation.ModelElementList
 
 
 
+
 public class EventModifier extends AbstractModifier {
 	private final actctr
 	private final grdctr
@@ -81,11 +82,11 @@ public class EventModifier extends AbstractModifier {
 		return guard(prop.label, prop.formula, theorem)
 	}
 
-	def EventModifier guard(String name, String pred, boolean theorem=false) {
+	def EventModifier guard(String name, String pred, boolean theorem=false, String comment="") {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
 		}
-		def guard = new EventBGuard(name, pred, theorem, Collections.emptySet())
+		def guard = new EventBGuard(name, pred, theorem, Collections.emptySet(), comment)
 		newEM(event.addTo(Guard.class, guard))
 	}
 
