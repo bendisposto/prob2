@@ -7,7 +7,6 @@ import de.prob.model.eventb.algorithm.graph.AlgorithmGraph
 import de.prob.model.eventb.algorithm.graph.AlgorithmToGraph
 import de.prob.model.eventb.algorithm.graph.BranchCondition
 import de.prob.model.eventb.algorithm.graph.EventInfo
-import de.prob.model.eventb.algorithm.graph.GraphOptimizer
 import de.prob.model.representation.Machine
 
 class AlgorithmTranslator2 {
@@ -38,7 +37,7 @@ class AlgorithmTranslator2 {
 	}
 
 	def translate(Block b) {
-		AlgorithmGraph g = new AlgorithmGraph(new GraphOptimizer(new AlgorithmToGraph(b).getNode()).getAlgorithm())
+		AlgorithmGraph g = new AlgorithmGraph(new AlgorithmToGraph(b).getNode())
 		g.assertions.each { pc, List<Assertion> assertion ->
 			assertion.each { a ->
 				machineM = machineM.invariant("pc = $pc => ${a.assertion}")

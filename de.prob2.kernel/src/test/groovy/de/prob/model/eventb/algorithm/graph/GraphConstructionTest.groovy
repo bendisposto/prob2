@@ -199,7 +199,7 @@ public class GraphConstructionTest extends Specification {
 
 	def "two decrementers"() {
 		when:
-		def DEBUG = true
+		def DEBUG = false
 		def graph = graph({
 			While("x > 0") { Assign("x := x - 1") }
 			Assert("x = 0")
