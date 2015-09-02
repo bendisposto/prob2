@@ -7,6 +7,7 @@ import de.prob.statespace.State;
 
 public class GetBStateCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "get_b_state";
 	private static final String STATE = "State";
 	private final State id;
 	private String stateRep;
@@ -17,7 +18,7 @@ public class GetBStateCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_b_state");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtomOrNumber(id.getId());
 		pto.printVariable(STATE);
 		pto.closeTerm();

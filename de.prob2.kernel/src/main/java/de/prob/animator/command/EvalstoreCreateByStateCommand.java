@@ -18,6 +18,7 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class EvalstoreCreateByStateCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "es_copy_from_statespace";
 	private static final String STORE_ID_VAR = "ID";
 	private final String stateId;
 	private long evalstoreId;
@@ -28,7 +29,7 @@ public class EvalstoreCreateByStateCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("es_copy_from_statespace");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtomOrNumber(stateId);
 		pto.printVariable(STORE_ID_VAR);
 		pto.closeTerm();

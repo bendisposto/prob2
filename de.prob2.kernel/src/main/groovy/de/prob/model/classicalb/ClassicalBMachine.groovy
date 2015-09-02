@@ -66,6 +66,10 @@ public class ClassicalBMachine extends Machine {
 		getChildrenOfType(BEvent.class)
 	}
 
+	def ModelElementList<Operation> getEvents() {
+		getChildrenOfType(BEvent.class)
+	}
+
 	public Operation getOperation(String name) {
 		getOperations().getElement(name)
 	}

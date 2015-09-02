@@ -8,6 +8,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public class InsertFormulaForVisualizationCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "insert_formula_for_expansion";
 	private final IEvalElement formula;
 	private final String ID = "Id";
 	private FormulaId formulaId;
@@ -18,7 +19,7 @@ public class InsertFormulaForVisualizationCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("insert_formula_for_expansion");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		formula.printProlog(pto);
 		pto.printVariable(ID);
 		pto.closeTerm();

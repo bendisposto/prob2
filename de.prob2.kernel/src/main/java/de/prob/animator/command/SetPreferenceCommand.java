@@ -18,6 +18,7 @@ import de.prob.prolog.term.PrologTerm;
  */
 public final class SetPreferenceCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "set_eclipse_preference";
 	private final String key;
 	private final String value;
 
@@ -34,7 +35,7 @@ public final class SetPreferenceCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("set_eclipse_preference").printAtom(key).printAtom(value)
+		pto.openTerm(PROLOG_COMMAND_NAME).printAtom(key).printAtom(value)
 				.closeTerm();
 	}
 }

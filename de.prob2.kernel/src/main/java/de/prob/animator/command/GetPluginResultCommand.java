@@ -14,6 +14,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public final class GetPluginResultCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "get_plugin_output";
 	private final String resultID;
 	private CompoundPrologTerm result;
 
@@ -33,7 +34,7 @@ public final class GetPluginResultCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_plugin_output").printAtomOrNumber(resultID)
+		pto.openTerm(PROLOG_COMMAND_NAME).printAtomOrNumber(resultID)
 				.printVariable("Bindings").closeTerm();
 	}
 

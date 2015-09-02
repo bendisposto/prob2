@@ -7,7 +7,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public class SetBGoalCommand extends AbstractCommand {
 
-	private static final String COMMAND_NAME = "set_goal_for_model_checking";
+	private static final String PROLOG_COMMAND_NAME = "set_goal_for_model_checking";
 	private final IEvalElement goal;
 
 	public SetBGoalCommand(final IEvalElement goal) {
@@ -16,7 +16,7 @@ public class SetBGoalCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm(COMMAND_NAME);
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		goal.printProlog(pto);
 		pto.closeTerm();
 	}

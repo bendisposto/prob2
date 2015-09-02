@@ -7,6 +7,8 @@ import de.prob.prolog.term.PrologTerm;
 
 public class LoadEventBProjectCommand extends AbstractCommand {
 
+	@SuppressWarnings("unused")
+	private static final String PROLOG_COMMAND_NAME = "load_event_b_project";
 	private final EventBModelTranslator translator;
 
 	public LoadEventBProjectCommand(final EventBModelTranslator translator) {

@@ -27,6 +27,8 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class CbcSolveCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "cbc_solve";
+
 	private static final int BINDINGS = 1;
 
 	private static final int VAR_NAME = 1;
@@ -102,7 +104,7 @@ public class CbcSolveCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
-		pout.openTerm("cbc_solve");
+		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.openList();
 		evalElement.printProlog(pout);
 		pout.closeList();

@@ -23,6 +23,7 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class GetStateBasedErrorsCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "get_state_errors";
 	private final String stateId;
 	private Collection<StateError> stateErrors;
 
@@ -53,7 +54,7 @@ public class GetStateBasedErrorsCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_state_errors").printAtomOrNumber(stateId)
+		pto.openTerm(PROLOG_COMMAND_NAME).printAtomOrNumber(stateId)
 				.printVariable("Errors").closeTerm();
 	}
 

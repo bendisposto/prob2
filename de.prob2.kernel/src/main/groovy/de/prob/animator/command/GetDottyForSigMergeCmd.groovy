@@ -6,6 +6,8 @@ import de.prob.prolog.term.PrologTerm
 
 public class GetDottyForSigMergeCmd extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "write_dotty_signature_merge"
+
 	def List<String> ignored
 
 	def GetDottyForSigMergeCmd(List<String> ignored) {
@@ -19,7 +21,7 @@ public class GetDottyForSigMergeCmd extends AbstractCommand {
 
 	@Override
 	def void writeCommand(IPrologTermOutput pto) {
-		pto.openTerm("write_dotty_signature_merge")
+		pto.openTerm(PROLOG_COMMAND_NAME)
 		pto.openList()
 		ignored.each { pto.printAtom(it) }
 		pto.closeList()

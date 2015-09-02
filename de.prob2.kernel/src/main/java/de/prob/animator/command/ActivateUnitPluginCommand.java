@@ -11,9 +11,11 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
 public class ActivateUnitPluginCommand extends AbstractCommand {
+	private static final String PROLOG_COMMAND_NAME = "activate_plugin";
+
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("activate_plugin");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtom("units");
 		pto.closeTerm();
 	}
@@ -23,4 +25,7 @@ public class ActivateUnitPluginCommand extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		// nothing to do here
 	}
+
+	
+
 }

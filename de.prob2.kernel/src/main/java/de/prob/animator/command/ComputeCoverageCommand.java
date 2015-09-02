@@ -22,6 +22,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public final class ComputeCoverageCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "compute_coverage";
 	private ComputeCoverageResult coverageResult;
 	Logger logger = LoggerFactory.getLogger(ComputeCoverageCommand.class);
 
@@ -100,7 +101,7 @@ public final class ComputeCoverageCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("compute_coverage").printVariable("TotalNodeNr")
+		pto.openTerm(PROLOG_COMMAND_NAME).printVariable("TotalNodeNr")
 				.printVariable("TotalTransSum").printVariable("NodeStat")
 				.printVariable("OpStat").printVariable("Uncovered").closeTerm();
 	}

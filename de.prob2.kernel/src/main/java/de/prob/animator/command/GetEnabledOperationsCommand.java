@@ -31,6 +31,8 @@ import de.prob.statespace.StateSpace;
 public final class GetEnabledOperationsCommand extends AbstractCommand
 		implements IStateSpaceModifier {
 
+	private static final String PROLOG_COMMAND_NAME = "compute_operations_for_state";
+
 	Logger logger = LoggerFactory.getLogger(GetEnabledOperationsCommand.class);
 
 	private static final String OPERATIONS_VARIABLE = "PLOps";
@@ -62,7 +64,7 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("compute_operations_for_state");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtomOrNumber(id);
 		pto.printVariable(OPERATIONS_VARIABLE);
 		pto.closeTerm();

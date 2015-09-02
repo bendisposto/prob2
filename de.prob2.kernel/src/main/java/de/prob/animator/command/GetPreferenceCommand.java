@@ -6,6 +6,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public class GetPreferenceCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "get_eclipse_preference";
 	private final String VALUE = "Value";
 	private final String key;
 	private String resultV;
@@ -16,7 +17,7 @@ public class GetPreferenceCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_eclipse_preference").printAtom(key)
+		pto.openTerm(PROLOG_COMMAND_NAME).printAtom(key)
 				.printVariable(VALUE).closeTerm();
 	}
 

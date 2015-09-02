@@ -20,6 +20,7 @@ import de.prob.prolog.term.PrologTerm;
  * 
  */
 public class LoadBProjectCommand extends AbstractCommand {
+	private static final String PROLOG_COMMAND_NAME = "load_classical_b_from_list_of_facts";
 	Logger logger = LoggerFactory.getLogger(LoadBProjectCommand.class);
 	private NodeIdAssignment nodeIdMapping;
 	private final RecursiveMachineLoader rml;
@@ -32,7 +33,7 @@ public class LoadBProjectCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("load_classical_b_from_list_of_facts");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtom(mainMachine.getAbsolutePath());
 		pto.openList();
 		printLoadTerm(rml, pto);

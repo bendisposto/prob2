@@ -15,6 +15,7 @@ import de.prob.util.StringUtil;
 
 public class GetOpFromId extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "get_op_from_id";
 	private final Transition op;
 	private final String PARAMS = "Params";
 	private final String RETVALS = "RetVals";
@@ -29,7 +30,7 @@ public class GetOpFromId extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_op_from_id").printAtomOrNumber(op.getId())
+		pto.openTerm(PROLOG_COMMAND_NAME).printAtomOrNumber(op.getId())
 				.printAtom(expansion.name()).printVariable(PARAMS)
 				.printVariable(RETVALS).closeTerm();
 	}

@@ -3,35 +3,32 @@ package de.prob.model.eventb
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.Action
 import de.prob.model.representation.Guard
+import de.prob.model.representation.ModelElementList
 
 
 
 
-class EventModifier extends AbstractModifier {
+public class EventModifier extends AbstractModifier {
 	private final actctr
 	private final grdctr
 	def Event event
 	boolean initialisation
-	def Event refinedEvent
 
-	private EventModifier(Event event, boolean initialisation=false, Event refinedEvent) {
-		this.event = event
+	public EventModifier(Event event, boolean initialisation=false) {
 		this.initialisation = initialisation
-		this.refinedEvent = refinedEvent
-		def actions = []
-		def guards = []
-		if (refinedEvent) {
-			actions.addAll(refinedEvent.actions)
-			guards.addAll(refinedEvent.guards)
-		}
-		actions.addAll(event.actions)
-		guards.addAll(event.guards)
-		this.actctr = extractCounter("act",actions)
-		this.grdctr = extractCounter("grd",guards)
+		this.actctr = extractCounter("act",event.actions)
+		this.event = event
+		this.grdctr = extractCounter("grd",event.guards)
 	}
 
 	private EventModifier newEM(Event event) {
-		return new EventModifier(event, initialisation, refinedEvent)
+		return new EventModifier(event, initialisation)
+	}
+
+	def EventModifier refines(String name) {
+		return newEM(event.set(Event.class, new ModelElementList<Event>([
+			new Event(name, EventType.ORDINARY, false)
+		])))
 	}
 
 	def EventModifier when(Map g) {

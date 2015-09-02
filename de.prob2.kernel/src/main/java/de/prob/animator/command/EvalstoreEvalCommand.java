@@ -24,6 +24,7 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class EvalstoreEvalCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "es_eval";
 	private static final String RESULT_VAR = "Result";
 	private final long evalstoreId;
 	private final IEvalElement evalElement;
@@ -46,7 +47,7 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("es_eval");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printNumber(evalstoreId);
 		evalElement.printProlog(pto);
 		if (timeout == null) {

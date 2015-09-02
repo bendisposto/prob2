@@ -1,6 +1,10 @@
 package de.prob.scripting
 
+import de.prob.model.classicalb.ClassicalBMachine
+import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.translate.EventBModelTranslator
+import de.prob.model.representation.DependencyGraph.ERefType
+import de.prob.model.representation.DependencyGraph.Edge
 import de.prob.statespace.StateSpace
 
 class LoadClosures {
@@ -29,7 +33,23 @@ class LoadClosures {
 		}
 	}
 
+	def static List<ClassicalBMachine> extractClassicalBHierarchy(ClassicalBModel model, String machineName) {
+		ClassicalBMachine machine = model.getComponent(machineName)
+		List<String> outEdges = model.getGraph().getOutEdges(machineName)
+				.findAll { Edge e -> e.relationship == ERefType.USES || e.relationship == ERefType.INCLUDES }
+				.collect { Edge e -> e.getTo().getElementName() }
+		List<ClassicalBMachine> ms = [machine]
+		List<ClassicalBMachine> referenced = outEdges.collect { String name ->
+			extractClassicalBHierarchy(model, name)
+		}.inject([]) { acc, list -> acc + list }
+		ms.addAll(referenced)
+		ms
+	}
+
 	def static Closure<Object> B = {StateSpace s ->
-		s.getModel().getMainMachine().getVariables().each { it.subscribe(s) }
+		List<ClassicalBMachine> machines = extractClassicalBHierarchy(s.getModel(), s.getModel().getMainMachine().getName())
+		machines.each { ClassicalBMachine m ->
+			m.variables.each { it.subscribe(s) }
+		}
 	}
 }

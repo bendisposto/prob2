@@ -12,30 +12,41 @@ import de.prob.model.representation.Variable;
 public class EventBMachine extends Machine {
 
 	public EventBMachine(final String name) {
-		super(name, PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap());
+		super(
+				name,
+				PersistentHashMap
+						.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
 	}
 
-	private EventBMachine(final String name, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
+	private EventBMachine(
+			final String name,
+			PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
 		super(name, children);
 	}
 
-	public EventBMachine set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+	public EventBMachine set(Class<? extends AbstractElement> clazz,
+			ModelElementList<? extends AbstractElement> elements) {
 		return new EventBMachine(name, assoc(clazz, elements));
 	}
 
-	public <T extends AbstractElement> EventBMachine addTo(Class<T> clazz, T element) {
+	public <T extends AbstractElement> EventBMachine addTo(Class<T> clazz,
+			T element) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
 		return new EventBMachine(name, assoc(clazz, list.addElement(element)));
 	}
 
-	public <T extends AbstractElement> EventBMachine removeFrom(Class<T> clazz, T element) {
+	public <T extends AbstractElement> EventBMachine removeFrom(Class<T> clazz,
+			T element) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
-		return new EventBMachine(name, assoc(clazz, list.removeElement(element)));
+		return new EventBMachine(name,
+				assoc(clazz, list.removeElement(element)));
 	}
 
-	public <T extends AbstractElement> EventBMachine replaceIn(Class<T> clazz, T oldElement, T newElement) {
+	public <T extends AbstractElement> EventBMachine replaceIn(Class<T> clazz,
+			T oldElement, T newElement) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
-		return new EventBMachine(name, assoc(clazz, list.replaceElement(oldElement, newElement)));
+		return new EventBMachine(name, assoc(clazz,
+				list.replaceElement(oldElement, newElement)));
 	}
 
 	public ModelElementList<EventBMachine> getRefines() {
@@ -64,6 +75,10 @@ public class EventBMachine extends Machine {
 	}
 
 	public ModelElementList<Event> getEvents() {
+		return getChildrenAndCast(BEvent.class, Event.class);
+	}
+
+	public ModelElementList<Event> getOperations() {
 		return getChildrenAndCast(BEvent.class, Event.class);
 	}
 
