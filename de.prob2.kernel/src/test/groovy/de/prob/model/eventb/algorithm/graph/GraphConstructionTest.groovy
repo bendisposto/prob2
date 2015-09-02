@@ -2,7 +2,6 @@ package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
 
@@ -22,6 +21,24 @@ public class GraphConstructionTest extends Specification {
 		EventInfo n = graph.nodes[index]
 		n.conditions.collectEntries { pc, b ->
 			[pc, b.conditions]
+		}
+	}
+
+	def List<String> actions(AlgorithmGraph graph, int index) {
+		EventInfo n = graph.nodes[index]
+		def acts = []
+		n.actions.each { Assignments a ->
+			a.assignments.each { acts.add(it) }
+		}
+		acts
+	}
+
+	def Map<Integer, List<String>> assertions(AlgorithmGraph graph) {
+		graph.assertions.collectEntries { pc, b ->
+			[
+				pc,
+				b.collect { it.assertion}
+			]
 		}
 	}
 
@@ -51,12 +68,13 @@ public class GraphConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		conditions(graph, 0) == [0: []]
-		node(graph, 0).actions == [
-			new Assignments(["x := 1", "y := 1"]),
-			new Assignments(["pc := 1"])
+		actions(graph, 0) == [
+			"x := 1",
+			"y := 1",
+			"pc := 1"
 		]
 		conditions(graph, 1) == [1: []]
-		node(graph, 1).actions.isEmpty()
+		actions(graph, 1) == []
 		graph.size() == 2
 	}
 
@@ -69,10 +87,10 @@ public class GraphConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 2
 		conditions(graph, 0) == [0: []]
-		node(graph, 0).actions == [new Assignments(["pc := 1"])]
+		actions(graph, 0) == ["pc := 1"]
 		conditions(graph, 1) == [1: []]
-		node(graph, 1).actions == []
-		graph.assertions == [0: [new Assertion("x = 1")], 1:[]]
+		actions(graph, 1) == []
+		assertions(graph) == [0: ["x = 1"], 1:[]]
 	}
 
 	def "an assert in front of a statement"() {
@@ -88,23 +106,17 @@ public class GraphConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 3
 		conditions(graph, 0) == [0: []]
-		node(graph, 0).actions == [
-			new Assignments(["x := 2"]),
-			new Assignments(["pc := 1"])
-		]
+		actions(graph, 0) == ["x := 2", "pc := 1"]
 		conditions(graph, 1) == [1: []]
-		node(graph, 1).actions == [
-			new Assignments(["x := 3"]),
-			new Assignments(["pc := 2"])
-		]
+		actions(graph, 1) == ["x := 3", "pc := 2"]
 		conditions(graph, 2) == [2: []]
-		node(graph, 2).actions == []
-		graph.assertions == [0: [], 1: [new Assertion("x = 1")], 2:[]]
+		actions(graph, 2) == []
+		assertions(graph) == [0: [], 1: ["x = 1"], 2:[]]
 	}
 
 	def "an assert before and after a while"() {
 		when:
-		def DEBUG = true
+		def DEBUG = false
 		def graph = graph({
 			Assign("x := 1")
 			Assert("x = 1")
@@ -116,20 +128,73 @@ public class GraphConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 4
 		conditions(graph, 0) == [0: []]
-		node(graph, 0).actions == [
-			new Assignments(["x := 1"]),
-			new Assignments(["pc := 1"])
-		]
+		actions(graph, 0) == ["x := 1", "pc := 1"]
 		conditions(graph, 1) == [1: ["x < 10"]]
-		node(graph, 1).actions == [
-			new Assignments(["x := x + 1"]),
-			new Assignments(["pc := 1"])
-		]
+		actions(graph, 1) == ["x := x + 1", "pc := 1"]
 		conditions(graph, 2) == [1: ["not(x < 10)"]]
-		node(graph, 2).actions == [new Assignments(["pc := 2"])]
+		actions(graph, 2) == ["pc := 2"]
 		conditions(graph, 3) == [2: []]
-		node(graph, 3).actions == []
-		graph.assertions == [0: [], 1: [new Assertion("x = 1")], 2: [new Assertion("x >= 10")]]
+		actions(graph, 3) == []
+		assertions(graph) == [0: [], 1: ["x = 1"], 2: ["x >= 10"]]
+	}
+
+	def "an assert in between whiles"() {
+		when:
+		def DEBUG = true
+		def graph = graph({
+			Assign("x := 1")
+			Assert("x = 1")
+			While("x < 10") { Assign("x := x + 1") }
+			Assert("x >= 10")
+			While("x > 0") { Assign("x := x - 1") }
+			Assert("x = 0")
+		})
+
+		then:
+		if (DEBUG) print(graph)
+		graph.size() == 5
+		conditions(graph, 0) == [0: []]
+		actions(graph, 0) == ["x := 1", "pc := 1"]
+		conditions(graph, 1) == [1: ["x < 10"]]
+		actions(graph, 1) == ["x := x + 1", "pc := 1"]
+		conditions(graph, 2) == [1: ["not(x < 10)", "x > 0"], 2: ["x > 0"]]
+		actions(graph, 2) == ["x := x - 1", "pc := 2"]
+		conditions(graph, 3) == [1: ["not(x < 10)", "not(x > 0)"], 2:["not(x > 0)"]]
+		actions(graph, 3) == ["pc := 3"]
+		conditions(graph, 4) == [3: []]
+		actions(graph, 4) == []
+		assertions(graph) == [0: [], 1:["x = 1"], 2:["x >= 10"], 3:["x = 0"]]
+	}
+
+	def "an assert between ifs"() {
+		when:
+		def DEBUG = true
+		def graph = graph({
+			Assign("x := 1")
+			Assert("x > 0")
+			If("x > 0") {
+				Then("x := 0 - x")
+				Else("x := x - 1")
+			}
+			Assert("x < 0")
+			If("x < 0") {
+				Then("x := 0 - x")
+				Else("x := x + 1")
+			}
+			Assert("x > 0")
+		})
+
+		then:
+		if (DEBUG) print(graph)
+		conditions(graph, 0) == [0: []]
+		actions(graph, 0) == ["x := 1", "pc := 1"]
+		conditions(graph, 1) == [1: ["x > 0"]]
+		actions(graph, 1) == ["x := 0 - x", "pc := 2"]
+		conditions(graph, 2) == [2: ["x < 0"]]
+		actions(graph, 2) == ["x := 0 - x", "pc := 3"]
+		conditions(graph, 3) == [3: []]
+		actions(graph, 3) == ["pc := 4"]
+		conditions(graph, 4) == [4: []]
 	}
 
 	def "an empty if has only one node"() {
@@ -145,7 +210,7 @@ public class GraphConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		conditions(graph, 0) == [0: ["(x < 4) or (not(x < 4))"]]
-		node(graph, 0).actions == []
+		actions(graph, 0) == []
 	}
 
 	def "an if with then has 2 nodes"() {
@@ -162,12 +227,9 @@ public class GraphConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 2
 		conditions(graph, 0) == [0: ["x < 4"]]
-		node(graph, 0).actions == [
-			new Assignments(["x := 1"]),
-			new Assignments(["pc := 1"])
-		]
+		actions(graph, 0) == ["x := 1", "pc := 1"]
 		conditions(graph, 1) == [0:["not(x < 4)"], 1:[]]
-		node(graph, 1).actions == []
+		actions(graph, 1) == []
 	}
 
 	def "an if with else has 3 nodes"() {
@@ -184,12 +246,9 @@ public class GraphConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 2
 		conditions(graph, 0) == [0: ["x < 4"], 1:[]]
-		node(graph, 0).actions == []
+		actions(graph, 0) == []
 		conditions(graph, 1) == [0:["not(x < 4)"]]
-		node(graph, 1).actions == [
-			new Assignments(["x := 1"]),
-			new Assignments(["pc := 1"])
-		]
+		actions(graph, 1) == ["x := 1", "pc := 1"]
 	}
 
 	def "an empty while has 2 nodes"() {
@@ -204,9 +263,9 @@ public class GraphConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 2
 		conditions(graph, 0) == [0: ["x < 4"]]
-		node(graph, 0).actions == [new Assignments(["pc := 0"])]
+		actions(graph, 0) == ["pc := 0"]
 		conditions(graph, 1) == [0: ["not(x < 4)"]]
-		node(graph, 1).actions == []
+		actions(graph, 1) == []
 	}
 
 	def "a while with one stmt"() {
@@ -220,17 +279,14 @@ public class GraphConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 2
 		conditions(graph,0) == [0: ["x < 4"]]
-		node(graph, 0).actions == [
-			new Assignments(["x := 2"]),
-			new Assignments(["pc := 0"])
-		]
+		actions(graph, 0) == ["x := 2", "pc := 0"]
 		conditions(graph, 1) == [0: ["not(x < 4)"]]
-		node(graph, 1).actions == []
+		actions(graph, 1) == []
 	}
 
 	def "optimized euclid"() {
 		when:
-		def DEBUG = true
+		def DEBUG = false
 		def graph = graph({
 			While("u /= 0") {
 				If ("u < v") { Then("u := v", "v := u") }
@@ -242,20 +298,18 @@ public class GraphConstructionTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		graph.assertions == [0:[], 1: new Assertion("u < v"), 2: new Assertion("u|->m|->n : IsGCD")]
+		assertions(graph) == [0:[], 1: ["u > v"], 2: ["u|->m|->n : IsGCD"]]
 		conditions(graph, 0) == [0: ["u /= 0", "u < v"]]
-		node(graph, 0).actions == [
-			new Assignments(["u := v", "v := u"]),
-			new Assignments(["pc := 1"])
+		actions(graph, 0) == [
+			"u := v",
+			"v := u",
+			"pc := 1"
 		]
 		conditions(graph, 1) == [0: ["u /= 0", "not(u < v)"], 1:[]]
-		node(graph, 1).actions == [
-			new Assignments(["u := u - v"]),
-			new Assignments(["pc := 0"])
-		]
+		actions(graph, 1) == ["u := u - v", "pc := 0"]
 		conditions(graph, 2) == [0: ["not(u /= 0)"]]
-		node(graph, 2).actions == [new Assignments(["pc := 2"])]
+		actions(graph, 2) == ["pc := 2"]
 		conditions(graph, 3) == [2: []]
-		node(graph, 3).actions == []
+		actions(graph, 3) == []
 	}
 }

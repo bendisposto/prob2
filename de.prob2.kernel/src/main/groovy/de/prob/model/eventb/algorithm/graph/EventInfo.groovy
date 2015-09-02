@@ -9,13 +9,15 @@ class EventInfo {
 	def addEdge(int pc, BranchCondition cond) {
 		if (conditions[pc]) {
 			BranchCondition old = conditions[pc]
-			def oldc = conditions[pc].conditions.iterator().join(" & ")
-			def newc = cond.conditions.iterator().join(" & ")
-			def newcondition = "($oldc) or ($newc)"
+			def oldc = conditions[pc].conditions
+			def newc = cond.conditions
+			def newconditions = oldc ? (newc ? [
+				"(${oldc.iterator().join(' & ')}) or (${newc.iterator().join(' & ')})"]
+			: []) : newc
 			def stmts = []
 			stmts.addAll(old.statements)
 			stmts.addAll(cond.statements)
-			conditions.put(pc, new BranchCondition([newcondition], stmts, cond.getOutNode()))
+			conditions.put(pc, new BranchCondition(newconditions, stmts, cond.getOutNode()))
 		} else {
 			conditions.put(pc, cond)
 		}

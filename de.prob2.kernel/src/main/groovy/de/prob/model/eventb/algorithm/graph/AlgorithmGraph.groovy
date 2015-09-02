@@ -94,9 +94,14 @@ public class AlgorithmGraph {
 	def addEdges(int pc, CombinedBranch node) {
 		addAssertions(node, pc)
 		node.branches.each { BranchCondition cond ->
-			int topc = addNode(cond.getOutNode(), false)
+			if (cond.getOutNode().assertions) {
+				assert !(cond.getOutNode() instanceof Nil)
+				cond.getOutNode().assertions.each { Assertion assertion ->
+					cond.getOutNode().getOutNode().addAssertion(assertion)
+				}
+			}
+			addNode(cond.getOutNode(), false)
 			getInfo(cond.getOutNode()).addEdge(pc, cond)
-			addAssertions(cond.getOutNode(), topc)
 		}
 	}
 
