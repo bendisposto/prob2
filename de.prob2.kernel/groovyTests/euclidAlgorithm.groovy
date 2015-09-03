@@ -25,11 +25,15 @@ end
 mm = new ModelModifier().make {
 	
 	context(name: "definitions") {
-		constants "Divides", "IsGCD"
+		constants "Divides", "GCD"
 		
 		axioms "Divides = {i|->j | #k.k:0..j & j = i*k}",
-		       """IsGCD = {i|->j|->k | i|->j : Divides & i|->k : Divides & (!r. r : (0..j \\/ 0..k) => (r|->j : Divides & r|->k : Divides => r|->i : Divides) ) }"""
-		}
+		       "GCD = {x↦y↦res ∣ res↦x ∈ Divides ∧ res↦y ∈ Divides ∧ (∀r· r ∈ (0‥x ∪ 0‥y) ⇒ (r↦x ∈ Divides ∧ r↦y ∈ Divides ⇒ r↦res ∈ Divides) ) }",
+			   "∀x,y·x↦x↦y ∈ GCD ⇒ x = y",
+			   "∀v·GCD[{v↦v}] = {v}",
+			   "∀x,y·y−x>0 ⇒ GCD[{x↦y}] = GCD[{x↦y−x}]",
+			   "∀x,y·GCD[{x↦y}] = GCD[{y↦x}]"
+	}
 	
 	context(name: "limits") {
 		constants "m", "n", "k"
@@ -43,16 +47,16 @@ mm = new ModelModifier().make {
 	machine(name: "euclid", sees: ["definitions", "limits"]) {
 		var_block name: "u", invariant: "u : 0..k", init: "u := m"
 		var_block name: "v", invariant: "v : 0..k", init: "v := n"
+		invariant "GCD[{m↦n}] = GCD[{u↦v}]"
 		
 		algorithm {
-			While("u /= 0") {
+			While("u /= v") {
 				If("u < v") {
-					Then("u := v", "v := u")
+					Then("v := v - u")
+					Else("u := u - v")
 				}
-				Assert("u > v")
-				Assign("u := u - v")
 			}
-			Assert("v|->m|->n : IsGCD")//"TRUE = TRUE")
+			Assert("m↦n↦v ∈ GCD")//"TRUE = TRUE")
 		}
 	}
 }
