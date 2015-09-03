@@ -336,4 +336,38 @@ public class GraphConstructionTest extends Specification {
 		conditions(graph, 3) == [2: []]
 		actions(graph, 3) == []
 	}
+
+	def "russische bauernmultiplikation"(){
+		when:
+		def DEBUG = true
+		def graph = graph({
+			While("l /= 1") {
+				Assign("l := l / 2", "r := r * 2")
+				If("l mod 2 /= 0") { Then("product := product + r") }
+			}
+			Assert("product = m * n")
+		})
+
+		then:
+		if (DEBUG) print(graph)
+		graph.size() == 5
+		assertions(graph) == [0: [], 1: [], 2:["product = m * n"]]
+		conditions(graph, 0) == [0: ["l /= 1"]]
+		actions(graph, 0) == [
+			"l := l / 2",
+			"r := r * 2",
+			"pc := 1"
+		]
+		conditions(graph, 1) == [1: ["l mod 2 /= 0"]]
+		actions(graph, 1) == [
+			"product := product + r",
+			"pc := 0"
+		]
+		conditions(graph, 2) == [1: ["not(l mod 2 /= 0)"]]
+		actions(graph, 2) == ["pc := 0"]
+		conditions(graph, 3) == [0: ["not(l /= 1)"]]
+		actions(graph, 3) == ["pc := 2"]
+		conditions(graph, 4) == [2: []]
+		actions(graph, 4) == []
+	}
 }

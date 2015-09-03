@@ -33,16 +33,24 @@ class AlgorithmToGraph {
 		combinedBranches.addAll(branches2)
 		Branch b = new Branch(combinedBranches)
 
-		branches.collect { BranchCondition cond ->
+		List<INode> endNodes = []
+		branches.each { BranchCondition cond ->
 			if (cond.getOutNode() instanceof Nil) {
 				body = new Node([], new Nil())
-				cond.setOutNode(body)
-				return body
+				cond.setEndNode(body)
+				endNodes << body
 			} else {
-				return getEndNode(cond)
+				List<INode> end = getEndNodes(cond)
+				endNodes.addAll(end)
 			}
-		}.each { INode node ->
-			node.setEndNode(b)
+		}
+		endNodes.each { INode node ->
+			if (node instanceof BranchCondition) {
+				body = new Node([], b)
+				node.setEndNode(body)
+			} else {
+				node.setEndNode(b)
+			}
 		}
 		return b
 	}
@@ -58,8 +66,10 @@ class AlgorithmToGraph {
 			if (cond.getOutNode() instanceof Nil) {
 				cond.setOutNode(restOfGraph)
 			} else {
-				INode end = getEndNode(cond)
-				end.setEndNode(restOfGraph)
+				List<INode> end = getEndNodes(cond)
+				end.each { INode e ->
+					e.setEndNode(restOfGraph)
+				}
 			}
 		}
 		return new Branch(branches)
@@ -81,12 +91,29 @@ class AlgorithmToGraph {
 		branches
 	}
 
-	def INode getEndNode(INode node) {
-		def n = node
-		while (!(n.getOutNode() instanceof Nil)) {
-			n = n.getOutNode()
+	def List<INode> getEndNodes(INode node) {
+		if (node instanceof Nil) {
+			return []
 		}
-		return n
+		if (node instanceof Node || node instanceof BranchCondition) {
+			if (node.getOutNode() instanceof Nil) {
+				return [node]
+			}
+			return getEndNodes(node.getOutNode())
+		}
+		if (node instanceof Branch) {
+			List<INode> endNodes = []
+			node.branches.each { BranchCondition cond ->
+				if (cond.getOutNode() instanceof Nil) {
+					endNodes.add(cond)
+				} else {
+					List<INode> outNodes = getEndNodes(cond.getOutNode())
+					endNodes.addAll(getEndNodes(cond.getOutNode()))
+				}
+			}
+			return endNodes
+		}
+		throw new IllegalArgumentException("Unknown node type: ${node.getClass()}")
 	}
 
 	def INode extractNode(Assertion assertion, Iterator<Statement> rest) {
