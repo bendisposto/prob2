@@ -32,7 +32,6 @@ import de.prob.scripting.FileHandler;
  */
 public class Main {
 
-
 	public static int maxCacheSize = 100;
 	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
@@ -74,7 +73,7 @@ public class Main {
 	 */
 	public final static String LOG_CONFIG = System
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
-					.getProperty("PROB_LOG_CONFIG");
+			.getProperty("PROB_LOG_CONFIG");
 
 	private final Downloader downloader;
 
@@ -101,8 +100,9 @@ public class Main {
 
 		try {
 			CommandLine line = parser.parse(options, args);
-			if (line.hasOption("upgrade")) {
-				String version = line.getOptionValue("upgrade");
+			if (line.hasOption("upgrade") || line.hasOption("cli")) {
+				String version = line.hasOption("upgrade") ? line
+						.getOptionValue("upgrade") : line.getOptionValue("cli");
 				if (version == null) {
 					version = "latest";
 				}
@@ -148,7 +148,7 @@ public class Main {
 			return homedir + separator;
 		}
 		return System.getProperty("user.home") + separator + ".prob"
-		+ separator;
+				+ separator;
 	}
 
 	public static Map<String, String> getGlobalPreferences(
@@ -184,6 +184,5 @@ public class Main {
 		}
 		System.exit(0);
 	}
-
 
 }

@@ -86,22 +86,28 @@ public class MainConfiguration extends AbstractModule {
 				.hasArg()
 				.withDescription(
 						"set the cache size for the states in the StateSpace")
-						.create("maxCacheSize");
-
+				.create("maxCacheSize");
 
 		Option script = OptionBuilder
 				.withArgName("script/dir")
 				.hasArg()
 				.withDescription(
 						"run a Groovy script or all .groovy files from a directory")
-						.create("script");
+				.create("script");
 
 		Option upgrade = OptionBuilder
 				.hasOptionalArg()
 				.withArgName("version")
 				.withDescription(
 						"upgrade the ProB binaries. Optionally specify the desired version.")
-						.create("upgrade");
+				.create("upgrade");
+
+		Option upgrade2 = OptionBuilder
+				.hasOptionalArg()
+				.withArgName("version")
+				.withDescription(
+						"upgrade the ProB binaries before running a script. Optionally specify the desired version.")
+				.create("cli");
 
 		// TODO: add modelchecking option
 		// Option modelcheck = new Option("mc", "modelcheck", false,
@@ -110,8 +116,9 @@ public class MainConfiguration extends AbstractModule {
 		mode.setRequired(true);
 		// mode.addOption(modelcheck);
 		mode.addOption(script);
+		mode.addOption(upgrade);
 		options.addOptionGroup(mode);
-		options.addOption(upgrade);
+		options.addOption(upgrade2);
 		options.addOption(maxCacheSize);
 		return options;
 	}
