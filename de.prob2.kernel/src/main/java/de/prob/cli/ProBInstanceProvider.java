@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +33,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 	private final PrologProcessProvider processProvider;
 	private final String home;
 	private final OsSpecificInfo osInfo;
-
-	@Override
-	public ProBInstance get() {
-		return create();
-	}
+	private final AtomicInteger processCounter;
 	private final Set<WeakReference<ProBInstance>> processes = new HashSet<WeakReference<ProBInstance>>();
 
 	@Inject
@@ -45,10 +42,20 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		this.processProvider = processProvider;
 		this.home = home;
 		this.osInfo = osInfo;
+		processCounter = new AtomicInteger();
+	}
+
+	@Override
+	public ProBInstance get() {
+		return create();
 	}
 
 	public ProBInstance create() {
 		return startProlog();
+	}
+
+	public int numberOfCLIs() {
+		return processCounter.get();
 	}
 
 	public void shutdownAll() {
@@ -60,6 +67,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 	}
 
 	private ProBInstance startProlog() {
+		processCounter.incrementAndGet();
 		ProcessHandle processTuple = processProvider.get();
 		Process process = processTuple.getProcess();
 		String key = processTuple.getKey();
@@ -78,10 +86,12 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		try {
 			connection.connect();
 			ProBInstance cli = new ProBInstance(process, stream,
-					userInterruptReference, connection, home, osInfo);
+					userInterruptReference, connection, home, osInfo,
+					processCounter);
 			processes.add(new WeakReference<ProBInstance>(cli));
 			return cli;
 		} catch (IOException e) {
+			processCounter.decrementAndGet();
 			logger.error("Error connecting to Prolog binary.", e);
 			return null;
 		}
@@ -130,7 +140,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	private void applyPatterns(
 			final Collection<? extends AbstractCliPattern<?>> patterns,
-			final String line) {
+					final String line) {
 		for (Iterator<? extends AbstractCliPattern<?>> it = patterns.iterator(); it
 				.hasNext();) {
 			final AbstractCliPattern<?> p = it.next();
@@ -139,6 +149,4 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 			}
 		}
 	}
-
-
 }

@@ -6,6 +6,7 @@ import com.google.inject.Inject
 
 import de.prob.annotations.Home
 import de.prob.cli.OsSpecificInfo
+import de.prob.cli.ProBInstanceProvider
 
 
 
@@ -14,12 +15,14 @@ class Downloader {
 	def OsSpecificInfo osInfo
 	def String probhome
 	def config
+	def ProBInstanceProvider instances
 
 	@Inject
-	public Downloader(final OsSpecificInfo osInfo, @Home final String probhome) {
+	public Downloader(final OsSpecificInfo osInfo, @Home final String probhome, ProBInstanceProvider instances) {
 		this.osInfo = osInfo
 		this.probhome = probhome
 		this.config = downloadConfig()
+		this.instances = instances
 	}
 
 	def download(address,target) {
@@ -92,6 +95,10 @@ class Downloader {
 		}
 		def versionurl = config.get(targetVersion).url
 
+		def numOfOpenCLIs = instances.numberOfCLIs()
+		if (numOfOpenCLIs != 0) {
+			return "--Cannot download the ProB binaries. Close the $numOfOpenCLIs CLIs that are open--"
+		}
 
 		// Use operating system to download the correct zip file
 		def os = osInfo.dirName
