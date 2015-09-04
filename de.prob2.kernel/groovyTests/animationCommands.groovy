@@ -94,5 +94,4 @@ cmd = new GetStateBasedErrorsCommand("5")
 s.execute(cmd)
 assert cmd.getResult().isEmpty()
 
-s.animator.cli.shutdown();
 "Animation commands work correctly"

@@ -33,6 +33,4 @@ after = b.getValues()
 assert after.containsKey(f2)
 assert after.get(f2).getValue() == "0"
 
-
-s.animator.cli.shutdown();
 "A registered formula is automatically evaluated in every state and can be found in the cache later"

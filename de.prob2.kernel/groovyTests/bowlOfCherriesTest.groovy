@@ -65,5 +65,4 @@ t = t.randomAnimation(10)
 //d = mtx.writeToRodin(m, "BowlOfCherries", dir)
 //d.deleteDir()
 
-s.animator.cli.shutdown();
 "generate and animate a model"

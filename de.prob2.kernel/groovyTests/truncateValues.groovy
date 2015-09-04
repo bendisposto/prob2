@@ -15,5 +15,4 @@ assert t.evalCurrent(truncated).getValue() == "#5:{2,...,10}"
 expanded = new ClassicalB("{2,4,6,8,10}",FormulaExpand.expand)
 assert t.evalCurrent(expanded).getValue() == "{2,4,6,8,10}"
 
-s.animator.cli.shutdown();
 "add a description of the test here"

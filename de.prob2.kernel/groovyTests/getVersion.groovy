@@ -15,5 +15,4 @@ assert cmd.getSvnrevision() != ""
 assert cmd.getProloginfo() != ""
 assert cmd.getVersion() != null
 
-s.animator.cli.shutdown();
 "version accessed successfully"

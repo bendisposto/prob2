@@ -48,6 +48,4 @@ assert tt3.traces[1] == t1
 
 assert tt.toString() instanceof String
 
-s0.animator.cli.shutdown();
-s1.animator.cli.shutdown();
 "it is possible to sync traces with event/parameter combinations"

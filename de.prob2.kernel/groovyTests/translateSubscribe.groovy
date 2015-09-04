@@ -16,5 +16,4 @@ current.explore()
 assert current.values[f] instanceof EvalResult
 assert current.values[f].value == "4"
 
-s.animator.cli.shutdown();
 "a translate formula object can be subscribed"

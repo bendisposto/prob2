@@ -26,5 +26,4 @@ arg1 = res.getArgument(1)
 assert arg1 instanceof ListPrologTerm
 assert arg1.isEmpty()
 
-s.animator.cli.shutdown();
 "Activating and accessing unit plugin successful"

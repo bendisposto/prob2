@@ -50,5 +50,4 @@ cmd = new GetPreferenceCommand("MAXINT")
 s.execute(cmd)
 assert cmd.getValue() == "12"
 
-s.animator.cli.shutdown();
 "the preferences for a model are as expected"

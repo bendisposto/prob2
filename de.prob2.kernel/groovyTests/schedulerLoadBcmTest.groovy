@@ -16,5 +16,4 @@ assert st != s.root
 c = c.anyEvent()
 assert c.getCurrentState() != st
 
-s.animator.cli.shutdown();
 "A .bcm file (Scheduler0.bcm) was loaded and some steps were made"

@@ -15,8 +15,6 @@ model_check = { job ->
 res = model_check(new ConsistencyChecker(s))
 assert res instanceof ModelCheckOk
 
-s.animator.cli.shutdown();
-
 s = api.eventb_load(dir+File.separator+"machines"+File.separator+"InvalidModel"+File.separator+"createErrors.bcm")
 
 res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkInvariantViolations(true)))
@@ -29,5 +27,4 @@ assert res instanceof ModelCheckErrorUncovered
 assert res.getMessage() == "Deadlock found."
 assert res.getTrace(s) != null
 
-s.animator.cli.shutdown();
 "model checking works correctly"

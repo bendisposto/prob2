@@ -36,5 +36,4 @@ f = "ready = {}" as ClassicalB
 states = s.getStatesFromPredicate(f)
 validateResults(states, f)
 
-s.animator.cli.shutdown();
 "filtering by predicate works successfully"

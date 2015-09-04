@@ -14,5 +14,4 @@ assert h.current.getTransition().getName() == "new" || h.current.getTransition()
 h = h.anyEvent("nr_ready")
 assert h.current.getTransition().getName() == "nr_ready"
 
-s.animator.cli.shutdown();
 "anyOperation and anyEvent on Trace work correctly"

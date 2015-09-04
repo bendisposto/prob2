@@ -18,5 +18,4 @@ assert wderror instanceof EvaluationErrorResult
 assert wderror.getResult() == "NOT-WELL-DEFINED"
 assert wderror.getErrors()[0] == "division by zero 3/0;;"
 
-s.animator.cli.shutdown();
 "Evaluation errors can be caught and handled simply"

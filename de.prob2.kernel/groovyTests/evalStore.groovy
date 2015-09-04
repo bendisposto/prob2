@@ -35,6 +35,4 @@ assert res.hasInterruptedOccurred() == false
 assert res.getResultingStoreId() == 2
 assert res.getNewIdentifiers() == ["x"]
 
-
-s.animator.cli.shutdown();
 "Eval store MAY be working correctly, but NOBODY knows because who knows how the eval store works actually???"

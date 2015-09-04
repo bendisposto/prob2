@@ -23,5 +23,4 @@ s.execute(cmd)
 t6 = s.getTrace(cmd)
 assert t6 != null && t6.getTransitionList().isEmpty() && t6.getCurrentState() == t1.getCurrentState()
 
-s.animator.cli.shutdown();
 "can create a trace between two given nodes"

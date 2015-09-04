@@ -8,6 +8,4 @@ cmd = new SimpleTextCommand("compute_operations_for_state(root,Transitions)","Tr
 s.execute(cmd)
 assert cmd.getResults() == ["op"]
 
-
-s.animator.cli.shutdown();
 "possible to create a simple text command"

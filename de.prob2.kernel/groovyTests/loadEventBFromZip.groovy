@@ -13,6 +13,4 @@ s = m.load(m.CFarmer)
 t = s as Trace
 t = t.$setup_constants()
 
-
-s.animator.cli.shutdown();
 "a model can be loaded from a zip file"

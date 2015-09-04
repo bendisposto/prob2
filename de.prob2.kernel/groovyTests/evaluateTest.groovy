@@ -28,6 +28,4 @@ assert t.getSolutions().containsKey("y")
 assert t.x == new Atom("PID2")
 assert t.y == 1
 
-
-s.animator.cli.shutdown();
 "Evaluation of formulas works (scheduler.mch)"

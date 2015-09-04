@@ -7,7 +7,6 @@ import de.prob.statespace.*
 s = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
 assert s.getMainComponent() != null
 m = s as EventBModel
-s.animator.cli.shutdown()
 
 mm = new ModelModifier(m).make {
 	machine(name: "EmptyMachine") {
@@ -31,7 +30,6 @@ t = s as Trace
 t = t.$initialise_machine()
 assert !t.canExecuteEvent("event1", [])
 assert !t.canExecuteEvent("event2", [])
-s.animator.cli.shutdown()
 
 mm = mm.make {
 	machine(name: "EmptyMachine") {
@@ -54,5 +52,4 @@ assert t.canExecuteEvent("event2", [])
 t = t.event1().event1().event2()
 assert t.evalCurrent("x").value == "5"
 
-s.animator.cli.shutdown()
 "the model API works correctly"

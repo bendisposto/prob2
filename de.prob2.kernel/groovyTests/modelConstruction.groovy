@@ -136,7 +136,4 @@ assert !t.canExecuteEvent("down",[])
 assert !t.canExecuteEvent("up",[])
 assert t.evalCurrent("door").value == "open"
 
-s.animator.cli.shutdown();
-
-
 "it is possible to construct a model"

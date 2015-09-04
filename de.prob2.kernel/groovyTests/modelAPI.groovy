@@ -7,7 +7,6 @@ import de.prob.statespace.*
 s = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
 assert s.getMainComponent() != null
 m = s as EventBModel
-s.animator.cli.shutdown()
 
 mm = new ModelModifier(m).make {
 	context(name: "EmptyContext") {
@@ -21,7 +20,6 @@ t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("mySet")
 assert x.getValue() == "{x,y,z}"
-s.animator.cli.shutdown()
 
 final axmName = m2.EmptyContext.axioms[0].getName()
 mm = mm.make {
@@ -41,7 +39,6 @@ t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("mySet")
 assert x instanceof ComputationNotCompletedResult
-s.animator.cli.shutdown()
 
 mm = mm.make {
 	context(name: "EmptyContext") {
@@ -57,8 +54,6 @@ t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("set")
 assert x.value == "{one}"
-s.animator.cli.shutdown()
-
 
 mm = mm.make { 
 	context(name: "EmptyContext") {
@@ -74,7 +69,6 @@ t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("set")
 assert x instanceof ComputationNotCompletedResult
-s.animator.cli.shutdown()
 
 mm = mm.make {
 	machine(name: "EmptyMachine") {
@@ -106,7 +100,6 @@ t = t.inc("y = 3")
 x = t.evalCurrent("x")
 assert x.value == "9"
 assert !t.canExecuteEvent("inc",["y = 1"])
-s.animator.cli.shutdown()
 
 mm = mm.make {
 	machine(name: "EmptyMachine") {
@@ -128,7 +121,6 @@ t = t.$initialise_machine().inc().inc().inc().inc()
 x = t.evalCurrent("x")
 assert x.value == "4"
 assert !t.canExecuteEvent("inc",[])
-s.animator.cli.shutdown()
 
 mm = mm.make {
 	machine(name: "EmptyMachine") {
@@ -136,14 +128,11 @@ mm = mm.make {
 	}
 }
 
-
 final m8 = mm.getModel()
 s = m8.load(m8.EmptyMachine)
 t = s as Trace
 t = t.$initialise_machine()
 assert !t.canExecuteEvent("inc", [])
-s.animator.cli.shutdown()
-
 
 mm = mm.make {
 	machine(name: "EmptyMachine") {
@@ -161,8 +150,6 @@ t = s as Trace
 t = t.$initialise_machine()
 x = t.evalCurrent("x")
 assert x instanceof ComputationNotCompletedResult
-s.animator.cli.shutdown()
-
 
 mm = mm.make {
 	machine(name: "EmptyMachine") {
@@ -188,6 +175,5 @@ t = t.$initialise_machine()
 t = t.hehe().hehe()
 x = t.evalCurrent("x")
 assert x.value == "5"
-s.animator.cli.shutdown()
 
 "the model API works correctly"

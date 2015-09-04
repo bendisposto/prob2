@@ -41,5 +41,4 @@ checker.start()
 res = checker.getResult()
 assert res instanceof CheckError
 
-s.animator.cli.shutdown();
 "checking for goal works"

@@ -9,5 +9,4 @@ x = "{w | w : NATURAL & w mod 2 = 0} /\\ {v | v : NATURAL & v mod 2 = 1} = {}" a
 res = t.evalCurrent(x)
 assert res instanceof EnumerationWarning
 
-s.animator.cli.shutdown();
 "enumeration warnings are handled"

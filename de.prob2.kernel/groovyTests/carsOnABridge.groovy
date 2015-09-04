@@ -82,6 +82,5 @@ t = t.randomAnimation(10)
 //mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "cars", "/tmp")
 //d.deleteDir()
-
-s.animator.cli.shutdown();*/
+*/
 "testing convergent and anticipated events"

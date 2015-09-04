@@ -76,5 +76,4 @@ assert variable(m, "MA.MC.M3", "MA.MC.bb").isSubscribed(s)
 assert variable(m, "MB.MD.M3", "MB.MD.bb").isSubscribed(s)
 assert variable(m, "MB.MC.M3", "MB.MC.bb").isSubscribed(s)
 
-s.animator.cli.shutdown();
 "included machines are prefixed and represented correctly"

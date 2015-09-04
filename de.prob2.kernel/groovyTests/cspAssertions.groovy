@@ -28,5 +28,4 @@ assert res.value == "(a.1->STOP) [] (a.1->NDet)"
 assert m.checkSyntax("NDet")
 assert !m.checkSyntax("Foo")
 
-s.animator.cli.shutdown();
 "csp assertions tested correctly"

@@ -23,5 +23,4 @@ assert t.getTransitionList().size() == 8
 res = ltl_check(new LTL("G({ active < 7 })"))
 assert res instanceof LTLError
 
-s.animator.cli.shutdown();
 "ltl formulas can be checked"

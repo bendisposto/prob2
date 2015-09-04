@@ -16,5 +16,4 @@ assert st != s.root
 c = c.$initialise_machine()
 assert c.getCurrentState() != st
 
-s.animator.cli.shutdown();
 "A .buc file can be loaded"

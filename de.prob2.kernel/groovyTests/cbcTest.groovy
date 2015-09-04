@@ -50,5 +50,4 @@ assert ["0","1","2","3"].contains(res.y)
  This is a ComputationNotCompletedResult with reason "no solution found (but there might be one)"
  However, it was not obvious which predicate could produce this result, which is why it is not tested here */ 
 
-s.animator.cli.shutdown();
 "CBC solving works correctly"

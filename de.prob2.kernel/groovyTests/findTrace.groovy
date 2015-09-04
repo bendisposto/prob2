@@ -38,5 +38,4 @@ ops = t.getTransitionList(true)
 assert opList.size() == 1
 assert opList[0].getName() == "find_valid_state"
 
-s.animator.cli.shutdown();
 "Finding trace through current state space works"

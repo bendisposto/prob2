@@ -3,12 +3,15 @@ package de.prob.cli;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 	public ProBInstance get() {
 		return create();
 	}
+	private final Set<WeakReference<ProBInstance>> processes = new HashSet<WeakReference<ProBInstance>>();
 
 	@Inject
 	public ProBInstanceProvider(final PrologProcessProvider processProvider,
@@ -45,6 +49,14 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	public ProBInstance create() {
 		return startProlog();
+	}
+
+	public void shutdownAll() {
+		for (WeakReference<ProBInstance> wr : processes) {
+			if (wr.get() != null) {
+				wr.get().shutdown();
+			}
+		}
 	}
 
 	private ProBInstance startProlog() {
@@ -67,6 +79,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 			connection.connect();
 			ProBInstance cli = new ProBInstance(process, stream,
 					userInterruptReference, connection, home, osInfo);
+			processes.add(new WeakReference<ProBInstance>(cli));
 			return cli;
 		} catch (IOException e) {
 			logger.error("Error connecting to Prolog binary.", e);

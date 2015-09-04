@@ -36,5 +36,4 @@ s.execute(cmd)
 assert !cmd.isSuccess()
 assert cmd.isDeadlocked()
 
-s.animator.cli.shutdown()
 "for simple scheduler, it is possible to randomly animate until a condition is met. The result trace is as expected."

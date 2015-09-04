@@ -28,7 +28,4 @@ sIds.each {
 	}
 }
 
-
-
-s.animator.cli.shutdown();
 "states can be filtered by predicate"

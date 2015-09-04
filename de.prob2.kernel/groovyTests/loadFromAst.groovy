@@ -35,5 +35,4 @@ assert m.blah.variables != null
 assert m.blah.variables.collect { it.name } == ["x"]
 assert m.blah.operations.collect { it.name } == ["ChangeX"]
 
-s.animator.cli.shutdown();
 "it is possible to load a b model from an ast"

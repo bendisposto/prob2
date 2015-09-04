@@ -54,6 +54,4 @@ assert res.isOk()
 assert res.getErrors().isEmpty()
 assert res.getType() == "record([field('PID1',integer),field('PID2',integer),field('PID3',integer)])"
 
-
-s.animator.cli.shutdown();
 "it is possible to type check a formula"

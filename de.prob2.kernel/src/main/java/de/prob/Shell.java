@@ -11,16 +11,19 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.ScriptEngineProvider;
 
 class Shell {
 
 	private final ScriptEngineProvider sep;
 	private final Logger logger = LoggerFactory.getLogger(Shell.class);
+	private ProBInstanceProvider ProBs;
 
 	@Inject
-	public Shell(final ScriptEngineProvider executor) {
+	public Shell(final ScriptEngineProvider executor, ProBInstanceProvider ProBs) {
 		sep = executor;
+		this.ProBs = ProBs;
 	}
 
 	private void runScript(final String dir, final File script,
@@ -58,6 +61,7 @@ class Shell {
 		}
 		FileReader fr = new FileReader(script);
 		Object res = executor.eval(fr);
+		ProBs.shutdownAll();
 		if (!silent) {
 			double seconds = (System.currentTimeMillis() - time) / 1000.0;
 			System.out.println(" - " + res.toString() + " ("

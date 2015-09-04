@@ -47,5 +47,4 @@ assert t.canExecuteEvent("new",["pp = PID1"])
 t = t.new("pp = PID1")
 assert !t.canExecuteEvent("blah",[])
 
-s.animator.cli.shutdown();
 "Some attributes of the scheduler model were tested"

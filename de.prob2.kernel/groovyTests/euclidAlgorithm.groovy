@@ -160,5 +160,4 @@ assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
 //d = mtx.writeToRodin(m, "Euclid", "/tmp")
 //d.deleteDir()
 
-s.animator.cli.shutdown();
 "generate and animate a model"

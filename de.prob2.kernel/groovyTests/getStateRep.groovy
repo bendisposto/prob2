@@ -12,7 +12,4 @@ t = t.ready("rr = PID1")
 
 assert t.getCurrentState().getStateRep() == "( active={PID1} &\n       ready={} &\n       waiting={PID2} )"
 
-
-
-s.animator.cli.shutdown();
 "can get the state representation from prolog"

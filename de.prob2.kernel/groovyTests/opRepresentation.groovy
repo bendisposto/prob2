@@ -47,8 +47,6 @@ assert op.returnValues.size() == 3
 assert op.returnValues == ["3","{(7|->{4,7,9})}","8"]
 assert op.getRep() == "3,{(7|->{4,7,9})},8 <-- Crazy2(7,{4,7,9})" 
 
-s.animator.cli.shutdown();
-
 // For csp:
 s = api.csp_load(dir+"/machines/csp/Deterministic1.csp")
 
@@ -67,5 +65,4 @@ assert op3.getRep() == "a.1"
 assert op3.getParams() == ["1"]
 assert op3.getReturnValues() == []
 
-s.animator.cli.shutdown();
 "the ops are expanded as expected"

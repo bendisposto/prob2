@@ -21,5 +21,4 @@ t2 = t.$initialise_machine()
 assert t1.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machine({},{},{})"]
 assert t2.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machine({},{},{})"]
 
-s.animator.cli.shutdown();
 "performing some animations, going back, different step results in a correct trace"

@@ -22,5 +22,4 @@ s.execute(cmd)
 assert cmd.getResults().get(f).getValue() == "2"
 assert cmd.getResults().get(f2) instanceof EvaluationErrorResult
 
-s.animator.cli.shutdown();
 "It is possible to register formulas and asynchronously evaluate them later"

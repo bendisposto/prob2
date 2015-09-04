@@ -18,9 +18,4 @@ s.execute(cmd)
 assert !cmd.getNodes().isEmpty()
 assert !cmd.getEdges().isEmpty()
 
-s.animator.cli.shutdown();
-
-//println "Nodes: "  + cmd.getNodes()
-//println "Edges: " + cmd.getEdges()
-
 "All tests passed!"
