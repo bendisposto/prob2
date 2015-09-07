@@ -22,6 +22,15 @@ class EventModifierTest extends Specification {
 		modifier.getEvent().guards[0].getPredicate().toUnicode() == new EventB("x : NAT").toUnicode()
 	}
 
+	def "it is possible to add a commented guard"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.guard("grd", "x : NAT", false, mycomment)
+
+		then:
+		modifier.getEvent().guards.grd.getComment() == mycomment
+	}
+
 	def "it is possible to remove a guard once added"() {
 		when:
 		def modifier = modifier.guard("x : NAT")
@@ -40,6 +49,15 @@ class EventModifierTest extends Specification {
 		modifier.getEvent().actions[0].getCode().toUnicode() == new EventB("x := 3").toUnicode()
 	}
 
+	def "it is possible to add a commented action"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.action("act", "x := 1", mycomment)
+
+		then:
+		modifier.getEvent().actions.act.getComment() == mycomment
+	}
+
 	def "it is possible to remove an action once added"() {
 		when:
 		def modifier = modifier.action("x := 3")
@@ -56,6 +74,15 @@ class EventModifierTest extends Specification {
 
 		then:
 		modifier.getEvent().parameters[0].name == "x"
+	}
+
+	def "it is possible to add a commented parameter"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.parameter("x", mycomment)
+
+		then:
+		modifier.getEvent().parameters.x.getComment() == mycomment
 	}
 
 	def "it is possible to remove a parameter block once added"() {
@@ -77,7 +104,13 @@ class EventModifierTest extends Specification {
 		modifier = modifier.guard("5 = 5")
 
 		then:
-		modifier.getEvent().guards.collect { it.getName() } == ["grd4","grd5","grd10","grd11","grd12"]
+		modifier.getEvent().guards.collect { it.getName() } == [
+			"grd4",
+			"grd5",
+			"grd10",
+			"grd11",
+			"grd12"
+		]
 	}
 
 	def "action names are generated correctly"() {
@@ -89,6 +122,21 @@ class EventModifierTest extends Specification {
 		modifier = modifier.action("5 = 5")
 
 		then:
-		modifier.getEvent().actions.collect { it.getName() } == ["act4","act5","act10","act11","act12"]
+		modifier.getEvent().actions.collect { it.getName() } == [
+			"act4",
+			"act5",
+			"act10",
+			"act11",
+			"act12"
+		]
+	}
+
+	def "it is possible to add a commented witness"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.witness("x", "x : SET", mycomment)
+
+		then:
+		modifier.getEvent().witnesses.x.getComment() == mycomment
 	}
 }

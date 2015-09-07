@@ -67,8 +67,8 @@ class MachineModifier extends AbstractModifier {
 		mm
 	}
 
-	def MachineModifier variable(String varName) {
-		variable(new EventBVariable(varName, null))
+	def MachineModifier variable(String varName, String comment="") {
+		variable(new EventBVariable(varName, null, comment))
 	}
 
 	def MachineModifier variable(EventBVariable variable) {
@@ -168,12 +168,12 @@ class MachineModifier extends AbstractModifier {
 		invariant("inv$ctr", pred, theorem)
 	}
 
-	def MachineModifier invariant(String name, String predicate, boolean theorem=false) {
+	def MachineModifier invariant(String name, String predicate, boolean theorem=false, String comment="") {
 		def newproofs = machine.getProofs().findAll { po ->
 			!po.getName().endsWith("/INV")
 		}
 
-		def invariant = new EventBInvariant(name, predicate, theorem, Collections.emptySet())
+		def invariant = new EventBInvariant(name, predicate, theorem, Collections.emptySet(), comment)
 		machine = machine.addTo(Invariant.class, invariant)
 		machine = machine.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs))
 		newMM(machine)
@@ -200,8 +200,8 @@ class MachineModifier extends AbstractModifier {
 				.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs)))
 	}
 
-	def MachineModifier variant(String expression) {
-		variant(new Variant(expression, Collections.emptySet()))
+	def MachineModifier variant(String expression, String comment="") {
+		variant(new Variant(expression, Collections.emptySet(), comment))
 	}
 
 	def MachineModifier variant(Variant variant) {

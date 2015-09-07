@@ -87,7 +87,8 @@ public class ModelToXML {
 			if (!extended) {
 				e.parameters.each {
 					xml.'org.eventb.core.parameter'(name: genName(),
-					'org.eventb.core.identifier': it.getName())
+					'org.eventb.core.identifier': it.getName(),
+					'org.eventb.core.comment': it.getComment())
 				}
 				e.guards.each {
 					xml.'org.eventb.core.guard'(name: genName(),
@@ -99,42 +100,48 @@ public class ModelToXML {
 				e.witnesses.each {
 					xml.'org.eventb.core.witness'(name: genName(),
 					'org.eventb.core.label': it.getName(),
-					'org.eventb.core.predicate': it.getPredicate().toUnicode())
+					'org.eventb.core.predicate': it.getPredicate().toUnicode(),
+					'org.eventb.core.comment': it.getComment())
 				}
 				e.actions.each {
 					xml.'org.eventb.core.action'(name: genName(),
 					'org.eventb.core.assignment': it.getCode().toUnicode(),
-					'org.eventb.core.label': it.getName())
+					'org.eventb.core.label': it.getName(),
+					'org.eventb.core.comment': it.getComment())
 				}
 			}
 		}
 	}
 
 	def extractContext(Context c, String directoryPath) {
+		String comment = c.getChildrenOfType(ElementComment.class).collect { it.getComment() }.iterator().join("\n")
 		String fileName = directoryPath + File.separator + c.getName() + ".buc"
 		new File(fileName).withWriter("UTF-8") { writer ->
 			MarkupBuilder xml = new MarkupBuilder(writer);
 
 			xml.mkp.xmlDeclaration(version: "1.0", encoding: "UTF-8", standalone: "no")
 			xml.'org.eventb.core.contextFile'('org.eventb.core.configuration': "org.eventb.core.fwd",
-			version:"3") {
+			version:"3", 'org.eventb.core.comment': comment) {
 				c.getExtends().each {
 					xml.'org.eventb.core.extendsContext'(name: genName(),
 					'org.eventb.core.target': it.getName())
 				}
 				c.sets.each {
 					xml.'org.eventb.core.carrierSet'(name: genName(),
-					'org.eventb.core.identifier': it.getFormula().toUnicode())
+					'org.eventb.core.identifier': it.getFormula().toUnicode(),
+					'org.eventb.core.comment': it.getComment())
 				}
 				c.constants.each {
 					xml.'org.eventb.core.constant'(name: genName(),
-					'org.eventb.core.identifier': it.getFormula().toUnicode())
+					'org.eventb.core.identifier': it.getFormula().toUnicode(),
+					'org.eventb.core.comment': it.getComment())
 				}
 				c.axioms.each {
 					xml.'org.eventb.core.axiom'(name: genName(),
 					'org.eventb.core.label': it.getName(),
 					'org.eventb.core.predicate': it.getPredicate().toUnicode(),
-					'org.eventb.core.theorem': it.isTheorem())
+					'org.eventb.core.theorem': it.isTheorem(),
+					'org.eventb.core.comment': it.getComment())
 				}
 			}
 		}

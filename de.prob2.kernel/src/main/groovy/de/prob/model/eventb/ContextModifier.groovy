@@ -3,6 +3,7 @@ package de.prob.model.eventb
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.Constant
+import de.prob.model.representation.ElementComment
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 
@@ -44,8 +45,8 @@ class ContextModifier extends AbstractModifier {
 		cm.axiom("partition($setName,$elementString)")
 	}
 
-	def ContextModifier set(String set) {
-		def bset = new Set(new EventB(set))
+	def ContextModifier set(String set, String comment="") {
+		def bset = new Set(new EventB(set), comment)
 		new ContextModifier(context.addTo(Set.class, bset))
 	}
 
@@ -70,8 +71,8 @@ class ContextModifier extends AbstractModifier {
 		cm
 	}
 
-	def ContextModifier constant(String identifier) {
-		newCM(context.addTo(Constant.class, new EventBConstant(identifier, false, null)))
+	def ContextModifier constant(String identifier, String comment="") {
+		newCM(context.addTo(Constant.class, new EventBConstant(identifier, false, null, comment)))
 	}
 
 	def ContextModifier removeConstant(String name) {
@@ -122,8 +123,8 @@ class ContextModifier extends AbstractModifier {
 		axiom("axm$ctr", pred, theorem)
 	}
 
-	def ContextModifier axiom(String name, String predicate, boolean theorem=false) {
-		def axiom = new EventBAxiom(name, predicate, theorem, Collections.emptySet())
+	def ContextModifier axiom(String name, String predicate, boolean theorem=false, String comment="") {
+		def axiom = new EventBAxiom(name, predicate, theorem, Collections.emptySet(), comment)
 		newCM(context.addTo(Axiom.class, axiom))
 	}
 
@@ -143,8 +144,11 @@ class ContextModifier extends AbstractModifier {
 		return newCM(ctx)
 	}
 
+	def ContextModifier addComment(String comment) {
+		newCM(context.addTo(ElementComment.class, new ElementComment(comment)))
+	}
+
 	def ContextModifier make(Closure definition) {
 		runClosure definition
 	}
-
 }

@@ -12,10 +12,17 @@ public class Witness extends AbstractElement {
 
 	private final String name;
 	private final EventB predicate;
+	private String comment;
 
-	public Witness(final String name,
-			final String code, final Set<IFormulaExtension> typeEnv) {
+	public Witness(final String name, final String code,
+			final Set<IFormulaExtension> typeEnv) {
+		this(name, code, typeEnv, "");
+	}
+
+	public Witness(final String name, final String code,
+			final Set<IFormulaExtension> typeEnv, String comment) {
 		this.name = name;
+		this.comment = comment;
 		predicate = new EventB(code, typeEnv);
 	}
 
@@ -29,6 +36,10 @@ public class Witness extends AbstractElement {
 
 	public IEvalElement getFormula() {
 		return predicate;
+	}
+
+	public String getComment() {
+		return comment;
 	}
 
 }

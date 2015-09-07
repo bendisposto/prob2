@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 import spock.lang.Specification
+import de.prob.model.representation.ElementComment
 
 class MachineModifierTest extends Specification {
 	def MachineModifier modifier
@@ -11,7 +12,7 @@ class MachineModifierTest extends Specification {
 		modifier = new MachineModifier(machine)
 	}
 
-	def "it is possible to at an intialisation"() {
+	def "it is possible to at an initialisation"() {
 		when:
 		modifier = modifier.initialisation { action "x := 1" }
 
@@ -34,6 +35,15 @@ class MachineModifierTest extends Specification {
 		!actions.isEmpty()
 	}
 
+	def "it is possible to add a commented variable"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.variable("x", mycomment)
+
+		then:
+		modifier.getMachine().variables.x.getComment() == mycomment
+	}
+
 	def "it is possible to remove a variable block once added"() {
 		when:
 		modifier = modifier.variable("x")
@@ -53,6 +63,15 @@ class MachineModifierTest extends Specification {
 		modifier.getMachine().invariants[0].getPredicate().getCode() == "x < 5"
 	}
 
+	def "it is possible to add a commented invariant"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.invariant("inv", "x : NAT", false, mycomment)
+
+		then:
+		modifier.getMachine().invariants.inv.getComment() == mycomment
+	}
+
 	def "it is possible to remove an invariant once added"() {
 		when:
 		modifier = modifier.invariant("x < 5")
@@ -67,9 +86,7 @@ class MachineModifierTest extends Specification {
 	def "it is possible to modify an existing event"() {
 		when:
 		modifier = modifier.var_block("x", "x : NAT", "x := 0")
-		modifier = modifier.event(name: "INITIALISATION") {
-			action "x := 1"
-		}
+		modifier = modifier.event(name: "INITIALISATION") { action "x := 1" }
 
 		then:
 		modifier.machine.events.INITIALISATION.actions.collect {
@@ -102,11 +119,18 @@ class MachineModifierTest extends Specification {
 		modifier.getMachine().events.isEmpty()
 	}
 
+	def "it is possible to add a commented event"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.event(name: "myevent", comment: mycomment) {}
+
+		then:
+		modifier.getMachine().events.myevent.getChildrenOfType(ElementComment.class).collect { it.getComment() } == [mycomment]
+	}
+
 	def "it is possible to duplicate an event and add its duplicate to the machine"() {
 		when:
-		modifier = modifier.event(name: "event1") {
-			action "x := 2"
-		}
+		modifier = modifier.event(name: "event1") { action "x := 2" }
 		modifier = modifier.duplicateEvent("event1", "event2")
 
 		then:
@@ -126,6 +150,12 @@ class MachineModifierTest extends Specification {
 		modifier = modifier.invariant("5 = 5")
 
 		then:
-		modifier.getMachine().invariants.collect { it.getName() } == ["inv4","inv5","inv10","inv11","inv12"]
+		modifier.getMachine().invariants.collect { it.getName() } == [
+			"inv4",
+			"inv5",
+			"inv10",
+			"inv11",
+			"inv12"
+		]
 	}
 }

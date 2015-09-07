@@ -2,6 +2,7 @@ package de.prob.model.eventb
 
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.Action
+import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Guard
 import de.prob.model.representation.ModelElementList
 
@@ -138,8 +139,8 @@ public class EventModifier extends AbstractModifier {
 		action("act$ctr", actionString)
 	}
 
-	def EventModifier action(String name, String action) {
-		def a = new EventBAction(name, action, Collections.emptySet())
+	def EventModifier action(String name, String action, String comment="") {
+		def a = new EventBAction(name, action, Collections.emptySet(), comment)
 		newEM(event.addTo(Action.class, a))
 	}
 
@@ -165,11 +166,11 @@ public class EventModifier extends AbstractModifier {
 		em
 	}
 
-	def EventModifier parameter(String parameter) {
+	def EventModifier parameter(String parameter, String comment="") {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot add parameter to initialisation.")
 		}
-		def param = new EventParameter(parameter)
+		def param = new EventParameter(parameter, comment)
 		newEM(event.addTo(EventParameter.class, param))
 	}
 
@@ -187,8 +188,8 @@ public class EventModifier extends AbstractModifier {
 		witness(validated.for, validated.with)
 	}
 
-	def EventModifier witness(String name, String code) {
-		def w = new Witness(name, code, Collections.emptySet())
+	def EventModifier witness(String name, String code, String comment="") {
+		def w = new Witness(name, code, Collections.emptySet(), comment)
 		newEM(event.addTo(Witness.class, w))
 	}
 
@@ -198,6 +199,10 @@ public class EventModifier extends AbstractModifier {
 
 	def EventModifier setType(EventType type) {
 		newEM(event.changeType(type))
+	}
+
+	def EventModifier addComment(String comment) {
+		newEM(event.addTo(ElementComment.class, new ElementComment(comment)))
 	}
 
 	def EventModifier make(Closure definition) {

@@ -31,11 +31,14 @@ public class ModelModifier extends AbstractModifier {
 	}
 
 	def ModelModifier context(HashMap properties, Closure definition) {
-		def props = validateProperties(properties, [name: String, "extends": [String,null]])
+		def props = validateProperties(properties, [name: String, "extends": [String, null], comment: [String, null]])
 		def model = this.model
 		def name = properties["name"]
 		def oldcontext = model.getContexts().getElement(name)
 		def c = oldcontext ?: new Context(name)
+		if (props["comment"]) {
+			c = c.addTo(ElementComment.class, new ElementComment(props["comment"]))
+		}
 
 		def extended = c.getExtends() ? c.getExtends()[0] : null
 		def ext = props["extends"]
@@ -62,7 +65,7 @@ public class ModelModifier extends AbstractModifier {
 	}
 
 	def ModelModifier machine(HashMap properties, Closure definition) {
-		def props = validateProperties(properties, [name: String, refines: [String,null], sees: [List,[]], comment: [String,null]])
+		def props = validateProperties(properties, [name: String, refines: [String, null], sees: [List, []], comment: [String, null]])
 		def model = this.model
 		def name = props["name"]
 		def oldmachine = model.getMachines().getElement(name)
@@ -112,9 +115,7 @@ public class ModelModifier extends AbstractModifier {
 		}
 
 		ModelModifier modelM = machine(name: refinementName, refines: machineName) {
-			m.variables.each {
-				variable(it)
-			}
+			m.variables.each { variable(it) }
 			m.events.each { Event e ->
 				refine(name: e.getName(), extended: true) {}
 			}

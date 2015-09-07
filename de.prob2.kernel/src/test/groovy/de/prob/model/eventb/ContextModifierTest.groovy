@@ -45,6 +45,15 @@ class ContextModifierTest extends Specification {
 		modifier.getContext().sets[0].getName() == "blah"
 	}
 
+	def "it is possible to add a commented set"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.set("blah", mycomment)
+
+		then:
+		modifier.getContext().sets.blah.getComment() == mycomment
+	}
+
 	def "it is possible to remove a set once added"() {
 		when:
 		modifier = modifier.set("blah")
@@ -62,6 +71,15 @@ class ContextModifierTest extends Specification {
 
 		then:
 		modifier.getContext().axioms[0].getPredicate().getCode() == "TRUE = TRUE"
+	}
+
+	def "it is possible to add a commented axiom"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.axiom("axm", "x : NAT", false, mycomment)
+
+		then:
+		modifier.getContext().axioms.axm.getComment() == mycomment
 	}
 
 	def "it is possible to remove an axiom once added"() {
@@ -84,6 +102,15 @@ class ContextModifierTest extends Specification {
 		modifier.getContext().constants[0].getName() == "x"
 	}
 
+	def "it is possible to add a commented constant"() {
+		when:
+		def mycomment = "this is a comment"
+		def modifier = modifier.constant("x", mycomment)
+
+		then:
+		modifier.getContext().constants.x.getComment() == mycomment
+	}
+
 	def "it is possible to remove a constant"() {
 		when:
 		modifier = modifier.constant("x")
@@ -104,7 +131,12 @@ class ContextModifierTest extends Specification {
 		modifier = modifier.axiom("5 = 5")
 
 		then:
-		modifier.getContext().axioms.collect { it.getName() } == ["axm4", "axm5", "axm10", "axm11", "axm12"]
+		modifier.getContext().axioms.collect { it.getName() } == [
+			"axm4",
+			"axm5",
+			"axm10",
+			"axm11",
+			"axm12"
+		]
 	}
-
 }
