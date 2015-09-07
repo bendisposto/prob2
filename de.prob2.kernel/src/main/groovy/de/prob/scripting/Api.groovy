@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import com.google.inject.Inject
+import com.google.inject.Provider
 
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.Main
@@ -23,6 +24,7 @@ public class Api {
 
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;
+	private final Provider<IAnimator> animatorProvider;
 
 	/**
 	 * This variable specifies whether the variables in the model are
@@ -31,6 +33,7 @@ public class Api {
 	def loadVariablesByDefault = true;
 
 	def globals = [:]
+
 
 	@Override
 	public String toString() {
@@ -46,7 +49,8 @@ public class Api {
 	 */
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
-	final Downloader downloader) {
+	final Downloader downloader, final Provider<IAnimator> animatorProvider) {
+		this.animatorProvider =  animatorProvider;
 		this.modelFactoryProvider = modelFactoryProvider;
 		this.downloader = downloader;
 	}
@@ -169,7 +173,7 @@ public class Api {
 
 	public CliVersionNumber getVersion() {
 		try {
-			IAnimator animator = Main.getInjector().getInstance(IAnimator.class);
+			IAnimator animator = animatorProvider.get();
 			GetVersionCommand versionCommand = new GetVersionCommand();
 			animator.execute(versionCommand);
 			animator.cli.shutdown()
