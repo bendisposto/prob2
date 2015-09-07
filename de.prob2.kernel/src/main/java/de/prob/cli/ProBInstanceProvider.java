@@ -67,7 +67,6 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 	}
 
 	private ProBInstance startProlog() {
-		processCounter.incrementAndGet();
 		ProcessHandle processTuple = processProvider.get();
 		Process process = processTuple.getProcess();
 		String key = processTuple.getKey();
@@ -84,6 +83,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		ProBConnection connection = new ProBConnection(key, port);
 
 		try {
+			processCounter.incrementAndGet();
 			connection.connect();
 			ProBInstance cli = new ProBInstance(process, stream,
 					userInterruptReference, connection, home, osInfo,
