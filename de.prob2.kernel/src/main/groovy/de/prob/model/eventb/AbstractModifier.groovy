@@ -1,8 +1,21 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
+import de.be4.classicalb.core.parser.node.AIdentifierExpression
+import de.prob.animator.domainobjects.EvalElementType
+import de.prob.animator.domainobjects.EvaluationException
+import de.prob.animator.domainobjects.EventB
+
 
 
 class AbstractModifier {
+
+	public final Set<IFormulaExtension> typeEnvironment
+
+	def AbstractModifier(Set<IFormulaExtension> typeEnvironment) {
+		this.typeEnvironment = typeEnvironment
+	}
 
 	protected Map validateProperties(Map properties, Map required) {
 		required.collectEntries { String prop,type ->
@@ -18,7 +31,10 @@ class AbstractModifier {
 
 	protected validateOptionalProperty(LinkedHashMap properties, String property, List type) {
 		if (properties[property]) {
-			return [property, properties[property].asType(type[0])]
+			return [
+				property,
+				properties[property].asType(type[0])
+			]
 		} else {
 			return [property, type[1]]
 		}
@@ -26,7 +42,10 @@ class AbstractModifier {
 
 	protected validateRequiredProperty(LinkedHashMap properties, String property, Class type) {
 		if (properties[property]) {
-			return [property, properties[property].asType(type)]
+			return [
+				property,
+				properties[property].asType(type)
+			]
 		} else {
 			throw new IllegalArgumentException("Expected property $property to have type $type")
 		}
@@ -48,6 +67,35 @@ class AbstractModifier {
 			}
 		}
 		counter
+	}
+
+	def EventB parseIdentifier(String formula) throws ModelGenerationException {
+		EventB expr = parseExpression(formula)
+		if (!(expr.getAst() instanceof AIdentifierExpression)) {
+			throw new FormulaTypeException(expr, "IDENTIFIER")
+		}
+		expr
+	}
+
+	def EventB parsePredicate(String formula) throws ModelGenerationException {
+		return parseFormula(formula, EvalElementType.PREDICATE)
+	}
+
+	def EventB parseExpression(String formula) throws ModelGenerationException {
+		return parseFormula(formula, EvalElementType.EXPRESSION)
+	}
+
+	def EventB parseFormula(String formula, EvalElementType expected) throws ModelGenerationException {
+		try {
+			EventB f = new EventB(formula, typeEnvironment)
+			String kind = f.getKind()
+			if (!kind.equals(expected.toString())) {
+				throw new FormulaTypeException(f, expected.name())
+			}
+			return f
+		} catch(EvaluationException e) {
+			throw new FormulaParseException(formula)
+		}
 	}
 
 	protected AbstractModifier runClosure(Closure runClosure) {

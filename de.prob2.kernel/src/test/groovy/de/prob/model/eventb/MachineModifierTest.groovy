@@ -158,4 +158,64 @@ class MachineModifierTest extends Specification {
 			"inv12"
 		]
 	}
+
+	def "parse error for variable when inputting invalid formula"() {
+		when:
+		modifier.variable("1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "parse error for invariant when inputting invalid formula"() {
+		when:
+		modifier.invariant("1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "parse error for variant when inputting invalid formula"() {
+		when:
+		modifier.variant("1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "type error for variable when inputting predicate"() {
+		when:
+		modifier.variable("1=1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "EXPRESSION"
+	}
+
+	def "type error for variable when inputting non identifier expression"() {
+		when:
+		modifier.variable("1+1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "IDENTIFIER"
+	}
+
+	def "type error for invariant when inputting expression"() {
+		when:
+		modifier.invariant("1+1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "PREDICATE"
+	}
+
+	def "type error for variant when inputting predicate"() {
+		when:
+		modifier.variant("1=1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "EXPRESSION"
+	}
 }

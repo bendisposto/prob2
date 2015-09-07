@@ -1,5 +1,7 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
 import de.prob.Main
 import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Machine
@@ -21,13 +23,13 @@ public class ModelModifier extends AbstractModifier {
 	 * @param model to be copied
 	 * @param startProB default = true
 	 */
-	def ModelModifier(EventBModel model) {
+	def ModelModifier(EventBModel model, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+		super(typeEnvironment)
 		this.model = model
 	}
 
 	def ModelModifier() {
-		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
-		this.model = factory.modelCreator.get()
+		this(Main.getInjector().getInstance(EventBFactory.class).modelCreator.get())
 	}
 
 	def ModelModifier context(HashMap properties, Closure definition) {

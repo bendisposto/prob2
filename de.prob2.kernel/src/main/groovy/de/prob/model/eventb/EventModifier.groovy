@@ -1,5 +1,8 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
+import de.prob.animator.domainobjects.EvalElementType
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.Action
 import de.prob.model.representation.ElementComment
@@ -16,7 +19,8 @@ public class EventModifier extends AbstractModifier {
 	def Event event
 	boolean initialisation
 
-	public EventModifier(Event event, boolean initialisation=false) {
+	public EventModifier(Event event, boolean initialisation=false, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+		super(typeEnvironment)
 		this.initialisation = initialisation
 		this.actctr = extractCounter("act",event.actions)
 		this.event = event
@@ -87,7 +91,7 @@ public class EventModifier extends AbstractModifier {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
 		}
-		def guard = new EventBGuard(name, pred, theorem, Collections.emptySet(), comment)
+		def guard = new EventBGuard(name, parsePredicate(pred), theorem, comment)
 		newEM(event.addTo(Guard.class, guard))
 	}
 
@@ -140,7 +144,7 @@ public class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier action(String name, String action, String comment="") {
-		def a = new EventBAction(name, action, Collections.emptySet(), comment)
+		def a = new EventBAction(name, parseFormula(action, EvalElementType.ASSIGNMENT), comment)
 		newEM(event.addTo(Action.class, a))
 	}
 
@@ -170,6 +174,7 @@ public class EventModifier extends AbstractModifier {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot add parameter to initialisation.")
 		}
+		parseIdentifier(parameter)
 		def param = new EventParameter(parameter, comment)
 		newEM(event.addTo(EventParameter.class, param))
 	}
@@ -189,7 +194,7 @@ public class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier witness(String name, String code, String comment="") {
-		def w = new Witness(name, code, Collections.emptySet(), comment)
+		def w = new Witness(name, parsePredicate(code), comment)
 		newEM(event.addTo(Witness.class, w))
 	}
 

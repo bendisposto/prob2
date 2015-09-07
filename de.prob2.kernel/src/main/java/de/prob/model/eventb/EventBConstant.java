@@ -15,7 +15,7 @@ public class EventBConstant extends Constant {
 		this(name, isAbstract, unit, "");
 	}
 
-	public EventBConstant(final String name, final boolean isAbstract,
+	public EventBConstant(String name, final boolean isAbstract,
 			final String unit, String comment) {
 		super(new EventB(name));
 		this.name = name;

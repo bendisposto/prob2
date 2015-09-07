@@ -14,12 +14,11 @@ public class EventBAction extends Action {
 
 	public EventBAction(final String name, final String code,
 			final Set<IFormulaExtension> typeEnv) {
-		this(name, code, typeEnv, "");
+		this(name, new EventB(code, typeEnv), "");
 	}
 
-	public EventBAction(final String name, final String code,
-			final Set<IFormulaExtension> typeEnv, String comment) {
-		super(new EventB(code, typeEnv));
+	public EventBAction(final String name, EventB code, String comment) {
+		super(code);
 		this.name = name;
 		this.comment = comment;
 	}

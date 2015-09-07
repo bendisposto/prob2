@@ -115,11 +115,11 @@ class EventModifierTest extends Specification {
 
 	def "action names are generated correctly"() {
 		when:
-		modifier = modifier.action(act4: "1 = 1")
-		modifier = modifier.action("2 = 2")
-		modifier = modifier.action(act10: "3 = 3")
-		modifier = modifier.action("4 = 4")
-		modifier = modifier.action("5 = 5")
+		modifier = modifier.action(act4: "x := 1")
+		modifier = modifier.action("x := 2")
+		modifier = modifier.action(act10: "x := 3")
+		modifier = modifier.action("x := 4")
+		modifier = modifier.action("x := 5")
 
 		then:
 		modifier.getEvent().actions.collect { it.getName() } == [

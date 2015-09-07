@@ -16,14 +16,13 @@ public class Witness extends AbstractElement {
 
 	public Witness(final String name, final String code,
 			final Set<IFormulaExtension> typeEnv) {
-		this(name, code, typeEnv, "");
+		this(name, new EventB(code, typeEnv), "");
 	}
 
-	public Witness(final String name, final String code,
-			final Set<IFormulaExtension> typeEnv, String comment) {
+	public Witness(final String name, EventB predicate, String comment) {
 		this.name = name;
 		this.comment = comment;
-		predicate = new EventB(code, typeEnv);
+		this.predicate = predicate;
 	}
 
 	public String getName() {

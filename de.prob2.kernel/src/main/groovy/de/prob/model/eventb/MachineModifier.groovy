@@ -1,5 +1,7 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.algorithm.Block
 import de.prob.model.representation.BEvent
@@ -42,7 +44,8 @@ class MachineModifier extends AbstractModifier {
 	EventBModel model
 	private eventModifiers = [:]
 
-	def MachineModifier(EventBMachine machine) {
+	def MachineModifier(EventBMachine machine, Set<IFormulaExtension> typeEnvironment = Collections.emptySet()) {
+		super(typeEnvironment)
 		this.machine = machine
 		this.invctr = extractCounter("inv", machine.invariants)
 	}
@@ -68,6 +71,7 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier variable(String varName, String comment="") {
+		parseIdentifier(varName)
 		variable(new EventBVariable(varName, null, comment))
 	}
 
@@ -173,7 +177,7 @@ class MachineModifier extends AbstractModifier {
 			!po.getName().endsWith("/INV")
 		}
 
-		def invariant = new EventBInvariant(name, predicate, theorem, Collections.emptySet(), comment)
+		def invariant = new EventBInvariant(name, parsePredicate(predicate), theorem, comment)
 		machine = machine.addTo(Invariant.class, invariant)
 		machine = machine.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs))
 		newMM(machine)
@@ -201,7 +205,7 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier variant(String expression, String comment="") {
-		variant(new Variant(expression, Collections.emptySet(), comment))
+		variant(new Variant(parseExpression(expression), comment))
 	}
 
 	def MachineModifier variant(Variant variant) {

@@ -13,13 +13,12 @@ public class Variant extends AbstractFormulaElement {
 	private String comment;
 
 	public Variant(final String code, final Set<IFormulaExtension> typeEnv) {
-		this(code, typeEnv, "");
+		this(new EventB(code, typeEnv), "");
 	}
 
-	public Variant(final String code, final Set<IFormulaExtension> typeEnv,
-			String comment) {
+	public Variant(EventB expression, String comment) {
 		this.comment = comment;
-		expression = new EventB(code, typeEnv);
+		this.expression = expression;
 	}
 
 	public IEvalElement getExpression() {

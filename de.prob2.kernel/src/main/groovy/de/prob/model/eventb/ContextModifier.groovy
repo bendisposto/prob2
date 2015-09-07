@@ -1,5 +1,7 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.Constant
@@ -11,7 +13,8 @@ class ContextModifier extends AbstractModifier {
 	private final axmctr
 	final Context context
 
-	def ContextModifier(Context context) {
+	def ContextModifier(Context context, java.util.Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+		super(typeEnvironment)
 		this.context = context
 		this.axmctr = extractCounter("axm", context.axioms)
 	}
@@ -23,7 +26,6 @@ class ContextModifier extends AbstractModifier {
 	def ContextModifier setExtends(Context extended) {
 		newCM(context.set(Context.class, new ModelElementList<Context>([extended])))
 	}
-
 
 	def ContextModifier enumerated_set(HashMap properties) {
 		Map validated = validateProperties(properties, [name: String, constants: String[]])
@@ -46,7 +48,7 @@ class ContextModifier extends AbstractModifier {
 	}
 
 	def ContextModifier set(String set, String comment="") {
-		def bset = new Set(new EventB(set), comment)
+		def bset = new Set(parseIdentifier(set), comment)
 		new ContextModifier(context.addTo(Set.class, bset))
 	}
 
@@ -72,6 +74,7 @@ class ContextModifier extends AbstractModifier {
 	}
 
 	def ContextModifier constant(String identifier, String comment="") {
+		parseIdentifier(identifier)
 		newCM(context.addTo(Constant.class, new EventBConstant(identifier, false, null, comment)))
 	}
 
@@ -124,7 +127,7 @@ class ContextModifier extends AbstractModifier {
 	}
 
 	def ContextModifier axiom(String name, String predicate, boolean theorem=false, String comment="") {
-		def axiom = new EventBAxiom(name, predicate, theorem, Collections.emptySet(), comment)
+		def axiom = new EventBAxiom(name, parsePredicate(predicate), theorem, comment)
 		newCM(context.addTo(Axiom.class, axiom))
 	}
 

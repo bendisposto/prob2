@@ -15,13 +15,12 @@ public class EventBInvariant extends Invariant {
 
 	public EventBInvariant(final String name, final String code,
 			final Boolean theorem, final Set<IFormulaExtension> typeEnv) {
-		this(name, code, theorem, typeEnv, "");
+		this(name, new EventB(code, typeEnv), theorem, "");
 	}
 
-	public EventBInvariant(final String name, final String code,
-			final Boolean theorem, final Set<IFormulaExtension> typeEnv,
-			String comment) {
-		super(new EventB(code, typeEnv));
+	public EventBInvariant(final String name, final EventB predicate,
+			final Boolean theorem, String comment) {
+		super(predicate);
 		this.name = name;
 		this.theorem = theorem;
 		this.comment = comment;
