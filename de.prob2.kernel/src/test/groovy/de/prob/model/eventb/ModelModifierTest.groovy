@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 import spock.lang.Specification
+import de.prob.model.representation.ElementComment
 import de.prob.model.representation.DependencyGraph.ERefType
 
 class ModelModifierTest extends Specification {
@@ -86,7 +87,11 @@ class ModelModifierTest extends Specification {
 		then:
 		model1.m1.getSees() == [model1.c1]
 		model2.m1.getSees() == [model2.c1, model2.c2]
-		model3.m1.getSees() == [model3.c1, model3.c2, model3.c3]
+		model3.m1.getSees() == [
+			model3.c1,
+			model3.c2,
+			model3.c3
+		]
 	}
 
 	def "adding a context with no extends should not overwrite existing extends"() {
@@ -132,5 +137,87 @@ class ModelModifierTest extends Specification {
 		model.Lift2.events.INITIALISATION.isExtended()
 		model.Lift2.events.up.isExtended()
 		model.Lift2.events.down.isExtended()
+	}
+
+	def "adding a machine with a comment works"() {
+		when:
+		def mycomment = "This is a comment!"
+		def mm = new ModelModifier().make {
+			machine(name: "Lift", comment: mycomment) {
+			}
+		}
+
+		then:
+		mm.getModel().Lift.getChildrenOfType(ElementComment.class).collect { it.getComment() } == [mycomment]
+	}
+
+	def "if refining a machine, it must already be there"() {
+		when:
+		def mm = new ModelModifier().make {
+			machine(name: "Lift", refines: "IDonTExist") {
+			}
+		}
+
+		then:
+		thrown(IllegalArgumentException)
+	}
+
+	def "when a machine sees a context, it must be there"() {
+		when:
+		def mm = new ModelModifier().make {
+			machine(name: "Lift", sees: ["IDonTExist"]) {
+			}
+		}
+
+		then:
+		thrown(IllegalArgumentException)
+	}
+
+	def "when refining a machine it must be there"() {
+		when:
+		def mm = new ModelModifier().make { refine("Lift", "Lift2")  }
+
+		then:
+		thrown(IllegalArgumentException)
+	}
+
+
+	def "adding a context with a comment works"() {
+		when:
+		def mycomment = "This is a comment!"
+		def mm = new ModelModifier().make {
+			context(name: "ctx", comment: mycomment) {
+			}
+		}
+
+		then:
+		mm.getModel().ctx.getChildrenOfType(ElementComment.class).collect { it.getComment() } == [mycomment]
+	}
+
+	def "when extending a context, it must be there already"() {
+		when:
+		def mm = new ModelModifier().make {
+			context(name: "ctx", extends: "IDonTExist") {
+			}
+		}
+
+		then:
+		thrown(IllegalArgumentException)
+	}
+
+	def "if the extended context is changed, this relationship is removed from the model"() {
+		when:
+		def mm = new ModelModifier().make {
+			context(name: "IDoNothing") {}
+			context(name: "IAlsoDoNothing", extends: "IDoNothing") {}
+		}
+		def beforemodel = mm.getModel()
+		mm = new ModelModifier(beforemodel).make {
+			context(name: "YetAnotherNothing") {}
+			context(name: "IAlsoDoNothing", extends: "YetAnotherNothing") {}
+		}
+
+		then:
+		true
 	}
 }

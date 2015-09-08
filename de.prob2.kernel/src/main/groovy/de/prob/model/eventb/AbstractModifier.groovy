@@ -1,5 +1,6 @@
 package de.prob.model.eventb
 
+import org.codehaus.groovy.transform.tailrec.VariableReplacedListener.*
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.be4.classicalb.core.parser.node.AIdentifierExpression
@@ -30,6 +31,9 @@ class AbstractModifier {
 	}
 
 	protected validateOptionalProperty(LinkedHashMap properties, String property, List type) {
+		if (type.size() != 2) {
+			throw new IllegalArgumentException("type tuple must contain two elements")
+		}
 		if (properties[property]) {
 			return [
 				property,
@@ -51,7 +55,7 @@ class AbstractModifier {
 		}
 	}
 
-	protected getDefinition(Map definition) {
+	protected Definition getDefinition(Map definition) {
 		new Definition(definition)
 	}
 
