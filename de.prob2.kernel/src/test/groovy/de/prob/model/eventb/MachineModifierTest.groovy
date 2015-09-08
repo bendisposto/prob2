@@ -189,7 +189,7 @@ class MachineModifierTest extends Specification {
 
 		then:
 		FormulaTypeException e = thrown()
-		e.getExpected() == "EXPRESSION"
+		e.getExpected() == "IDENTIFIER"
 	}
 
 	def "type error for variable when inputting non identifier expression"() {

@@ -70,11 +70,15 @@ class AbstractModifier {
 	}
 
 	def EventB parseIdentifier(String formula) throws ModelGenerationException {
-		EventB expr = parseExpression(formula)
-		if (!(expr.getAst() instanceof AIdentifierExpression)) {
-			throw new FormulaTypeException(expr, "IDENTIFIER")
+		try {
+			EventB f = new EventB(formula, typeEnvironment)
+			if (!(f.getAst() instanceof AIdentifierExpression)) {
+				throw new FormulaTypeException(f, "IDENTIFIER")
+			}
+			return f
+		} catch(EvaluationException e) {
+			throw new FormulaParseException(formula)
 		}
-		expr
 	}
 
 	def EventB parsePredicate(String formula) throws ModelGenerationException {

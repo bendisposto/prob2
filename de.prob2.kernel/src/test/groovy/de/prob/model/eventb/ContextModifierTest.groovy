@@ -139,4 +139,73 @@ class ContextModifierTest extends Specification {
 			"axm12"
 		]
 	}
+
+	def "parse error for set when inputting invalid formula"() {
+		when:
+		modifier.set("1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "parse error for constant when inputting invalid formula"() {
+		when:
+		modifier.constant("1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "parse error for axiom when inputting invalid formula"() {
+		when:
+		modifier.axiom("1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "type error for constant when inputting predicate"() {
+		when:
+		modifier.constant("1=1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "IDENTIFIER"
+	}
+
+	def "type error for constant when inputting expression"() {
+		when:
+		modifier.constant("1+1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "IDENTIFIER"
+	}
+
+	def "type error for set when inputting predicate"() {
+		when:
+		modifier.set("1=1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "IDENTIFIER"
+	}
+
+	def "type error for set when inputting expression"() {
+		when:
+		modifier.set("1+1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "IDENTIFIER"
+	}
+
+	def "type error for axiom when inputting expression"() {
+		when:
+		modifier.axiom("1+1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "PREDICATE"
+	}
 }

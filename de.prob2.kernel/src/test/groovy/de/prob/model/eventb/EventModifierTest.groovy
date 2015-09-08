@@ -139,4 +139,81 @@ class EventModifierTest extends Specification {
 		then:
 		modifier.getEvent().witnesses.x.getComment() == mycomment
 	}
+
+	def "parse error for witness when inputting invalid formula"() {
+		when:
+		modifier.witness("x","1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "parse error for guard when inputting invalid formula"() {
+		when:
+		modifier.guard("1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "parse error for parameter when inputting invalid formula"() {
+		when:
+		modifier.parameter("1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "parse error for action when inputting invalid formula"() {
+		when:
+		modifier.action("1+")
+
+		then:
+		thrown(FormulaParseException)
+	}
+
+	def "type error for witness when inputting expression"() {
+		when:
+		modifier.witness("x","1+1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "PREDICATE"
+	}
+
+	def "type error for guard when inputting expression"() {
+		when:
+		modifier.guard("1+1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "PREDICATE"
+	}
+
+	def "type error for action when inputting expression"() {
+		when:
+		modifier.action("1+1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "ASSIGNMENT"
+	}
+
+	def "type error for parameter when inputting expression"() {
+		when:
+		modifier.parameter("1+1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "IDENTIFIER"
+	}
+
+	def "type error for parameter when inputting predicate"() {
+		when:
+		modifier.parameter("1=1")
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "IDENTIFIER"
+	}
 }
