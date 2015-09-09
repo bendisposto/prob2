@@ -73,8 +73,7 @@ public class Event extends BEvent {
 	public ModelElementList<Event> getRefines(EventBMachine parentMachine) {
 		ModelElementList<EventBMachine> refines = parentMachine.getRefines();
 		if (refines.size() != 1) {
-			throw new IllegalArgumentException(
-					"No refined machine present in the parent machine. Cannot retrieve refined events");
+			return new ModelElementList<Event>();
 		}
 		EventBMachine m = refines.get(0);
 		ModelElementList<Event> refined = new ModelElementList<Event>();
