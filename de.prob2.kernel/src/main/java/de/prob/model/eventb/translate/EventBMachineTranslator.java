@@ -147,7 +147,7 @@ public class EventBMachineTranslator {
 					e.getName()));
 
 			List<TIdentifierLiteral> refined = new ArrayList<TIdentifierLiteral>();
-			for (Event ref : e.getRefines()) {
+			for (Event ref : e.getRefines(machine)) {
 				refined.add(new TIdentifierLiteral(ref.getName()));
 			}
 			event.setRefines(refined);

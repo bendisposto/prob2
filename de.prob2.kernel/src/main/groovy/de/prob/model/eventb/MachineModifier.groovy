@@ -11,8 +11,6 @@ import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Variable
 
-
-
 /**
  * The {@link MachineModifier} provides an API to programmatically modify or
  * construct {@link EventBMachine}s. Basic elements can be added to the machine
@@ -39,7 +37,6 @@ import de.prob.model.representation.Variable
  * @author Joy Clark
  */
 class MachineModifier extends AbstractModifier {
-	private final int invctr
 	EventBMachine machine
 	EventBModel model
 	private eventModifiers = [:]
@@ -47,11 +44,10 @@ class MachineModifier extends AbstractModifier {
 	def MachineModifier(EventBMachine machine, Set<IFormulaExtension> typeEnvironment = Collections.emptySet()) {
 		super(typeEnvironment)
 		this.machine = machine
-		this.invctr = extractCounter("inv", machine.invariants)
 	}
 
 	private newMM(EventBMachine machine) {
-		new MachineModifier(machine)
+		new MachineModifier(machine, typeEnvironment)
 	}
 
 	def MachineModifier setSees(ModelElementList<Context> seenContexts) {
@@ -107,21 +103,6 @@ class MachineModifier extends AbstractModifier {
 		newMM(machine.removeFrom(Variable.class, variable))
 	}
 
-	/**
-	 * Removes a variable and its typing/initialisation information from the machine
-	 * @param block containing the added variable, typing invariant, and initialisation
-	 * @return if the removal of all elements from the machine was successful.
-	 */
-	def boolean removeVariableBlock(VariableBlock block) {
-		// proof obligations are invalidated by removeInvariant
-		// if we could check whether typingInvariant is in fact only typing,
-		// we could remove just selected proof information
-		def a = machine.variables.remove(block.getVariable())
-		def b = removeInvariant(block.getTypingInvariant())
-		def c = machine.events.INITIALISATION.actions.remove(block.getInitialisationAction())
-		return a & b & c
-	}
-
 	def MachineModifier invariants(Map invariants) {
 		MachineModifier mm = this
 		invariants.each { k,v ->
@@ -159,7 +140,11 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier theorem(String thm) {
-		invariant(thm, true)
+		invariant(validate("thm", thm), true)
+	}
+
+	def MachineModifier theorem(String name, String pred) {
+		invariant(validate("name", name), validate("pred", pred), true)
 	}
 
 	def MachineModifier invariant(LinkedHashMap properties, boolean theorem=false) {
@@ -168,11 +153,14 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier invariant(String pred, boolean theorem=false) {
-		int ctr = invctr + 1
-		invariant("inv$ctr", pred, theorem)
+		int ctr = extractCounter("inv", machine.invariants) + 1
+		invariant("inv$ctr", validate("pred", pred), theorem)
 	}
 
 	def MachineModifier invariant(String name, String predicate, boolean theorem=false, String comment="") {
+		validate("name", name)
+		validate("predicate", predicate)
+
 		def newproofs = machine.getProofs().findAll { po ->
 			!po.getName().endsWith("/INV")
 		}
@@ -184,8 +172,8 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier removeInvariant(String name) {
-		def axm = machine.invariants.getElement(name)
-		axm ? removeInvariant(axm) : this
+		def inv = machine.invariants.getElement(name)
+		inv ? removeInvariant(inv) : this
 	}
 
 	/**
@@ -197,7 +185,7 @@ class MachineModifier extends AbstractModifier {
 		// only variant well-definedness may not use existing invariants in a prove
 		// thus, these seem to be the only proof obligations we can keep
 		def newproofs = machine.getProofs().findAll { po ->
-			po.getName().endsWith("/VWD")
+			po.getName().equals("VWD")
 		}
 
 		newMM(machine.removeFrom(Invariant.class, invariant)
@@ -209,23 +197,36 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier variant(Variant variant) {
-		newMM(machine.set(Variant.class, new ModelElementList([variant])))
+		def mm = removePOsForVariant()
+		newMM(mm.getMachine().set(Variant.class, new ModelElementList([variant])))
+	}
+
+	def MachineModifier removePOsForVariant() {
+		def newproofs = machine.getProofs().findAll { po ->
+			!(po.getName().equals("VWD") ||
+					po.getName().equals("FIN") ||
+					po.getName().endsWith("/VAR") ||
+					po.getName().endsWith("/NAT"))
+		}
+
+		newMM(machine.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs)))
 	}
 
 	def MachineModifier removeVariant(Variant variant) {
-		newMM(machine.removeFrom(Variant.class, variant))
+		def mm = removePOsForVariant()
+		newMM(mm.getMachine().removeFrom(Variant.class, variant))
 	}
 
 	def MachineModifier initialisation(LinkedHashMap properties) {
 		if (properties["extended"] == true) {
-			initialisation({},true)
+			return initialisation({},true)
 		}
 		this
 	}
 
 	def MachineModifier initialisation(Closure cls, boolean extended=false) {
 		def refines = machine.getRefines().isEmpty() ? null : "INITIALISATION"
-		event("INITIALISATION", refines, EventType.ORDINARY, extended, cls)
+		event("INITIALISATION", refines, EventType.ORDINARY, extended, null, cls)
 	}
 
 	def MachineModifier refine(LinkedHashMap properties, Closure cls={}) {
@@ -240,10 +241,10 @@ class MachineModifier extends AbstractModifier {
 				EventType.ORDINARY
 			]])
 
-		event(props["name"], props["refines"], props["type"],props["extended"], cls, props["comment"])
+		event(props["name"], props["refines"], props["type"],props["extended"],props["comment"], cls)
 	}
 
-	def MachineModifier event(String name, String refinedEvent, EventType type, boolean extended, Closure cls={}, String comment=null) {
+	def MachineModifier event(String name, String refinedEvent, EventType type, boolean extended, String comment=null,Closure cls={} ) {
 		def mm = removePOsForEvent(name)
 		def oldevent = machine.getEvent(name)
 		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, extended)
@@ -299,7 +300,7 @@ class MachineModifier extends AbstractModifier {
 	def MachineModifier removePOsForEvent(String name) {
 		def proofs = machine.getProofs()
 		proofs.each {
-			if (it.name.startsWith(name)) {
+			if (it.name.startsWith(name + "/")) {
 				proofs = proofs.removeElement(it)
 			}
 		}

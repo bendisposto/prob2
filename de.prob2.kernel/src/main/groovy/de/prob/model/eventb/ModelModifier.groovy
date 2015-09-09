@@ -52,7 +52,7 @@ public class ModelModifier extends AbstractModifier {
 			if (extended) {
 				model = model.removeRelationship(name, extended.getName(), ERefType.EXTENDS)
 			}
-			model.addRelationship(name, ctx.getName(), ERefType.EXTENDS)
+			model = model.addRelationship(name, ctx.getName(), ERefType.EXTENDS)
 			extended = ctx
 		}
 
@@ -62,7 +62,7 @@ public class ModelModifier extends AbstractModifier {
 		}
 		cm = cm.make(definition)
 		model = oldcontext ? model.replaceIn(Context.class, oldcontext, cm.getContext()) :
-				model.addTo(Context.class, cm.getContext())
+				model.addContext(cm.getContext())
 		new ModelModifier(model)
 	}
 
@@ -100,13 +100,13 @@ public class ModelModifier extends AbstractModifier {
 			model = model.addRelationship(name, c, ERefType.SEES)
 			seenContexts = seenContexts.addElement(context)
 		}
-		def mm = new MachineModifier(m)
+		def mm = new MachineModifier(m, typeEnvironment)
 		if (refined) {
 			mm = mm.setRefines(refined)
 		}
 		mm = mm.setSees(seenContexts).make(definition)
 		model = oldmachine ? model.replaceIn(Machine.class, oldmachine, mm.getMachine()) :
-				model.addTo(Machine.class, mm.getMachine())
+				model.addMachine(mm.getMachine())
 		new ModelModifier(model)
 	}
 
@@ -129,7 +129,7 @@ public class ModelModifier extends AbstractModifier {
 		runClosure definition
 	}
 
-	def ModelModifier replaceContext(EventBMachine oldContext, EventBMachine newContext) {
+	def ModelModifier replaceContext(Context oldContext, Context newContext) {
 		new ModelModifier(model.replaceIn(Context.class, oldContext, newContext))
 	}
 

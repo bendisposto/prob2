@@ -216,8 +216,73 @@ class ModelModifierTest extends Specification {
 			context(name: "YetAnotherNothing") {}
 			context(name: "IAlsoDoNothing", extends: "YetAnotherNothing") {}
 		}
+		def aftermodel = mm.getModel()
 
 		then:
-		true
+		beforemodel.getContexts().collect { it.getName() } == [
+			"IDoNothing",
+			"IAlsoDoNothing"
+		]
+		beforemodel.getGraph().getVertices() == [
+			"IDoNothing",
+			"IAlsoDoNothing"] as Set
+		beforemodel.getRelationship("IAlsoDoNothing", "IDoNothing") == ERefType.EXTENDS
+
+		aftermodel.getContexts().collect { it.getName() } == [
+			"IDoNothing",
+			"IAlsoDoNothing",
+			"YetAnotherNothing"
+		]
+		aftermodel.getGraph().getVertices() == [
+			"IDoNothing",
+			"IAlsoDoNothing",
+			"YetAnotherNothing"] as Set
+		aftermodel.getRelationship("IAlsoDoNothing", "YetAnotherNothing") == ERefType.EXTENDS
+		aftermodel.getRelationship("IAlsoDoNothing", "IDoNothing") == null
+	}
+
+	def "replacing contexts works"() {
+		when:
+		def mm = new ModelModifier().make {
+			context(name: "A") {}
+			context(name: "B", extends: "A") {}
+			context(name: "C", extends: "B") {}
+		}
+		def model = mm.getModel()
+		def ctx = model.B
+		def ctx2 = new ContextModifier(ctx).make {
+			enumerated_set name: "MySet",
+			constants: ["a", "b", "c"]
+		}.getContext()
+		mm = mm.replaceContext(ctx, ctx2)
+		def model2 = mm.getModel()
+
+		then:
+		model.getContexts().collect { it.getName() } == ["A", "B", "C"]
+		model.getContexts().B.sets == []
+		model.getContexts().B.constants == []
+		model2.getContexts().collect { it.getName() } == ["A", "B", "C"]
+		model2.getContexts().B.sets.collect { it.getName() } == ["MySet"]
+		model2.getContexts().B.constants.collect { it.getName() } == ["a", "b", "c"]
+	}
+
+	def "replacing machine works"() {
+		when:
+		def mm = new ModelModifier().make {
+			machine(name: "A") {}
+			machine(name: "B", refines: "A") {}
+			machine(name: "C", refines: "B") {}
+		}
+		def model = mm.getModel()
+		def mch = model.B
+		def mch2 = new MachineModifier(mch, [] as Set).make { variables "x", "y" }.getMachine()
+		mm = mm.replaceMachine(mch, mch2)
+		def model2 = mm.getModel()
+
+		then:
+		model.getMachines().collect { it.getName() } == ["A", "B", "C"]
+		model.getMachines().B.variables == []
+		model2.getMachines().collect { it.getName() } == ["A", "B", "C"]
+		model2.getMachines().B.variables.collect { it.getName() } == ["x", "y"]
 	}
 }

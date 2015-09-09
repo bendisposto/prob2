@@ -106,6 +106,13 @@ class AbstractModifier {
 		}
 	}
 
+	def String validate(String name, String e) {
+		if (e == null) {
+			throw new IllegalArgumentException("Argument $name must not be null")
+		}
+		return e
+	}
+
 	protected AbstractModifier runClosure(Closure runClosure) {
 		// Create clone of closure for threading access.
 		Closure runClone = runClosure.clone()
