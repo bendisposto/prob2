@@ -11,6 +11,47 @@ class ContextModifierTest extends Specification {
 		modifier = new ContextModifier(context)
 	}
 
+	def "it is possible to add an extended context"() {
+		when:
+		Context ctx = new Context("EE")
+		modifier = modifier.setExtends(ctx)
+
+		then:
+		modifier.getContext().getExtends() == [ctx]
+	}
+
+	def "it is possible to add an enumerated set (from map)"() {
+		when:
+		modifier = modifier.enumerated_set name: "set1",
+		constants: ["x", "y", "z"]
+		def context = modifier.getContext()
+
+		then:
+		context.sets.size() == 1
+		def set = context.sets[0]
+		set.getName() == "set1"
+		context.constants.size() == 3
+		context.constants.collect { it.getName() } == ["x", "y", "z"]
+		context.axioms.size() == 1
+		context.axioms[0].getPredicate().getCode() == "partition(set1,{x},{y},{z})"
+	}
+
+	def "enumerated_set requires name"() {
+		when:
+		modifier = modifier.enumerated_set constants: ["x", "y", "z"]
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "enumerated_set requires constants"() {
+		when:
+		modifier = modifier.enumerated_set name: "set1"
+
+		then:
+		thrown IllegalArgumentException
+	}
+
 	def "it is possible to add an enumerated set"() {
 		when:
 		modifier = modifier.addEnumeratedSet("set1", "x","y","z")
@@ -24,6 +65,17 @@ class ContextModifierTest extends Specification {
 		context.constants.collect { it.getName() } == ["x", "y", "z"]
 		context.axioms.size() == 1
 		context.axioms[0].getPredicate().getCode() == "partition(set1,{x},{y},{z})"
+	}
+
+	def "it is possible to remove a set via name once added"() {
+		when:
+		modifier = modifier.addEnumeratedSet("set1", "x","y","z")
+		def set = modifier.getContext().sets.set1
+		modifier = modifier.removeSet("set1")
+
+		then:
+		set != null
+		modifier.getContext().sets.size() == 0
 	}
 
 	def "it is possible to remove set elements once added"() {
@@ -109,6 +161,14 @@ class ContextModifierTest extends Specification {
 
 		then:
 		modifier.getContext().constants.x.getComment() == mycomment
+	}
+
+	def "it is possible to add multiple constants"() {
+		when:
+		modifier = modifier.constants "x", "y", "z"
+
+		then:
+		modifier.getContext().constants.collect { it.getName() } == ["x", "y", "z"]
 	}
 
 	def "it is possible to remove a constant"() {

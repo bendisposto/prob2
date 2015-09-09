@@ -51,16 +51,17 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier setSees(ModelElementList<Context> seenContexts) {
-		newMM(machine.set(Context.class, seenContexts))
+		newMM(machine.set(Context.class, validate("seenContexts", seenContexts)))
 	}
 
 	def MachineModifier setRefines(EventBMachine refined) {
+		validate("refined", refined)
 		newMM(machine.set(Machine.class, new ModelElementList<EventBMachine>([refined])))
 	}
 
 	def MachineModifier variables(String... variables) {
 		MachineModifier mm = this
-		variables.each {
+		validate("variables", variables).each {
 			mm = mm.variable(it)
 		}
 		mm
@@ -68,7 +69,7 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier variable(String varName, String comment="") {
 		parseIdentifier(varName)
-		variable(new EventBVariable(varName, null, comment))
+		variable(new EventBVariable(varName, null, validate("comment",comment)))
 	}
 
 	def MachineModifier variable(EventBVariable variable) {
@@ -76,7 +77,7 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier var_block(LinkedHashMap properties) {
-		Map validated = validateProperties(properties, [name: String, invariant: Object, init: Object])
+		Map validated = validateProperties(validate("properties", properties), [name: String, invariant: Object, init: Object])
 		var_block(validated.name, validated.invariant, validated.init)
 	}
 

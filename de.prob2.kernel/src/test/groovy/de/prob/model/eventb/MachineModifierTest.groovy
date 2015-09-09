@@ -824,4 +824,92 @@ class MachineModifierTest extends Specification {
 		then:
 		!modifier.getMachine().getChildrenOfType(Block.class).isEmpty()
 	}
+
+	def "set sees cannot be null"() {
+		when:
+		modifier = modifier.setSees(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "refines cannot be null"() {
+		when:
+		modifier = modifier.setRefines(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "empty variables does nothing"() {
+		when:
+		def modifier1 = modifier.variables()
+
+		then:
+		modifier1 == modifier
+	}
+
+	def "variables cannot be null"() {
+		when:
+		modifier.variables(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "variable cannot be null"() {
+		when:
+		modifier = modifier.variable(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "variable comment cannot be null"() {
+		when:
+		modifier = modifier.variable("x", null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "var_block cannot be null"() {
+		when:
+		modifier = modifier.var_block(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "var_block cannot be null (1)"() {
+		when:
+		modifier = modifier.var_block(null, null, null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "var_block cannot be null (2)"() {
+		when:
+		modifier = modifier.var_block("x", null, null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "var_block cannot be null (3)"() {
+		when:
+		modifier = modifier.var_block("x", "x < 4", null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "empty invariants does nothing"() {
+		when:
+		def modifier1 = modifier.invariants()
+
+		then:
+		modifier1 == modifier
+	}
 }

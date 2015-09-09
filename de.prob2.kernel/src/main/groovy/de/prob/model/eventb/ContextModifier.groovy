@@ -24,10 +24,11 @@ class ContextModifier extends AbstractModifier {
 	}
 
 	def ContextModifier setExtends(Context extended) {
+		validate("extended", extended)
 		newCM(context.set(Context.class, new ModelElementList<Context>([extended])))
 	}
 
-	def ContextModifier enumerated_set(HashMap properties) {
+	def ContextModifier enumerated_set(LinkedHashMap properties) {
 		Map validated = validateProperties(properties, [name: String, constants: String[]])
 		addEnumeratedSet(validated["name"], validated["constants"])
 	}

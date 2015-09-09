@@ -74,6 +74,9 @@ class AbstractModifier {
 	}
 
 	def EventB parseIdentifier(String formula) throws ModelGenerationException {
+		if (formula == null) {
+			throw new IllegalArgumentException("identifier must not be null");
+		}
 		try {
 			EventB f = new EventB(formula, typeEnvironment)
 			if (!(f.getAst() instanceof AIdentifierExpression)) {
@@ -94,6 +97,9 @@ class AbstractModifier {
 	}
 
 	def EventB parseFormula(String formula, EvalElementType expected) throws ModelGenerationException {
+		if (formula == null) {
+			throw new IllegalArgumentException("${expected.name().toLowerCase()} must not be null");
+		}
 		try {
 			EventB f = new EventB(formula, typeEnvironment)
 			String kind = f.getKind()
@@ -106,7 +112,7 @@ class AbstractModifier {
 		}
 	}
 
-	def String validate(String name, String e) {
+	def Object validate(String name, Object e) {
 		if (e == null) {
 			throw new IllegalArgumentException("Argument $name must not be null")
 		}
