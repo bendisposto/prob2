@@ -23,7 +23,7 @@ public class Event extends BEvent {
 				type,
 				extended,
 				PersistentHashMap
-						.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
+				.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
 	}
 
 	private Event(
@@ -82,7 +82,7 @@ public class Event extends BEvent {
 			if (e == null) {
 				throw new IllegalArgumentException(
 						"Attempted to retrieve event with name " + event.name
-								+ " from refinement but could not find it.");
+						+ " from refinement but could not find it.");
 			}
 			refined = refined.addElement(e);
 		}
@@ -127,28 +127,5 @@ public class Event extends BEvent {
 	@Override
 	public String toString() {
 		return getName();
-	}
-
-	public String print() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Name: " + getName() + "\n");
-		sb.append("Type: " + type.toString() + "\n");
-		printChildren("Refines", getChildrenOfType(Event.class), sb);
-		printChildren("Any", getChildrenOfType(EventParameter.class), sb);
-		printChildren("Where", getChildrenOfType(Guard.class), sb);
-		printChildren("With", getChildrenOfType(Witness.class), sb);
-		printChildren("Then", getChildrenOfType(Action.class), sb);
-		return sb.toString();
-	}
-
-	private void printChildren(final String name,
-			final ModelElementList<? extends AbstractElement> childrenOfType,
-			final StringBuilder sb) {
-		if (!childrenOfType.isEmpty()) {
-			sb.append(name + ": \n");
-			for (AbstractElement abstractElement : childrenOfType) {
-				sb.append("\t" + abstractElement.toString() + "\n");
-			}
-		}
 	}
 }
