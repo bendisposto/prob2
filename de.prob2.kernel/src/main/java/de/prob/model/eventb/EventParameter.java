@@ -8,7 +8,7 @@ public class EventParameter extends AbstractElement {
 
 	private final String name;
 	private final EventB expression;
-	private String comment;
+	private final String comment;
 
 	public EventParameter(final String name) {
 		this(name, "");
@@ -16,7 +16,7 @@ public class EventParameter extends AbstractElement {
 
 	public EventParameter(final String name, String comment) {
 		this.name = name;
-		this.comment = comment;
+		this.comment = comment == null ? "" : comment;
 		expression = new EventB(name);
 	}
 

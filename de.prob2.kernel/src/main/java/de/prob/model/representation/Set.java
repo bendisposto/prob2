@@ -6,7 +6,7 @@ import de.prob.unicode.UnicodeTranslator;
 public class Set extends AbstractFormulaElement {
 
 	private final IEvalElement formula;
-	private String comment;
+	private final String comment;
 
 	public Set(final IEvalElement formula) {
 		this(formula, "");
@@ -14,7 +14,7 @@ public class Set extends AbstractFormulaElement {
 
 	public Set(final IEvalElement formula, String comment) {
 		this.formula = formula;
-		this.comment = comment;
+		this.comment = comment == null ? "" : comment;
 	}
 
 	public String getName() {

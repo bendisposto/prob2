@@ -16,6 +16,22 @@ class MachineModifierTest extends Specification {
 		modifier = new MachineModifier(machine, Collections.emptySet())
 	}
 
+	def "the input machine must not be null"() {
+		when:
+		new MachineModifier(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "the type environment must not be null"() {
+		when:
+		modifier = new MachineModifier(new EventBMachine("myMachine"), null)
+
+		then:
+		modifier.typeEnvironment == [] as Set
+	}
+
 	def "it is possible to set the sees block"() {
 		when:
 		def sees = new ModelElementList([
@@ -273,12 +289,36 @@ class MachineModifierTest extends Specification {
 		thrown IllegalArgumentException
 	}
 
+	def "trying to add an invariant with null (2.5)"() {
+		when:
+		modifier = modifier.invariant(null, "x < 4", false)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
 	def "trying to add an invariant with null (3)"() {
 		when:
 		modifier = modifier.invariant("inv",null)
 
 		then:
 		thrown IllegalArgumentException
+	}
+
+	def "trying to add an invariant with null (3.5)"() {
+		when:
+		modifier = modifier.invariant("inv", null, false)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "trying to add an invariant with a null comment results in empty comment"() {
+		when:
+		modifier = modifier.invariant("inv", "x < 4", false, null)
+
+		then:
+		modifier.getMachine().invariants.inv.getComment() == ""
 	}
 
 
@@ -865,12 +905,12 @@ class MachineModifierTest extends Specification {
 		thrown IllegalArgumentException
 	}
 
-	def "variable comment cannot be null"() {
+	def "variable null comment results in empty comment"() {
 		when:
 		modifier = modifier.variable("x", null)
 
 		then:
-		thrown IllegalArgumentException
+		modifier.getMachine().variables.x.getComment() == ""
 	}
 
 	def "var_block cannot be null"() {
@@ -908,8 +948,10 @@ class MachineModifierTest extends Specification {
 	def "empty invariants does nothing"() {
 		when:
 		def modifier1 = modifier.invariants()
+		def modifier2 = modifier.invariants([:])
 
 		then:
 		modifier1 == modifier
+		modifier2 == modifier
 	}
 }

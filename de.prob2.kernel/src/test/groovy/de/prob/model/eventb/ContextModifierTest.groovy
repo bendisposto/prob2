@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 import spock.lang.Specification
+import de.prob.model.representation.ElementComment
 
 class ContextModifierTest extends Specification {
 
@@ -11,6 +12,22 @@ class ContextModifierTest extends Specification {
 		modifier = new ContextModifier(context)
 	}
 
+	def "context in constructor cannot be null"() {
+		when:
+		new ContextModifier(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "null type environment will result in empty set"() {
+		when:
+		def cm = new ContextModifier(new Context("name"), null)
+
+		then:
+		cm.typeEnvironment == [] as Set
+	}
+
 	def "it is possible to add an extended context"() {
 		when:
 		Context ctx = new Context("EE")
@@ -18,6 +35,14 @@ class ContextModifierTest extends Specification {
 
 		then:
 		modifier.getContext().getExtends() == [ctx]
+	}
+
+	def "setExtends cannot be null"() {
+		when:
+		modifier.setExtends(null)
+
+		then:
+		thrown IllegalArgumentException
 	}
 
 	def "it is possible to add an enumerated set (from map)"() {
@@ -47,6 +72,14 @@ class ContextModifierTest extends Specification {
 	def "enumerated_set requires constants"() {
 		when:
 		modifier = modifier.enumerated_set name: "set1"
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "enumerated_set cannot be null"() {
+		when:
+		modifier.enumerated_set(null)
 
 		then:
 		thrown IllegalArgumentException
@@ -89,6 +122,30 @@ class ContextModifierTest extends Specification {
 		modifier.getContext().sets.size() == 0
 	}
 
+	def "addEnumeratedSet: set name cannot be null"() {
+		when:
+		modifier.addEnumeratedSet(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "addEnumeratedSet: elements cannot be null"() {
+		when:
+		modifier.addEnumeratedSet("X", null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "addEnumeratedSet: multiple elements cannot be null"() {
+		when:
+		modifier.addEnumeratedSet("X", "x", null, "a", null, "b")
+
+		then:
+		thrown IllegalArgumentException
+	}
+
 	def "it is possible to add a carrier set"() {
 		when:
 		modifier = modifier.set("blah")
@@ -106,6 +163,22 @@ class ContextModifierTest extends Specification {
 		modifier.getContext().sets.blah.getComment() == mycomment
 	}
 
+	def "set cannot be null"() {
+		when:
+		modifier.set(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "null comment for set results in empty comment"() {
+		when:
+		modifier = modifier.set("MySet", null)
+
+		then:
+		modifier.getContext().sets.MySet.getComment() == ""
+	}
+
 	def "it is possible to remove a set once added"() {
 		when:
 		modifier = modifier.set("blah")
@@ -115,6 +188,64 @@ class ContextModifierTest extends Specification {
 		then:
 		set != null
 		modifier.getContext().sets.size() == 0
+	}
+
+	def "if a set doesn't exist, or null nothing happens with removeSet"() {
+		when:
+		def modifier1 = modifier.removeSet("DontExist")
+		def modifier2 = modifier.removeSet(null)
+
+		then:
+		modifier1 == modifier
+		modifier2 == modifier
+	}
+
+	def "it is possible to add multiple axioms"() {
+		when:
+		modifier = modifier.axioms axm1: "cst + 1 = 2",
+		axm2: "1 = 2",
+		axm4: "life : GREATNESS"
+		def axms = modifier.getContext().axioms
+
+		then:
+		axms.collect { it.getName() } == ["axm1", "axm2", "axm4"]
+		axms.collect { it.getPredicate().getCode() } == [
+			"cst + 1 = 2",
+			"1 = 2",
+			"life : GREATNESS"
+		]
+	}
+
+	def "it is possible to add multiple axioms from list"() {
+		when:
+		modifier = modifier.axioms "cst + 1 = 2",
+				"1 = 2",
+				"life : GREATNESS"
+		def axms = modifier.getContext().axioms
+
+		then:
+		axms.collect { it.getName() } == ["axm0", "axm1", "axm2"]
+		axms.collect { it.getPredicate().getCode() } == [
+			"cst + 1 = 2",
+			"1 = 2",
+			"life : GREATNESS"
+		]
+	}
+
+	def "axioms cannot be null"() {
+		when:
+		modifier = modifier.axioms(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "multiple axioms cannot be null"() {
+		when:
+		modifier = modifier.axioms("x < 4", null, "x + y = 9", null)
+
+		then:
+		thrown IllegalArgumentException
 	}
 
 	def "it is possible to add an axiom"() {
@@ -145,6 +276,55 @@ class ContextModifierTest extends Specification {
 		modifier.getContext().axioms.size() == 0
 	}
 
+	def "it is possible to remove an axiom via name once added"() {
+		when:
+		modifier = modifier.axiom("axm", "TRUE = TRUE")
+		def axiom = modifier.getContext().axioms.axm
+		modifier = modifier.removeAxiom("axm")
+
+		then:
+		axiom != null
+		modifier.getContext().axioms.size() == 0
+	}
+
+	def "removing an Axiom that doesn't exist or is null does nothing"() {
+		when:
+		def idontexist = modifier.removeAxiom("IDontExist")
+		def iamnull = modifier.removeAxiom(null)
+
+		then:
+		modifier == idontexist
+		modifier == iamnull
+	}
+
+	def "it is possible to add a theorem"() {
+		when:
+		modifier = modifier.theorem("TRUE = TRUE")
+		def axiom = modifier.getContext().axioms[0]
+
+		then:
+		axiom.getPredicate().getCode() == "TRUE = TRUE"
+		axiom.isTheorem()
+	}
+
+	def "it is possible to add a theorem from map"() {
+		when:
+		modifier = modifier.theorem thm: "TRUE = TRUE"
+		def thm = modifier.getContext().axioms.thm
+
+		then:
+		thm.getPredicate().getCode() == "TRUE = TRUE"
+		thm.isTheorem()
+	}
+
+	def "theorem cannot be null"() {
+		when:
+		modifier.theorem(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
 	def "it is possible to add a constant"() {
 		when:
 		modifier = modifier.constant("x")
@@ -163,12 +343,44 @@ class ContextModifierTest extends Specification {
 		modifier.getContext().constants.x.getComment() == mycomment
 	}
 
+	def "constant cannot be null"() {
+		when:
+		modifier.constant(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "constant null comment results in empty comment"() {
+		when:
+		modifier = modifier.constant("c", null)
+
+		then:
+		modifier.getContext().constants.c.getComment() == ""
+	}
+
 	def "it is possible to add multiple constants"() {
 		when:
 		modifier = modifier.constants "x", "y", "z"
 
 		then:
 		modifier.getContext().constants.collect { it.getName() } == ["x", "y", "z"]
+	}
+
+	def "constants cannot be null"() {
+		when:
+		modifier.constants(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "multiple constants cannot be null"() {
+		when:
+		modifier.constants("a",null,"b",null,"c")
+
+		then:
+		thrown IllegalArgumentException
 	}
 
 	def "it is possible to remove a constant"() {
@@ -180,6 +392,27 @@ class ContextModifierTest extends Specification {
 		then:
 		constant != null
 		modifier.getContext().constants.size() == 0
+	}
+
+	def "it is possible to remove a constant via name"() {
+		when:
+		modifier = modifier.constant("x")
+		def constant = modifier.getContext().constants.x
+		modifier = modifier.removeConstant("x")
+
+		then:
+		constant != null
+		modifier.getContext().constants.size() == 0
+	}
+
+	def "removeConstant for nonexistant constant or null does nothing"() {
+		when:
+		def nonexistant = modifier.removeConstant("IDontExist")
+		def iamnull = modifier.removeConstant(null)
+
+		then:
+		modifier == nonexistant
+		modifier == iamnull
 	}
 
 	def "names for axiom generation are correct"() {
@@ -267,5 +500,51 @@ class ContextModifierTest extends Specification {
 		then:
 		FormulaTypeException e = thrown()
 		e.getExpected() == "PREDICATE"
+	}
+
+	def "it is possible to add a comment"() {
+		when:
+		String mycomment = "This is a comment!"
+		modifier = modifier.addComment(mycomment)
+
+		then:
+		modifier.getContext().getChildrenOfType(ElementComment.class).collect { it.getComment() } == [mycomment]
+	}
+
+	def "adding a null or empty comment does nothing"() {
+		when:
+		def iamnull = modifier.addComment(null)
+		def iamempty = modifier.addComment("")
+
+		then:
+		modifier == iamnull
+		modifier == iamempty
+	}
+
+	def "definition for make cannot be null"() {
+		when:
+		modifier.make(null)
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def 'make method works'() {
+		when:
+		modifier = modifier.make {
+			enumerated_set name: "x",
+			constants: ["a", "b", "c"]
+			axiom axm: "card(x) = 3"
+		}
+		def ctx = modifier.getContext()
+
+		then:
+		ctx.sets.collect { it.getName() } == ["x"]
+		ctx.constants.collect { it.getName() } == ["a", "b", "c"]
+		ctx.axioms.collect { it.getName() } == ["axm0", "axm"]
+		ctx.axioms.collect { it.getPredicate().getCode() } == [
+			"partition(x,{a},{b},{c})",
+			"card(x) = 3"
+		]
 	}
 }

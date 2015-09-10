@@ -13,7 +13,7 @@ public class EventBGuard extends Guard {
 
 	private final String name;
 	private final boolean theorem;
-	private String comment;
+	private final String comment;
 
 	public EventBGuard(final String name, final String code,
 			final boolean theorem, final Set<IFormulaExtension> typeEnv) {
@@ -25,7 +25,7 @@ public class EventBGuard extends Guard {
 		super(predicate);
 		this.name = name;
 		this.theorem = theorem;
-		this.comment = comment;
+		this.comment = comment == null ? "" : comment;
 	}
 
 	public String getName() {

@@ -11,7 +11,7 @@ public class EventBInvariant extends Invariant {
 
 	private final String name;
 	private final boolean theorem;
-	private String comment;
+	private final String comment;
 
 	public EventBInvariant(final String name, final String code,
 			final Boolean theorem, final Set<IFormulaExtension> typeEnv) {
@@ -23,7 +23,7 @@ public class EventBInvariant extends Invariant {
 		super(predicate);
 		this.name = name;
 		this.theorem = theorem;
-		this.comment = comment;
+		this.comment = comment == null ? "" : comment;
 	}
 
 	public String getName() {

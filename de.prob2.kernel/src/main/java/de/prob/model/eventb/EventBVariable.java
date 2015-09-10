@@ -7,7 +7,7 @@ public class EventBVariable extends Variable {
 
 	private final String name;
 	private final String unit;
-	private String comment;
+	private final String comment;
 
 	public EventBVariable(final String name, final String unit) {
 		this(name, unit, "");
@@ -17,7 +17,7 @@ public class EventBVariable extends Variable {
 		super(new EventB(name));
 		this.name = name;
 		this.unit = unit;
-		this.comment = comment;
+		this.comment = comment == null ? "" : comment;
 	}
 
 	public boolean hasUnit() {

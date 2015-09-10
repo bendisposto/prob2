@@ -10,7 +10,7 @@ import de.prob.model.representation.Action;
 public class EventBAction extends Action {
 
 	private final String name;
-	private String comment;
+	private final String comment;
 
 	public EventBAction(final String name, final String code,
 			final Set<IFormulaExtension> typeEnv) {
@@ -20,7 +20,7 @@ public class EventBAction extends Action {
 	public EventBAction(final String name, EventB code, String comment) {
 		super(code);
 		this.name = name;
-		this.comment = comment;
+		this.comment = comment == null ? "" : comment;
 	}
 
 	public String getName() {

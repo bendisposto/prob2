@@ -15,10 +15,11 @@ class AbstractModifier {
 	public final Set<IFormulaExtension> typeEnvironment
 
 	def AbstractModifier(Set<IFormulaExtension> typeEnvironment) {
-		this.typeEnvironment = typeEnvironment
+		this.typeEnvironment = typeEnvironment ?: Collections.emptySet()
 	}
 
 	protected Map validateProperties(Map properties, Map required) {
+		validate("properties", properties)
 		required.collectEntries { String prop,type ->
 			if (type instanceof List && type.size() == 2) {
 				return validateOptionalProperty(properties, prop, type)
@@ -112,6 +113,14 @@ class AbstractModifier {
 		}
 	}
 
+	def validateAll(Object... es) {
+		es.each {
+			if (it == null) {
+				throw new IllegalArgumentException("Expected argument to be an object but was null")
+			}
+		}
+	}
+
 	def Object validate(String name, Object e) {
 		if (e == null) {
 			throw new IllegalArgumentException("Argument $name must not be null")
@@ -120,6 +129,8 @@ class AbstractModifier {
 	}
 
 	protected AbstractModifier runClosure(Closure runClosure) {
+		validate('runClosure', runClosure)
+
 		// Create clone of closure for threading access.
 		Closure runClone = runClosure.clone()
 

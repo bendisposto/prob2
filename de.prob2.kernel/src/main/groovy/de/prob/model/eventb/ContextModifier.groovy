@@ -15,12 +15,12 @@ class ContextModifier extends AbstractModifier {
 
 	def ContextModifier(Context context, java.util.Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
 		super(typeEnvironment)
-		this.context = context
+		this.context = validate('context',context)
 		this.axmctr = extractCounter("axm", context.axioms)
 	}
 
-	def ContextModifier newCM(Context context) {
-		return new ContextModifier(context)
+	private ContextModifier newCM(Context context) {
+		return new ContextModifier(context, typeEnvironment)
 	}
 
 	def ContextModifier setExtends(Context extended) {
@@ -40,8 +40,8 @@ class ContextModifier extends AbstractModifier {
 	 * @return the {@link EnumeratedSetBlock} generated when creating the set
 	 */
 	def ContextModifier addEnumeratedSet(String setName, String... elements) {
-		ContextModifier cm = set(setName)
-		elements.each {
+		ContextModifier cm = set(validate('setName', setName))
+		validate('elements',elements).each {
 			cm = cm.constant(it)
 		}
 		def elementString = elements.collect { "{$it}" }.join(",")
@@ -68,7 +68,7 @@ class ContextModifier extends AbstractModifier {
 
 	def ContextModifier constants(String... constants) {
 		ContextModifier cm = this
-		constants.each {
+		validate('constants', constants).each {
 			cm = cm.constant(it)
 		}
 		cm
@@ -93,7 +93,7 @@ class ContextModifier extends AbstractModifier {
 		return newCM(ctx)
 	}
 
-	def ContextModifier axioms(Map axioms) {
+	def ContextModifier axioms(LinkedHashMap axioms) {
 		ContextModifier cm = this
 		axioms.each { k,v ->
 			cm = cm.axiom(k,v)
@@ -103,18 +103,18 @@ class ContextModifier extends AbstractModifier {
 
 	def ContextModifier axioms(String... axioms) {
 		ContextModifier cm = this
-		axioms.each {
-			cm = cm.axiom(it)
+		validate('axioms',axioms).each {
+			cm = cm.axiom(validate('axiom', it))
 		}
 		cm
 	}
 
-	def ContextModifier theorem(String thm) {
-		axiom(thm, true)
+	def ContextModifier theorem(LinkedHashMap theorem) {
+		axiom(theorem, true)
 	}
 
-	def ContextModifier theorem(Map props) {
-		axiom(props, true)
+	def ContextModifier theorem(String theorem) {
+		axiom(validate("theorem", theorem), true)
 	}
 
 	def ContextModifier axiom(Map props, boolean theorem=false) {
@@ -149,7 +149,7 @@ class ContextModifier extends AbstractModifier {
 	}
 
 	def ContextModifier addComment(String comment) {
-		newCM(context.addTo(ElementComment.class, new ElementComment(comment)))
+		comment ? newCM(context.addTo(ElementComment.class, new ElementComment(comment))) : this
 	}
 
 	def ContextModifier make(Closure definition) {

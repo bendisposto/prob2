@@ -39,11 +39,10 @@ import de.prob.model.representation.Variable
 class MachineModifier extends AbstractModifier {
 	EventBMachine machine
 	EventBModel model
-	private eventModifiers = [:]
 
 	def MachineModifier(EventBMachine machine, Set<IFormulaExtension> typeEnvironment = Collections.emptySet()) {
 		super(typeEnvironment)
-		this.machine = machine
+		this.machine = validate('machine',machine)
 	}
 
 	private newMM(EventBMachine machine) {
@@ -69,7 +68,7 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier variable(String varName, String comment="") {
 		parseIdentifier(varName)
-		variable(new EventBVariable(varName, null, validate("comment",comment)))
+		variable(new EventBVariable(varName, null, comment))
 	}
 
 	def MachineModifier variable(EventBVariable variable) {
@@ -106,7 +105,7 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier invariants(Map invariants) {
 		MachineModifier mm = this
-		invariants.each { k,v ->
+		validate("invariants", invariants).each { k,v ->
 			mm = mm.invariant(k,v)
 		}
 		mm
@@ -159,10 +158,9 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier invariant(String name, String predicate, boolean theorem=false, String comment="") {
-		validate("name", name)
-		validate("predicate", predicate)
+		validateAll(name, predicate)
 
-		def newproofs = machine.getProofs().findAll { po ->
+		def newproofs = machine.getProofs().findAll { ProofObligation po ->
 			!po.getName().endsWith("/INV")
 		}
 
@@ -214,6 +212,9 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier removeVariant(Variant variant) {
+		if (!machine.getChildrenOfType(Variant.class).contains(variant)) {
+			return this
+		}
 		def mm = removePOsForVariant()
 		newMM(mm.getMachine().removeFrom(Variant.class, variant))
 	}
@@ -227,12 +228,13 @@ class MachineModifier extends AbstractModifier {
 
 	def MachineModifier initialisation(Closure cls, boolean extended=false) {
 		def refines = machine.getRefines().isEmpty() ? null : "INITIALISATION"
-		event("INITIALISATION", refines, EventType.ORDINARY, extended, null, cls)
+		event("INITIALISATION", refines, EventType.ORDINARY, extended, null, validate("cls",cls))
 	}
 
 	def MachineModifier refine(LinkedHashMap properties, Closure cls={}) {
+		validate("properties", properties)
 		properties["refines"] = properties["name"]
-		event(properties, cls)
+		event(properties, validate("cls", cls))
 	}
 
 	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
@@ -242,10 +244,11 @@ class MachineModifier extends AbstractModifier {
 				EventType.ORDINARY
 			]])
 
-		event(props["name"], props["refines"], props["type"],props["extended"],props["comment"], cls)
+		event(props["name"], props["refines"], props["type"],props["extended"],props["comment"], validate("cls",cls))
 	}
 
 	def MachineModifier event(String name, String refinedEvent, EventType type, boolean extended, String comment=null,Closure cls={} ) {
+		validateAll(name, type, cls)
 		def mm = removePOsForEvent(name)
 		def oldevent = machine.getEvent(name)
 		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, extended)
@@ -272,6 +275,7 @@ class MachineModifier extends AbstractModifier {
 	 * @param newName of the cloned event
 	 */
 	def MachineModifier duplicateEvent(String eventName, String newName) {
+		validateAll(eventName, newName)
 		MachineModifier mm = removePOsForEvent(newName)
 		Event event = machine.getEvent(eventName)
 		if (!event) {
@@ -301,7 +305,7 @@ class MachineModifier extends AbstractModifier {
 	def MachineModifier removePOsForEvent(String name) {
 		def proofs = machine.getProofs()
 		proofs.each {
-			if (it.name.startsWith(name + "/")) {
+			if (it.name.startsWith(validate('name', name) + "/")) {
 				proofs = proofs.removeElement(it)
 			}
 		}
@@ -309,11 +313,11 @@ class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier addComment(String comment) {
-		newMM(machine.addTo(ElementComment.class, new ElementComment(comment)))
+		comment ? newMM(machine.addTo(ElementComment.class, new ElementComment(comment))) : this
 	}
 
 	def MachineModifier algorithm(Closure definition) {
-		newMM(machine.addTo(Block.class, new Block().make(definition)))
+		newMM(machine.addTo(Block.class, new Block().make(validate('definition',definition))))
 	}
 
 	def MachineModifier make(Closure definition) {
