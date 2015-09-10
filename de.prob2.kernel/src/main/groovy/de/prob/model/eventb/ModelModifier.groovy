@@ -23,7 +23,7 @@ public class ModelModifier extends AbstractModifier {
 	 * @param model to be copied
 	 * @param startProB default = true
 	 */
-	def ModelModifier(EventBModel model, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+	public ModelModifier(EventBModel model, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
 		super(typeEnvironment)
 		this.model = model
 	}

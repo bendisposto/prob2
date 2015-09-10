@@ -36,11 +36,11 @@ import de.prob.model.representation.Variable
  * </code>
  * @author Joy Clark
  */
-class MachineModifier extends AbstractModifier {
+public class MachineModifier extends AbstractModifier {
 	EventBMachine machine
 	EventBModel model
 
-	def MachineModifier(EventBMachine machine, Set<IFormulaExtension> typeEnvironment = Collections.emptySet()) {
+	public MachineModifier(EventBMachine machine, Set<IFormulaExtension> typeEnvironment = Collections.emptySet()) {
 		super(typeEnvironment)
 		this.machine = validate('machine',machine)
 	}

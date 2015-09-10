@@ -28,32 +28,32 @@ public class EventModifier extends AbstractModifier {
 	}
 
 	private EventModifier newEM(Event event) {
-		return new EventModifier(event, initialisation)
+		return new EventModifier(event, initialisation, typeEnvironment)
 	}
 
 	def EventModifier refines(String name) {
 		return newEM(event.set(Event.class, new ModelElementList<Event>([
-			new Event(name, EventType.ORDINARY, false)
+			new Event(validate('name',name), EventType.ORDINARY, false)
 		])))
 	}
 
-	def EventModifier when(Map g) {
+	def EventModifier when(LinkedHashMap g) {
 		guards(g)
 	}
 
-	def EventModifier when(String... g) {
+	def EventModifier when(String... conditions) {
+		guards(validate('conditions',conditions))
+	}
+
+	def EventModifier where(LinkedHashMap g) {
 		guards(g)
 	}
 
-	def EventModifier where(Map g) {
-		guards(g)
+	def EventModifier where(String... conditions) {
+		guards(validate('conditions',conditions))
 	}
 
-	def EventModifier where(String... g) {
-		guards(g)
-	}
-
-	def EventModifier guards(Map guards) {
+	def EventModifier guards(LinkedHashMap guards) {
 		EventModifier em = this
 		guards.each { k,v ->
 			em = em.guard(k,v)
@@ -61,20 +61,20 @@ public class EventModifier extends AbstractModifier {
 		em
 	}
 
-	def EventModifier guards(String... grds) {
+	def EventModifier guards(String... guards) {
 		EventModifier em = this
-		grds.each {
+		validate('guards', guards).each {
 			em = em.guard(it)
 		}
 		em
 	}
 
-	def EventModifier theorem(LinkedHashMap properties) {
-		guard(properties, true)
+	def EventModifier theorem(LinkedHashMap theorem) {
+		guard(theorem, true)
 	}
 
-	def EventModifier theorem(String pred) {
-		guard(pred, true)
+	def EventModifier theorem(String theorem) {
+		guard(validate('theorem',theorem), true)
 	}
 
 	def EventModifier guard(String pred, boolean theorem=false) {
@@ -91,13 +91,13 @@ public class EventModifier extends AbstractModifier {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
 		}
-		def guard = new EventBGuard(name, parsePredicate(pred), theorem, comment)
+		def guard = new EventBGuard(validate('name',name), parsePredicate(pred), theorem, comment)
 		newEM(event.addTo(Guard.class, guard))
 	}
 
 	def EventModifier removeGuard(String name) {
 		def grd = event.guards.getElement(name)
-		removeGuard(grd)
+		grd ? removeGuard(grd) : this
 	}
 
 	/**
@@ -109,15 +109,15 @@ public class EventModifier extends AbstractModifier {
 		newEM(event.removeFrom(Guard.class, guard))
 	}
 
-	def EventModifier then(Map acts) {
-		actions(acts)
+	def EventModifier then(LinkedHashMap assignments) {
+		actions(assignments)
 	}
 
-	def EventModifier then(String... acts) {
-		actions(acts)
+	def EventModifier then(String... assignments) {
+		actions(validate('assignments',assignments))
 	}
 
-	def EventModifier actions(Map actions) {
+	def EventModifier actions(LinkedHashMap actions) {
 		EventModifier em = this
 		actions.each { k,v ->
 			em = em.action(k,v)
@@ -127,7 +127,7 @@ public class EventModifier extends AbstractModifier {
 
 	def EventModifier actions(String... actions) {
 		EventModifier em = this
-		actions.each {
+		validate('actions',actions).each {
 			em = em.action(it)
 		}
 		em
@@ -144,13 +144,13 @@ public class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier action(String name, String action, String comment="") {
-		def a = new EventBAction(name, parseFormula(action, EvalElementType.ASSIGNMENT), comment)
+		def a = new EventBAction(validate('name',name), parseFormula(action, EvalElementType.ASSIGNMENT), comment)
 		newEM(event.addTo(Action.class, a))
 	}
 
 	def EventModifier removeAction(String name) {
 		def act = event.actions.getElement(name)
-		removeAction(act)
+		act ? removeAction(act) : this
 	}
 
 	/**
@@ -162,9 +162,13 @@ public class EventModifier extends AbstractModifier {
 		newEM(event.removeFrom(Action.class, action))
 	}
 
+	def EventModifier any(String... params) {
+		parameters(validate('params', params))
+	}
+
 	def EventModifier parameters(String... parameters) {
 		EventModifier em = this
-		parameters.each {
+		validate('parameters', parameters).each {
 			em = em.parameter(it)
 		}
 		em
@@ -188,14 +192,24 @@ public class EventModifier extends AbstractModifier {
 		newEM(event.removeFrom(EventParameter.class, parameter))
 	}
 
-	def EventModifier witness(Map properties) {
-		Map validated = validateProperties(properties, [for: String, with: String])
-		witness(validated.for, validated.with)
+	def EventModifier with(String name, String predicate) {
+		witness(validate('name',name), validate('predicate',predicate))
 	}
 
-	def EventModifier witness(String name, String code, String comment="") {
-		def w = new Witness(name, parsePredicate(code), comment)
+	def EventModifier witness(LinkedHashMap properties, String comment="") {
+		Map validated = validateProperties(properties, [for: String, with: String])
+		witness(validated.for, validated.with,comment)
+	}
+
+	def EventModifier witness(String name, String predicate, String comment="") {
+		parseIdentifier(name) // the label for a witness must be an abstract variable
+		def w = new Witness(name, parsePredicate(predicate), comment)
 		newEM(event.addTo(Witness.class, w))
+	}
+
+	def EventModifier removeWitness(String name) {
+		def wit = event.witnesses.getElement(name)
+		wit ? removeWitness(wit) : this
 	}
 
 	def EventModifier removeWitness(Witness w) {
@@ -203,11 +217,11 @@ public class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier setType(EventType type) {
-		newEM(event.changeType(type))
+		newEM(event.changeType(validate('type', type)))
 	}
 
 	def EventModifier addComment(String comment) {
-		newEM(event.addTo(ElementComment.class, new ElementComment(comment)))
+		comment ? newEM(event.addTo(ElementComment.class, new ElementComment(comment))) : this
 	}
 
 	def EventModifier make(Closure definition) {

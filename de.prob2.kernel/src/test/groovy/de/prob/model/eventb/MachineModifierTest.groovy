@@ -1,5 +1,7 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
 import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event.EventType
@@ -14,6 +16,27 @@ class MachineModifierTest extends Specification {
 		def machine = new EventBMachine("myMachine")
 
 		modifier = new MachineModifier(machine, Collections.emptySet())
+	}
+
+	def "constructor with machine => default value for typenv"() {
+		when:
+		def machine = new EventBMachine("m")
+		modifier = new MachineModifier(machine)
+
+		then:
+		modifier.getMachine() == machine
+		modifier.typeEnvironment == [] as Set
+	}
+
+	def "constructor with machine & type env"() {
+		when:
+		def machine = new EventBMachine("m")
+		def typeEnv = [Mock(IFormulaExtension)] as Set
+		modifier = new MachineModifier(machine, typeEnv)
+
+		then:
+		modifier.getMachine() == machine
+		modifier.typeEnvironment == typeEnv
 	}
 
 	def "the input machine must not be null"() {

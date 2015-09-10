@@ -9,11 +9,11 @@ import de.prob.model.representation.ElementComment
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 
-class ContextModifier extends AbstractModifier {
+public class ContextModifier extends AbstractModifier {
 	private final axmctr
 	final Context context
 
-	def ContextModifier(Context context, java.util.Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+	public ContextModifier(Context context, java.util.Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
 		super(typeEnvironment)
 		this.context = validate('context',context)
 		this.axmctr = extractCounter("axm", context.axioms)
