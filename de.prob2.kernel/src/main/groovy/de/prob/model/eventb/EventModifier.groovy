@@ -9,10 +9,6 @@ import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Guard
 import de.prob.model.representation.ModelElementList
 
-
-
-
-
 public class EventModifier extends AbstractModifier {
 	private final actctr
 	private final grdctr
