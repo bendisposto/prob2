@@ -285,4 +285,68 @@ class ModelModifierTest extends Specification {
 		model2.getMachines().collect { it.getName() } == ["A", "B", "C"]
 		model2.getMachines().B.variables.collect { it.getName() } == ["x", "y"]
 	}
+
+	def "load theories map cannot be empty"() {
+		when:
+		mm = new ModelModifier().loadTheories([:])
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "load theories requires workspace"() {
+		when:
+		def mm = new ModelModifier().loadTheories([project: "MyProject", theories: []])
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "load theories requires project"() {
+		when:
+		def mm = new ModelModifier().loadTheories([workspace: "MyWkspc", theories: []])
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "load theories requires theories"() {
+		when:
+		def mm = new ModelModifier().loadTheories([workspace: "MyWkspc", project: "MyProject"])
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "load theories theories cannot be null"() {
+		when:
+		def mm = new ModelModifier().loadTheories([workspace: "MyWkspc", project: "MyProject", theories: null])
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "load theories workspace cannot be null"() {
+		when:
+		def mm = new ModelModifier().loadTheories([workspace: null, project: "MyProject", theories: ["Atheory"]])
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "load theories project cannot be null"() {
+		when:
+		def mm = new ModelModifier().loadTheories([workspace: "MyWkspc", project: null, theories: ["Atheory"]])
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "load theories single theories cannot be null"() {
+		when:
+		def mm = new ModelModifier().loadTheories([workspace: "MyWkspc", project: "MyProject", theories: [null]])
+
+		then:
+		thrown IllegalArgumentException
+	}
 }
