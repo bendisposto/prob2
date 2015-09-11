@@ -255,7 +255,7 @@ public class MachineModifier extends AbstractModifier {
 		if (comment) {
 			event = event.addTo(ElementComment.class, new ElementComment(comment))
 		}
-		def em = new EventModifier(event, "INITIALISATION" == name).make(cls)
+		def em = new EventModifier(event, "INITIALISATION" == name, typeEnvironment).make(cls)
 		em = refinedEvent ? em.refines(refinedEvent) : em
 		def m = mm.getMachine()
 		if (oldevent) {

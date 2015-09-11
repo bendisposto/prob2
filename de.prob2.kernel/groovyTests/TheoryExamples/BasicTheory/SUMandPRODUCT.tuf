@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.theory.core.theoryRoot org.eventb.core.comment="A theory of generalised sum and product&#10;&#10;@author Michael Butler&#10;@June 2014&#10;&#10;SUM takes a function whose range is a set of integers giving &#10;the sum of the integer values of every point in the domain, &#10;e.g.,   SUM( λx·x∈1‥N ∣ x∗x )   is the sum of the squares of &#10;integers between 1 and N.&#10;&#10;PRODUCT takes a function whose range is a set of integers giving &#10;the product of the integer values of every point in the domain.&#10;" org.eventb.core.configuration="org.eventb.theory.core.thy">
+<org.eventb.theory.core.typeParameter name="'" org.eventb.core.identifier="T"/>
+<org.eventb.theory.core.axiomaticDefinitionsBlock name="(" org.eventb.core.label="xdb1">
+<org.eventb.theory.core.axiomaticOperatorDefinition name="'" org.eventb.core.label="SUM" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="ℤ">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="T↔ℤ" org.eventb.core.identifier="s"/>
+<org.eventb.theory.core.operatorWDcondition name="(" org.eventb.core.predicate="s ∈ T⇸ℤ"/>
+<org.eventb.theory.core.operatorWDcondition name=")" org.eventb.core.predicate="finite(s)"/>
+</org.eventb.theory.core.axiomaticOperatorDefinition>
+<org.eventb.theory.core.axiomaticDefinitionAxiom name="*" org.eventb.core.comment="   SUM({p·p∈(T×ℤ)∧⊥∣p}) = 0" org.eventb.core.label="axm1" org.eventb.core.predicate="SUM(∅ ⦂ T↔ℤ) = 0"/>
+<org.eventb.theory.core.axiomaticDefinitionAxiom name="+" org.eventb.core.comment="" org.eventb.core.label="axm2" org.eventb.core.predicate="∀t,x· t∈T ∧ x∈ℤ ⇒ SUM( {t↦x} ) = x"/>
+<org.eventb.theory.core.axiomaticDefinitionAxiom name=")" org.eventb.core.label="axm3" org.eventb.core.predicate="∀s,t· s∈T⇸ℤ ∧ t∈T⇸ℤ ∧  finite(s) ∧ finite(t) ∧ dom(s)∩dom(t)=∅  ⇒ SUM(s∪t) = SUM(s) + SUM(t)"/>
+<org.eventb.theory.core.axiomaticOperatorDefinition name="," org.eventb.core.label="PRODUCT" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="ℤ">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="T↔ℤ" org.eventb.core.identifier="s"/>
+<org.eventb.theory.core.operatorWDcondition name="(" org.eventb.core.predicate="s ∈ T⇸ℤ"/>
+<org.eventb.theory.core.operatorWDcondition name=")" org.eventb.core.predicate="finite(s)"/>
+</org.eventb.theory.core.axiomaticOperatorDefinition>
+<org.eventb.theory.core.axiomaticDefinitionAxiom name="." org.eventb.core.label="axm5" org.eventb.core.predicate="PRODUCT(∅ ⦂ T↔ℤ) = 1"/>
+<org.eventb.theory.core.axiomaticDefinitionAxiom name="/" org.eventb.core.label="axm6" org.eventb.core.predicate="∀t,x· t∈T ∧ x∈ℤ ⇒ PRODUCT( {t↦x} ) = x"/>
+<org.eventb.theory.core.axiomaticDefinitionAxiom name="0" org.eventb.core.label="axm7" org.eventb.core.predicate="∀s,t· s∈T⇸ℤ ∧ t∈T⇸ℤ ∧ finite(s) ∧ finite(t) ∧ dom(s)∩dom(t)=∅ ⇒ PRODUCT(s∪t) = PRODUCT(s) ∗ PRODUCT(t)"/>
+</org.eventb.theory.core.axiomaticDefinitionsBlock>
+<org.eventb.theory.core.theorem name=")" org.eventb.core.comment="" org.eventb.core.label="thm1" org.eventb.core.predicate=" ∀s,t· s∈T⇸ℤ ∧ t∈T⇸ℤ ∧ t⊆s ∧ finite(s) ⇒  SUM(s∖t) = SUM(s) − SUM(t)"/>
+<org.eventb.theory.core.proofRulesBlock name="*" org.eventb.core.label="rulesBlock1">
+<org.eventb.theory.core.rewriteRule name="'" org.eventb.core.label="rew1" org.eventb.theory.core.applicability="both" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="Empty SUM" org.eventb.theory.core.formula="SUM(∅ ⦂ ℙ(T×ℤ))">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="0"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="(" org.eventb.core.label="rew2" org.eventb.theory.core.applicability="interactive" org.eventb.theory.core.complete="false" org.eventb.theory.core.desc="Union SUM" org.eventb.theory.core.formula="SUM(s ∪ t)">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="dom(s)∩dom(t)=∅" org.eventb.theory.core.formula="SUM(s) + SUM(t)"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.metaVariable name=")" org.eventb.core.identifier="s" org.eventb.theory.core.type="T↔ℤ"/>
+<org.eventb.theory.core.metaVariable name="*" org.eventb.core.identifier="t" org.eventb.theory.core.type="T↔ℤ"/>
+<org.eventb.theory.core.metaVariable name="+" org.eventb.core.identifier="x" org.eventb.theory.core.type="T"/>
+<org.eventb.theory.core.metaVariable name="," org.eventb.core.identifier="y" org.eventb.theory.core.type="ℤ"/>
+<org.eventb.theory.core.rewriteRule name="-" org.eventb.core.label="rew3" org.eventb.theory.core.applicability="both" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="Singleton SUM" org.eventb.theory.core.formula="SUM({x↦y})">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="y"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="." org.eventb.core.label="rew4" org.eventb.theory.core.applicability="interactive" org.eventb.theory.core.complete="false" org.eventb.theory.core.desc="Remove from SUM" org.eventb.theory.core.formula="SUM({x}⩤s)">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="s∈T⇸ℤ ∧ finite(s) ∧ x∈dom(s)" org.eventb.theory.core.formula="SUM(s) − s(x)"/>
+</org.eventb.theory.core.rewriteRule>
+</org.eventb.theory.core.proofRulesBlock>
+<org.eventb.theory.core.theorem name="+" org.eventb.core.label="thm2" org.eventb.core.predicate=" ∀s,t· s∈T⇸ℤ ∧ t∈T⇸ℤ ∧ t⊆s ∧ finite(s) ∧ PRODUCT(t)≠0 ⇒  PRODUCT(s∖t) = PRODUCT(s) ÷ PRODUCT(t)"/>
+<org.eventb.theory.core.proofRulesBlock name="," org.eventb.core.label="rulesBlock2">
+<org.eventb.theory.core.metaVariable name="*" org.eventb.core.identifier="s" org.eventb.theory.core.type="T↔ℤ"/>
+<org.eventb.theory.core.metaVariable name=")" org.eventb.core.identifier="t" org.eventb.theory.core.type="T↔ℤ"/>
+<org.eventb.theory.core.metaVariable name="(" org.eventb.core.identifier="x" org.eventb.theory.core.type="T"/>
+<org.eventb.theory.core.metaVariable name="'" org.eventb.core.identifier="y" org.eventb.theory.core.type="ℤ"/>
+<org.eventb.theory.core.rewriteRule name="+" org.eventb.core.label="rew11" org.eventb.theory.core.applicability="both" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="Empty PRODUCT" org.eventb.theory.core.formula="PRODUCT(∅ ⦂ ℙ(T×ℤ))">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="1"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="," org.eventb.core.label="rew12" org.eventb.theory.core.applicability="interactive" org.eventb.theory.core.complete="false" org.eventb.theory.core.desc="Union PRODUCT" org.eventb.theory.core.formula="PRODUCT(s ∪ t)">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="dom(s)∩dom(t)=∅" org.eventb.theory.core.formula="PRODUCT(s) ∗ PRODUCT(t)"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="-" org.eventb.core.label="rew13" org.eventb.theory.core.applicability="both" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="Singleton PRODUCT" org.eventb.theory.core.formula="PRODUCT({x↦y})">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="y"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="." org.eventb.core.label="rew14" org.eventb.theory.core.applicability="interactive" org.eventb.theory.core.complete="false" org.eventb.theory.core.desc="Remove PRODUCT" org.eventb.theory.core.formula="PRODUCT({x}⩤s)">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="s∈T⇸ℤ ∧ finite(s) ∧ x∈dom(s) ∧ s(x)≠0" org.eventb.theory.core.formula="PRODUCT(s) ÷ s(x)"/>
+</org.eventb.theory.core.rewriteRule>
+</org.eventb.theory.core.proofRulesBlock>
+</org.eventb.theory.core.theoryRoot>

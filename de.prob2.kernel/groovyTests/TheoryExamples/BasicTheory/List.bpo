@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="S" org.eventb.core.type="ℙ(S)"/>
+<org.eventb.core.poIdentifier name="T" org.eventb.core.type="ℙ(T)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="thm0/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l⦂List(T),x⦂T·l∈List(T)∧x∈T⇒listSize(append(l,x))=1+listSize(l)" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#="/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBlocl"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#="/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm0\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm2/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l⦂List(T),f⦂ℙ(T×S),x⦂T·l∈List(T)∧f∈T → S∧x∈T⇒map(f,append(l,x))=append(map(f,l),f(x))" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#\/"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBlocm"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#\/"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm2\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm2/WD-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-Definedness of Theorem" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l⦂List(T),f⦂ℙ(T×S),x⦂T·l∈List(T)∧f∈T → S∧x∈T⇒x∈dom(f)∧f∈T ⇸ S" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#\/"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBlocm"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#\/"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm2\/WD-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm1/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l⦂List(T),f⦂ℙ(T×S)·l∈List(T)∧f∈T → S⇒rev(map(f,l))=map(f,rev(l))" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#."/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBlocn"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#."/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm1\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm4/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l⦂List(T),x⦂T·l∈List(T)∧x∈T⇒rev(append(l,x))=cons(x,rev(l))" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#1"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBloco"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#1"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm4\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm3/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l⦂List(T)·l∈List(T)⇒rev(rev(l))=l" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#0"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBlocp"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#0"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm3\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm6/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l⦂List(T)·l∈List(T)⇒conc(l,nil ⦂ List(T))=l" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#5"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBlocq"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#5"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm6\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm7/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l1⦂List(T),l2⦂List(T),x⦂T·l1∈List(T)∧l2∈List(T)∧x∈T⇒append(conc(l1,l2),x)=conc(l1,append(l2,x))" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#6"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBlocr"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#6"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm7\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm5/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l1⦂List(T)·l1∈List(T)⇒(∀l2⦂List(T)·l2∈List(T)⇒rev(conc(l1,l2))=conc(rev(l2),rev(l1)))" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#4"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBlocs"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#4"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm5\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm10/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀l1⦂List(T),l2⦂List(T),l3⦂List(T)·l1∈List(T)∧l2∈List(T)∧l3∈List(T)⇒conc(conc(l1,l2),l3)=conc(l1,conc(l2,l3))" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#:"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBloct"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#:"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm10\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm9/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀ll⦂List(List(T)),l⦂List(T)·ll∈List(List(T))∧l∈List(T)⇒flatten(append(ll,l))=conc(flatten(ll),l)" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#8"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tcf|org.eventb.theory.core.scTheoryRoot#List|org.eventb.theory.core.scTheorem#generatedBlocu"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/List.tuf|org.eventb.theory.core.theoryRoot#List|org.eventb.theory.core.theorem#8"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/List.bpo|org.eventb.core.poFile#List|org.eventb.core.poSequent#thm9\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+</org.eventb.core.poFile>

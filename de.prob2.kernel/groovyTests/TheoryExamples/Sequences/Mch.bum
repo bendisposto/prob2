@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" org.eventb.texttools.text_lastmodified="1441953986528" org.eventb.texttools.text_representation="machine Mch&#10;variables s&#10;invariants @inv s ∈ seq(ℤ)&#10;events&#10;  event INITIALISATION&#10;  &#9;then @a s ≔  emptySeq&#10;  end&#10;&#10;  event add&#10;  &#9;any p&#10;  &#9;where @grd p ∈ 1‥10&#10;  &#9;then @a s≔ s&#10;  end&#10;end&#10;" version="5">
+<org.eventb.core.event name="_0wa70FhQEeWyt789LlZp3w" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+<org.eventb.core.action name="_0wa70VhQEeWyt789LlZp3w" org.eventb.core.assignment="s ≔  emptySeq" org.eventb.core.label="a"/>
+</org.eventb.core.event>
+<org.eventb.core.variable name="_0wbi4FhQEeWyt789LlZp3w" org.eventb.core.identifier="s"/>
+<org.eventb.core.invariant name="_0wbi4VhQEeWyt789LlZp3w" org.eventb.core.label="inv" org.eventb.core.predicate="s ∈ seq(ℤ)"/>
+<org.eventb.core.event name="_0wcJ8FhQEeWyt789LlZp3w" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="add">
+<org.eventb.core.parameter name="_0wcJ8VhQEeWyt789LlZp3w" org.eventb.core.identifier="p"/>
+<org.eventb.core.guard name="_0wcxAFhQEeWyt789LlZp3w" org.eventb.core.label="grd" org.eventb.core.predicate="p ∈ 1‥10"/>
+<org.eventb.core.action name="_0wcxAVhQEeWyt789LlZp3w" org.eventb.core.assignment="s≔ seqAppend(s,p)" org.eventb.core.label="a"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>

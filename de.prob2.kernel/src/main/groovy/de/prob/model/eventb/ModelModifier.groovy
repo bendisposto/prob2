@@ -1,8 +1,13 @@
 package de.prob.model.eventb
 
+import javax.xml.parsers.SAXParser
+import javax.xml.parsers.SAXParserFactory
+
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.Main
+import de.prob.model.eventb.theory.Theory
+import de.prob.model.eventb.translate.TheoryExtractor
 import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
@@ -135,5 +140,26 @@ public class ModelModifier extends AbstractModifier {
 
 	def ModelModifier replaceMachine(EventBMachine oldMachine, EventBMachine newMachine) {
 		new ModelModifier(model.replaceIn(Machine.class, oldMachine, newMachine))
+	}
+
+	def ModelModifier loadTheories(LinkedHashMap properties) {
+		validateProperties(properties, [workspace: String, project: String, theories: String[]])
+		SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+		SAXParser saxParser = parserFactory.newSAXParser();
+
+		Map<String, Theory> theoryMap = [:]
+		ModelElementList<Theory> theories = new ModelElementList<Theory>()
+		HashSet<IFormulaExtension> types = new HashSet<IFormulaExtension>()
+		validate('theories', properties["theories"]).each { String name ->
+			def workspace = validate('workspace', properties["workspace"])
+			def project = validate('project', properties["project"])
+			validate('name', name)
+			TheoryExtractor extractor = new TheoryExtractor(workspace, project, name, theoryMap);
+			saxParser.parse(new File(workspace + File.separator + project + File.separator + name + ".dtf"), extractor);
+			theories = theories.addMultiple(extractor.getTheories())
+			types.addAll(extractor.getTypeEnv())
+		}
+		def model = model.set(Theory.class, theories)
+		new ModelModifier(model, types)
 	}
 }

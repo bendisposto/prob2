@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.theory.core.theoryRoot org.eventb.core.comment="A theory of boolean operators.&#10;&#10;@author Nicolas Beauger, Issam Maamria&#10;@date September 2011" org.eventb.core.configuration="org.eventb.theory.core.thy">
+<org.eventb.theory.core.newOperatorDefinition name="'" org.eventb.core.label="AND" org.eventb.theory.core.associative="true" org.eventb.theory.core.commutative="true" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="INFIX" org.eventb.theory.core.syntaxSymbol="AND">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="BOOL" org.eventb.core.identifier="a" org.eventb.theory.core.type="BOOL"/>
+<org.eventb.theory.core.operatorArgument name="(" org.eventb.core.expression="BOOL" org.eventb.core.identifier="b" org.eventb.theory.core.type="BOOL"/>
+<org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.theory.core.formula="bool(a=TRUE ∧ b=TRUE)"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.proofRulesBlock name="(" org.eventb.core.label="blockAND">
+<org.eventb.theory.core.rewriteRule name="'" org.eventb.core.label="rewTAT" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="TRUE AND TRUE" org.eventb.theory.core.formula="TRUE AND (TRUE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="T AND T == T">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="TRUE"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="(" org.eventb.core.label="rewTAF" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="TRUE AND FALSE" org.eventb.theory.core.formula="TRUE AND (FALSE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="T AND F == F">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="FALSE"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name=")" org.eventb.core.label="rewFAT" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="FALSE AND TRUE" org.eventb.theory.core.formula="FALSE AND (TRUE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="F AND T == F">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="FALSE"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="*" org.eventb.core.label="rewFAF" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="FALSE AND FALSE" org.eventb.theory.core.formula="FALSE AND (FALSE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="F AND F == F">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="FALSE"/>
+</org.eventb.theory.core.rewriteRule>
+</org.eventb.theory.core.proofRulesBlock>
+<org.eventb.theory.core.proofRulesBlock name=")" org.eventb.core.label="blockOR">
+<org.eventb.theory.core.rewriteRule name="'" org.eventb.core.label="rewTOT" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="TRUE OR TRUE" org.eventb.theory.core.formula="TRUE OR (TRUE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="T OR T == T">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="TRUE"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="(" org.eventb.core.label="rewTOF" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="TRUE OR FALSE" org.eventb.theory.core.formula="TRUE OR (FALSE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="T OR F == T">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="TRUE"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name=")" org.eventb.core.label="rewFOT" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="FALSE OR TRUE" org.eventb.theory.core.formula="FALSE OR (TRUE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="F OR T == T">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="TRUE"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="*" org.eventb.core.label="rewFOF" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="FALSE OR FALSE" org.eventb.theory.core.formula="FALSE OR (FALSE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="F OR F == F">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="FALSE"/>
+</org.eventb.theory.core.rewriteRule>
+</org.eventb.theory.core.proofRulesBlock>
+<org.eventb.theory.core.newOperatorDefinition name="*" org.eventb.core.label="OR" org.eventb.theory.core.associative="true" org.eventb.theory.core.commutative="true" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="INFIX" org.eventb.theory.core.syntaxSymbol="OR">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="BOOL" org.eventb.core.identifier="a" org.eventb.theory.core.type="BOOL"/>
+<org.eventb.theory.core.operatorArgument name="(" org.eventb.core.expression="BOOL" org.eventb.core.identifier="b" org.eventb.theory.core.type="BOOL"/>
+<org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.theory.core.formula="bool(a=TRUE ∨ b=TRUE)"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="+" org.eventb.core.label="NOT" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.syntaxSymbol="NOT">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="BOOL" org.eventb.core.identifier="a" org.eventb.theory.core.type="BOOL"/>
+<org.eventb.theory.core.directOperatorDefinition name="(" org.eventb.theory.core.formula="bool(¬ a=TRUE)"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.proofRulesBlock name="," org.eventb.core.label="blockNOT">
+<org.eventb.theory.core.rewriteRule name="'" org.eventb.core.label="rewNT" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="NOT TRUE" org.eventb.theory.core.formula="NOT(TRUE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="NOT T == F">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="FALSE"/>
+</org.eventb.theory.core.rewriteRule>
+<org.eventb.theory.core.rewriteRule name="(" org.eventb.core.label="rewNF" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.auto="true" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="NOT FALSE" org.eventb.theory.core.formula="NOT(FALSE)" org.eventb.theory.core.interactive="true" org.eventb.theory.core.toolTip="NOT F == T">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="TRUE"/>
+</org.eventb.theory.core.rewriteRule>
+</org.eventb.theory.core.proofRulesBlock>
+</org.eventb.theory.core.theoryRoot>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.poStamp="0"/>
+<org.eventb.core.poSequent name="axm1/WD-AXM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-Definedness of Axiom" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="0∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tcf_tmp|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scAxiomaticDefinitionsBlock#generatedBlocl|org.eventb.theory.core.scAxiomaticDefinitionAxiom#("/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tcf|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scTheorem#axm1"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tcf_tmp|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scAxiomaticDefinitionsBlock#generatedBlocl|org.eventb.theory.core.scAxiomaticDefinitionAxiom#("/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poSequent#axm1\/WD-AXM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="axm2/WD-AXM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-Definedness of Axiom" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀n⦂ℤ·n∈ℕ⇒1+n∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tcf_tmp|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scAxiomaticDefinitionsBlock#generatedBlocl|org.eventb.theory.core.scAxiomaticDefinitionAxiom#)"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tcf|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scTheorem#axm2"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tcf_tmp|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scAxiomaticDefinitionsBlock#generatedBlocl|org.eventb.theory.core.scAxiomaticDefinitionAxiom#)"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poSequent#axm2\/WD-AXM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm1/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀p⦂PEANO·p∈(PEANO ⦂ ℙ(PEANO))⇒(odd(p)⇔¬even(p))" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.theorem#*"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tcf|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scTheorem#generatedBlocm"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.theorem#*"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poSequent#thm1\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm3/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀p⦂PEANO·p∈(PEANO ⦂ ℙ(PEANO))⇒mk_nat(p)∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.theorem#."/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tcf|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scTheorem#generatedBlocn"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.theorem#."/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poSequent#thm3\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm2/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀p⦂PEANO·p∈(PEANO ⦂ ℙ(PEANO))⇒mk_PEANO(mk_nat(p))=p" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.theorem#-"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tcf|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scTheorem#generatedBloco"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.theorem#-"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poSequent#thm2\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="thm2/WD-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-Definedness of Theorem" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀p⦂PEANO·p∈(PEANO ⦂ ℙ(PEANO))⇒mk_nat(p)∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.theorem#-"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tcf|org.eventb.theory.core.scTheoryRoot#PEANO|org.eventb.theory.core.scTheorem#generatedBloco"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.theorem#-"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/PEANO.bpo|org.eventb.core.poFile#PEANO|org.eventb.core.poSequent#thm2\/WD-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+</org.eventb.core.poFile>

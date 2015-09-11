@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.theory.core.theoryRoot org.eventb.core.comment="A theory of sequences defined as finite partial functions.&#10;&#10;@author Issam Maamria, Michael Butler&#10;@June 2014" org.eventb.core.configuration="org.eventb.theory.core.thy">
+<org.eventb.theory.core.typeParameter name="'" org.eventb.core.identifier="A"/>
+<org.eventb.theory.core.newOperatorDefinition name="(" org.eventb.core.label="seq" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="ℙ(A)" org.eventb.core.identifier="a"/>
+<org.eventb.theory.core.directOperatorDefinition name="(" org.eventb.theory.core.formula="{n, f · n ∈ ℕ ∧ f ∈ 1‥n→a ∣ f}"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name=")" org.eventb.core.comment="size of sequence" org.eventb.core.label="seqSize" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="seq(A)" org.eventb.core.identifier="s"/>
+<org.eventb.theory.core.directOperatorDefinition name="(" org.eventb.theory.core.formula="card(s)"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.theorem name="/" org.eventb.core.label="seqsIsFinite" org.eventb.core.predicate="∀ s, a· a ⊆ A ∧ s ∈ seq(a) ⇒ finite(s)"/>
+<org.eventb.theory.core.proofRulesBlock name="4" org.eventb.core.label="sequences Rules">
+<org.eventb.theory.core.metaVariable name="'" org.eventb.core.identifier="s" org.eventb.theory.core.type="ℤ ↔ A"/>
+<org.eventb.theory.core.inferenceRule name="(" org.eventb.core.label="seqIsFiniteInf" org.eventb.theory.core.applicability="interactive" org.eventb.theory.core.desc="sequences are finite">
+<org.eventb.theory.core.given name="'" org.eventb.core.predicate="s ∈ seq(a)" org.eventb.theory.core.hyp="false"/>
+<org.eventb.theory.core.infer name="(" org.eventb.core.predicate="finite(s)"/>
+</org.eventb.theory.core.inferenceRule>
+<org.eventb.theory.core.metaVariable name=")" org.eventb.core.identifier="a" org.eventb.theory.core.type="ℙ(A)"/>
+<org.eventb.theory.core.inferenceRule name="*" org.eventb.core.label="tailSeqIsSeqInf" org.eventb.theory.core.applicability="automatic" org.eventb.theory.core.desc="tail is a sequence">
+<org.eventb.theory.core.given name="'" org.eventb.core.predicate="s ∈ seq(a)" org.eventb.theory.core.hyp="false"/>
+<org.eventb.theory.core.given name="(" org.eventb.core.predicate="s ≠ emptySeq" org.eventb.theory.core.hyp="false"/>
+<org.eventb.theory.core.infer name=")" org.eventb.core.predicate="seqTail(s)∈seq(a)"/>
+</org.eventb.theory.core.inferenceRule>
+<org.eventb.theory.core.inferenceRule name="+" org.eventb.core.label="inf3" org.eventb.theory.core.applicability="both" org.eventb.theory.core.desc="Append is seq">
+<org.eventb.theory.core.infer name="'" org.eventb.core.predicate="seqAppend(s,x) ∈ seq(a)"/>
+<org.eventb.theory.core.given name="(" org.eventb.core.predicate="a ⊆ A" org.eventb.theory.core.hyp="false"/>
+<org.eventb.theory.core.given name=")" org.eventb.core.predicate="s ∈ seq(a)" org.eventb.theory.core.hyp="false"/>
+<org.eventb.theory.core.given name="*" org.eventb.core.predicate="x ∈ a" org.eventb.theory.core.hyp="false"/>
+</org.eventb.theory.core.inferenceRule>
+<org.eventb.theory.core.metaVariable name="," org.eventb.core.identifier="x" org.eventb.theory.core.type="A"/>
+<org.eventb.theory.core.inferenceRule name="-" org.eventb.core.label="inf4" org.eventb.theory.core.applicability="both" org.eventb.theory.core.desc="empty seq is seq">
+<org.eventb.theory.core.infer name="'" org.eventb.core.predicate="emptySeq ∈ seq(a)"/>
+<org.eventb.theory.core.given name="(" org.eventb.core.predicate="a ⊆ A" org.eventb.theory.core.hyp="false"/>
+</org.eventb.theory.core.inferenceRule>
+<org.eventb.theory.core.inferenceRule name="." org.eventb.core.label="inf5" org.eventb.theory.core.applicability="interactive" org.eventb.theory.core.desc="seq monotonic">
+<org.eventb.theory.core.infer name="'" org.eventb.core.predicate="s ∈ seq(b)"/>
+<org.eventb.theory.core.given name=")" org.eventb.core.predicate="s ∈ seq(a)" org.eventb.theory.core.hyp="true"/>
+<org.eventb.theory.core.given name="(" org.eventb.core.predicate="a ⊆ b" org.eventb.theory.core.hyp="false"/>
+</org.eventb.theory.core.inferenceRule>
+<org.eventb.theory.core.metaVariable name="/" org.eventb.core.identifier="b" org.eventb.theory.core.type="ℙ(A)"/>
+<org.eventb.theory.core.inferenceRule name="0" org.eventb.core.label="inf6" org.eventb.theory.core.applicability="both" org.eventb.theory.core.desc="seq reduce ran">
+<org.eventb.theory.core.infer name="'" org.eventb.core.predicate="s ∈ seq(a∖{x})"/>
+<org.eventb.theory.core.given name="(" org.eventb.core.predicate="s ∈ seq(a)" org.eventb.theory.core.hyp="false"/>
+<org.eventb.theory.core.given name=")" org.eventb.core.predicate="x ∉ ran(s)" org.eventb.theory.core.hyp="false"/>
+</org.eventb.theory.core.inferenceRule>
+</org.eventb.theory.core.proofRulesBlock>
+<org.eventb.theory.core.newOperatorDefinition name="5" org.eventb.core.comment="empty sequence" org.eventb.core.label="emptySeq" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.directOperatorDefinition name="'" org.eventb.theory.core.formula="∅ ⦂ ℙ(A)"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="+" org.eventb.core.comment="the head of a non-empty sequece" org.eventb.core.label="seqHead" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="seq(A)" org.eventb.core.identifier="s"/>
+<org.eventb.theory.core.operatorWDcondition name="(" org.eventb.core.predicate="s ≠ emptySeq"/>
+<org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.theory.core.formula="s(1)"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="," org.eventb.core.comment="the tail of a non-empty sequence" org.eventb.core.label="seqTail" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="seq(A)" org.eventb.core.identifier="s"/>
+<org.eventb.theory.core.operatorWDcondition name="(" org.eventb.core.predicate="s ≠ emptySeq"/>
+<org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.theory.core.formula="λi·i∈1‥card(s)−1∣s(i+1)"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="-" org.eventb.core.comment="prepends an element to a sequence" org.eventb.core.label="seqPrepend" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="seq(A)" org.eventb.core.identifier="s"/>
+<org.eventb.theory.core.operatorArgument name="(" org.eventb.core.expression="A" org.eventb.core.identifier="e"/>
+<org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.theory.core.formula="{1↦e}∪(λi·i∈2‥seqSize(s)+1∣s(i−1))"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="." org.eventb.core.comment="appends an element to a sequence" org.eventb.core.label="seqAppend" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="seq(A)" org.eventb.core.identifier="s"/>
+<org.eventb.theory.core.operatorArgument name="(" org.eventb.core.expression="A" org.eventb.core.identifier="e"/>
+<org.eventb.theory.core.directOperatorDefinition name=")" org.eventb.theory.core.formula="s∪{(card(s)+1)↦e}"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.theorem name="0" org.eventb.core.label="seqsMonotone" org.eventb.core.predicate="∀ s, a, b· (a ⊆ A ∧ s ∈ seq(a) ∧ a ⊆ b ⇒ s ∈ seq(b))"/>
+<org.eventb.theory.core.theorem name="6" org.eventb.core.label="seqDomain" org.eventb.core.predicate="∀ s, a· a ⊆ A ∧ s ∈ seq(a) ⇒ dom(s) = 1‥card(s)"/>
+<org.eventb.theory.core.theorem name="1" org.eventb.core.label="tailSeqIsSeq" org.eventb.core.predicate="∀ s, a· a ⊆ A ∧ s ∈ seq(a) ∧ s ≠ emptySeq ⇒ seqTail(s) ∈ seq(a)"/>
+<org.eventb.theory.core.theorem name="2" org.eventb.core.label="seqPrependIsSeq" org.eventb.core.predicate="∀ s, a, e· a ⊆ A ∧ s ∈ seq(a) ⇒ (seqPrepend(s, e) ∈ seq(a ∪ {e}))"/>
+<org.eventb.theory.core.theorem name="3" org.eventb.core.label="seqAppendIsSeq" org.eventb.core.predicate="∀ s, a, e· a ⊆ A ∧ s ∈ seq(a) ⇒ (seqAppend(s, e) ∈ seq(a ∪ {e}))"/>
+</org.eventb.theory.core.theoryRoot>

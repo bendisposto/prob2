@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.scMachineFile org.eventb.core.accurate="true" org.eventb.core.configuration="org.eventb.core.fwd">
+<org.eventb.core.scInvariant name="'" org.eventb.core.label="inv" org.eventb.core.predicate="s∈seq(ℤ)" org.eventb.core.source="/Sequences/Mch.bum|org.eventb.core.machineFile#Mch|org.eventb.core.invariant#_0wbi4VhQEeWyt789LlZp3w" org.eventb.core.theorem="false"/>
+<org.eventb.core.scVariable name="s" org.eventb.core.abstract="false" org.eventb.core.concrete="true" org.eventb.core.source="/Sequences/Mch.bum|org.eventb.core.machineFile#Mch|org.eventb.core.variable#_0wbi4FhQEeWyt789LlZp3w" org.eventb.core.type="ℙ(ℤ×ℤ)"/>
+<org.eventb.core.scEvent name="t" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION" org.eventb.core.source="/Sequences/Mch.bum|org.eventb.core.machineFile#Mch|org.eventb.core.event#_0wa70FhQEeWyt789LlZp3w">
+<org.eventb.core.scAction name="'" org.eventb.core.assignment="s ≔ emptySeq ⦂ ℙ(ℤ×ℤ)" org.eventb.core.label="a" org.eventb.core.source="/Sequences/Mch.bum|org.eventb.core.machineFile#Mch|org.eventb.core.event#_0wa70FhQEeWyt789LlZp3w|org.eventb.core.action#_0wa70VhQEeWyt789LlZp3w"/>
+</org.eventb.core.scEvent>
+<org.eventb.core.scEvent name="u" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="add" org.eventb.core.source="/Sequences/Mch.bum|org.eventb.core.machineFile#Mch|org.eventb.core.event#_0wcJ8FhQEeWyt789LlZp3w">
+<org.eventb.core.scGuard name="'" org.eventb.core.label="grd" org.eventb.core.predicate="p∈1 ‥ 10" org.eventb.core.source="/Sequences/Mch.bum|org.eventb.core.machineFile#Mch|org.eventb.core.event#_0wcJ8FhQEeWyt789LlZp3w|org.eventb.core.guard#_0wcxAFhQEeWyt789LlZp3w" org.eventb.core.theorem="false"/>
+<org.eventb.core.scParameter name="p" org.eventb.core.source="/Sequences/Mch.bum|org.eventb.core.machineFile#Mch|org.eventb.core.event#_0wcJ8FhQEeWyt789LlZp3w|org.eventb.core.parameter#_0wcJ8VhQEeWyt789LlZp3w" org.eventb.core.type="ℤ"/>
+<org.eventb.core.scAction name="q" org.eventb.core.assignment="s ≔ seqAppend(s,p)" org.eventb.core.label="a" org.eventb.core.source="/Sequences/Mch.bum|org.eventb.core.machineFile#Mch|org.eventb.core.event#_0wcJ8FhQEeWyt789LlZp3w|org.eventb.core.action#_0wcxAVhQEeWyt789LlZp3w"/>
+</org.eventb.core.scEvent>
+</org.eventb.core.scMachineFile>

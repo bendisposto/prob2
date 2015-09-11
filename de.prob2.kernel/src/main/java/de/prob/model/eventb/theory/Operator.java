@@ -52,16 +52,25 @@ public class Operator extends AbstractElement {
 			final boolean formulaType, final String notationType,
 			final String groupId, final String type, final String wd,
 			final String predicate, final Set<IFormulaExtension> typeEnv) {
-		this(theoryName, new EventB(operator, typeEnv), associative, commutative, formulaType ? IOperatorProperties.FormulaType.EXPRESSION
-				: IOperatorProperties.FormulaType.PREDICATE, notationType.equals("PREFIX") ? IOperatorProperties.Notation.PREFIX
+		this(
+				theoryName,
+				new EventB(operator, typeEnv),
+				associative,
+				commutative,
+				formulaType ? IOperatorProperties.FormulaType.EXPRESSION
+						: IOperatorProperties.FormulaType.PREDICATE,
+				notationType.equals("PREFIX") ? IOperatorProperties.Notation.PREFIX
 						: (notationType.equals("INFIX") ? IOperatorProperties.Notation.INFIX
 								: IOperatorProperties.Notation.POSTFIX),
-								groupId, type == null ? null : new EventB(type, typeEnv), new EventB(wd, typeEnv), new EventB(predicate, typeEnv), null, null);
+				groupId, type == null ? null : new EventB(type, typeEnv),
+				new EventB(wd, typeEnv), new EventB(predicate, typeEnv), null,
+				null);
 	}
 
 	public Operator(final String theoryName, final EventB syntax,
 			final boolean associative, final boolean commutative,
-			final IOperatorProperties.FormulaType formulaType, final IOperatorProperties.Notation notationType,
+			final IOperatorProperties.FormulaType formulaType,
+			final IOperatorProperties.Notation notationType,
 			final String groupId, final EventB type, final EventB wd,
 			final EventB predicate,
 			ModelElementList<OperatorArgument> operatorArguments,
@@ -80,10 +89,11 @@ public class Operator extends AbstractElement {
 		this.operatorArguments = operatorArguments;
 	}
 
-	public Operator addArguments(final ModelElementList<OperatorArgument> arguments) {
+	public Operator addArguments(
+			final ModelElementList<OperatorArgument> arguments) {
 		return new Operator(theoryName, syntax, associative, commutative,
-				formulaType, notation, groupId, type, wd, predicate,
-				arguments, definition);
+				formulaType, notation, groupId, type, wd, predicate, arguments,
+				definition);
 	}
 
 	public EventB getSyntax() {
@@ -223,7 +233,7 @@ public class Operator extends AbstractElement {
 			return new ExtensionKind(notation, formulaType,
 					ExtensionFactory.makeAllExpr(ExtensionFactory.makeArity(
 							getArguments().size(), getArguments().size())),
-							false);
+					false);
 		}
 
 		@Override
@@ -264,7 +274,7 @@ public class Operator extends AbstractElement {
 	}
 
 	private class PredicateOperatorExtension extends OperatorExtension
-	implements IPredicateExtension {
+			implements IPredicateExtension {
 
 		public PredicateOperatorExtension(final EventB syntax) {
 			super(syntax);
@@ -279,7 +289,7 @@ public class Operator extends AbstractElement {
 	}
 
 	private class ExpressionOperatorExtension extends OperatorExtension
-	implements IExpressionExtension {
+			implements IExpressionExtension {
 
 		public ExpressionOperatorExtension(final EventB syntax) {
 			super(syntax);
@@ -298,7 +308,7 @@ public class Operator extends AbstractElement {
 				final Expression[] childExprs, final Predicate[] childPreds) {
 			// This extension is intended to adapt the parser but not the
 			// typechecker
-			return false;
+			return true;
 		}
 
 		@Override
