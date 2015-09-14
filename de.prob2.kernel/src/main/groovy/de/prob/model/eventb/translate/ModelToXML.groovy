@@ -5,7 +5,9 @@ import de.prob.model.eventb.Context
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
+import de.prob.model.eventb.theory.Theory
 import de.prob.model.representation.ElementComment
+import de.prob.model.representation.ModelElementList
 
 public class ModelToXML {
 
@@ -22,6 +24,8 @@ public class ModelToXML {
 		def directoryPath = path + File.separator + name
 		def dir = createProjectFile(name, directoryPath)
 
+		extractTheories(model.getChildrenOfType(Theory.class), directoryPath)
+
 		model.getMachines().each { m ->
 			extractMachine(m, directoryPath)
 		}
@@ -31,6 +35,37 @@ public class ModelToXML {
 		}
 
 		dir
+	}
+
+	def extractTheories(ModelElementList<Theory> theories, String directoryPath) {
+		if (theories.isEmpty()) {
+			return
+		}
+		String fileName = directoryPath + File.separator + "TheoryPath.tul"
+		Map<String, List<String>> collected = [:]
+		theories.each { Theory t ->
+			if (collected[t.parentDirectory]) {
+				collected[t.parentDirectory] << t.name
+			} else {
+				collected[t.parentDirectory] = [t.name]
+			}
+		}
+		new File(fileName).withWriter("UTF-8") { writer ->
+			MarkupBuilder xml = new MarkupBuilder(writer);
+
+			xml.mkp.xmlDeclaration(version: "1.0", encoding: "UTF-8", standalone: "no")
+			xml.'org.eventb.theory.core.theoryLanguageRoot'('org.eventb.core.configuration': "org.eventb.theory.core.tul") {
+				collected.each { dir, ts ->
+					xml.'org.eventb.theory.core.availableTheoryProject'(name: genName(), 'org.eventb.theory.core.availableTheoryProject': File.separator+dir) {
+						ts.each { t ->
+							xml.'org.eventb.theory.core.availableTheory'(name: genName(),
+							'org.eventb.theory.core.availableTheory': File.separator+dir+File.separator+t+".dtf|org.eventb.theory.core.deployedTheoryRoot#"+t
+							)
+						}
+					}
+				}
+			}
+		}
 	}
 
 	def extractMachine(EventBMachine m, String directoryPath) {
@@ -79,7 +114,7 @@ public class ModelToXML {
 		'org.eventb.core.comment': comment
 		) {
 			if (!e.getName().equals("INITIALISATION")) {
-				e.refines.each {
+				e.getChildrenOfType(Event.class).each {
 					xml.'org.eventb.core.refinesEvent'(name: genName(),
 					'org.eventb.core.target': it.getName())
 				}
