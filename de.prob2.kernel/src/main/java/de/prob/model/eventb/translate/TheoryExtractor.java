@@ -142,7 +142,7 @@ public class TheoryExtractor extends DefaultHandler {
 	@Override
 	public void startElement(final String uri, final String localName,
 			final String qName, final Attributes attributes)
-					throws SAXException {
+			throws SAXException {
 		if (qName.equals("org.eventb.theory.core.scTypeParameter")) {
 			addTypeParameter(attributes);
 		} else if (qName.equals("org.eventb.theory.core.useTheory")) {
@@ -508,8 +508,8 @@ public class TheoryExtractor extends DefaultHandler {
 		theory = theory.set(Type.class, typeParameters);
 
 		theoryMap.put(project + File.separator + name, theory);
-		theories = theories.addElement(theory);
 		theory = theory.setTypeEnvironment(typeEnv);
+		theories = theories.addElement(theory);
 	}
 
 	public ModelElementList<Theory> getTheories() {

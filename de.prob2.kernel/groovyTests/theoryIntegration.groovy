@@ -1,6 +1,6 @@
 import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
-import de.prob.model.eventb.translate.ModelToXML
+import de.prob.model.eventb.theory.Theory
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
@@ -11,6 +11,8 @@ t = t.$add("p = 5")
 assert t.evalCurrent("s(1)").value == "5"
 t = t.$add("p = 9")
 assert t.evalCurrent("s(2)").value == "9"
+m = s.getModel()
+assert !m.getChildrenOfType(Theory.class).Seq.getTypeEnvironment().isEmpty()
 
 final workspace = dir + File.separator + "TheoryExamples"
 m = new ModelModifier().make {
