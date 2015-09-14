@@ -61,14 +61,14 @@ public class ModelModifier extends AbstractModifier {
 			extended = ctx
 		}
 
-		def cm = new ContextModifier(c)
+		def cm = new ContextModifier(c, typeEnvironment)
 		if (extended) {
 			cm = cm.setExtends(extended)
 		}
 		cm = cm.make(definition)
 		model = oldcontext ? model.replaceIn(Context.class, oldcontext, cm.getContext()) :
 				model.addContext(cm.getContext())
-		new ModelModifier(model)
+		new ModelModifier(model, typeEnvironment)
 	}
 
 	def ModelModifier machine(HashMap properties, Closure definition) {
@@ -112,7 +112,7 @@ public class ModelModifier extends AbstractModifier {
 		mm = mm.setSees(seenContexts).make(definition)
 		model = oldmachine ? model.replaceIn(Machine.class, oldmachine, mm.getMachine()) :
 				model.addMachine(mm.getMachine())
-		new ModelModifier(model)
+		new ModelModifier(model, typeEnvironment)
 	}
 
 	def ModelModifier refine(String machineName, String refinementName) {
@@ -150,6 +150,7 @@ public class ModelModifier extends AbstractModifier {
 		Map<String, Theory> theoryMap = [:]
 		ModelElementList<Theory> theories = new ModelElementList<Theory>()
 		HashSet<IFormulaExtension> types = new HashSet<IFormulaExtension>()
+		types.addAll(typeEnvironment)
 		validate('theories', properties["theories"]).each { String name ->
 			def workspace = validate('workspace', properties["workspace"])
 			def project = validate('project', properties["project"])

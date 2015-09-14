@@ -97,7 +97,7 @@ public class ModelElementList<E> implements List<E> {
 		if(e.metaClass.respondsTo(e, "getName")) {
 			newkeys = newkeys.assoc(e.getName(),e)
 		}
-		if(e.metaClass.respondsTo(e, "getFormula")) {
+		if(e.metaClass.respondsTo(e, "getFormula") && e.getFormula()) {
 			newkeys = newkeys.assoc("_" + e.getFormula().getFormulaId().uuid,e)
 		}
 		newkeys

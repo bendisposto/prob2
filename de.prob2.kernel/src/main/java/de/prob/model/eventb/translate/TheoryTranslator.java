@@ -3,17 +3,18 @@ package de.prob.model.eventb.translate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.FreeIdentifier;
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.theory.AxiomaticDefinitionBlock;
 import de.prob.model.eventb.theory.DataType;
-import de.prob.model.eventb.theory.DataTypeConstructor;
-import de.prob.model.eventb.theory.DataTypeDestructor;
 import de.prob.model.eventb.theory.DirectDefinition;
 import de.prob.model.eventb.theory.IOperatorDefinition;
 import de.prob.model.eventb.theory.Operator;
@@ -25,10 +26,12 @@ import de.prob.model.eventb.theory.Type;
 import de.prob.model.representation.ModelElementList;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.tmparser.OperatorMapping;
+import de.prob.util.Tuple2;
 
 public class TheoryTranslator {
 
 	private final List<Theory> theories;
+	Set<IFormulaExtension> typeEnv;
 
 	public TheoryTranslator(final ModelElementList<Theory> theories) {
 		this.theories = new ArrayList<Theory>();
@@ -47,6 +50,7 @@ public class TheoryTranslator {
 
 	public void toProlog(final IPrologTermOutput pto) {
 		for (Theory theory : theories) {
+			typeEnv = theory.getTypeEnvironment();
 			pto.openTerm("theory");
 			printTheoryName(theory, pto);
 			printListOfImportedTheories(theory.getImported(), pto);
@@ -100,30 +104,32 @@ public class TheoryTranslator {
 		pto.openTerm("datatype");
 		pto.printAtom(dataType.toString());
 		pto.openList();
-		for (Type arg : dataType.getTypeArguments()) {
+		for (String arg : dataType.getTypeArguments()) {
 			printType(arg, pto);
 		}
 		pto.closeList();
 		pto.openList();
-		for (DataTypeConstructor cons : dataType.getDataTypeConstructors()) {
-			printConstructor(cons, pto);
+		for (Entry<String, List<Tuple2<String, String>>> cons : dataType
+				.getConstructors().entrySet()) {
+			printConstructor(cons.getKey(), cons.getValue(), pto);
 		}
 		pto.closeList();
 		pto.closeTerm();
 	}
 
-	private void printType(final Type type, final IPrologTermOutput pto) {
-		printEventBElement(type.getIdentifier(), pto);
+	private void printType(final String type, final IPrologTermOutput pto) {
+		printEventBElement(new EventB(type, typeEnv), pto);
 	}
 
-	private void printConstructor(final DataTypeConstructor cons,
+	private void printConstructor(String name,
+			List<Tuple2<String, String>> destructors,
 			final IPrologTermOutput pto) {
 		pto.openTerm("constructor");
-		pto.printAtom(cons.toString());
+		pto.printAtom(name);
 		pto.openList();
-		for (DataTypeDestructor arg : cons.getDestructors()) {
-			printTypedIdentifier("destructor", arg.getUnicodeIdentifier(),
-					arg.getType(), pto);
+		for (Tuple2<String, String> arg : destructors) {
+			printTypedIdentifier("destructor", arg.getFirst(),
+					new EventB(arg.getSecond(), typeEnv), pto);
 		}
 		pto.closeList();
 		pto.closeTerm();

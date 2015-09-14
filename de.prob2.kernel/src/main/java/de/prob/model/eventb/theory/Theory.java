@@ -1,6 +1,10 @@
 package de.prob.model.eventb.theory;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
 import com.google.common.base.Objects;
@@ -15,22 +19,36 @@ public class Theory extends AbstractElement {
 	private final String name;
 	private final String parentDirectory;
 	private final Collection<OperatorMapping> proBMappings;
+	private Set<IFormulaExtension> typeEnvironment;
 
 	public Theory(final String name, final String parentDirectory,
 			final Collection<OperatorMapping> mappings) {
-		this(name, parentDirectory, mappings, PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap());
+		this(
+				name,
+				parentDirectory,
+				mappings,
+				Collections.<IFormulaExtension> emptySet(),
+				PersistentHashMap
+						.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
 	}
 
-	private Theory(final String name, final String parentDirectory, final Collection<OperatorMapping> proBMappings,
+	private Theory(
+			final String name,
+			final String parentDirectory,
+			final Collection<OperatorMapping> proBMappings,
+			Set<IFormulaExtension> typeEnvironment,
 			PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
 		super(children);
 		this.name = name;
 		this.parentDirectory = parentDirectory;
 		this.proBMappings = proBMappings;
+		this.typeEnvironment = typeEnvironment;
 	}
 
-	public Theory set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
-		return new Theory(name, parentDirectory, proBMappings, assoc(clazz, elements));
+	public Theory set(Class<? extends AbstractElement> clazz,
+			ModelElementList<? extends AbstractElement> elements) {
+		return new Theory(name, parentDirectory, proBMappings, typeEnvironment,
+				assoc(clazz, elements));
 	}
 
 	public ModelElementList<DataType> getDataTypes() {
@@ -97,5 +115,14 @@ public class Theory extends AbstractElement {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(parentDirectory, name);
+	}
+
+	public Theory setTypeEnvironment(Set<IFormulaExtension> typeEnvironment) {
+		return new Theory(name, parentDirectory, proBMappings, typeEnvironment,
+				children);
+	}
+
+	public Set<IFormulaExtension> getTypeEnvironment() {
+		return typeEnvironment;
 	}
 }

@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,6 @@ import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.theory.AxiomaticDefinitionBlock;
 import de.prob.model.eventb.theory.DataType;
-import de.prob.model.eventb.theory.DataTypeConstructor;
-import de.prob.model.eventb.theory.DataTypeDestructor;
 import de.prob.model.eventb.theory.DirectDefinition;
 import de.prob.model.eventb.theory.IOperatorDefinition;
 import de.prob.model.eventb.theory.InferenceRule;
@@ -45,6 +44,7 @@ import de.prob.model.representation.ModelElementList;
 import de.prob.tmparser.OperatorMapping;
 import de.prob.tmparser.TheoryMappingException;
 import de.prob.tmparser.TheoryMappingParser;
+import de.prob.util.Tuple2;
 
 public class TheoryExtractor extends DefaultHandler {
 
@@ -60,14 +60,13 @@ public class TheoryExtractor extends DefaultHandler {
 	private ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
 
 	// For adding DataType
-	private DataType dataType;
-	private ModelElementList<DataTypeConstructor> constructors;
+	private String dataTypeName;
+	private String currentConstructor;
+	private Map<String, List<Tuple2<String, String>>> constructors;
+	private List<String> types;
+
 	private ModelElementList<Type> typeArguments; // Also used for axiomatic
 	// definition blocks
-
-	// For adding DataType constructors
-	private DataTypeConstructor constructor;
-	private ModelElementList<DataTypeDestructor> destructors;
 
 	// For adding Operator
 	private Operator operator;
@@ -127,11 +126,8 @@ public class TheoryExtractor extends DefaultHandler {
 					+ name
 					+ ". This means that ProB has no information on how to interpret this theory.");
 		} catch (TheoryMappingException e) {
-
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		theory = new Theory(name, project, mappings);
@@ -153,6 +149,8 @@ public class TheoryExtractor extends DefaultHandler {
 			addUsedTheory(attributes);
 		} else if (qName.equals("org.eventb.theory.core.scDatatypeDefinition")) {
 			beginAddingDataType(attributes);
+		} else if (qName.equals("org.eventb.theory.core.scTypeArgument")) {
+			addTypeArgument(attributes);
 		} else if (qName.equals("org.eventb.theory.core.scDatatypeConstructor")) {
 			beginAddingDataTypeConstructor(attributes);
 		} else if (qName.equals("org.eventb.theory.core.scConstructorArgument")) {
@@ -351,22 +349,23 @@ public class TheoryExtractor extends DefaultHandler {
 		String name = attributes.getValue("name");
 		String type = attributes.getValue("org.eventb.core.type");
 
-		destructors = destructors
-				.addElement(new DataTypeDestructor(name, type));
+		constructors.get(currentConstructor).add(
+				new Tuple2<String, String>(name, type));
 	}
 
 	private void beginAddingDataTypeConstructor(final Attributes attributes) {
 		String name = attributes.getValue("name");
-		constructor = new DataTypeConstructor(name);
 
-		destructors = new ModelElementList<DataTypeDestructor>();
+		currentConstructor = name;
+		constructors.put(currentConstructor,
+				new ArrayList<Tuple2<String, String>>());
 	}
 
 	private void beginAddingDataType(final Attributes attributes) {
 		String name = attributes.getValue("name");
-		dataType = new DataType(name);
-		constructors = new ModelElementList<DataTypeConstructor>();
-		typeArguments = new ModelElementList<Type>();
+		dataTypeName = name;
+		constructors = new HashMap<String, List<Tuple2<String, String>>>();
+		types = new ArrayList<String>();
 
 	}
 
@@ -403,13 +402,16 @@ public class TheoryExtractor extends DefaultHandler {
 		typeParameters = typeParameters.addElement(p);
 	}
 
+	private void addTypeArgument(final Attributes attributes) {
+		String name = attributes.getValue("name");
+		types.add(name);
+	}
+
 	@Override
 	public void endElement(final String uri, final String localName,
 			final String qName) throws SAXException {
 		if (qName.equals("org.eventb.theory.core.scDatatypeDefinition")) {
 			finishDataType();
-		} else if (qName.equals("org.eventb.theory.core.scDatatypeConstructor")) {
-			finishDataTypeConstructor();
 		} else if (qName
 				.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
 			finishOperator();
@@ -485,20 +487,13 @@ public class TheoryExtractor extends DefaultHandler {
 		}
 	}
 
-	public void finishDataTypeConstructor() {
-		constructor = constructor.addDestructors(destructors);
-		constructors = constructors.addElement(constructor);
-	}
-
 	private void finishDataType() {
-		dataType = dataType.set(DataTypeConstructor.class, constructors);
-		dataType = dataType.set(Type.class, typeArguments);
+		DataType dataType = new DataType(dataTypeName, constructors, types);
+
 		Set<IFormulaExtension> newExts = dataType
 				.getFormulaExtensions(FormulaFactory.getInstance(typeEnv));
-
 		dataTypes = dataTypes.addElement(dataType);
 		typeEnv.addAll(newExts);
-		dataType.parseElements(typeEnv);
 	}
 
 	@Override
@@ -514,6 +509,7 @@ public class TheoryExtractor extends DefaultHandler {
 
 		theoryMap.put(project + File.separator + name, theory);
 		theories = theories.addElement(theory);
+		theory = theory.setTypeEnvironment(typeEnv);
 	}
 
 	public ModelElementList<Theory> getTheories() {

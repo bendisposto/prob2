@@ -1,48 +1,38 @@
 package de.prob.model.eventb.theory;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.GivenType;
+import org.eventb.core.ast.IParseResult;
+import org.eventb.core.ast.datatype.IConstructorBuilder;
 import org.eventb.core.ast.datatype.IDatatype;
 import org.eventb.core.ast.datatype.IDatatypeBuilder;
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-import com.github.krukow.clj_lang.PersistentHashMap;
-
-import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.ModelElementList;
+import de.prob.util.Tuple2;
 
 public class DataType extends AbstractElement {
 
 	final String identifierString;
-	private final EventB identifier;
+	private final Map<String, List<Tuple2<String, String>>> constructors;
+	private final List<String> typeArguments;
 
-	public DataType(final String identifier) {
+	public DataType(final String identifier,
+			Map<String, List<Tuple2<String, String>>> constructors,
+			List<String> types) {
 		identifierString = identifier;
-		this.identifier = new EventB(identifier);
+		this.constructors = constructors;
+		this.typeArguments = types;
 	}
 
-	private DataType(final String identifier, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
-		super(children);
-		identifierString = identifier;
-		this.identifier = new EventB(identifier);
-	}
-
-	public DataType set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
-		return new DataType(identifierString, assoc(clazz, elements));
-	}
-
-	public EventB getTypeIdentifier() {
-		return identifier;
-	}
-
-	public ModelElementList<DataTypeConstructor> getDataTypeConstructors() {
-		return getChildrenOfType(DataTypeConstructor.class);
-	}
-
-	public ModelElementList<Type> getTypeArguments() {
-		return getChildrenOfType(Type.class);
+	public String getTypeIdentifier() {
+		return identifierString;
 	}
 
 	@Override
@@ -66,20 +56,38 @@ public class DataType extends AbstractElement {
 		return identifierString.hashCode();
 	}
 
-	public void parseElements(final Set<IFormulaExtension> typeEnv) {
-		for (DataTypeConstructor cons : getDataTypeConstructors()) {
-			cons.parseElements(typeEnv);
-		}
+	public Map<String, List<Tuple2<String, String>>> getConstructors() {
+		return constructors;
 	}
 
 	public Set<IFormulaExtension> getFormulaExtensions(final FormulaFactory ff) {
-		IDatatypeBuilder builder = ff.makeDatatypeBuilder(identifierString);
-		for (DataTypeConstructor c : getDataTypeConstructors()) {
-			builder.addConstructor(c.getUnicode());
+		List<GivenType> types = new ArrayList<GivenType>();
+		for (String type : typeArguments) {
+			IParseResult parseType = ff.parseType(type);
+			if (parseType.getParsedType() instanceof GivenType) {
+				types.add((GivenType) parseType.getParsedType());
+			}
+		}
+		assert types.size() == typeArguments.size();
+		IDatatypeBuilder builder = ff.makeDatatypeBuilder(identifierString,
+				types.toArray(new GivenType[typeArguments.size()]));
+		for (Entry<String, List<Tuple2<String, String>>> entry : constructors
+				.entrySet()) {
+			IConstructorBuilder consBuilder = builder.addConstructor(entry
+					.getKey());
+			for (Tuple2<String, String> destructor : entry.getValue()) {
+				IParseResult parseType = ff.parseType(destructor.getSecond());
+				consBuilder.addArgument(destructor.getFirst(),
+						parseType.getParsedType());
+			}
 		}
 
 		IDatatype datatype = builder.finalizeDatatype();
-		return datatype.getExtensions();
+		Set<IFormulaExtension> extensions = datatype.getExtensions();
+		return extensions;
+	}
 
+	public List<String> getTypeArguments() {
+		return typeArguments;
 	}
 }
