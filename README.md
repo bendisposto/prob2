@@ -27,6 +27,6 @@ We assume, you have a fresh copy of Eclipse and an empty workspace at hand. We u
 2. Clone the prob2 repository to some location (e.g. gitrepo/prob2). 
    We assume that gitrepo is a directory outside your Eclipse workspace. 
 3. cd into gitrepo/prob2/de.prob2.kernel, switch to the development branch (git checkout develop) and run `gradle eclipse` 
-4. In Eclipse, import  gitrepo/prob2/de.prob2.kernel  
+4. In Eclipse, import project from gitrepo/prob2/de.prob2.kernel  
 
 (c) 2012-2014 Jens Bendisposto et.al. , all rights reserved
