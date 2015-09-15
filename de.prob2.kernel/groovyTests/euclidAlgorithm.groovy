@@ -161,8 +161,8 @@ assert t.evalCurrent("v|->m|->n : IsGCD").value == "TRUE"
 t = t.evt5()
 assert t.evalCurrent("u").value == "0" && t.evalCurrent("v").value == "10"
 */
-mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "Euclid", "/tmp")
+//mtx = new ModelToXML()
+//d = mtx.writeToRodin(m, "Euclid", "/tmp")
 //d.deleteDir()
 
 "generate and animate a model"
