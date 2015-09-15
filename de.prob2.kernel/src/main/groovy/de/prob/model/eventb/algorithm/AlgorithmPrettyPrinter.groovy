@@ -29,6 +29,10 @@ class AlgorithmPrettyPrinter {
 
 	def printStatement(While statement, StringBuilder sb, String indent) {
 		writeLine(sb,indent,statement.toString())
+		if (statement.variant) {
+			def newindent = indent == null ? "" : "  ${indent}"
+			writeLine(sb,newindent,"variant: "+toUnicode(statement.variant))
+		}
 		printBlock(statement.block, sb, indent)
 	}
 

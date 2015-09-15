@@ -13,8 +13,6 @@ import de.prob.util.StringUtil
 
 public class EvalResult extends AbstractEvalResult {
 
-
-
 	public final static EvalResult TRUE = new EvalResult("TRUE", Collections.emptyMap())
 	public final static EvalResult FALSE = new EvalResult("FALSE", Collections.emptyMap())
 	final static HashMap<String, EvalResult> formulaCache = [:]

@@ -11,6 +11,8 @@ import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Variable
 
+
+
 /**
  * The {@link MachineModifier} provides an API to programmatically modify or
  * construct {@link EventBMachine}s. Basic elements can be added to the machine
@@ -219,9 +221,9 @@ public class MachineModifier extends AbstractModifier {
 		newMM(mm.getMachine().removeFrom(Variant.class, variant))
 	}
 
-	def MachineModifier initialisation(LinkedHashMap properties) {
+	def MachineModifier initialisation(LinkedHashMap properties, Closure cls={}) {
 		if (properties["extended"] == true) {
-			return initialisation({},true)
+			return initialisation(cls,true)
 		}
 		this
 	}

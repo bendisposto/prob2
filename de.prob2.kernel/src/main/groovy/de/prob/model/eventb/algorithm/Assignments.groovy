@@ -1,7 +1,5 @@
 package de.prob.model.eventb.algorithm
 
-import static de.prob.unicode.UnicodeTranslator.toUnicode
-
 class Assignments extends Statement {
 	List<String> assignments
 
@@ -11,5 +9,18 @@ class Assignments extends Statement {
 
 	def String toString() {
 		toUnicode(assignments.iterator().join(" || "))
+	}
+
+	@Override
+	public boolean equals(Object that) {
+		if (that instanceof Assignments) {
+			return this.assignments.equals(that.getAssignments())
+		}
+		return false
+	}
+
+	@Override
+	public int hashCode() {
+		return this.assignments.hashCode()
 	}
 }
