@@ -28,11 +28,11 @@ mm = new ModelModifier().make {
 		constants "Divides", "GCD"
 		
 		axioms "Divides = {i|->j | #k.k:0..j & j = i*k}",
-		       "GCD = {x↦y↦res ∣ res↦x ∈ Divides ∧ res↦y ∈ Divides ∧ (∀r· r ∈ (0‥x ∪ 0‥y) ⇒ (r↦x ∈ Divides ∧ r↦y ∈ Divides ⇒ r↦res ∈ Divides) ) }",
-			   "∀x,y·x↦x↦y ∈ GCD ⇒ x = y",
-			   "∀v·GCD[{v↦v}] = {v}",
-			   "∀x,y·y−x>0 ⇒ GCD[{x↦y}] = GCD[{x↦y−x}]",
-			   "∀x,y·GCD[{x↦y}] = GCD[{y↦x}]"
+		       "GCD = {x|->y|->res | res|->x : Divides & res|->y : Divides & (!r. r : (0..x \\/ 0..y) => (r|->x : Divides & r|->y : Divides => r|->res : Divides) ) }",
+			   "!x,y.x|->x|->y : GCD => x = y",
+			   "!v.GCD[{v|->v}] = {v}",
+			   "!x,y.y-x>0 => GCD[{x|->y}] = GCD[{x|->y-x}]",
+			   "!x,y.GCD[{x|->y}] = GCD[{y|->x}]"
 	}
 	
 	context(name: "limits") {
@@ -47,7 +47,7 @@ mm = new ModelModifier().make {
 	machine(name: "euclid", sees: ["definitions", "limits"]) {
 		var_block name: "u", invariant: "u : 0..k", init: "u := m"
 		var_block name: "v", invariant: "v : 0..k", init: "v := n"
-		invariant "GCD[{m↦n}] = GCD[{u↦v}]"
+		invariant "GCD[{m|->n}] = GCD[{u|->v}]"
 		
 		algorithm {
 			While("u /= v") {
@@ -56,7 +56,7 @@ mm = new ModelModifier().make {
 					Else("u := u - v")
 				}
 			}
-			Assert("m↦n↦v ∈ GCD")//"TRUE = TRUE")
+			Assert("m|->n|->v : GCD")//"TRUE = TRUE")
 		}
 	}
 }
