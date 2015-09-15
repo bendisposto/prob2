@@ -3,6 +3,7 @@ package de.prob.model.eventb
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EvalElementType
+import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.Action
 import de.prob.model.representation.ElementComment
@@ -78,6 +79,11 @@ public class EventModifier extends AbstractModifier {
 		guard("grd$ctr", pred, theorem)
 	}
 
+	def EventModifier guard(EventB predicate, boolean theorem=false) throws ModelGenerationException {
+		def ctr = grdctr + 1
+		guard("grd$ctr", predicate, theorem)
+	}
+
 	def EventModifier guard(LinkedHashMap properties, boolean theorem=false) throws ModelGenerationException {
 		Definition prop = getDefinition(properties)
 		return guard(prop.label, prop.formula, theorem)
@@ -88,6 +94,14 @@ public class EventModifier extends AbstractModifier {
 			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
 		}
 		def guard = new EventBGuard(validate('name',name), parsePredicate(pred), theorem, comment)
+		newEM(event.addTo(Guard.class, guard))
+	}
+
+	def EventModifier guard(String name, EventB pred, boolean theorem=false, String comment="") throws ModelGenerationException {
+		if (initialisation) {
+			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
+		}
+		def guard = new EventBGuard(validate('name',name), ensureType(pred, EvalElementType.PREDICATE), theorem, comment)
 		newEM(event.addTo(Guard.class, guard))
 	}
 
@@ -139,8 +153,18 @@ public class EventModifier extends AbstractModifier {
 		action("act$ctr", actionString)
 	}
 
+	def EventModifier action(EventB act) throws ModelGenerationException {
+		int ctr = actctr + 1
+		action("act$ctr", act)
+	}
+
 	def EventModifier action(String name, String action, String comment="") throws ModelGenerationException {
 		def a = new EventBAction(validate('name',name), parseFormula(action, EvalElementType.ASSIGNMENT), comment)
+		newEM(event.addTo(Action.class, a))
+	}
+
+	def EventModifier action(String name, EventB action, String comment="") throws ModelGenerationException {
+		def a = new EventBAction(validate('name',name), ensureType(action, EvalElementType.ASSIGNMENT), comment)
 		newEM(event.addTo(Action.class, a))
 	}
 

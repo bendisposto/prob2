@@ -7,10 +7,11 @@ import de.be4.classicalb.core.parser.node.AIdentifierExpression
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.representation.AbstractElement
 
 
 
-class AbstractModifier {
+class AbstractModifier extends AbstractElement {
 
 	public final Set<IFormulaExtension> typeEnvironment
 
@@ -103,14 +104,18 @@ class AbstractModifier {
 		}
 		try {
 			EventB f = new EventB(formula, typeEnvironment)
-			String kind = f.getKind()
-			if (!kind.equals(expected.toString())) {
-				throw new FormulaTypeException(f, expected.name())
-			}
+			ensureType(f, expected)
 			return f
 		} catch(EvaluationException e) {
 			throw new FormulaParseException(formula)
 		}
+	}
+
+	def EventB ensureType(EventB formula, EvalElementType expected) {
+		if (!formula.getKind().equals(expected.toString())) {
+			throw new FormulaTypeException(formula, expected.name())
+		}
+		return formula
 	}
 
 	def validateAll(Object... es) {

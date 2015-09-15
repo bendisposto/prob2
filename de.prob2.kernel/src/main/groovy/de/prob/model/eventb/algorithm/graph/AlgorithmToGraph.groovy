@@ -1,5 +1,6 @@
 package de.prob.model.eventb.algorithm.graph
 
+import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
@@ -27,7 +28,7 @@ class AlgorithmToGraph {
 		INode body = extractGraph(whileStmt.block.statements.iterator())
 		INode restOfGraph = extractGraph(rest)
 		List<BranchCondition> branches = combineBranches(body, whileStmt, whileStmt.condition)
-		List<BranchCondition> branches2 = combineBranches(restOfGraph, whileStmt, "not(${whileStmt.condition})")
+		List<BranchCondition> branches2 = combineBranches(restOfGraph, whileStmt, whileStmt.notCondition)
 		List<BranchCondition> combinedBranches = []
 		combinedBranches.addAll(branches)
 		combinedBranches.addAll(branches2)
@@ -59,7 +60,7 @@ class AlgorithmToGraph {
 		INode yesNode = extractGraph(ifStmt.Then.statements.iterator())
 		List<BranchCondition> branches = combineBranches(yesNode, ifStmt, ifStmt.condition)
 		INode noNode = extractGraph(ifStmt.Else.statements.iterator())
-		branches.addAll(combineBranches(noNode, ifStmt, "not(${ifStmt.condition})"))
+		branches.addAll(combineBranches(noNode, ifStmt, ifStmt.elseCondition))
 
 		INode restOfGraph = extractGraph(rest)
 		branches.each { BranchCondition cond ->
@@ -75,12 +76,12 @@ class AlgorithmToGraph {
 		return new Branch(branches)
 	}
 
-	def List<BranchCondition> combineBranches(INode node, Statement statement, String condition) {
+	def List<BranchCondition> combineBranches(INode node, Statement statement, EventB condition) {
 		List<BranchCondition> branches = []
 		if (node instanceof Branch) {
 			node.branches.each { BranchCondition cond ->
 				List<Statement> statements = [statement]
-				List<String> conditions = [condition]
+				List<EventB> conditions = [condition]
 				conditions.addAll(cond.getConditions())
 				statements.addAll(cond.getStatements())
 				branches.add(new BranchCondition(conditions, statements, cond.getOutNode()))

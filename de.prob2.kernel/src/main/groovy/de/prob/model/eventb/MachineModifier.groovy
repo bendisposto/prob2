@@ -319,7 +319,7 @@ public class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier algorithm(Closure definition) throws ModelGenerationException {
-		newMM(machine.addTo(Block.class, new Block().make(definition)))
+		newMM(machine.addTo(Block.class, new Block([],typeEnvironment).make(definition)))
 	}
 
 	def MachineModifier algorithm(Block algorithm) {

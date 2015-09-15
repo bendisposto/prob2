@@ -1,28 +1,42 @@
 package de.prob.model.eventb.algorithm
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
+import de.prob.animator.domainobjects.EventB
 import de.prob.model.representation.IllegalModificationException
 
-class If extends Statement {
-	def final String condition
+public class If extends Statement {
+	def final EventB condition
+	def final EventB elseCondition
 	def final Block Then
 	def final Block Else
 
-	def If(String condition) {
-		this.condition = condition
+	def If(String condition, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+		super(typeEnvironment)
+		this.condition = parsePredicate(condition)
+		this.elseCondition = parsePredicate("not($condition)")
+		this.Then = null
+		this.Else = null
 	}
 
-	def If(String condition, Block Then, Block Else) {
+	private If(EventB condition, EventB elseCondition, Block Then, Block Else, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+		super(typeEnvironment)
 		this.condition = condition
+		this.elseCondition = elseCondition
 		this.Then = Then
 		this.Else = Else
+	}
+
+	def If newIf(Block Then, Block Else) {
+		return new If(condition, elseCondition, Then, Else, typeEnvironment)
 	}
 
 	def If Then(String... assignments) {
 		if(Then != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		new If(condition, new Block([
-			new Assignments(assignments as List)
+		newIf(newBlock([
+			new Assignments(assignments as List, typeEnvironment)
 		]), Else)
 	}
 
@@ -30,15 +44,15 @@ class If extends Statement {
 		if(Then != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		new If(condition, new Block().make(definition), Else)
+		newIf(newBlock().make(definition), Else)
 	}
 
 	def If Else(String... assignments) {
 		if(Else != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		new If(condition, Then, new Block([
-			new Assignments(assignments as List)
+		newIf(Then, newBlock([
+			new Assignments(assignments as List, typeEnvironment)
 		]))
 	}
 
@@ -46,25 +60,28 @@ class If extends Statement {
 		if(Else != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		new If(condition, Then, new Block().make(definition))
+		newIf(Then, newBlock().make(definition))
+	}
+
+	def If finish() {
+		// makes sure that Then and Else blocks are not null!
+		newIf(Then ?: newBlock(), Else ?: newBlock())
 	}
 
 	def If make(Closure definition) {
-		If i = runClosure(definition)
-		i = i.Then ? i : new If(i.condition, new Block(), i.Else)
-		i.Else ? i : new If(i.condition, i.Then, new Block())
+		runClosure(definition).finish()
 	}
 
 	def String toString() {
-		"if (${toUnicode(condition)}):"
+		"if (${condition.toUnicode()}):"
 	}
 
 	@Override
 	public boolean equals(Object that) {
 		if (that instanceof If) {
-			return this.condition.equals(that.getCondition()) &&
-			this.Then.equals(that.getThen()) &&
-			this.Else.equals(that.getElse())
+			return this.condition.getCode().equals(that.getCondition().getCode()) &&
+					this.Then.equals(that.getThen()) &&
+					this.Else.equals(that.getElse())
 		}
 		return false
 	}

@@ -902,7 +902,7 @@ class MachineModifierTest extends Specification {
 		modifier.algorithm(null)
 
 		then:
-		thrown GroovyRuntimeException
+		thrown IllegalArgumentException
 	}
 
 	def "set sees cannot be null"() {

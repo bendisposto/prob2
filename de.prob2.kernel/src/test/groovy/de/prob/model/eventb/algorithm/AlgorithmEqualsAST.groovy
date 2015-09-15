@@ -13,4 +13,9 @@ class AlgorithmEqualsAST extends Specification {
 		expect:
 		new Assertion("x = 1") == new Assertion("x = 1")
 	}
+
+	def "while equals"() {
+		expect:
+		new While("x < 1", null, new Block()) == new While("x < 1", null, new Block())
+	}
 }

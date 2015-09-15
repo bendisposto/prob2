@@ -20,7 +20,10 @@ public class GraphConstructionTest extends Specification {
 	def conditions(AlgorithmGraph graph, int index) {
 		EventInfo n = graph.nodes[index]
 		n.conditions.collectEntries { pc, b ->
-			[pc, b.conditions]
+			[
+				pc,
+				b.conditions.collect { it.getCode() }
+			]
 		}
 	}
 
@@ -28,7 +31,7 @@ public class GraphConstructionTest extends Specification {
 		EventInfo n = graph.nodes[index]
 		def acts = []
 		n.actions.each { Assignments a ->
-			a.assignments.each { acts.add(it) }
+			a.assignments.each { acts << it.getCode()}
 		}
 		acts
 	}
@@ -37,7 +40,7 @@ public class GraphConstructionTest extends Specification {
 		graph.assertions.collectEntries { pc, b ->
 			[
 				pc,
-				b.collect { it.assertion}
+				b.collect { it.assertion.getCode() }
 			]
 		}
 	}
@@ -339,7 +342,7 @@ public class GraphConstructionTest extends Specification {
 
 	def "russische bauernmultiplikation"(){
 		when:
-		def DEBUG = true
+		def DEBUG = false
 		def graph = graph({
 			While("l /= 1") {
 				Assign("l := l / 2", "r := r * 2")

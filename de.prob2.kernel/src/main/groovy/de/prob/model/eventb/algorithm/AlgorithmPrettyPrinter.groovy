@@ -31,7 +31,7 @@ class AlgorithmPrettyPrinter {
 		writeLine(sb,indent,statement.toString())
 		if (statement.variant) {
 			def newindent = indent == null ? "" : "  ${indent}"
-			writeLine(sb,newindent,"variant: "+toUnicode(statement.variant))
+			writeLine(sb,newindent,"variant: "+statement.variant.toUnicode())
 		}
 		printBlock(statement.block, sb, indent)
 	}
@@ -58,5 +58,4 @@ class AlgorithmPrettyPrinter {
 		sb.append(line)
 		sb.append("\n")
 	}
-
 }

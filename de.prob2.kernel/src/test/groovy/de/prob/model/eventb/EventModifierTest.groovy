@@ -73,6 +73,24 @@ class EventModifierTest extends Specification {
 		modifier.getEvent().guards[0].getPredicate().toUnicode() == new EventB("x : NAT").toUnicode()
 	}
 
+	def "it is possible to add a guard from EventB"() {
+		when:
+		def grd = new EventB("x : NAT")
+		def modifier = modifier.guard(grd)
+
+		then:
+		modifier.getEvent().guards[0].getPredicate() == grd
+	}
+
+	def "it is possible to add a labelled guard from EventB"() {
+		when:
+		def grd = new EventB("x : NAT")
+		def modifier = modifier.guard("mygrd", grd)
+
+		then:
+		modifier.getEvent().guards.mygrd.getPredicate() == grd
+	}
+
 	def "it is possible to add a commented guard"() {
 		when:
 		def mycomment = "this is a comment"
@@ -91,12 +109,38 @@ class EventModifierTest extends Specification {
 		thrown IllegalArgumentException
 	}
 
+	def "it is not possible to add an EventB guard to initialisation"() {
+		when:
+		def em = new EventModifier(new Event("myEvent", EventType.ORDINARY, false), true)
+		em.guard("grd", new EventB("x < 4"))
+
+		then:
+		thrown IllegalArgumentException
+	}
+
 	def "guard name cannot be null"() {
 		when:
 		modifier.guard(null, "x > 4")
 
 		then:
 		thrown IllegalArgumentException
+	}
+
+	def "EventB guard name cannot be null"() {
+		when:
+		modifier.guard(null, new EventB("x > 4"))
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "EventB guard must still be of type predicate"() {
+		when:
+		modifier.guard(new EventB("1+1"))
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "PREDICATE"
 	}
 
 	def "guard predicate cannot be null"() {
@@ -361,6 +405,33 @@ class EventModifierTest extends Specification {
 
 		then:
 		modifier.getEvent().actions[0].getCode().toUnicode() == new EventB("x := 3").toUnicode()
+	}
+
+	def "it is possible to add an EventB action"() {
+		when:
+		def act = new EventB("x := 3")
+		def modifier = modifier.action(act)
+
+		then:
+		modifier.getEvent().actions[0].getCode() == act
+	}
+
+	def "it is possible to add a labelled EventB action"() {
+		when:
+		def act = new EventB("x := 3")
+		def modifier = modifier.action("myact", act)
+
+		then:
+		modifier.getEvent().actions.myact.getCode() == act
+	}
+
+	def "EventB action must still be of type assignment"() {
+		when:
+		modifier.action(new EventB("1+1"))
+
+		then:
+		FormulaTypeException e = thrown()
+		e.getExpected() == "ASSIGNMENT"
 	}
 
 	def "it is possible to add a commented action"() {

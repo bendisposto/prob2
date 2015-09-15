@@ -1,5 +1,6 @@
 package de.prob.model.eventb.algorithm
 
+import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
@@ -41,7 +42,7 @@ class AlgorithmTranslator {
 		AlgorithmGraph g = new AlgorithmGraph(new AlgorithmToGraph(b).getNode())
 		g.assertions.each { pc, List<Assertion> assertion ->
 			assertion.each { a ->
-				machineM = machineM.invariant("pc = $pc => ${a.assertion}")
+				machineM = machineM.invariant("pc = $pc => ${a.assertion.getCode()}")
 			}
 		}
 		g.nodes.each { EventInfo ev ->
@@ -52,7 +53,7 @@ class AlgorithmTranslator {
 					guard("grd${ctr++}","pc = $pc")
 					cond.condAndStmts().each { guard("grd${ctr++}", it.getFirst(), false, it.getSecond().toString()) }
 					ev.actions.each { Assignments a ->
-						a.assignments.each { String assign ->
+						a.assignments.each { EventB assign ->
 							action(assign)
 						}
 					}

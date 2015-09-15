@@ -1,21 +1,26 @@
 package de.prob.model.eventb.algorithm
 
-class Assertion extends Statement {
-	def String assertion
+import org.eventb.core.ast.extension.IFormulaExtension
 
-	def Assertion(String assertion) {
-		this.assertion = assertion
+import de.prob.animator.domainobjects.EventB
+
+class Assertion extends Statement {
+	def EventB assertion
+
+	def Assertion(String assertion, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+		super(typeEnvironment)
+		this.assertion = parsePredicate(assertion)
 	}
 
 	def String toString() {
-		"assert ${toUnicode(assertion)}"
+		"assert ${assertion.toUnicode()}"
 	}
 
 	@Override
 	public boolean equals(Object that) {
 		if (that instanceof Assertion) {
 			if (assertion != null) {
-				return this.assertion.equals(that.getAssertion())
+				return this.assertion.getCode().equals(that.getAssertion().getCode())
 			} else {
 				if (that.getAssertion() == null) {
 					return true

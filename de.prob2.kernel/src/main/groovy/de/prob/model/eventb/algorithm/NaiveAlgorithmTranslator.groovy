@@ -29,9 +29,7 @@ class NaiveAlgorithmTranslator {
 			machineM = machineM.addComment(new AlgorithmPrettyPrinter(b).prettyPrint())
 			nextpc = translate(nextpc, b)
 		}
-		machineM = machineM.event(name: "evt$nextpc") {
-			guard("pc = $nextpc")
-		}
+		machineM = machineM.event(name: "evt$nextpc") { guard("pc = $nextpc") }
 		machineM.getMachine()
 	}
 
@@ -82,7 +80,7 @@ class NaiveAlgorithmTranslator {
 		}
 		if (statement.variant) {
 			def machine = machineM.getMachine()
-			def loopInfo = new LoopInformation(new Variant(statement.variant, Collections.emptySet()), machine.events.getElement(enter_while_name), machine.events.getElement(loop_name), pc, npc)
+			def loopInfo = new LoopInformation(new Variant(statement.variant, null), machine.events.getElement(enter_while_name), machine.events.getElement(loop_name), pc, npc)
 			machineM = new MachineModifier(machine.addTo(LoopInformation.class, loopInfo))
 		}
 
