@@ -1,6 +1,6 @@
 import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
-import de.prob.model.eventb.algorithm.AlgorithmTranslator2
+import de.prob.model.eventb.algorithm.AlgorithmTranslator
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
@@ -34,10 +34,10 @@ mm = new ModelModifier().make {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator2(m).run()
+m = new AlgorithmTranslator(m).run()
 
-mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "Bauern", "/home/joy/workspace/")
+//mtx = new ModelToXML()
+//d = mtx.writeToRodin(m, "Bauern", "tmp/")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

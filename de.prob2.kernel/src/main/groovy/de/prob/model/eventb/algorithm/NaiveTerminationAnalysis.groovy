@@ -9,10 +9,10 @@ import de.prob.model.eventb.Variant
 import de.prob.model.eventb.Event.EventType
 import de.prob.statespace.StateSpace
 
-class TerminationAnalysis {
+class NaiveTerminationAnalysis {
 	ModelModifier modelM
 
-	def TerminationAnalysis(EventBModel model) {
+	def NaiveTerminationAnalysis(EventBModel model) {
 		this.modelM = new ModelModifier(model)
 	}
 

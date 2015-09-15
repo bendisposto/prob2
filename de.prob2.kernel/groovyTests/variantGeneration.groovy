@@ -1,7 +1,7 @@
 import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
-import de.prob.model.eventb.algorithm.AlgorithmTranslator
-import de.prob.model.eventb.algorithm.TerminationAnalysis
+import de.prob.model.eventb.algorithm.NaiveAlgorithmTranslator
+import de.prob.model.eventb.algorithm.NaiveTerminationAnalysis
 import de.prob.model.eventb.algorithm.LoopInformation;
 import de.prob.model.eventb.translate.*
 
@@ -35,8 +35,8 @@ def actions(evt) {
 	evt.actions.collect { it.getCode().getCode() }
 }
 
-m = new AlgorithmTranslator(mm.getModel()).run()
-m = new TerminationAnalysis(m).run()
+m = new NaiveAlgorithmTranslator(mm.getModel()).run()
+m = new NaiveTerminationAnalysis(m).run()
 e = m.MyLoop
 
 evt0_enter_while = e.events.evt0_enter_while
@@ -94,7 +94,7 @@ assert actions(evt3_loop) == ["var := x"]
 
 
 
-mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "MyLoopProject", "/tmp")
+//mtx = new ModelToXML()
+//d = mtx.writeToRodin(m, "MyLoopProject", "/tmp")
 
 "it is possible to generate models to check the termination of loops"
