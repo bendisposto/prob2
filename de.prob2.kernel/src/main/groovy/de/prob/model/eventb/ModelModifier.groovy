@@ -37,7 +37,7 @@ public class ModelModifier extends AbstractModifier {
 		this(Main.getInjector().getInstance(EventBFactory.class).modelCreator.get())
 	}
 
-	def ModelModifier context(HashMap properties, Closure definition) {
+	def ModelModifier context(HashMap properties, Closure definition) throws ModelGenerationException {
 		def props = validateProperties(properties, [name: String, "extends": [String, null], comment: [String, null]])
 		def model = this.model
 		def name = properties["name"]
@@ -71,7 +71,7 @@ public class ModelModifier extends AbstractModifier {
 		new ModelModifier(model, typeEnvironment)
 	}
 
-	def ModelModifier machine(HashMap properties, Closure definition) {
+	def ModelModifier machine(HashMap properties, Closure definition) throws ModelGenerationException {
 		def props = validateProperties(properties, [name: String, refines: [String, null], sees: [List, []], comment: [String, null]])
 		def model = this.model
 		def name = props["name"]
@@ -123,9 +123,7 @@ public class ModelModifier extends AbstractModifier {
 
 		def comment = m.getChildrenOfType(ElementComment.class) ? m.getChildrenOfType(ElementComment.class).collect { it.comment }.join("\n") : null
 		ModelModifier modelM = machine(name: refinementName, refines: machineName, comment: comment) {
-			m.variables.each {
-				variable(it)
-			}
+			m.variables.each { variable(it) }
 			m.events.each { Event e ->
 				refine(name: e.getName(), extended: true,
 				comment: e.getChildrenOfType(ElementComment.class) ? e.getChildrenOfType(ElementComment.class).collect { it.comment }.join("\n") : null) {}
@@ -134,7 +132,7 @@ public class ModelModifier extends AbstractModifier {
 		modelM
 	}
 
-	def ModelModifier make(Closure definition) {
+	def ModelModifier make(Closure definition) throws ModelGenerationException {
 		runClosure definition
 	}
 

@@ -888,6 +888,23 @@ class MachineModifierTest extends Specification {
 		!modifier.getMachine().getChildrenOfType(Block.class).isEmpty()
 	}
 
+	def "it is possible to add an algorithm block"() {
+		when:
+		def block = new Block().If("x < 10") { Then("x := x +1") }
+		modifier = modifier.algorithm(block)
+
+		then:
+		modifier.getMachine().getChildrenOfType(Block.class) == [block]
+	}
+
+	def "algorithm definition cannot be null"() {
+		when:
+		modifier.algorithm(null)
+
+		then:
+		thrown GroovyRuntimeException
+	}
+
 	def "set sees cannot be null"() {
 		when:
 		modifier = modifier.setSees(null)

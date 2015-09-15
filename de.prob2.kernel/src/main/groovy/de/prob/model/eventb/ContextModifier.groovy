@@ -28,7 +28,7 @@ public class ContextModifier extends AbstractModifier {
 		newCM(context.set(Context.class, new ModelElementList<Context>([extended])))
 	}
 
-	def ContextModifier enumerated_set(LinkedHashMap properties) {
+	def ContextModifier enumerated_set(LinkedHashMap properties) throws ModelGenerationException {
 		Map validated = validateProperties(properties, [name: String, constants: String[]])
 		addEnumeratedSet(validated["name"], validated["constants"])
 	}
@@ -39,7 +39,7 @@ public class ContextModifier extends AbstractModifier {
 	 * @param elements contained in the specified set
 	 * @return the {@link EnumeratedSetBlock} generated when creating the set
 	 */
-	def ContextModifier addEnumeratedSet(String setName, String... elements) {
+	def ContextModifier addEnumeratedSet(String setName, String... elements) throws ModelGenerationException {
 		ContextModifier cm = set(validate('setName', setName))
 		validate('elements',elements).each {
 			cm = cm.constant(it)
@@ -48,7 +48,7 @@ public class ContextModifier extends AbstractModifier {
 		cm.axiom("partition($setName,$elementString)")
 	}
 
-	def ContextModifier set(String set, String comment="") {
+	def ContextModifier set(String set, String comment="") throws ModelGenerationException {
 		def bset = new Set(parseIdentifier(set), comment)
 		new ContextModifier(context.addTo(Set.class, bset))
 	}
@@ -66,7 +66,7 @@ public class ContextModifier extends AbstractModifier {
 		return newCM(context.removeFrom(Set.class, set))
 	}
 
-	def ContextModifier constants(String... constants) {
+	def ContextModifier constants(String... constants) throws ModelGenerationException {
 		ContextModifier cm = this
 		validate('constants', constants).each {
 			cm = cm.constant(it)
@@ -74,7 +74,7 @@ public class ContextModifier extends AbstractModifier {
 		cm
 	}
 
-	def ContextModifier constant(String identifier, String comment="") {
+	def ContextModifier constant(String identifier, String comment="") throws ModelGenerationException {
 		parseIdentifier(identifier)
 		newCM(context.addTo(Constant.class, new EventBConstant(identifier, false, null, comment)))
 	}
@@ -93,7 +93,7 @@ public class ContextModifier extends AbstractModifier {
 		return newCM(ctx)
 	}
 
-	def ContextModifier axioms(LinkedHashMap axioms) {
+	def ContextModifier axioms(LinkedHashMap axioms) throws ModelGenerationException {
 		ContextModifier cm = this
 		axioms.each { k,v ->
 			cm = cm.axiom(k,v)
@@ -101,7 +101,7 @@ public class ContextModifier extends AbstractModifier {
 		cm
 	}
 
-	def ContextModifier axioms(String... axioms) {
+	def ContextModifier axioms(String... axioms) throws ModelGenerationException {
 		ContextModifier cm = this
 		validate('axioms',axioms).each {
 			cm = cm.axiom(validate('axiom', it))
@@ -109,25 +109,25 @@ public class ContextModifier extends AbstractModifier {
 		cm
 	}
 
-	def ContextModifier theorem(LinkedHashMap theorem) {
+	def ContextModifier theorem(LinkedHashMap theorem) throws ModelGenerationException {
 		axiom(theorem, true)
 	}
 
-	def ContextModifier theorem(String theorem) {
+	def ContextModifier theorem(String theorem) throws ModelGenerationException {
 		axiom(validate("theorem", theorem), true)
 	}
 
-	def ContextModifier axiom(Map props, boolean theorem=false) {
+	def ContextModifier axiom(Map props, boolean theorem=false) throws ModelGenerationException {
 		Definition prop = getDefinition(props)
 		return axiom(prop.label, prop.formula, theorem)
 	}
 
-	def ContextModifier axiom(String pred, boolean theorem=false) {
+	def ContextModifier axiom(String pred, boolean theorem=false) throws ModelGenerationException {
 		int ctr = axmctr + 1
 		axiom("axm$ctr", pred, theorem)
 	}
 
-	def ContextModifier axiom(String name, String predicate, boolean theorem=false, String comment="") {
+	def ContextModifier axiom(String name, String predicate, boolean theorem=false, String comment="") throws ModelGenerationException {
 		def axiom = new EventBAxiom(name, parsePredicate(predicate), theorem, comment)
 		newCM(context.addTo(Axiom.class, axiom))
 	}
@@ -152,7 +152,7 @@ public class ContextModifier extends AbstractModifier {
 		comment ? newCM(context.addTo(ElementComment.class, new ElementComment(comment))) : this
 	}
 
-	def ContextModifier make(Closure definition) {
+	def ContextModifier make(Closure definition) throws ModelGenerationException {
 		runClosure definition
 	}
 }

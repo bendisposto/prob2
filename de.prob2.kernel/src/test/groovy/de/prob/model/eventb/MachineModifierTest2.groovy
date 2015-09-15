@@ -163,14 +163,6 @@ class MachineModifierTest2 extends Specification {
 		modifier2 == modifier
 	}
 
-	def "algorithm cannot be null"() {
-		when:
-		modifier.algorithm(null)
-
-		then:
-		thrown IllegalArgumentException
-	}
-
 	def "closure for make cannot be null"() {
 		when:
 		modifier.make(null)
