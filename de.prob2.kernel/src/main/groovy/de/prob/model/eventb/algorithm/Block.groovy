@@ -22,6 +22,10 @@ class Block extends AbstractModifier {
 		newBlock(statements.addElement(new If(condition, typeEnvironment).make(definition)))
 	}
 
+	def Block If(String condition, Block thenBlock, Block elseBlock) {
+		newBlock(statements.addElement(new If(condition, typeEnvironment).Then(thenBlock).Else(elseBlock)))
+	}
+
 	def Block While(String condition, Closure definition) {
 		newBlock(statements.addElement(new While(condition, null, newBlock().make(definition), typeEnvironment)))
 	}
@@ -29,6 +33,10 @@ class Block extends AbstractModifier {
 	def Block While(LinkedHashMap properties, String condition, Closure definition) {
 		def props = validateProperties(properties, [variant: [String, null]])
 		newBlock(statements.addElement(new While(condition, props.variant, newBlock().make(definition), typeEnvironment)))
+	}
+
+	def Block While(String condition, Block block, String variant=null) {
+		newBlock(statements.addElement(new While(condition, variant, block, typeEnvironment)))
 	}
 
 	def Block Assert(String condition) {

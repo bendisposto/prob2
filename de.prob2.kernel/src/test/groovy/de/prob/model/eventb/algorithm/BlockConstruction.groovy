@@ -40,4 +40,40 @@ class BlockConstruction extends Specification {
 		then:
 		b.statements[0] instanceof If
 	}
+
+	def "it is possible to create If without closure"() {
+		when:
+		def b = new If("x < 5").Then(new Block([
+			new Assignments(["x := 2", "y := 1"])
+		])).Else(new Block([
+			new Assignments(["x := 1", "y := 2"])
+		]))
+		then:
+		b instanceof If
+		b.Then.statements[0] instanceof Assignments
+		b.Else.statements[0] instanceof Assignments
+	}
+
+	def "it is possible to create a While without a closure"() {
+		when:
+		def b = new Block().While("x < 5", new Block([
+			new Assignments(["x := 2", "y := 3"])
+		]))
+
+		then:
+		b.statements[0] instanceof While
+		b.statements[0].block.statements[0] instanceof Assignments
+	}
+
+	def "it is possible to create a While with variant without a closure"() {
+		when:
+		def b = new Block().While("x < 5", new Block([
+			new Assignments(["x := 2", "y := 3"])
+		]), "x + 5")
+
+		then:
+		b.statements[0] instanceof While
+		b.statements[0].variant.getCode() == "x + 5"
+		b.statements[0].block.statements[0] instanceof Assignments
+	}
 }

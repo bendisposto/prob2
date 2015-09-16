@@ -47,6 +47,13 @@ public class If extends Statement {
 		newIf(newBlock().make(definition), Else)
 	}
 
+	def If Then(Block block) {
+		if(Then != null) {
+			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
+		}
+		newIf(block, Else)
+	}
+
 	def If Else(String... assignments) {
 		if(Else != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
@@ -61,6 +68,13 @@ public class If extends Statement {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
 		newIf(Then, newBlock().make(definition))
+	}
+
+	def If Else(Block block) {
+		if(Else != null) {
+			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
+		}
+		newIf(Then, block)
 	}
 
 	def If finish() {
