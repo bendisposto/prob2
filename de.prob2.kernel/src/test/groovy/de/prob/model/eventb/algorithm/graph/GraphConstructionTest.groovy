@@ -373,4 +373,23 @@ public class GraphConstructionTest extends Specification {
 		conditions(graph, 4) == [2: []]
 		actions(graph, 4) == []
 	}
+
+	def "loop within loop"() {
+		when:
+		def DEBUG = false
+		def graph = graph({
+			While("x < 50") {
+				If("y > x") {
+					Then {
+						While("x < y") { Assign("x := x + 1") }
+					}
+				}
+				Assign("y := y / 2", "x := x / 2")
+			}
+			Assign("z := y + x")
+		})
+
+		then:
+		if (DEBUG) print(graph)
+	}
 }
