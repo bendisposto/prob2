@@ -36,9 +36,7 @@ public class If extends Statement {
 		if(Then != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		newIf(newBlock([
-			new Assignments(assignments as List, typeEnvironment)
-		]), Else)
+		newIf(newBlock().Assign(assignments), Else)
 	}
 
 	def If Then(Closure definition) {
@@ -59,9 +57,7 @@ public class If extends Statement {
 		if(Else != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		newIf(Then, newBlock([
-			new Assignments(assignments as List, typeEnvironment)
-		]))
+		newIf(Then, newBlock().Assign(assignments))
 	}
 
 	def If Else(Closure definition) {
@@ -95,8 +91,8 @@ public class If extends Statement {
 	public boolean equals(Object that) {
 		if (that instanceof If) {
 			return this.condition.getCode().equals(that.getCondition().getCode()) &&
-					this.Then.equals(that.getThen()) &&
-					this.Else.equals(that.getElse())
+			this.Then.equals(that.getThen()) &&
+			this.Else.equals(that.getElse())
 		}
 		return false
 	}

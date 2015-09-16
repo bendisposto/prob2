@@ -37,7 +37,7 @@ class AlgorithmToGraph {
 		List<INode> endNodes = []
 		branches.each { BranchCondition cond ->
 			if (cond.getOutNode() instanceof Nil) {
-				body = new Node([], new Nil())
+				body = new Node(new Assignments(whileStmt.typeEnvironment), new Nil())
 				cond.setEndNode(body)
 				endNodes << body
 			} else {
@@ -47,7 +47,7 @@ class AlgorithmToGraph {
 		}
 		endNodes.each { INode node ->
 			if (node instanceof BranchCondition) {
-				body = new Node([], b)
+				body = new Node(new Assignments(whileStmt.typeEnvironment), b)
 				node.setEndNode(body)
 			} else {
 				node.setEndNode(b)
@@ -120,14 +120,14 @@ class AlgorithmToGraph {
 	def INode extractNode(Assertion assertion, Iterator<Statement> rest) {
 		INode node = extractGraph(rest)
 		if (node instanceof Nil) {
-			node = new Node([], new Nil())
+			node = new Node(new Assignments(assertion.typeEnvironment), new Nil())
 		}
 		node.addAssertion(assertion)
 		return node
 	}
 
 	def INode extractNode(Assignments assignments, Iterator<Statement> rest) {
-		return new Node([assignments], extractGraph(rest))
+		return new Node(assignments, extractGraph(rest))
 	}
 }
 

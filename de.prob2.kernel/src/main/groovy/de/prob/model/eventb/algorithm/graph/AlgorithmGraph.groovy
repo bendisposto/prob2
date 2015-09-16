@@ -77,10 +77,11 @@ public class AlgorithmGraph {
 		getInfo(node.getOutNode()).addEdge(topc, new BranchCondition([], [], node.getOutNode()))
 		addAssertions(node.getOutNode(), topc)
 		EventInfo info = getInfo(node)
-		info.addActions(node.getStatements())
-		info.addActions([
-			new Assignments(["pc := $topc"])
-		])
+		def a = node.getAssignments().addAssignments("pc := $topc")
+		if (a.size() != 1) {
+			throw new IllegalArgumentException("Do not use the variable 'pc' within your machine definition!")
+		}
+		info.addActions(a)
 	}
 
 	def addEdges(int pc, Branch node) {

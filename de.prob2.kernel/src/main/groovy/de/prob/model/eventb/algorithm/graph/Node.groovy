@@ -1,15 +1,16 @@
 package de.prob.model.eventb.algorithm.graph
 
 import de.prob.model.eventb.algorithm.Assertion
+import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Statement
 
 class Node implements INode {
-	List<Statement> actions
+	Assignments assignments
 	INode outNode
 	def List<Assertion> assertions = []
 
-	def Node(List<Statement> actions, INode outNode) {
-		this.actions = actions
+	def Node(Assignments assignments, INode outNode) {
+		this.assignments = assignments
 		this.outNode = outNode
 	}
 
@@ -25,12 +26,12 @@ class Node implements INode {
 
 	@Override
 	public List<Statement> getStatements() {
-		return actions;
+		return [assignments];
 	}
 
 	@Override
 	public String toString() {
-		return actions.toString();
+		return assignments.toString();
 	}
 
 	@Override

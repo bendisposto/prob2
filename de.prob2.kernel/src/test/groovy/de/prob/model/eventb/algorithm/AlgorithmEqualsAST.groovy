@@ -6,7 +6,7 @@ class AlgorithmEqualsAST extends Specification {
 
 	def "assignment equals"() {
 		expect:
-		new Assignments(["x := 1", "y := 1"]) == new Assignments(["x := 1", "y := 1"])
+		new Assignments().addAssignments("x := 1", "y := 1") == new Assignments().addAssignments("x := 1", "y := 1")
 	}
 
 	def "assert equals"() {

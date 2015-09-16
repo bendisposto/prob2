@@ -6,7 +6,8 @@ class BlockConstruction extends Specification {
 
 	def "it is possible to create a while loop"() {
 		when:
-		def b = new Block().make { While("x = 1") { } }
+		def b = new Block().make { While("x = 1") {
+			} }
 		then:
 		b.statements[0] instanceof While
 		b.statements[0].condition.getCode() == "x = 1"
@@ -43,11 +44,7 @@ class BlockConstruction extends Specification {
 
 	def "it is possible to create If without closure"() {
 		when:
-		def b = new If("x < 5").Then(new Block([
-			new Assignments(["x := 2", "y := 1"])
-		])).Else(new Block([
-			new Assignments(["x := 1", "y := 2"])
-		]))
+		def b = new If("x < 5").Then(new Block().Assign("x := 2", "y := 1")).Else(new Block().Assign("x := 1", "y := 2"))
 		then:
 		b instanceof If
 		b.Then.statements[0] instanceof Assignments
@@ -56,9 +53,7 @@ class BlockConstruction extends Specification {
 
 	def "it is possible to create a While without a closure"() {
 		when:
-		def b = new Block().While("x < 5", new Block([
-			new Assignments(["x := 2", "y := 3"])
-		]))
+		def b = new Block().While("x < 5", new Block().Assign("x := 2", "y := 3"))
 
 		then:
 		b.statements[0] instanceof While
@@ -67,9 +62,7 @@ class BlockConstruction extends Specification {
 
 	def "it is possible to create a While with variant without a closure"() {
 		when:
-		def b = new Block().While("x < 5", new Block([
-			new Assignments(["x := 2", "y := 3"])
-		]), "x + 5")
+		def b = new Block().While("x < 5", new Block().Assign("x := 2", "y := 3"), "x + 5")
 
 		then:
 		b.statements[0] instanceof While

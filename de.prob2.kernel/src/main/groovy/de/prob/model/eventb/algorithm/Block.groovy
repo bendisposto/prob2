@@ -3,7 +3,7 @@ package de.prob.model.eventb.algorithm
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.model.eventb.AbstractModifier
-import de.prob.model.eventb.ModelGenerationException;
+import de.prob.model.eventb.ModelGenerationException
 import de.prob.model.representation.ModelElementList
 
 
@@ -45,7 +45,15 @@ class Block extends AbstractModifier {
 	}
 
 	def Block Assign(String... assignments) throws ModelGenerationException {
-		newBlock(statements.addElement(new Assignments(assignments as List, typeEnvironment)))
+		def last = !statements.isEmpty() && statements[statements.size()-1] ? statements[statements.size()-1] : null
+		def stmts = statements
+		Assignments a = new Assignments([], typeEnvironment)
+		if (last instanceof Assignments) {
+			a = last
+			stmts = stmts.removeElement(last)
+		}
+
+		newBlock(stmts.addMultiple(a.addAssignments(assignments)))
 	}
 
 	def Block make(Closure definition) throws ModelGenerationException {
