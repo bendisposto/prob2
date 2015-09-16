@@ -67,6 +67,15 @@ def variable(model, element, var) {
 	model.getComponent(element).variables.getElement(var)
 }
 
+
+variable(m, "M1", "v1").subscribe(s)
+variable(m, "MB.M2", "MB.vv").subscribe(s)
+variable(m, "MA.M2", "MA.vv").subscribe(s)
+variable(m, "MA.MD.M3", "MA.MD.bb").subscribe(s)
+variable(m, "MA.MC.M3", "MA.MC.bb").subscribe(s)
+variable(m, "MB.MD.M3", "MB.MD.bb").subscribe(s)
+variable(m, "MB.MC.M3", "MB.MC.bb").subscribe(s)
+
 // checks that the subscription works correctly. This will be eliminated once the old subscription mechanism is removed.
 assert variable(m, "M1", "v1").isSubscribed(s)
 assert variable(m, "MB.M2", "MB.vv").isSubscribed(s)
