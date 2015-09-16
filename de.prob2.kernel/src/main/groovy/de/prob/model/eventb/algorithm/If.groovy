@@ -3,6 +3,7 @@ package de.prob.model.eventb.algorithm
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.ModelGenerationException
 import de.prob.model.representation.IllegalModificationException
 
 public class If extends Statement {
@@ -11,7 +12,7 @@ public class If extends Statement {
 	def final Block Then
 	def final Block Else
 
-	def If(String condition, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+	def If(String condition, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) throws ModelGenerationException {
 		super(typeEnvironment)
 		this.condition = parsePredicate(condition)
 		this.elseCondition = parsePredicate("not($condition)")

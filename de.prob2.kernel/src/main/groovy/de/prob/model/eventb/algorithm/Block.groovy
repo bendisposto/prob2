@@ -3,6 +3,7 @@ package de.prob.model.eventb.algorithm
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.model.eventb.AbstractModifier
+import de.prob.model.eventb.ModelGenerationException;
 import de.prob.model.representation.ModelElementList
 
 
@@ -18,36 +19,36 @@ class Block extends AbstractModifier {
 		return new Block(statements, typeEnvironment)
 	}
 
-	def Block If(String condition, Closure definition) {
+	def Block If(String condition, Closure definition) throws ModelGenerationException {
 		newBlock(statements.addElement(new If(condition, typeEnvironment).make(definition)))
 	}
 
-	def Block If(String condition, Block thenBlock, Block elseBlock) {
+	def Block If(String condition, Block thenBlock, Block elseBlock) throws ModelGenerationException {
 		newBlock(statements.addElement(new If(condition, typeEnvironment).Then(thenBlock).Else(elseBlock)))
 	}
 
-	def Block While(String condition, Closure definition) {
+	def Block While(String condition, Closure definition) throws ModelGenerationException {
 		newBlock(statements.addElement(new While(condition, null, newBlock().make(definition), typeEnvironment)))
 	}
 
-	def Block While(LinkedHashMap properties, String condition, Closure definition) {
+	def Block While(LinkedHashMap properties, String condition, Closure definition) throws ModelGenerationException {
 		def props = validateProperties(properties, [variant: [String, null]])
 		newBlock(statements.addElement(new While(condition, props.variant, newBlock().make(definition), typeEnvironment)))
 	}
 
-	def Block While(String condition, Block block, String variant=null) {
+	def Block While(String condition, Block block, String variant=null) throws ModelGenerationException {
 		newBlock(statements.addElement(new While(condition, variant, block, typeEnvironment)))
 	}
 
-	def Block Assert(String condition) {
+	def Block Assert(String condition) throws ModelGenerationException {
 		newBlock(statements.addElement(new Assertion(condition, typeEnvironment)))
 	}
 
-	def Block Assign(String... assignments) {
+	def Block Assign(String... assignments) throws ModelGenerationException {
 		newBlock(statements.addElement(new Assignments(assignments as List, typeEnvironment)))
 	}
 
-	def Block make(Closure definition) {
+	def Block make(Closure definition) throws ModelGenerationException {
 		runClosure definition
 	}
 

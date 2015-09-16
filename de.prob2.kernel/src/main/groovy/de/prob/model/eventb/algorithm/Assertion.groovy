@@ -3,11 +3,12 @@ package de.prob.model.eventb.algorithm
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.ModelGenerationException
 
 class Assertion extends Statement {
 	def EventB assertion
 
-	def Assertion(String assertion, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+	def Assertion(String assertion, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) throws ModelGenerationException {
 		super(typeEnvironment)
 		this.assertion = parsePredicate(assertion)
 	}

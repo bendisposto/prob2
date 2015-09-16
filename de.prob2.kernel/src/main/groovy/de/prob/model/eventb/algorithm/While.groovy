@@ -3,6 +3,7 @@ package de.prob.model.eventb.algorithm
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.ModelGenerationException;
 
 class While extends Statement {
 	def EventB condition
@@ -10,7 +11,7 @@ class While extends Statement {
 	def EventB variant
 	def Block block
 
-	def While(String condition, String variant, Block block, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+	def While(String condition, String variant, Block block, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) throws ModelGenerationException {
 		super(typeEnvironment)
 		this.condition = parsePredicate(condition)
 		this.notCondition = parsePredicate("not($condition)")

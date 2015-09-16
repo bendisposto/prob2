@@ -4,12 +4,13 @@ import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.ModelGenerationException;
 import de.prob.unicode.UnicodeTranslator
 
 class Assignments extends Statement {
 	List<EventB> assignments
 
-	def Assignments(List<String> assignments, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+	def Assignments(List<String> assignments, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) throws ModelGenerationException{
 		super(typeEnvironment)
 		this.assignments = assignments.collect { parseFormula(it, EvalElementType.ASSIGNMENT) }
 	}
