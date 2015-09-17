@@ -9,12 +9,14 @@ public class Edge {
 	def String to
 	def List<EventB> conditions
 	def List<String> statements
+	def Map<String, Integer> pcInformation
 
-	def Edge(String from, String to, List<EventB> conditions, List<String> statements) {
+	def Edge(String from, String to, List<EventB> conditions, List<String> statements, Map<String, Integer> pcInformation) {
 		this.from = from
 		this.to = to
 		this.conditions = conditions
 		this.statements = statements
+		this.pcInformation = pcInformation
 	}
 
 	@Override

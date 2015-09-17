@@ -1,10 +1,13 @@
 package de.prob.model.eventb.algorithm.graph;
 
+import com.google.inject.Scopes;
+
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments;
 import de.prob.model.eventb.algorithm.Block
 import de.prob.model.eventb.algorithm.Statement
+import de.prob.model.eventb.algorithm.While
 
 
 
@@ -15,15 +18,27 @@ public class AlgorithmGraph2 {
 	def Map<String, Set<Edge>> outgoingEdges = new HashMap<String, Set<Edge>>()
 	def Map<String, Set<Edge>> incomingEdges = new HashMap<String, Set<Edge>>()
 
-	private String pcscope
+	private currentscope
+	private List<String> scopes = []
 	private Map<String, Integer> currentPcs = [:]
 	private Map<String, Map<String, Integer>> nodesToPc = [:]
 	private Map<String, Statement> nameToCurrentStmt = [:]
 
+	private Map<String, Set<Assertion>> assertions
+
 	def AlgorithmGraph(Block algorithm) {
-		naming = new NodeNaming(algorithm)
-		pcscope = "pc"
-		currentPcs[pcscope] = 0
+		AssertionEliminator e = new AssertionEliminator(algorithm)
+		naming = new NodeNaming(e.algorithm)
+		assertions = e.getAssertions().collectEntries { Statement stmt, Set<Assertion> a ->
+			[naming.getName(stmt), a]
+		}
+		newScope("pc")
+	}
+
+	def newScope(String scopeName) {
+		currentscope = scopeName
+		currentPcs[currentscope] = 0
+		scopes << currentscope
 	}
 
 	def addNode(String node) {
@@ -37,24 +52,26 @@ public class AlgorithmGraph2 {
 		node
 	}
 
-	def addEdge(String from, String to, List<EventB> conditions, List<String> statements) {
-		Edge e = new Edge(from, to, conditions, statements)
+	def addEdge(String from, String to, List<EventB> conditions, List<String> statements, Map<String, Integer> pcInformation) {
+		Edge e = new Edge(from, to, conditions, statements, pcInformation)
 		outgoingEdges[addNode(from)].add(e)
 		incomingEdges[addNode(to)].add(e)
 		e
 	}
 
-	private getPc(String node) {
+	private Map<String, Integer> getPc(String node) {
 		if (nodesToPc[node] == null) {
-			nodesToPc[node] = [:]
-		}
-		if (nodesToPc[node][pcscope] == null) {
-			if (currentPcs[pcscope] == null) {
-				currentPcs[pcscope] = 0
+			Map<String, Integer> pcs = [:]
+			scopes.collect { String scope ->
+				if (scope == currentscope) {
+					pcs[scope] = currentPcs[scope]++
+				} else {
+					pcs[scope] = currentPcs[scope]
+				}
 			}
-			nodesToPc[node][pcscope] = currentPcs[pcscope]++
+			nodesToPc[node] = pcs
 		}
-		nodesToPc[node][pcscope]
+		nodesToPc[node]
 	}
 
 	def addStatement(Assignments a, List<Statement> nextStmts) {
@@ -62,18 +79,30 @@ public class AlgorithmGraph2 {
 		addNode(name)
 		if (!nextStmts.isEmpty()) {
 			Statement s = nextStmts.head()
-			def pc = getPc(naming.getName(s))
-			List<Assignments> acts = a.addAssignments("$pcscope := $pc")
+			Map<String, Integer> pcs = getPc(naming.getName(s))
+			def pc = pcs[currentscope]
+			List<Assignments> acts = a.addAssignments("$currentscope := $pc")
 			if (acts.size() != 1) {
 				throw new IllegalArgumentException("To generate this algorithm, do not use variables named $pcscope in your machine")
 			}
 			nameToCurrentStmt[name] = acts[0]
-			EventB condition = a.parsePredicate("$pcscope = $pc")
-			addEdge(name, naming.getName(s), [condition], [])
+			addEdge(name, naming.getName(s), [], [], pcs)
 			addStatement(s, nextStmts.tail())
 		} else {
 			nameToCurrentStmt[name] = a
 		}
+		name
+	}
+
+	def addStatement(While w, List<Statement> nextStmts) {
+		String name = naming.getName(w)
+		String oldscope = currentscope
+		newScope(name)
+
+		// do something
+
+		scopes.remove(name)
+		currentscope = oldscope
 		name
 	}
 
