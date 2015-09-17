@@ -1,34 +1,40 @@
 package de.prob.model.eventb.algorithm.graph;
 
+import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.algorithm.Statement
+
 
 public class Edge {
-	def Integer from
-	def Integer to
-	def BranchCondition condition
+	def String from
+	def String to
+	def List<EventB> conditions
+	def List<String> statements
 
-	def Edge(Integer from, Integer to, BranchCondition condition) {
+	def Edge(String from, String to, List<EventB> conditions, List<String> statements) {
 		this.from = from
 		this.to = to
-		this.condition = condition
+		this.conditions = conditions
+		this.statements = statements
 	}
 
 	@Override
 	public boolean equals(Object that) {
 		if (that instanceof Edge) {
 			return from.equals(that.getFrom()) &&
-			to.equals(that.getTo()) &&
-			condition.equals(that.getCondition())
+					to.equals(that.getTo()) &&
+					conditions.equals(that.getConditions()) &&
+					statements.equals(that.getStatements())
 		}
 		return false
 	}
 
 	@Override
 	public int hashCode() {
-		return from * 7 + to * 13 + rep.hashCode() * 17;
+		return from * 7 + to * 13 + conditions.hashCode() * 17 + statements.hashCode() * 19;
 	}
 
 	@Override
 	public String toString() {
-		return condition ? "--${condition.getConditions().toString}-->" : "-->"
+		return conditions ? "--${conditions.toString}-->" : "-->"
 	}
 }

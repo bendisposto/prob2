@@ -374,6 +374,38 @@ public class GraphConstructionTest extends Specification {
 		actions(graph, 4) == []
 	}
 
+	def "complicated while if"() {
+		when:
+		def DEBUG = false
+		def graph = graph({
+			While("x : ODD") {
+				If ("x = 2") {
+					Then("x := x + 1")
+					Else {
+						If ("x = 3") {
+							Then("x := x + 2")
+							Else {
+								If("x = 4") {
+									Then("x := x + 3")
+									Else("x := x - 5")
+								}
+							}
+						}
+					}
+				}
+				If ("y = 3") {
+					Then("x := y + 2")
+					Else("x := y + 3")
+				}
+				Assign("x := y - 2")
+			}
+			Assign("z := x + y")
+		})
+
+		then:
+		if (DEBUG) print(graph)
+	}
+
 	//	def "loop within loop"() {
 	//		when:
 	//		def DEBUG = false

@@ -59,17 +59,4 @@ class Block extends AbstractModifier {
 	def Block make(Closure definition) throws ModelGenerationException {
 		runClosure definition
 	}
-
-	@Override
-	public boolean equals(Object that) {
-		if (that instanceof Block) {
-			return this.statements.equals(that.getStatements())
-		}
-		return false
-	}
-
-	@Override
-	public int hashCode() {
-		return this.statements.hashCode() * 7
-	}
 }
