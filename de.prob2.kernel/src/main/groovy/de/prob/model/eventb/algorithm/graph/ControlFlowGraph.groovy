@@ -127,4 +127,12 @@ class ControlFlowGraph {
 	def getNode(String name) {
 		return nodeMapping[name]
 	}
+
+	def outEdges(Statement stmt) {
+		outgoingEdges[stmt] ?: []
+	}
+
+	def inEdges(Statement stmt) {
+		incomingEdges[stmt] ?: []
+	}
 }
