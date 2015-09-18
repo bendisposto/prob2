@@ -57,4 +57,8 @@ class NodeNaming {
 	def String getName(Statement node) {
 		naming[node]
 	}
+
+	def getAt(String name) {
+		nodes[name]
+	}
 }

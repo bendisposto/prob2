@@ -7,31 +7,31 @@ import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
 import de.prob.model.eventb.algorithm.Statement
 
-public class AssertionEliminatorTest extends Specification {
+public class AssertionExtractorTest extends Specification {
 
-	def AssertionEliminator run(Closure cls) {
+	def AssertionExtractor run(Closure cls) {
 		Block b = new Block().make(cls)
-		return new AssertionEliminator(b)
+		return new AssertionExtractor(b)
 	}
 
-	def print(AssertionEliminator e) {
+	def print(AssertionExtractor e) {
 		println new AlgorithmPrettyPrinter(e.getAlgorithm()).prettyPrint()
 		println e.assertions.toString() + "\n"
 	}
 
-	def assertions(AssertionEliminator e, int index) {
+	def assertions(AssertionExtractor e, int index) {
 		e.assertions[e.algorithm.statements[index]].collect {
 			it.assertion.getCode()
 		}
 	}
 
-	def assertions(AssertionEliminator e, Statement statement) {
+	def assertions(AssertionExtractor e, Statement statement) {
 		e.assertions[statement].collect {
 			it.assertion.getCode()
 		}
 	}
 
-	def emptyEnd(AssertionEliminator e) {
+	def emptyEnd(AssertionExtractor e) {
 		e.algorithm.statements.last().assignments == []? e.algorithm.statements.last() : null
 	}
 

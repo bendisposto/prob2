@@ -7,11 +7,11 @@ import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
-class AssertionEliminator {
+class AssertionExtractor {
 	Block algorithm
 	Map<Statement, Set<Assertion>> assertions
 
-	def AssertionEliminator(Block algorithm) {
+	def AssertionExtractor(Block algorithm) {
 		assertions = [:]
 		this.algorithm = eliminateAssertions(algorithm)
 	}
