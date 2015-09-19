@@ -1,36 +1,22 @@
 package de.prob.model.eventb.algorithm
 
-import de.prob.model.eventb.EventBMachine
-import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
+import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.Variant
-import de.prob.model.representation.Machine
+import de.prob.statespace.StateSpace;
 
-class NaiveAlgorithmTranslator {
-	def EventBModel model
+class NaiveAlgorithmPrototype extends TranslationAlgorithm {
 	def MachineModifier machineM
 
-	def NaiveAlgorithmTranslator(EventBModel model) {
-		this.model = model
-	}
-
-	def EventBModel run() {
-		model.getMachines().each { oldM ->
-			model = model.replaceIn(Machine.class, oldM, runAlgorithm(oldM))
-		}
-		model
-	}
-
-	def EventBMachine runAlgorithm(EventBMachine machine) {
+	@Override
+	public MachineModifier run(MachineModifier machineModifier, Block algorithm) {
 		def nextpc = 0
-		machineM = new MachineModifier(machine)
+		this.machineM = machineModifier
 		machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
-		machine.getChildrenOfType(Block.class).each { Block b ->
-			machineM = machineM.addComment(new AlgorithmPrettyPrinter(b).prettyPrint())
-			nextpc = translate(nextpc, b)
-		}
+		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm).prettyPrint())
+		nextpc = translate(nextpc, algorithm)
 		machineM = machineM.event(name: "evt$nextpc") { guard("pc = $nextpc") }
-		machineM.getMachine()
+		machineM
 	}
 
 	def int nextpc(int pc, Assertion s) {
@@ -141,7 +127,7 @@ class NaiveAlgorithmTranslator {
 		def nextpc = pc + 1
 		machineM = machineM.event(name: name, comment: statement.toString()) {
 			guard("pc = $pc")
-			theorem(statement.assertion)
+			guard(statement.assertion, true)
 			action("pc := $nextpc")
 		}
 		nextpc

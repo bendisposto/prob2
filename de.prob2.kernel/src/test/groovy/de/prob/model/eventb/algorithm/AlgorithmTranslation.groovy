@@ -27,7 +27,7 @@ class AlgorithmTranslation extends Specification {
 		mm = mm.algorithm {
 			If("x < 0") { Then("x := 0") }
 		}
-		def m = new NaiveAlgorithmTranslator(null).runAlgorithm(mm.getMachine())
+		def m = new NaiveAlgorithmPrototype(null).runAlgorithm(mm.getMachine())
 
 		then:
 		def e = m.events
@@ -56,7 +56,7 @@ class AlgorithmTranslation extends Specification {
 				Else("x := 2")
 			}
 		})
-		def a = new NaiveAlgorithmTranslator(null)
+		def a = new NaiveAlgorithmPrototype(null)
 
 		then:
 		a.nextpc(0, b) == 4
@@ -73,7 +73,7 @@ class AlgorithmTranslation extends Specification {
 				Else("x := 2")
 			}
 		}
-		def m = new NaiveAlgorithmTranslator(null).runAlgorithm(mm.getMachine())
+		def m = new NaiveAlgorithmPrototype(null).runAlgorithm(mm.getMachine())
 
 		then:
 		def e = m.events
@@ -107,7 +107,7 @@ class AlgorithmTranslation extends Specification {
 		mm = mm.algorithm {
 			While("x < 0") { Assign("x := 0") }
 		}
-		def m = new NaiveAlgorithmTranslator(null).runAlgorithm(mm.getMachine())
+		def m = new NaiveAlgorithmPrototype(null).runAlgorithm(mm.getMachine())
 
 		then:
 		def e = m.events

@@ -44,16 +44,12 @@ class NaiveTerminationAnalysis {
 		def refinementName = "${baseName}_loop${loopInfo.startPc}"
 		modelM = modelM.refine(baseName, refinementName)
 
-		modelM = modelM.machine(name: refinementName, refines: baseName) {
+		modelM = modelM.machine(name: refinementName, refines: baseName, sees: m.getSees().collect { it.getName() }) {
 			variable "var"
 			invariant typingVar: typingVariant
-			initialisation(extended: true) {
-				then init
-			}
+			initialisation(extended: true) { then init }
 			variant "var"
-			refine(name: loopInfo.lastStatement.getName(), type: EventType.CONVERGENT, extended: true) {
-				then variant: "var := ${loopInfo.variant.getExpression().getCode()}"
-			}
+			refine(name: loopInfo.lastStatement.getName(), type: EventType.CONVERGENT, extended: true) { then variant: "var := ${loopInfo.variant.getExpression().getCode()}" }
 		}
 
 		modelM

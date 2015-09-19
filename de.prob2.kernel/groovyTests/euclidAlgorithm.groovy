@@ -1,6 +1,7 @@
 import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
+import de.prob.model.eventb.algorithm.MergeAllBranches
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
@@ -50,7 +51,7 @@ mm = new ModelModifier().make {
 		invariant "GCD[{m|->n}] = GCD[{u|->v}]"
 		
 		algorithm {
-			While("u /= v") {
+			While("u /= v", variant: "u + v") {
 				If("u < v") {
 					Then("v := v - u")
 					Else("u := u - v")
@@ -70,8 +71,11 @@ def actions(evt) {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m).run()
-
+m = new AlgorithmTranslator(m, new MergeAllBranches()).run()
+/*
+m = new AlgorithmTranslator(m, new NaiveAlgorithmPrototype()).run()
+m = new NaiveTerminationAnalysis(m).run()
+*/
 /*
 e = m.euclid
 
