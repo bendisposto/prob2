@@ -25,9 +25,9 @@ public class EventModifier extends AbstractModifier {
 		def guards = []
 		event.getRefines().inject(guards) { List<EventBGuard> acc, Event e -> acc.addAll(e.guards); acc }
 		guards.addAll(event.guards)
-		this.actctr = extractCounter("act", actions)
+		this.actctr = extractCounter("act", event.isExtended() ? actions : event.actions)
 		this.event = event
-		this.grdctr = extractCounter("grd", guards)
+		this.grdctr = extractCounter("grd", event.isExtended() ? guards : event.guards)
 	}
 
 	private EventModifier newEM(Event event) {
