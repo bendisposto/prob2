@@ -19,19 +19,40 @@ public class EventModifier extends AbstractModifier {
 	public EventModifier(Event event, boolean initialisation=false, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
 		super(typeEnvironment)
 		this.initialisation = initialisation
-		this.actctr = extractCounter("act",event.actions)
+		def actions = []
+		event.getRefines().inject(actions) { List<EventBAction> acc, Event e -> acc.addAll(e.actions); acc}
+		actions.addAll(event.actions)
+		def guards = []
+		event.getRefines().inject(guards) { List<EventBGuard> acc, Event e -> acc.addAll(e.guards); acc }
+		guards.addAll(event.guards)
+		this.actctr = extractCounter("act", actions)
 		this.event = event
-		this.grdctr = extractCounter("grd",event.guards)
+		this.grdctr = extractCounter("grd", guards)
 	}
 
 	private EventModifier newEM(Event event) {
 		return new EventModifier(event, initialisation, typeEnvironment)
 	}
 
-	def EventModifier refines(String name) {
-		return newEM(event.set(Event.class, new ModelElementList<Event>([
-			new Event(validate('name',name), EventType.ORDINARY, false)
-		])))
+	def EventModifier refines(Event refinedEvent, boolean extended) {
+		validate('refinedEvent', refinedEvent)
+		Event e = event.toggleExtended(extended)
+		e = e.set(Event.class, new ModelElementList<Event>([refinedEvent]))
+		if (extended) {
+			def actctr = extractCounter("act", refinedEvent.actions)
+			if (actctr > -1) {
+				e = e.set(Action.class, new ModelElementList<EventBAction>(e.actions.collect { EventBAction a ->
+					a.getName().startsWith("act") ? new EventBAction("act${++actctr}", a.getCode(), a.getComment()) : a
+				}))
+			}
+			def grdctr = extractCounter("grd", refinedEvent.guards)
+			if (grdctr > -1) {
+				e = e.set(Guard.class, new ModelElementList<EventBGuard>(e.guards.collect { EventBGuard g ->
+					g.getName().startsWith("grd") ? new EventBGuard("grd${++grdctr}", g.getPredicate(), g.isTheorem(), g.getComment()) : g
+				}))
+			}
+		}
+		newEM(e)
 	}
 
 	def EventModifier when(LinkedHashMap g) throws ModelGenerationException {

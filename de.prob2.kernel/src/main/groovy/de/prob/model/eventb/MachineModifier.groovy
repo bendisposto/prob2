@@ -251,14 +251,22 @@ public class MachineModifier extends AbstractModifier {
 
 	def MachineModifier event(String name, String refinedEvent, EventType type, boolean extended, String comment=null,Closure cls={} ) throws ModelGenerationException {
 		validateAll(name, type, cls)
+		if (refinedEvent && machine.refines.size() != 1) {
+			throw new IllegalArgumentException("Machine refinement hierarchy is incorrect. Could not find Event $refinedEvent to refine")
+		}
+		if (refinedEvent && !machine.refines[0].getEvent(refinedEvent)) {
+			throw new IllegalArgumentException("The event $refinedEvent does not exist in the refined machine and therefore cannot be refined in the existing context.")
+		}
 		def mm = removePOsForEvent(name)
+		def refinedE = refinedEvent ? machine.refines[0].getEvent(refinedEvent) : null
 		def oldevent = machine.getEvent(name)
-		def event = oldevent ? oldevent.changeType(type).toggleExtended(extended) : new Event(name, type, extended)
+		def event = oldevent ? oldevent.changeType(type) : new Event(name, type, extended)
 		if (comment) {
 			event = event.addTo(ElementComment.class, new ElementComment(comment))
 		}
-		def em = new EventModifier(event, "INITIALISATION" == name, typeEnvironment).make(cls)
-		em = refinedEvent ? em.refines(refinedEvent) : em
+		def em = new EventModifier(event, "INITIALISATION" == name, typeEnvironment)
+		em = refinedEvent ? em.refines(refinedE, extended) : em
+		em = em.make(cls)
 		def m = mm.getMachine()
 		if (oldevent) {
 			m = m.replaceIn(BEvent.class, oldevent, em.getEvent())

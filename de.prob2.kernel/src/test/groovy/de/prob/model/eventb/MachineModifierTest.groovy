@@ -544,7 +544,7 @@ class MachineModifierTest extends Specification {
 		def machine = modifier.getMachine()
 
 		then:
-		machine.events.INITIALISATION.getRefines(machine) == [refinedinit]
+		machine.events.INITIALISATION.getRefines() == [refinedinit]
 	}
 
 	def "when refining events, the correct refined event is selected"() {
@@ -560,7 +560,7 @@ class MachineModifierTest extends Specification {
 		def machine = modifier.getMachine()
 
 		then:
-		machine.events.inc.getRefines(machine) == [inc]
+		machine.events.inc.getRefines() == [inc]
 	}
 
 	def "when refining events with closure, the correct refined event is selected"() {
@@ -576,7 +576,30 @@ class MachineModifierTest extends Specification {
 		def machine = modifier.getMachine()
 
 		then:
-		machine.events.inc.getRefines(machine) == [inc]
+		machine.events.inc.getRefines() == [inc]
+	}
+
+	def "when refining an event, it must exist in the refinement"() {
+		when:
+		def refined = new MachineModifier(new EventBMachine("refined"), [] as Set).make {
+			var_block "x", "x : NAT", "x := 0"
+			event(name: "inc") { then "x := x + 1" }
+		}.getMachine()
+		def inc = refined.events.inc
+		modifier = modifier.setRefines(refined)
+		modifier = modifier.var_block("y", "y : INT", "y := -1")
+		modifier.refine(name: "inc2", extended: "true") { then "y := y + 1" }
+
+		then:
+		thrown IllegalArgumentException
+	}
+
+	def "when refining an event, there must be a refinement"() {
+		when:
+		modifier.refine(name: "inc2", extended: "true") { then "y := y + 1" }
+
+		then:
+		thrown IllegalArgumentException
 	}
 
 	def "event with map parameter requires name entry"() {
