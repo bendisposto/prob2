@@ -48,18 +48,18 @@ class EventModifierTest extends Specification {
 		modifier.typeEnvironment == typeenv
 	}
 
-	def "it is possible to set a reference to the refined event"() {
+	def "it is possible to set a refined event"() {
 		when:
-		def name = "RefinedEvent"
-		modifier = modifier.refines(name)
+		def event = new Event("RefinedEvent", EventType.ORDINARY, false)
+		modifier = modifier.refines(event, false)
 
 		then:
-		modifier.getEvent().getChildrenOfType(Event.class).collect { it.getName() } == [name]
+		modifier.getEvent().getRefines() == [event]
 	}
 
 	def "refines cannot be null"() {
 		when:
-		modifier.refines(null)
+		modifier.refines(null, false)
 
 		then:
 		thrown IllegalArgumentException
@@ -941,5 +941,98 @@ class EventModifierTest extends Specification {
 		then:
 		FormulaTypeException e = thrown()
 		e.getExpected() == "IDENTIFIER"
+	}
+
+	def "refined events cause the event counter to be modified"() {
+		when:
+		Event refined = new EventModifier(new Event("refined", EventType.ORDINARY, false)).make {
+			when "x < y", "y < 6"
+			then "x := x + 1", "y := y + 1", "z := z + 1"
+		}.getEvent()
+		def refacts = refined.actions.collect { it.getName() }
+		def refgrds = refined.guards.collect { it.getName() }
+		modifier = modifier.refines(refined, true).make {
+			when "x < 4", "y < 6", "z + y < 10"
+			then "x := x * 2", "y := 4 - x", "z := m - n"
+		}
+		def event = modifier.getEvent()
+
+		then:
+		refacts == ["act0", "act1", "act2"]
+		refgrds == ["grd0", "grd1"]
+		event.actions.collect { it.getName() } == ["act3", "act4", "act5"]
+		event.guards.collect { it.getName() } == ["grd2", "grd3", "grd4"]
+	}
+
+	def "adding a refined event will rename existing actions"() {
+		when:
+		Event refined = new EventModifier(new Event("refined", EventType.ORDINARY, false)).make {
+			when "x < y", "y < 6"
+			then "x := x + 1", "y := y + 1", "z := z + 1"
+		}.getEvent()
+		def refacts = refined.actions.collect { it.getName() }
+		def refgrds = refined.guards.collect { it.getName() }
+		modifier = modifier.make {
+			when "x < 4", "y < 6", "z + y < 10"
+			then "x := x * 2", "y := 4 - x", "z := m - n"
+		}
+		def b4acts = modifier.getEvent().actions.collect { it.getName() }
+		def b4grds = modifier.getEvent().guards.collect { it.getName() }
+		def event = modifier.refines(refined, true).getEvent()
+
+		then:
+		refacts == ["act0", "act1", "act2"]
+		refgrds == ["grd0", "grd1"]
+		b4acts == ["act0", "act1", "act2"]
+		b4grds == ["grd0", "grd1", "grd2"]
+		event.actions.collect { it.getName() } == ["act3", "act4", "act5"]
+		event.guards.collect { it.getName() } == ["grd2", "grd3", "grd4"]
+	}
+
+	def "only those names with a correct prefix will be changed"() {
+		when:
+		Event refined = new EventModifier(new Event("refined", EventType.ORDINARY, false)).make {
+			when grd10: "x < y", blah: "y < 6"
+			then foo: "x := x + 1", bar: "y := y + 1", act97: "z := z + 1"
+		}.getEvent()
+		def refacts = refined.actions.collect { it.getName() }
+		def refgrds = refined.guards.collect { it.getName() }
+		modifier = modifier.make {
+			when "x < 4", "y < 6", "z + y < 10"
+			then "x := x * 2", "y := 4 - x", "z := m - n"
+		}
+		def b4acts = modifier.getEvent().actions.collect { it.getName() }
+		def b4grds = modifier.getEvent().guards.collect { it.getName() }
+		def event = modifier.refines(refined, true).getEvent()
+
+		then:
+		refacts == ["foo", "bar", "act97"]
+		refgrds == ["grd10", "blah"]
+		b4acts == ["act0", "act1", "act2"]
+		b4grds == ["grd0", "grd1", "grd2"]
+		event.actions.collect { it.getName() } == ["act98", "act99", "act100"]
+		event.guards.collect { it.getName() } == ["grd11", "grd12", "grd13"]
+	}
+
+	def "adding a an empty refined event will not affect naming"() {
+		when:
+		Event refined = new Event("refined", EventType.ORDINARY, false)
+		def refacts = refined.actions.collect { it.getName() }
+		def refgrds = refined.guards.collect { it.getName() }
+		modifier = modifier.make {
+			when "x < 4", "y < 6", "z + y < 10"
+			then "x := x * 2", "y := 4 - x", "z := m - n"
+		}
+		def b4acts = modifier.getEvent().actions.collect { it.getName() }
+		def b4grds = modifier.getEvent().guards.collect { it.getName() }
+		def event = modifier.refines(refined, true).getEvent()
+
+		then:
+		refacts == []
+		refgrds == []
+		b4acts == ["act0", "act1", "act2"]
+		b4grds == ["grd0", "grd1", "grd2"]
+		event.actions.collect { it.getName() } == b4acts
+		event.guards.collect { it.getName() } == b4grds
 	}
 }

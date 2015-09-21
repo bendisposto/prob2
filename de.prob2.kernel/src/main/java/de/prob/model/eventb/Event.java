@@ -23,7 +23,7 @@ public class Event extends BEvent {
 				type,
 				extended,
 				PersistentHashMap
-				.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
+						.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
 	}
 
 	private Event(
@@ -70,23 +70,8 @@ public class Event extends BEvent {
 	 *            from which the refined event will be retrieved
 	 * @return the event that this event refines, if any. Otherwise null.
 	 */
-	public ModelElementList<Event> getRefines(EventBMachine parentMachine) {
-		ModelElementList<EventBMachine> refines = parentMachine.getRefines();
-		if (refines.size() != 1) {
-			return new ModelElementList<Event>();
-		}
-		EventBMachine m = refines.get(0);
-		ModelElementList<Event> refined = new ModelElementList<Event>();
-		for (Event event : getChildrenOfType(Event.class)) {
-			Event e = m.getEvent(event.name);
-			if (e == null) {
-				throw new IllegalArgumentException(
-						"Attempted to retrieve event with name " + event.name
-						+ " from refinement but could not find it.");
-			}
-			refined = refined.addElement(e);
-		}
-		return refined;
+	public ModelElementList<Event> getRefines() {
+		return getChildrenOfType(Event.class);
 	}
 
 	public ModelElementList<EventBGuard> getGuards() {
