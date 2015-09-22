@@ -6,6 +6,9 @@ class AlgorithmPrettyPrinter {
 
 	Block algorithm
 
+	def AlgorithmPrettyPrinter() {
+	}
+
 	def AlgorithmPrettyPrinter(Block algorithm) {
 		this.algorithm = algorithm
 	}
@@ -13,6 +16,18 @@ class AlgorithmPrettyPrinter {
 	def String prettyPrint() {
 		StringBuilder sb = new StringBuilder()
 		printBlock(algorithm, sb, null)
+		sb.toString()
+	}
+
+	def String prettyPrint(Block b) {
+		StringBuilder sb = new StringBuilder()
+		printBlock(b, sb, null)
+		sb.toString()
+	}
+
+	def String prettyPrint(Statement stmt) {
+		StringBuilder sb = new StringBuilder()
+		printStatement(stmt, sb, "")
 		sb.toString()
 	}
 

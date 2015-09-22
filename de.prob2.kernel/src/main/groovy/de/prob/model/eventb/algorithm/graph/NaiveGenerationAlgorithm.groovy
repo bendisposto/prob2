@@ -1,20 +1,26 @@
 package de.prob.model.eventb.algorithm.graph
 
+import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.Event
 import de.prob.model.eventb.MachineModifier
+import de.prob.model.eventb.Variant
 import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
 import de.prob.model.eventb.algorithm.If
+import de.prob.model.eventb.algorithm.LoopInformation
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.TranslationAlgorithm
 import de.prob.model.eventb.algorithm.While
+import de.prob.model.representation.ModelElementList
 
 class NaiveGenerationAlgorithm extends TranslationAlgorithm {
 
 	ControlFlowGraph graph
 	Map<Statement, Integer> pcInformation
 	Set<Statement> generated = [] as Set
+	Map<Statement, LoopInformation> loopInfo = [:]
 
 	@Override
 	public MachineModifier run(MachineModifier machineM, Block algorithm) {
@@ -28,8 +34,11 @@ class NaiveGenerationAlgorithm extends TranslationAlgorithm {
 					machineM = machineM.invariant("pc = ${pcInformation[stmt]} => (${a.assertion.getCode()})")
 				}
 			}
-
-			return addNode(machineM, graph.entryNode)
+			machineM =  addNode(machineM, graph.entryNode)
+			def loops = []
+			loopInfo.each { k, v -> loops << v }
+			def loopI = new ModelElementList<LoopInformation>(loops)
+			machineM = new MachineModifier(machineM.getMachine().set(LoopInformation.class, loopI), machineM.typeEnvironment)
 		}
 		return machineM
 	}
@@ -57,6 +66,9 @@ class NaiveGenerationAlgorithm extends TranslationAlgorithm {
 			}
 
 			machineM = addNode(machineM, outEdge.to)
+			if (outEdge.loopToWhile) {
+				addLoopInfo(outEdge, machineM.getMachine().getEvent(name))
+			}
 		}
 		if (graph.outEdges(stmt) == []) {
 			def name = graph.nodeMapping.getName(stmt)
@@ -92,5 +104,17 @@ class NaiveGenerationAlgorithm extends TranslationAlgorithm {
 			return "${graph.nodeMapping.getName(s)}_else"
 		}
 		return "${graph.nodeMapping.getName(s)}"
+	}
+
+	def addLoopInfo(Edge edge, Event loopEvent) {
+		def w = edge.to
+		def name = graph.nodeMapping.getName(w)
+		assert w instanceof While
+		if (loopInfo[w] == null && w.variant != null) {
+			loopInfo[w] = new LoopInformation(name, w, new Variant(w.variant, name), [])
+		}
+		if (!loopInfo[w].loopStatements.contains(loopEvent)) {
+			loopInfo[w] = loopInfo[w].add(loopEvent)
+		}
 	}
 }

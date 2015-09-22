@@ -7,6 +7,7 @@ import de.prob.statespace.StateSpace;
 
 class NaiveAlgorithmPrototype extends TranslationAlgorithm {
 	def MachineModifier machineM
+	def whilectr = 0
 
 	@Override
 	public MachineModifier run(MachineModifier machineModifier, Block algorithm) {
@@ -66,7 +67,9 @@ class NaiveAlgorithmPrototype extends TranslationAlgorithm {
 		}
 		if (statement.variant) {
 			def machine = machineM.getMachine()
-			def loopInfo = new LoopInformation(new Variant(statement.variant, null), machine.events.getElement(enter_while_name), machine.events.getElement(loop_name), pc, npc)
+			def loopInfo = new LoopInformation("while${whilectr++}", statement, new Variant(statement.variant, null), [
+				machine.events.getElement(loop_name)
+			])
 			machineM = new MachineModifier(machine.addTo(LoopInformation.class, loopInfo))
 		}
 

@@ -8,11 +8,13 @@ public class Edge {
 	def Statement from
 	def Statement to
 	def List<EventB> conditions
+	def final boolean loopToWhile
 
-	def Edge(Statement from, Statement to, List<EventB> conditions) {
+	def Edge(Statement from, Statement to, List<EventB> conditions, loopToWhile=false) {
 		this.from = from
 		this.to = to
 		this.conditions = conditions
+		this.loopToWhile = loopToWhile
 	}
 
 	@Override

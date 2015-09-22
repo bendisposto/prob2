@@ -35,10 +35,10 @@ class ControlFlowGraph {
 		}
 	}
 
-	def addEdge(Statement from, Statement to, List<EventB> conditions) {
+	def addEdge(Statement from, Statement to, List<EventB> conditions, boolean loopToWhile=false) {
 		nodes.add(from)
 		nodes.add(to)
-		Edge e = new Edge(from, to, conditions)
+		Edge e = new Edge(from, to, conditions, loopToWhile)
 		if (!outgoingEdges[from]) {
 			outgoingEdges[from] = new LinkedHashSet<Edge>()
 		}
@@ -65,7 +65,7 @@ class ControlFlowGraph {
 		}
 		addEdge(w, block.first(), [w.condition])
 		addNode(block.first(), block.tail())
-		addSpecialEdge(block.last(), w)
+		addSpecialEdge(block.last(), w, true)
 
 		if (!stmts.isEmpty()) {
 			addEdge(w, stmts.first(), [w.notCondition])
@@ -73,24 +73,24 @@ class ControlFlowGraph {
 		}
 	}
 
-	def addSpecialEdge(Assignments from, Statement to) {
-		addEdge(from, to, [])
+	def addSpecialEdge(Assignments from, Statement to, boolean loopToWhile) {
+		addEdge(from, to, [], loopToWhile)
 	}
 
-	def addSpecialEdge(While from, Statement to) {
-		addEdge(from, to, [from.notCondition])
+	def addSpecialEdge(While from, Statement to, boolean loopToWhile) {
+		addEdge(from, to, [from.notCondition], loopToWhile)
 	}
 
-	def addSpecialEdge(If from, Statement to) {
+	def addSpecialEdge(If from, Statement to, boolean loopToWhile) {
 		if (from.Then.statements.isEmpty()) {
-			addEdge(from, to, [from.condition])
+			addEdge(from, to, [from.condition], loopToWhile)
 		} else {
-			addSpecialEdge(from.Then.statements.last(), to)
+			addSpecialEdge(from.Then.statements.last(), to, loopToWhile)
 		}
 		if (from.Else.statements.isEmpty()) {
-			addEdge(from, to, [from.elseCondition])
+			addEdge(from, to, [from.elseCondition], loopToWhile)
 		} else {
-			addSpecialEdge(from.Else.statements.last(), to)
+			addSpecialEdge(from.Else.statements.last(), to, loopToWhile)
 		}
 	}
 
@@ -99,7 +99,7 @@ class ControlFlowGraph {
 			addEdge(i, i.Then.statements.first(), [i.condition])
 			addNode(i.Then.statements.first(), i.Then.statements.tail())
 			if (!stmts.isEmpty()) {
-				addSpecialEdge(i.Then.statements.last(), stmts.first())
+				addSpecialEdge(i.Then.statements.last(), stmts.first(), false)
 			}
 		} else if (!stmts.isEmpty()) {
 			addEdge(i, stmts.first(), [i.condition])
@@ -109,7 +109,7 @@ class ControlFlowGraph {
 			addEdge(i, i.Else.statements.first(), [i.elseCondition])
 			addNode(i.Else.statements.first(), i.Else.statements.tail())
 			if (!stmts.isEmpty()) {
-				addSpecialEdge(i.Else.statements.last(), stmts.first())
+				addSpecialEdge(i.Else.statements.last(), stmts.first(), false)
 			}
 		} else if (!stmts.isEmpty()) {
 			addEdge(i, stmts.first(), [i.elseCondition])
