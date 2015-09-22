@@ -40,16 +40,16 @@ class NaiveTerminationAnalysis {
 		def baseName = m.getName()
 		// change loop event to anticipated in the refinement
 		loopInfo.loopStatements.each { Event loopE ->
-			modelM = modelM.machine(name: baseName, comment: comment) {
+			modelM = modelM.machine(name: baseName) {
 				event(name: loopE.getName(), type: EventType.ANTICIPATED) {}
 			}
 		}
 
-
 		def refinementName = "${baseName}_${loopInfo.stmtName}"
 		modelM = modelM.refine(baseName, refinementName)
-
-		modelM = modelM.machine(name: refinementName, refines: baseName, sees: m.getSees().collect { it.getName() }) {
+		def comment = "Termination Proof for: \n"+new AlgorithmPrettyPrinter().prettyPrint(loopInfo.stmt)
+		modelM = modelM.machine(name: refinementName, comment: comment,
+		refines: baseName, sees: m.getSees().collect { it.getName() }) {
 			variable "var"
 			invariant typingVar: typingVariant
 			initialisation(extended: true) { then init }
@@ -78,9 +78,13 @@ class NaiveTerminationAnalysis {
 	def String initForVariant(EventBMachine machine, StateSpace s, Variant variant) {
 		assert machine.variables.var == null
 
+		def axioms = machine.sees.collect { Context c ->
+			c.axioms.collect { "(${it.getPredicate().getCode()})" }.iterator().join(" & ")
+		}.iterator().join(" & ")
+
 		def init = machine.events.INITIALISATION
 		def assignments = init.getActions().collect { it.getCode().getCode().replace(":=","=") }.join(' & ')
-		def pred = "${assignments} & var = ${variant.getExpression().getCode()}"
+		def pred = "${axioms} & ${assignments} & var = ${variant.getExpression().getCode()}"
 		"var := ${cbc(s, pred).var}"
 	}
 
