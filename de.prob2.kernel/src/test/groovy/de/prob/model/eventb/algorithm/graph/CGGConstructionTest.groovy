@@ -28,7 +28,8 @@ public class CGGConstructionTest extends Specification {
 		g.outgoingEdges[g.getNode(from)].findAll {
 			it.to == g.getNode(to)
 		}.collect {
-			it.conditions.collect { it.getCode() } } as Set
+			it.conditions.collect { it.getCode()
+			} } as Set
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
@@ -227,10 +228,7 @@ public class CGGConstructionTest extends Specification {
 		when:
 		def DEBUG = false
 		def graph = graph({
-			If("x < 4") {
-				Then("x := 1")
-				Else {}
-			}
+			If("x < 4") { Then("x := 1") }
 		})
 
 		then:
