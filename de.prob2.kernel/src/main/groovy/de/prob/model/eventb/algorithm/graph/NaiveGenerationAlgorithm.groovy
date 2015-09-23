@@ -21,10 +21,15 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 	Map<Statement, Integer> pcInformation
 	Set<Statement> generated = [] as Set
 	Map<Statement, LoopInformation> loopInfo = [:]
+	List<IGraphTransformer> transformers
+
+	def NaiveGenerationAlgorithm(List<IGraphTransformer> transformers=[]) {
+		this.transformers = transformers
+	}
 
 	@Override
 	public MachineModifier run(MachineModifier machineM, Block algorithm) {
-		graph = new ControlFlowGraph(algorithm)
+		graph = transformers.inject(new ControlFlowGraph(algorithm)) { ControlFlowGraph g, IGraphTransformer t -> t.transform(g) }
 		pcInformation = new PCCalculator(graph).pcInformation
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm).prettyPrint())
 		if (graph.entryNode) {
