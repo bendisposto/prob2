@@ -9,7 +9,7 @@ public class PCCalculationTest extends Specification {
 
 	def PCCalculator graph(Closure cls) {
 		Block b = new Block().make(cls)
-		return new PCCalculator(new ControlFlowGraph(b))
+		return new PCCalculator(new ControlFlowGraph(b), false)
 	}
 
 	def pcInfo(PCCalculator calc) {

@@ -30,7 +30,7 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 	@Override
 	public MachineModifier run(MachineModifier machineM, Block algorithm) {
 		graph = transformers.inject(new ControlFlowGraph(algorithm)) { ControlFlowGraph g, IGraphTransformer t -> t.transform(g) }
-		pcInformation = new PCCalculator(graph).pcInformation
+		pcInformation = new PCCalculator(graph, false).pcInformation
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm).prettyPrint())
 		if (graph.entryNode) {
 			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")

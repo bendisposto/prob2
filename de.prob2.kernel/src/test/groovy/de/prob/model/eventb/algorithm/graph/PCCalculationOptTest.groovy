@@ -5,11 +5,11 @@ import spock.lang.Specification
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
 
-public class PCCalculationWMergeTest extends Specification {
+public class PCCalculationOptTest extends Specification {
 
 	def PCCalculator graph(Closure cls) {
 		Block b = new Block().make(cls)
-		return new PCCalculator(new GraphMerge().transform(new ControlFlowGraph(b)), false)
+		return new PCCalculator(new ControlFlowGraph(b), true)
 	}
 
 	def pcInfo(PCCalculator calc) {
@@ -39,7 +39,7 @@ public class PCCalculationWMergeTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, assign0: 1, assign1: 2, assign2: 3]
+		pcInfo(graph) == [while0: 0, if0: 1, assign1: 2]
 	}
 
 	def "russische bauernmultiplikation"(){
@@ -55,7 +55,7 @@ public class PCCalculationWMergeTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, assign0: 1, if0: 2, assign1: 3, assign2: 4]
+		pcInfo(graph) == [while0: 0, if0: 1]
 	}
 
 	def "complicated while if"() {
@@ -88,31 +88,26 @@ public class PCCalculationWMergeTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, assign0: 1, assign1: 2, assign2: 3, assign3: 4,
-			if3: 5, assign4: 6, assign5: 7, assign6: 8, assign7: 9, assign8: 10]
+		pcInfo(graph) == [while0: 0, if0: 1, if1: 2, if2: 3, if3: 4,
+			assign6: 5, assign8: 6]
 	}
 
 	def "complicated while if 2"() {
 		when:
 		def DEBUG = false
 		def graph = graph({
-			Assign("y := 0")
-			Assign("x := 2")
+			Assign("y := 0", "x := 2")
 			While("x = 2") {
 				Assign("y := y + 1")
 				If ("y > 10")  { Then("x := 3") }
 			}
-			While("x + y < 20") {
-				Assign("x := x + 1")
-				Assign("y := y + 1")
-			}
+			While("x + y < 20") { Assign("x := x + 1", "y := y + 1") }
 			Assert("x + y > 20")
 		})
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [assign0: 0, while0: 1, assign1: 2, if0: 3,
-			assign2: 4, while1: 5, assign3: 6, assign4: 7]
+		pcInfo(graph) == [assign0: 0, while0: 1, if0: 2, while1: 3]
 	}
 
 	def "loop within loop"() {
@@ -132,6 +127,6 @@ public class PCCalculationWMergeTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, while1: 1, assign0: 2, assign1: 3, assign2: 4, assign3: 5]
+		pcInfo(graph) == [while0: 0, if0: 1, while1: 2, assign3: 3]
 	}
 }
