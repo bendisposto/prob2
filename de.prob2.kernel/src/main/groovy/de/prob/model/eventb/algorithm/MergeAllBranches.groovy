@@ -8,7 +8,7 @@ import de.prob.model.eventb.algorithm.graph.AlgorithmToGraph
 import de.prob.model.eventb.algorithm.graph.BranchCondition
 import de.prob.model.eventb.algorithm.graph.EventInfo
 
-class MergeAllBranches extends TranslationAlgorithm {
+class MergeAllBranches implements ITranslationAlgorithm {
 
 	def MachineModifier run(MachineModifier machineM, Block b) {
 		def namectr = 0

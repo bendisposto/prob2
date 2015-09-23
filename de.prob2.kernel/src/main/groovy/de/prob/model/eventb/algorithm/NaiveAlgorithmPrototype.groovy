@@ -5,7 +5,7 @@ import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.Variant
 import de.prob.statespace.StateSpace;
 
-class NaiveAlgorithmPrototype extends TranslationAlgorithm {
+class NaiveAlgorithmPrototype implements ITranslationAlgorithm {
 	def MachineModifier machineM
 	def whilectr = 0
 

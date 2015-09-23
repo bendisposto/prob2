@@ -12,9 +12,9 @@ import de.prob.model.representation.Machine
 
 class AlgorithmTranslator {
 	def EventBModel model
-	def TranslationAlgorithm translator
+	def ITranslationAlgorithm translator
 
-	def AlgorithmTranslator(EventBModel model, TranslationAlgorithm translator) {
+	def AlgorithmTranslator(EventBModel model, ITranslationAlgorithm translator) {
 		this.model = model
 		this.translator = translator
 	}

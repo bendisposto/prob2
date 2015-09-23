@@ -11,11 +11,11 @@ import de.prob.model.eventb.algorithm.Block
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.LoopInformation
 import de.prob.model.eventb.algorithm.Statement
-import de.prob.model.eventb.algorithm.TranslationAlgorithm
+import de.prob.model.eventb.algorithm.ITranslationAlgorithm
 import de.prob.model.eventb.algorithm.While
 import de.prob.model.representation.ModelElementList
 
-class NaiveGenerationAlgorithm extends TranslationAlgorithm {
+class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 
 	ControlFlowGraph graph
 	Map<Statement, Integer> pcInformation
