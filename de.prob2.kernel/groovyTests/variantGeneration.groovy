@@ -1,9 +1,11 @@
 import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-import de.prob.model.eventb.algorithm.NaiveAlgorithmTranslator
+import de.prob.model.eventb.ModelModifier
+import de.prob.model.eventb.algorithm.AlgorithmTranslator
+import de.prob.model.eventb.algorithm.LoopInformation
+import de.prob.model.eventb.algorithm.NaiveAlgorithmPrototype
 import de.prob.model.eventb.algorithm.NaiveTerminationAnalysis
-import de.prob.model.eventb.algorithm.LoopInformation;
 import de.prob.model.eventb.translate.*
+import de.prob.statespace.*
 
 /*
  * x≔ 10
@@ -35,7 +37,7 @@ def actions(evt) {
 	evt.actions.collect { it.getCode().getCode() }
 }
 
-m = new NaiveAlgorithmTranslator(mm.getModel()).run()
+m = new AlgorithmTranslator(mm.getModel(), new NaiveAlgorithmPrototype()).run()
 m = new NaiveTerminationAnalysis(m).run()
 e = m.MyLoop
 
@@ -73,12 +75,9 @@ loopInfos = e.getChildrenOfType(LoopInformation.class)
 assert loopInfos.size() == 1
 loopInfo = loopInfos[0]
 assert loopInfo.variant.getExpression().getCode() == "x"
-assert loopInfo.loopBegin == e.events.evt0_enter_while
-assert loopInfo.lastStatement.getName() == "evt3_loop"
-assert loopInfo.startPc == 0
-assert loopInfo.lastStmtPc == 3
+assert loopInfo.loopStatements[0].getName() == "evt3_loop"
 
-e = m.MyLoop_loop0
+e = m.MyLoop_while0
 assert e.events.INITIALISATION.isExtended()
 assert actions(e.events.INITIALISATION) == ["var := 10"]
 assert e.events.evt0_enter_while.isExtended()

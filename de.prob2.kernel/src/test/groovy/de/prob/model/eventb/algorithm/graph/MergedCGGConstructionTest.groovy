@@ -29,8 +29,7 @@ public class MergedCGGConstructionTest extends Specification {
 		g.outgoingEdges[g.getNode(from)].findAll {
 			it.to == g.getNode(to)
 		}.collect {
-			it.conditions.collect { it.getCode()
-			} } as Set
+			it.conditions.collect { it.getCode() } } as Set
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
@@ -467,7 +466,7 @@ public class MergedCGGConstructionTest extends Specification {
 
 	def "loopity loop loop loop"() {
 		when:
-		def DEBUG = true
+		def DEBUG = false
 		def graph = graph({
 			While("x < 50") {
 				If("y > x") {

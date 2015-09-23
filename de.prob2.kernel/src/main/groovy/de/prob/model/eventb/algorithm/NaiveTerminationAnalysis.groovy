@@ -80,11 +80,13 @@ class NaiveTerminationAnalysis {
 
 		def axioms = machine.sees.collect { Context c ->
 			c.axioms.collect { "(${it.getPredicate().getCode()})" }.iterator().join(" & ")
-		}.iterator().join(" & ")
+		}.findAll { it != "" }.iterator().join(" & ")
+
+		axioms = axioms == "" ? "" : axioms + " & "
 
 		def init = machine.events.INITIALISATION
 		def assignments = init.getActions().collect { it.getCode().getCode().replace(":=","=") }.join(' & ')
-		def pred = "${axioms} & ${assignments} & var = ${variant.getExpression().getCode()}"
+		def pred = "$axioms ${assignments} & var = ${variant.getExpression().getCode()}"
 		"var := ${cbc(s, pred).var}"
 	}
 
