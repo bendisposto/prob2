@@ -8,29 +8,29 @@ import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.ITranslationAlgorithm
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.LoopInformation
 import de.prob.model.eventb.algorithm.Statement
-import de.prob.model.eventb.algorithm.ITranslationAlgorithm
 import de.prob.model.eventb.algorithm.While
 import de.prob.model.representation.ModelElementList
 
-class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
+class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 
 	ControlFlowGraph graph
 	Map<Statement, Integer> pcInformation
-	Set<Statement> generated = [] as Set
+	final Set<Statement> generated = [] as Set
 	Map<Statement, LoopInformation> loopInfo = [:]
 	List<IGraphTransformer> transformers
 
-	def NaiveGenerationAlgorithm(List<IGraphTransformer> transformers=[]) {
+	def OptimizedGenerationAlgorithm(List<IGraphTransformer> transformers=[]) {
 		this.transformers = transformers
 	}
 
 	@Override
 	public MachineModifier run(MachineModifier machineM, Block algorithm) {
 		graph = transformers.inject(new ControlFlowGraph(algorithm)) { ControlFlowGraph g, IGraphTransformer t -> t.transform(g) }
-		pcInformation = new PCCalculator(graph, false).pcInformation
+		pcInformation = new PCCalculator(graph, true).pcInformation
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm).prettyPrint())
 		if (graph.entryNode) {
 			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
@@ -48,32 +48,44 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 		return machineM
 	}
 
-	def MachineModifier addNode(MachineModifier machineM, final Statement stmt) {
+	def MachineModifier addNode(MachineModifier machineM, Statement stmt) {
 		if (generated.contains(stmt)) {
 			return machineM
 		}
 		generated << stmt
 		final pcs = pcInformation
 
+		def branch = stmt instanceof While || stmt instanceof If
 		graph.outEdges(stmt).each { final Edge outEdge ->
 			def name = extractName(outEdge)
+			def node = null
+			if (branch && outEdge.to instanceof Assignments) {
+				generated << outEdge.to
+				if (!graph.outEdges(outEdge.to).isEmpty()) {
+					node = graph.outEdges(outEdge.to).first().to
+				}
+			}
+			final nextN = node ?: outEdge.to
 
 			machineM = machineM.event(name: name, comment: stmt.toString()) {
 				guard "pc = ${pcs[stmt]}"
 				outEdge.conditions.each { guard it }
 				if (stmt instanceof Assignments) {
 					stmt.assignments.each { action it }
+				} else if (branch && outEdge.to instanceof Assignments) {
+					outEdge.to.assignments.each { action it }
 				}
-				if (pcs[outEdge.to] != null) {
-					action "pc := ${pcs[outEdge.to]}"
+				if (pcs[nextN] != null) {
+					action "pc := ${pcs[nextN]}"
 				}
 			}
 
-			machineM = addNode(machineM, outEdge.to)
+			machineM = addNode(machineM, nextN)
 			if (outEdge.loopToWhile) {
 				addLoopInfo(outEdge, machineM.getMachine().getEvent(name))
 			}
 		}
+
 		if (graph.outEdges(stmt) == []) {
 			def name = graph.nodeMapping.getName(stmt)
 			if (stmt instanceof Assignments && !stmt.assignments.isEmpty()) {
