@@ -2,6 +2,7 @@ package de.prob.model.eventb.algorithm
 
 import de.prob.animator.command.CbcSolveCommand
 import de.prob.animator.domainobjects.EvalResult
+import de.prob.model.eventb.Context
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
@@ -35,7 +36,6 @@ class NaiveTerminationAnalysis {
 		StateSpace s = modelM.getModel().load(m)
 		String typingVariant = typingForVariant(m, s, loopInfo.variant)
 		String init = initForVariant(m, s, loopInfo.variant)
-		def comment = "Termination Proof for: \n"+new AlgorithmPrettyPrinter().prettyPrint(loopInfo.stmt)
 
 		def baseName = m.getName()
 		// change loop event to anticipated in the refinement
