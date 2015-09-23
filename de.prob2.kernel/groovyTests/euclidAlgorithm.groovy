@@ -2,6 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
 import de.prob.model.eventb.algorithm.NaiveTerminationAnalysis
+import de.prob.model.eventb.algorithm.graph.GraphMerge
 import de.prob.model.eventb.algorithm.graph.NaiveGenerationAlgorithm
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
@@ -75,10 +76,10 @@ def actions(evt) {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new NaiveGenerationAlgorithm()).run()
+m = new AlgorithmTranslator(m, new NaiveGenerationAlgorithm([new GraphMerge()])).run()
 
 //m = new AlgorithmTranslator(m, new NaiveAlgorithmPrototype()).run()
-m = new NaiveTerminationAnalysis(m).run()
+//m = new NaiveTerminationAnalysis(m).run()
 
 /*
 e = m.euclid

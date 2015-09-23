@@ -57,7 +57,7 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 
 		def found = false
 		graph.outEdges(stmt).each { final Edge outEdge ->
-			def name = extractName(stmt, outEdge)
+			def name = extractName(outEdge)
 
 			machineM = machineM.event(name: name, comment: stmt.toString()) {
 				guard "pc = ${pcs[stmt]}"
@@ -87,28 +87,38 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 		machineM
 	}
 
-	def String extractName(Assignments s, Edge e) {
-		return "${graph.nodeMapping.getName(s)}"
+	def String extractName(Edge e) {
+		List<Statement> statements = graph.edgeMapping[e]
+		if (statements.size() == 1 && statements[0] instanceof Assignments) {
+			assert e.conditions.isEmpty()
+			return "${graph.nodeMapping.getName(statements[0])}"
+		}
+		assert e.conditions.size() == statements.size()
+		[statements, e.conditions].transpose().collect { l ->
+			extractName(l[0], l[1])
+		}.iterator().join("_")
 	}
 
-	def String extractName(While s, Edge e) {
-		if (e.getConditions() == [s.condition]) {
-			return "enter_${graph.nodeMapping.getName(s)}"
+	def String extractName(While s, EventB condition) {
+		def name = graph.nodeMapping.getName(s)
+		if (condition == s.condition) {
+			return "enter_$name"
 		}
-		if (e.getConditions() == [s.notCondition]) {
-			return "exit_${graph.nodeMapping.getName(s)}"
+		if (condition == s.notCondition) {
+			return "exit_$name"
 		}
-		return "${graph.nodeMapping.getName(s)}"
+		return "unknown_branch_$name"
 	}
 
-	def String extractName(If s, Edge e) {
-		if (e.getConditions() == [s.condition]) {
-			return "${graph.nodeMapping.getName(s)}_then"
+	def String extractName(If s, EventB condition) {
+		def name = graph.nodeMapping.getName(s)
+		if (condition == s.condition) {
+			return "${name}_then"
 		}
-		if (e.getConditions() == [s.elseCondition]) {
-			return "${graph.nodeMapping.getName(s)}_else"
+		if (condition == s.elseCondition) {
+			return "${name}_else"
 		}
-		return "${graph.nodeMapping.getName(s)}"
+		return "unknown_branch_$name"
 	}
 
 	def addLoopInfo(Edge edge, Event loopEvent) {

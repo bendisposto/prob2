@@ -14,6 +14,7 @@ class ControlFlowGraph {
 	LinkedHashSet<Statement> nodes = new LinkedHashSet<Statement>()
 	LinkedHashMap<Statement, Set<Edge>> outgoingEdges = new LinkedHashMap<Statement, Set<Edge>>()
 	LinkedHashMap<Statement, Set<Edge>> incomingEdges = new LinkedHashMap<Statement, Set<Edge>>()
+	Map<Edge, List<Statement>> edgeMapping = [:]
 	NodeNaming nodeMapping
 	Statement entryNode
 
@@ -47,6 +48,8 @@ class ControlFlowGraph {
 		}
 		outgoingEdges[from].add(e)
 		incomingEdges[to].add(e)
+		edgeMapping[e] = [from]
+		e
 	}
 
 	def addNode(Assignments a, List<Statement> stmts) {

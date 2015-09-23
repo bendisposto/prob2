@@ -5,11 +5,11 @@ import spock.lang.Specification
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
 
-public class CGGConstructionTest extends Specification {
+public class MergedCGGConstructionTest extends Specification {
 
 	def ControlFlowGraph graph(Closure cls) {
 		Block b = new Block().make(cls)
-		return new ControlFlowGraph(b)
+		return new GraphMerge().transform((new ControlFlowGraph(b)))
 	}
 
 	def nodes(ControlFlowGraph g, String... names) {
@@ -302,13 +302,12 @@ public class CGGConstructionTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "while0", "if0")
-		graph.size() == 5
+		graph.size() == 4
+		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "while0")
 		assertions(graph, "assign1") == ["u > v"] as Set
 		assertions(graph, "assign2") == ["u|->m|->n : IsGCD"] as Set
-		edge(graph, "while0", "if0") == ["u /= 0"]
-		edge(graph, "if0", "assign0") == ["u < v"]
-		edge(graph, "if0", "assign1") == ["not(u < v)"]
+		edge(graph, "while0", "assign0") == ["u /= 0", "u < v"]
+		edge(graph, "while0", "assign1") == ["u /= 0", "not(u < v)"]
 		edge(graph, "assign0", "assign1") == []
 		edge(graph, "assign1", "while0") == []
 		edge(graph, "while0", "assign2") == ["not(u /= 0)"]
@@ -368,19 +367,30 @@ public class CGGConstructionTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		graph.size() == 14
+		graph.size() == 11
 		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "assign3", "assign4",
-				"assign5", "assign6", "assign7", "assign8", "while0", "if0", "if1", "if2", "if3")
-		edge(graph, "while0","if0") == ["x : ODD"]
-		edge(graph, "if0", "assign0") == ["x = 2"]
+				"assign5", "assign6", "assign7", "assign8", "while0", "if3")
+		edge(graph, "while0","assign0") == ["x : ODD", "x = 2"]
+		edge(graph, "while0", "assign1") == [
+			"x : ODD",
+			"not(x = 2)",
+			"x = 3"
+		]
+		edge(graph, "while0", "assign2") == [
+			"x : ODD",
+			"not(x = 2)",
+			"not(x = 3)",
+			"x = 4"
+		]
+		edge(graph, "while0", "assign3") == [
+			"x : ODD",
+			"not(x = 2)",
+			"not(x = 3)",
+			"not(x = 4)"
+		]
 		edge(graph, "assign0","if3") == []
-		edge(graph, "if0", "if1") == ["not(x = 2)"]
-		edge(graph, "if1", "assign1") == ["x = 3"]
 		edge(graph, "assign1", "if3") == []
-		edge(graph, "if1", "if2") == ["not(x = 3)"]
-		edge(graph, "if2", "assign2") == ["x = 4"]
 		edge(graph, "assign2", "if3") == []
-		edge(graph, "if2", "assign3") == ["not(x = 4)"]
 		edge(graph, "assign3", "if3") == []
 		edge(graph, "if3", "assign4") == ["y = 3"]
 		edge(graph, "if3", "assign5") == ["not(y = 3)"]
@@ -442,15 +452,14 @@ public class CGGConstructionTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		graph.size() == 7
+		graph.size() == 6
 		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "assign3",
-				"while0", "while1", "if0")
-		edge(graph, "while0", "if0") == ["x < 50"]
-		edge(graph, "if0", "while1") == ["y > x"]
+				"while0", "while1")
+		edge(graph, "while0", "while1") == ["x < 50", "y > x"]
 		edge(graph, "while1", "assign0") == ["x < y"]
 		edge(graph, "assign0", "while1") == []
 		edge(graph, "while1", "assign1") == ["not(x < y)"]
-		edge(graph, "if0", "assign1") == ["not(y > x)"]
+		edge(graph, "while0", "assign1") == ["x < 50", "not(y > x)"]
 		edge(graph, "assign1", "while0") == []
 		edge(graph, "while0", "assign2") == ["not(x < 50)"]
 		edge(graph, "assign2", "assign3") == []
@@ -475,20 +484,18 @@ public class CGGConstructionTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		graph.size() == 9
+		graph.size() == 7
 		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "assign3",
-				"while0", "while1", "while2", "if0", "if1")
-		edge(graph, "while0", "if0") == ["x < 50"]
-		edge(graph, "if0", "while1") == ["y > x"]
+				"while0", "while1", "while2")
+		edge(graph, "while0", "while1") == ["x < 50", "y > x"]
 		edge(graph, "while1", "assign0") == ["x < y"]
 		edge(graph, "assign0", "while1") == []
 		edge(graph, "while1", "while0") == ["not(x < y)"]
-		edge(graph, "if0", "while0") == ["not(y > x)"]
+		edge(graph, "while0", "while0") == ["x < 50", "not(y > x)"]
 		edge(graph, "while0", "while2") == ["not(x < 50)"]
-		edge(graph, "while2", "if1") == ["z < 50"]
-		edge(graph, "if1", "assign1") == ["z < 0"]
+		edge(graph, "while2", "assign1") == ["z < 50", "z < 0"]
 		edge(graph, "assign1", "assign2") == []
-		edge(graph, "if1", "assign2") == ["not(z < 0)"]
+		edge(graph, "while2", "assign2") == ["z < 50", "not(z < 0)"]
 		edge(graph, "assign2", "while2") == []
 		edge(graph, "while2", "assign3") == ["not(z < 50)"]
 	}
