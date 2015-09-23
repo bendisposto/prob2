@@ -69,18 +69,18 @@ class NaiveAlgorithmTranslation extends Specification {
 
 		e.if0_else != null
 		guards(e.if0_else) == ["pc = 0", "not(x < 0)"]
-		actions(e.if0_else) == ["pc := 3"]
+		actions(e.if0_else) == ["pc := 2"]
 
 		e.assign0 != null
 		guards(e.assign0) == ["pc = 1"]
-		actions(e.assign0) == ["x := 0", "pc := 2"]
+		actions(e.assign0) == ["x := 0", "pc := 3"]
 
 		e.assign1 != null
-		guards(e.assign1) == ["pc = 3"]
-		actions(e.assign1) == ["x := 2", "pc := 2"]
+		guards(e.assign1) == ["pc = 2"]
+		actions(e.assign1) == ["x := 2", "pc := 3"]
 
 		e.assign2 != null
-		guards(e.assign2) == ["pc = 2"]
+		guards(e.assign2) == ["pc = 3"]
 		actions(e.assign2) == []
 	}
 

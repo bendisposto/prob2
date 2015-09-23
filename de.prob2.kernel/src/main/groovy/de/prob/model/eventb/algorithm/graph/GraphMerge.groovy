@@ -18,6 +18,7 @@ class GraphMerge implements IGraphTransformer {
 		if (graph.entryNode) {
 			this.graph.nodeMapping = graph.nodeMapping
 			this.graph.algorithm = graph.algorithm
+			this.graph.woAssertions = graph.woAssertions
 			this.graph.assertions = graph.assertions
 			this.graph.entryNode = mergeGraph(graph, graph.entryNode)
 		} else {

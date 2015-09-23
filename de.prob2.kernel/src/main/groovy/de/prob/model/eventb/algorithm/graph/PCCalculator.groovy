@@ -1,7 +1,11 @@
 package de.prob.model.eventb.algorithm.graph
 
+import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
+import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
+import de.prob.model.eventb.algorithm.While
 
 class PCCalculator {
 	ControlFlowGraph graph
@@ -11,18 +15,37 @@ class PCCalculator {
 	def PCCalculator(ControlFlowGraph graph) {
 		this.graph = graph
 		pcInformation = [:]
-		if (graph.entryNode) {
-			addNode(graph.entryNode)
+		addBlock(graph.woAssertions)
+	}
+
+	def addBlock(Block block) {
+		block.statements.each { Statement stmt ->
+			addStatement(stmt)
 		}
 	}
 
-	def addNode(Statement stmt) {
-		if (pcInformation[stmt] != null) {
-			return
+	def addStatement(While s) {
+		if (graph.nodes.contains(s)) {
+			pcInformation[s] = pc++
 		}
-		pcInformation[stmt] = pc++
-		graph.outEdges(stmt).each { Edge e ->
-			addNode(e.to)
+		addBlock(s.block)
+	}
+
+	def addStatement(If s) {
+		if (graph.nodes.contains(s)) {
+			pcInformation[s] = pc++
 		}
+		addBlock(s.Then)
+		addBlock(s.Else)
+	}
+
+	def addStatement(Assignments s) {
+		if (graph.nodes.contains(s)) {
+			pcInformation[s] = pc++
+		}
+	}
+
+	def addStatement(Assertion s) {
+		// do nothing
 	}
 }

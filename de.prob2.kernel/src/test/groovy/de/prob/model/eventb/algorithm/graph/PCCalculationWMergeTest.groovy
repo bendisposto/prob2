@@ -5,11 +5,11 @@ import spock.lang.Specification
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
 
-public class PCCalculationTest extends Specification {
+public class PCCalculationWMergeTest extends Specification {
 
 	def PCCalculator graph(Closure cls) {
 		Block b = new Block().make(cls)
-		return new PCCalculator(new ControlFlowGraph(b))
+		return new PCCalculator(new GraphMerge().transform(new ControlFlowGraph(b)))
 	}
 
 	def pcInfo(PCCalculator calc) {
@@ -39,7 +39,7 @@ public class PCCalculationTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, if0: 1, assign0: 2, assign1: 3, assign2: 4]
+		pcInfo(graph) == [while0: 0, assign0: 1, assign1: 2, assign2: 3]
 	}
 
 	def "russische bauernmultiplikation"(){
@@ -88,8 +88,8 @@ public class PCCalculationTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, if0: 1, assign0: 2, if1: 3, assign1: 4, if2: 5, assign2: 6, assign3: 7,
-			if3: 8, assign4: 9, assign5: 10, assign6: 11, assign7: 12, assign8: 13]
+		pcInfo(graph) == [while0: 0, assign0: 1, assign1: 2, assign2: 3, assign3: 4,
+			if3: 5, assign4: 6, assign5: 7, assign6: 8, assign7: 9, assign8: 10]
 	}
 
 	def "complicated while if 2"() {
@@ -132,6 +132,6 @@ public class PCCalculationTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, if0: 1, while1: 2, assign0: 3, assign1: 4, assign2: 5, assign3: 6]
+		pcInfo(graph) == [while0: 0, while1: 1, assign0: 2, assign1: 3, assign2: 4, assign3: 5]
 	}
 }

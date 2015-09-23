@@ -19,6 +19,7 @@ class ControlFlowGraph {
 	Statement entryNode
 
 	Block algorithm
+	Block woAssertions
 
 	def ControlFlowGraph(Block algorithm) {
 		if (!algorithm.statements.isEmpty()) {
@@ -28,6 +29,7 @@ class ControlFlowGraph {
 			AssertionExtractor e = new AssertionExtractor(a)
 			assertions = e.assertions
 			nodeMapping = new NodeNaming(e.algorithm)
+			this.woAssertions = e.algorithm
 
 			if (!e.algorithm.statements.isEmpty()) {
 				entryNode = e.algorithm.statements.first()

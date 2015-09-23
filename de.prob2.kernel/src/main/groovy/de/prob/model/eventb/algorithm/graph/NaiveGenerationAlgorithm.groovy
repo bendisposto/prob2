@@ -127,8 +127,7 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 		assert w instanceof While
 		if (loopInfo[w] == null && w.variant != null) {
 			loopInfo[w] = new LoopInformation(name, w, new Variant(w.variant, name), [])
-		}
-		if (!loopInfo[w].loopStatements.contains(loopEvent)) {
+		} else if (loopInfo[w] != null && !loopInfo[w].loopStatements.contains(loopEvent)) {
 			loopInfo[w] = loopInfo[w].add(loopEvent)
 		}
 	}
