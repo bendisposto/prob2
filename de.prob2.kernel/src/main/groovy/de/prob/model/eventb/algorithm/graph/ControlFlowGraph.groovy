@@ -23,7 +23,7 @@ class ControlFlowGraph {
 	def ControlFlowGraph(Block algorithm) {
 		if (!algorithm.statements.isEmpty()) {
 			// adding an assignments block to the end adds an extra event which goes into a deadlock.
-			Block a = new Block(algorithm.statements.addElement(new Assignments()), algorithm.typeEnvironment)
+			Block a = new Block(algorithm.statements.addElement(new Assignments(algorithm.typeEnvironment)), algorithm.typeEnvironment)
 			AssertionExtractor e = new AssertionExtractor()
 			this.algorithm = e.transform(a)
 			assertions = e.assertions

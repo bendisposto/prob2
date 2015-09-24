@@ -47,7 +47,7 @@ class Block extends AbstractModifier {
 	def Block Assign(String... assignments) throws ModelGenerationException {
 		def last = !statements.isEmpty() && statements[statements.size()-1] ? statements[statements.size()-1] : null
 		def stmts = statements
-		Assignments a = new Assignments([], typeEnvironment)
+		Assignments a = new Assignments(typeEnvironment)
 		if (last instanceof Assignments) {
 			a = last
 			stmts = stmts.removeElement(last)
