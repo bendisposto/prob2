@@ -65,7 +65,7 @@ class NaiveTerminationAnalysis {
 	def String typingForVariant(EventBMachine machine, StateSpace s, Variant variant) {
 		assert machine.variables.var == null
 
-		def invs = machine.invariants.collect { it.getPredicate().getCode() }.iterator().join(" & ")
+		def invs = machine.invariants.collect { "(${it.getPredicate().getCode()})" }.iterator().join(" & ")
 		def pred = "${invs} & var = ${variant.getExpression().getCode()}"
 
 		def result = cbc(s, pred).translate().var

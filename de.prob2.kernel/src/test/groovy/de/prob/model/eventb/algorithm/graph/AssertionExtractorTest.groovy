@@ -5,6 +5,7 @@ import spock.lang.Specification
 import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
 
 public class AssertionExtractorTest extends Specification {
@@ -263,22 +264,45 @@ public class AssertionExtractorTest extends Specification {
 		assertions(obj, emptyEnd(obj)) == ["product = m * n"]
 	}
 
-	//	def "loop within loop"() {
-	//		when:
-	//		def DEBUG = true
-	//		def obj = run({
-	//			While("x < 50") {
-	//				If("y > x") {
-	//					Then {
-	//						While("x < y") { Assign("x := x + 1") }
-	//					}
-	//				}
-	//				Assign("y := y / 2", "x := x / 2")
-	//			}
-	//			Assign("z := y + x")
-	//		})
-	//
-	//		then:
-	//		if (DEBUG) print(obj)
-	//	}
+	def "all of the assertions"() {
+		when:
+		def DEBUG = false
+		def obj = run({
+			Assert("1 = 1")
+			While("u /= v", variant: "u + v") {
+				Assert("2 = 2")
+				If("u < v") {
+					Then {
+						Assert("3 = 3")
+						Assign("v := v - u")
+					}
+					Else {
+						Assert("4 = 4")
+						Assign("u := u - v")
+					}
+				}
+				Assert("5 = 5")
+			}
+			Assert("m|->n|->v : GCD")//"TRUE = TRUE")
+			Assert("6 = 6")
+		})
+		def while0 = obj.algorithm.statements[0]
+		def if0 = while0.block.statements[0]
+		def then0 = if0.Then.statements[0]
+		def else0 = if0.Else.statements[0]
+		def loopToWhile = while0.block.statements[1]
+
+		then:
+		if (DEBUG) print(obj)
+		assertions(obj, while0) == ["1 = 1"]
+		assertions(obj, emptyEnd(obj)) == ["m|->n|->v : GCD", "6 = 6"]
+		if0 instanceof If
+		assertions(obj, if0) == ["2 = 2"]
+		then0 instanceof Assignments
+		assertions(obj, then0) == ["3 = 3"]
+		else0 instanceof Assignments
+		assertions(obj, else0) == ["4 = 4"]
+		loopToWhile instanceof Assignments
+		assertions(obj, loopToWhile) == ["5 = 5"]
+	}
 }

@@ -16,6 +16,7 @@ class ControlFlowGraph {
 	LinkedHashMap<Statement, Set<Edge>> incomingEdges = new LinkedHashMap<Statement, Set<Edge>>()
 	Map<Edge, List<Statement>> edgeMapping = [:]
 	NodeNaming nodeMapping
+	NodeNaming namingWAssertions
 	Statement entryNode
 
 	Block algorithm
@@ -26,6 +27,7 @@ class ControlFlowGraph {
 			// adding an assignments block to the end adds an extra event which goes into a deadlock.
 			Block a = new Block(algorithm.statements.addElement(new Assignments()), algorithm.typeEnvironment)
 			this.algorithm = a
+			this.namingWAssertions = new NodeNaming(a)
 			AssertionExtractor e = new AssertionExtractor(a)
 			assertions = e.assertions
 			nodeMapping = new NodeNaming(e.algorithm)

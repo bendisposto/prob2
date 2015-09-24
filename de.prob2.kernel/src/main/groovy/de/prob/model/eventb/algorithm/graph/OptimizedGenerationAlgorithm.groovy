@@ -22,6 +22,7 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 	final Set<Statement> generated = [] as Set
 	Map<Statement, LoopInformation> loopInfo = [:]
 	List<IGraphTransformer> transformers
+	Map<String, Integer> assertCtr = [:]
 
 	def OptimizedGenerationAlgorithm(List<IGraphTransformer> transformers=[]) {
 		this.transformers = transformers
@@ -34,11 +35,7 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm).prettyPrint())
 		if (graph.entryNode) {
 			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
-			graph.assertions.each { Statement stmt, Set<Assertion> assertions ->
-				assertions.each { Assertion a ->
-					machineM = machineM.invariant("pc = ${pcInformation[stmt]} => (${a.assertion.getCode()})")
-				}
-			}
+			machineM = addAssertions(machineM, graph.woAssertions)
 			machineM =  addNode(machineM, graph.entryNode)
 			def loops = []
 			loopInfo.each { k, v -> loops << v }
@@ -46,6 +43,74 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 			machineM = new MachineModifier(machineM.getMachine().set(LoopInformation.class, loopI), machineM.typeEnvironment)
 		}
 		return machineM
+	}
+
+	def MachineModifier addAssertions(MachineModifier machineM, Block b) {
+		b.statements.each {
+			machineM = addAssertions(machineM, it)
+		}
+		machineM
+	}
+
+	def MachineModifier addAssertions(MachineModifier machineM, Assignments a) {
+		addAssertionsForNode(machineM, a)
+	}
+
+	def MachineModifier addAssertions(MachineModifier machineM, While w) {
+		machineM = addAssertionsForNode(machineM, w)
+		addAssertions(machineM, w.block)
+	}
+
+	def MachineModifier addAssertions(MachineModifier machineM, If i) {
+		machineM = addAssertionsForNode(machineM, i)
+		machineM = addAssertions(machineM, i.Then)
+		addAssertions(machineM, i.Else)
+	}
+
+	def MachineModifier addAssertionsForNode(MachineModifier machineM, Statement stmt) {
+		graph.assertions[stmt].each { Assertion assertion ->
+			List<String> preds = []
+			if (graph.nodes.contains(stmt)) {
+				if (pcInformation[stmt] != null) {
+					preds << "pc = ${pcInformation[stmt]}"
+				} else {
+					Set<Edge> inE = graph.inEdges(stmt)
+					inE.each { Edge e ->
+						def pred = "pc = ${pcInformation[e.from]}"
+						def rcond = e.conditions.collect { it.getCode() }.iterator().join(" & ")
+						pred = rcond == "" ? pred : "$pred & $rcond"
+						preds << pred
+					}
+				}
+			} else {
+				assert stmt instanceof If
+				println stmt
+				Set<Edge> allEdges = [] as Set
+				graph.outgoingEdges.inject(allEdges) { Set<Edge> all, entry -> all.addAll(entry.value); all }
+				Set<List<EventB>> conds = [] as Set
+				allEdges.findAll { Edge e -> e.conditions.contains(stmt.condition) }.each { Edge e ->
+					def i = e.conditions.indexOf(stmt.condition)
+					def cond = e.conditions[0..i-1]
+					if (!conds.contains(cond)) {
+						conds << cond
+						def pred = "pc = ${pcInformation[e.from]}"
+						def rcond = cond.collect { it.getCode() }.iterator().join(" & ")
+						pred = rcond = "" ? pred : "$pred & $rcond"
+						preds << pred
+					}
+				}
+			}
+			preds.each { String pred ->
+				def name = graph.namingWAssertions.getName(assertion)
+				if (assertCtr[name] != null) {
+					name = name + "_" + assertCtr[name]++
+				} else {
+					assertCtr[name] = 0
+				}
+				machineM = machineM.invariant(name, "$pred => (${assertion.assertion.getCode()})", false, assertion.toString())
+			}
+		}
+		machineM
 	}
 
 	def MachineModifier addNode(MachineModifier machineM, Statement stmt) {

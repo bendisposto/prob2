@@ -12,7 +12,7 @@ class AssertionExtractor {
 	Map<Statement, Set<Assertion>> assertions
 
 	def AssertionExtractor(Block algorithm) {
-		assertions = [:]
+		assertions = new LinkedHashMap()
 		this.algorithm = eliminateAssertions(algorithm)
 	}
 
@@ -33,19 +33,21 @@ class AssertionExtractor {
 	}
 
 	def List<Statement> eliminateAssertions(Assertion t, List<Statement> stmts) {
-		Set<Assertion> myassertions = [t] as Set
+		Set<Assertion> myassertions = [t] as LinkedHashSet
 		List<Statement> statements = stmts
 		while (!statements.isEmpty() && statements.head() instanceof Assertion) {
 			myassertions.add(statements.head())
 			statements = statements.tail()
 		}
-		Statement h = statements.isEmpty() ? new Assignments(t.typeEnvironment) : statements.head()
-		assert !(h instanceof Assertion) // this shouldn't happen because we already took out all of the assertions
-		addAssertions(h, myassertions)
 		if (statements.isEmpty()) {
+			Statement h = new Assignments(t.typeEnvironment)
+			addAssertions(h, myassertions)
 			return [h]
 		}
-		recurIfNecessary(h, statements.tail())
+		List<Statement> nextS = eliminateAssertions(statements.head(), statements.tail())
+		assert !nextS.isEmpty() && !(nextS.first() instanceof Assertion)
+		addAssertions(nextS.first(), myassertions)
+		nextS
 	}
 
 	def List<Statement> eliminateAssertions(While w, List<Statement> stmts) {
