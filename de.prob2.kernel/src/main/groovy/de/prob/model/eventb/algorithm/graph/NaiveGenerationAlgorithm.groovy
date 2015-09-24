@@ -5,13 +5,12 @@ import de.prob.model.eventb.Event
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.Variant
 import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter
-import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.ITranslationAlgorithm
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.LoopInformation
 import de.prob.model.eventb.algorithm.Statement
-import de.prob.model.eventb.algorithm.ITranslationAlgorithm
 import de.prob.model.eventb.algorithm.While
 import de.prob.model.representation.ModelElementList
 
@@ -34,11 +33,7 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm).prettyPrint())
 		if (graph.entryNode) {
 			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
-			graph.assertions.each { Statement stmt, Set<Assertion> assertions ->
-				assertions.each { Assertion a ->
-					machineM = machineM.invariant("pc = ${pcInformation[stmt]} => (${a.assertion.getCode()})")
-				}
-			}
+			machineM = new AssertionTranslator(machineM, graph, pcInformation, false).getMachineM()
 			machineM =  addNode(machineM, graph.entryNode)
 			def loops = []
 			loopInfo.each { k, v -> loops << v }

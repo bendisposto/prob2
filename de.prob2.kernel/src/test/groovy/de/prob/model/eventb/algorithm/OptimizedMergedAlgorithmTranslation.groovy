@@ -2,6 +2,7 @@ package de.prob.model.eventb.algorithm
 
 import spock.lang.Specification
 import de.prob.model.eventb.Event
+import de.prob.model.eventb.EventBInvariant
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.algorithm.graph.GraphMerge
@@ -26,6 +27,10 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 
 	def actions(Event evt) {
 		evt.actions.collect { it.getCode().getCode() }
+	}
+
+	def inv(EventBInvariant i) {
+		i.getPredicate().getCode()
 	}
 
 	def "translate an if without an else"() {
@@ -273,6 +278,102 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 			"pc = 0",
 			"not(u /= 0)",
 		]
+		actions(e.exit_while0) == []
+	}
+
+	def "empty if then while"() {
+		when:
+		def m = translate(mm.algorithm {
+			If("u < v") {}
+			While("u /= 0") { Assign("u := u - 0") }
+		})
+
+		then:
+		def e = m.events
+		e.if0_then != null
+		guards(e.if0_then) == ["pc = 0", "u < v"]
+		actions(e.if0_then) == ["pc := 1"]
+
+		e.if0_else != null
+		guards(e.if0_else) == ["pc = 0", "not(u < v)"]
+		actions(e.if0_else) == ["pc := 1"]
+
+		e.enter_while0 != null
+		guards(e.enter_while0) == ["pc = 1", "u /= 0"]
+		actions(e.enter_while0) == ["u := u - 0", "pc := 1"]
+
+		e.exit_while0 != null
+		guards(e.exit_while0) == ["pc = 1", "not(u /= 0)"]
+		actions(e.exit_while0) == []
+	}
+
+	def "test assertion generation"() {
+		when:
+		def m = translate(mm.algorithm {
+			Assert("1 = 1")
+			While("x < 1") {
+				Assert("2 = 2")
+				If("x + y > 10") {
+					Then {
+						Assert("3 = 3")
+						Assign("x := 2")
+						Assert("4 = 4")
+					}
+				}
+				Assert("5 = 5")
+				Assign("x := z - 90")
+				Assert("6 = 6")
+			}
+			Assert("7 = 7")
+		})
+
+		then:
+		def i = m.invariants
+		inv(i.assert0) == "pc = 0 => (1 = 1)"
+		inv(i.assert1) == "pc = 0 & x < 1 => (2 = 2)"
+		inv(i.assert2) == "pc = 0 & x < 1 & x + y > 10 => (3 = 3)"
+		inv(i.assert3) == "pc = 1 => (4 = 4)"
+		([
+			inv(i.assert4),
+			inv(i.assert4_0)
+		] as Set).equals([
+			"pc = 2 => (5 = 5)",
+			"pc = 0 & x < 1 & not(x + y > 10) => (5 = 5)"
+		] as Set)
+		inv(i.assert5) == "pc = 3 => (6 = 6)"
+		inv(i.assert6) == "pc = 0 & not(x < 1) => (7 = 7)"
+
+		def e = m.events
+		e.enter_while0_if0_then != null
+		guards(e.enter_while0_if0_then) == [
+			"pc = 0",
+			"x < 1",
+			"x + y > 10"
+		]
+		actions(e.enter_while0_if0_then) == ["x := 2", "pc := 1"]
+
+		e.assign1 != null
+		guards(e.assign1) == ["pc = 1"]
+		actions(e.assign1) == ["pc := 2"]
+
+		e.enter_while0_if0_else != null
+		guards(e.enter_while0_if0_else) == [
+			"pc = 0",
+			"x < 1",
+			"not(x + y > 10)"
+		]
+		actions(e.enter_while0_if0_else) == ["x := z - 90", "pc := 3"]
+
+		e.assign2 != null
+		guards(e.assign2) == ["pc = 2"]
+		actions(e.assign2) == ["x := z - 90", "pc := 3"]
+
+		e.assign3 != null
+		guards(e.assign3) == ["pc = 3"]
+		actions(e.assign3) == ["pc := 0"]
+
+		e.exit_while0 != null
+		guards(e.exit_while0) == ["pc = 0", "not(x < 1)"]
 		actions(e.exit_while0) == []
 	}
 }

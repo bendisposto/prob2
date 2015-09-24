@@ -18,7 +18,7 @@ class AssertionExtractor implements IAlgorithmASTTransformer{
 
 	def addAssertions(Statement stmt, List<Assertion> stmts) {
 		if (assertions[stmt] == null) {
-			assertions[stmt] = stmts as Set
+			assertions[stmt] = stmts as LinkedHashSet
 		} else {
 			assertions[stmt].addAll(stmts)
 		}
