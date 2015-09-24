@@ -16,26 +16,21 @@ class ControlFlowGraph {
 	LinkedHashMap<Statement, Set<Edge>> incomingEdges = new LinkedHashMap<Statement, Set<Edge>>()
 	Map<Edge, List<Statement>> edgeMapping = [:]
 	NodeNaming nodeMapping
-	NodeNaming namingWAssertions
 	Statement entryNode
 
 	Block algorithm
-	Block woAssertions
 
 	def ControlFlowGraph(Block algorithm) {
 		if (!algorithm.statements.isEmpty()) {
 			// adding an assignments block to the end adds an extra event which goes into a deadlock.
 			Block a = new Block(algorithm.statements.addElement(new Assignments()), algorithm.typeEnvironment)
-			this.algorithm = a
-			this.namingWAssertions = new NodeNaming(a)
-			AssertionExtractor e = new AssertionExtractor(a)
+			AssertionExtractor e = new AssertionExtractor()
+			this.algorithm = e.transform(a)
 			assertions = e.assertions
-			nodeMapping = new NodeNaming(e.algorithm)
-			this.woAssertions = e.algorithm
+			nodeMapping = new NodeNaming(this.algorithm)
 
-			if (!e.algorithm.statements.isEmpty()) {
-				entryNode = e.algorithm.statements.first()
-				addNode(entryNode, e.algorithm.statements.tail())
+			if (!this.algorithm.statements.isEmpty()) {
+				entryNode = addNode(this.algorithm.statements.first(), this.algorithm.statements.tail())
 			}
 		}
 	}
@@ -59,9 +54,14 @@ class ControlFlowGraph {
 	def addNode(Assignments a, List<Statement> stmts) {
 		if (stmts.isEmpty()) {
 			nodes.add(a)
-			return
+			return a
 		}
-		addEdge(a, stmts.first(), [])
+		addEdge(a, addNode(stmts.first(), stmts.tail()), [])
+		a
+	}
+
+	def addNode(Assertion a, List<Statement> stmts) {
+		assert !stmts.isEmpty() // assertions are mapped to the next statement, so an assertion before empty statements is incorrect
 		addNode(stmts.first(), stmts.tail())
 	}
 
@@ -70,18 +70,43 @@ class ControlFlowGraph {
 		if (block.isEmpty()) {
 			throw new IllegalArgumentException("While loops cannot be null!")
 		}
-		addEdge(w, block.first(), [w.condition])
-		addNode(block.first(), block.tail())
+		addEdge(w, addNode(block.first(), block.tail()), [w.condition])
 		addSpecialEdge(block.last(), w, true)
 
 		if (!stmts.isEmpty()) {
-			addEdge(w, stmts.first(), [w.notCondition])
-			addNode(stmts.first(), stmts.tail())
+			addEdge(w, addNode(stmts.first(), stmts.tail()), [w.notCondition])
 		}
+		w
+	}
+
+	def addNode(If i, List<Statement> stmts) {
+		def nextN =	!stmts.isEmpty() ? addNode(stmts.first(), stmts.tail()) : null
+		if (!i.Then.statements.isEmpty()) {
+			addEdge(i, addNode(i.Then.statements.first(), i.Then.statements.tail()), [i.condition])
+			if (nextN) {
+				addSpecialEdge(i.Then.statements.last(), nextN, false)
+			}
+		} else if (nextN) {
+			addEdge(i, nextN, [i.condition])
+		}
+
+		if (!i.Else.statements.isEmpty()) {
+			addEdge(i, addNode(i.Else.statements.first(), i.Else.statements.tail()), [i.elseCondition])
+			if (nextN) {
+				addSpecialEdge(i.Else.statements.last(), nextN, false)
+			}
+		} else if (nextN) {
+			addEdge(i, nextN, [i.elseCondition])
+		}
+		i
 	}
 
 	def addSpecialEdge(Assignments from, Statement to, boolean loopToWhile) {
 		addEdge(from, to, [], loopToWhile)
+	}
+
+	def addSpecialEdge(Assertion from, Statement to, boolean loopToWhile) {
+		throw new IllegalArgumentException("Assertion is not allowed to be alone at the end of a statement!")
 	}
 
 	def addSpecialEdge(While from, Statement to, boolean loopToWhile) {
@@ -98,32 +123,6 @@ class ControlFlowGraph {
 			addEdge(from, to, [from.elseCondition], loopToWhile)
 		} else {
 			addSpecialEdge(from.Else.statements.last(), to, loopToWhile)
-		}
-	}
-
-	def addNode(If i, List<Statement> stmts) {
-		if (!i.Then.statements.isEmpty()) {
-			addEdge(i, i.Then.statements.first(), [i.condition])
-			addNode(i.Then.statements.first(), i.Then.statements.tail())
-			if (!stmts.isEmpty()) {
-				addSpecialEdge(i.Then.statements.last(), stmts.first(), false)
-			}
-		} else if (!stmts.isEmpty()) {
-			addEdge(i, stmts.first(), [i.condition])
-		}
-
-		if (!i.Else.statements.isEmpty()) {
-			addEdge(i, i.Else.statements.first(), [i.elseCondition])
-			addNode(i.Else.statements.first(), i.Else.statements.tail())
-			if (!stmts.isEmpty()) {
-				addSpecialEdge(i.Else.statements.last(), stmts.first(), false)
-			}
-		} else if (!stmts.isEmpty()) {
-			addEdge(i, stmts.first(), [i.elseCondition])
-		}
-
-		if (!stmts.isEmpty()) {
-			addNode(stmts.first(), stmts.tail())
 		}
 	}
 

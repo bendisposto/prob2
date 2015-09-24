@@ -29,7 +29,8 @@ public class CGGConstructionTest extends Specification {
 		g.outgoingEdges[g.getNode(from)].findAll {
 			it.to == g.getNode(to)
 		}.collect {
-			it.conditions.collect { it.getCode() } } as Set
+			it.conditions.collect { it.getCode()
+			} } as Set
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
@@ -92,8 +93,8 @@ public class CGGConstructionTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		graph.size() == 3
 		graph.nodes == nodes(graph, "assign0", "assign1", "assign2")
+		graph.size() == 3
 		assertions(graph, "assign1") == ["x = 1"] as Set
 		edge(graph, "assign0", "assign1") == []
 		edge(graph, "assign1", "assign2") == []

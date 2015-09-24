@@ -7,60 +7,60 @@ import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
-class AssertionExtractor {
-	Block algorithm
-	Map<Statement, Set<Assertion>> assertions
+class AssertionExtractor implements IAlgorithmASTTransformer{
 
-	def AssertionExtractor(Block algorithm) {
-		assertions = new LinkedHashMap()
-		this.algorithm = eliminateAssertions(algorithm)
+	Map<Statement, Set<Assertion>> assertions = [:]
+
+	@Override
+	public Block transform(Block algorithm) {
+		extractAssertions(algorithm)
 	}
 
-	def addAssertions(Statement stmt, Set<Assertion> stmts) {
+	def addAssertions(Statement stmt, List<Assertion> stmts) {
 		if (assertions[stmt] == null) {
-			assertions[stmt] = stmts
+			assertions[stmt] = stmts as Set
 		} else {
 			assertions[stmt].addAll(stmts)
 		}
 	}
 
-	def Block eliminateAssertions(Block b) {
+	def Block extractAssertions(Block b) {
 		if (b.statements.isEmpty()) {
 			return b
 		}
-		List<Statement> stmts = eliminateAssertions(b.statements.head(), b.statements.tail())
+		List<Statement> stmts = extractAssertions(b.statements.head(), b.statements.tail())
 		return new Block(stmts, b.typeEnvironment)
 	}
 
-	def List<Statement> eliminateAssertions(Assertion t, List<Statement> stmts) {
-		Set<Assertion> myassertions = [t] as LinkedHashSet
+	def List<Statement> extractAssertions(Assertion t, List<Statement> stmts) {
+		List<Assertion> myassertions = [t]
 		List<Statement> statements = stmts
 		while (!statements.isEmpty() && statements.head() instanceof Assertion) {
-			myassertions.add(statements.head())
+			myassertions << statements.head()
 			statements = statements.tail()
 		}
 		if (statements.isEmpty()) {
 			Statement h = new Assignments(t.typeEnvironment)
 			addAssertions(h, myassertions)
-			return [h]
+			return myassertions + [h]
 		}
-		List<Statement> nextS = eliminateAssertions(statements.head(), statements.tail())
+		List<Statement> nextS = extractAssertions(statements.head(), statements.tail())
 		assert !nextS.isEmpty() && !(nextS.first() instanceof Assertion)
 		addAssertions(nextS.first(), myassertions)
-		nextS
+		myassertions + nextS
 	}
 
-	def List<Statement> eliminateAssertions(While w, List<Statement> stmts) {
-		While newWhile = w.updateBlock(eliminateAssertions(w.block))
+	def List<Statement> extractAssertions(While w, List<Statement> stmts) {
+		While newWhile = w.updateBlock(extractAssertions(w.block))
 		recurIfNecessary(newWhile, stmts)
 	}
 
-	def List<Statement> eliminateAssertions(Assignments a, List<Statement> stmts) {
+	def List<Statement> extractAssertions(Assignments a, List<Statement> stmts) {
 		recurIfNecessary(a, stmts)
 	}
 
-	def List<Statement> eliminateAssertions(If i, List<Statement> stmts) {
-		If newI = i.newIf(eliminateAssertions(i.getThen()), eliminateAssertions(i.getElse()))
+	def List<Statement> extractAssertions(If i, List<Statement> stmts) {
+		If newI = i.newIf(extractAssertions(i.getThen()), extractAssertions(i.getElse()))
 		recurIfNecessary(newI, stmts)
 	}
 
@@ -69,7 +69,7 @@ class AssertionExtractor {
 			return [s]
 		}
 		def retStmts = [s]
-		retStmts.addAll(eliminateAssertions(stmts.head(), stmts.tail()))
+		retStmts.addAll(extractAssertions(stmts.head(), stmts.tail()))
 		return retStmts
 	}
 }

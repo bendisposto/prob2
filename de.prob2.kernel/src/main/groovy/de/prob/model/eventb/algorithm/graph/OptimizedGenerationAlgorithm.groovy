@@ -35,7 +35,7 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm).prettyPrint())
 		if (graph.entryNode) {
 			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
-			machineM = addAssertions(machineM, graph.woAssertions)
+			machineM = addAssertions(machineM, graph.algorithm)
 			machineM =  addNode(machineM, graph.entryNode)
 			def loops = []
 			loopInfo.each { k, v -> loops << v }
@@ -54,6 +54,10 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 
 	def MachineModifier addAssertions(MachineModifier machineM, Assignments a) {
 		addAssertionsForNode(machineM, a)
+	}
+
+	def MachineModifier addAssertions(MachineModifier machineM, Assertion a) {
+		machineM
 	}
 
 	def MachineModifier addAssertions(MachineModifier machineM, While w) {
@@ -101,7 +105,7 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 				}
 			}
 			preds.each { String pred ->
-				def name = graph.namingWAssertions.getName(assertion)
+				def name = graph.nodeMapping.getName(assertion)
 				if (assertCtr[name] != null) {
 					name = name + "_" + assertCtr[name]++
 				} else {

@@ -17,9 +17,7 @@ class GraphMerge implements IGraphTransformer {
 		this.graph = new ControlFlowGraph(new Block()) // creates empty graph
 		if (graph.entryNode) {
 			this.graph.nodeMapping = graph.nodeMapping
-			this.graph.namingWAssertions = graph.namingWAssertions
 			this.graph.algorithm = graph.algorithm
-			this.graph.woAssertions = graph.woAssertions
 			this.graph.assertions = graph.assertions
 			this.graph.entryNode = mergeGraph(graph, graph.entryNode)
 		} else {

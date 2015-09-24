@@ -10,29 +10,31 @@ import de.prob.model.eventb.algorithm.Statement
 
 public class AssertionExtractorTest extends Specification {
 
-	def AssertionExtractor run(Closure cls) {
+	def run(Closure cls) {
 		Block b = new Block().make(cls)
-		return new AssertionExtractor(b)
+		def a = new AssertionExtractor()
+		def b2 = a.transform(b)
+		[assertions: a.assertions, algorithm: b2]
 	}
 
-	def print(AssertionExtractor e) {
-		println new AlgorithmPrettyPrinter(e.getAlgorithm()).prettyPrint()
+	def print(e) {
+		println new AlgorithmPrettyPrinter(e.algorithm).prettyPrint()
 		println e.assertions.toString() + "\n"
 	}
 
-	def assertions(AssertionExtractor e, int index) {
+	def assertions(e, int index) {
 		e.assertions[e.algorithm.statements[index]].collect {
 			it.assertion.getCode()
 		}
 	}
 
-	def assertions(AssertionExtractor e, Statement statement) {
+	def assertions(e, Statement statement) {
 		e.assertions[statement].collect {
 			it.assertion.getCode()
 		}
 	}
 
-	def emptyEnd(AssertionExtractor e) {
+	def emptyEnd(e) {
 		e.algorithm.statements.last().assignments == []? e.algorithm.statements.last() : null
 	}
 
@@ -64,7 +66,7 @@ public class AssertionExtractorTest extends Specification {
 		then:
 		if (DEBUG) print(obj)
 		emptyEnd(obj)
-		assertions(obj, 0) == ["x = 1"]
+		assertions(obj, 1) == ["x = 1"]
 	}
 
 	def "an assert in front of a statement"() {
@@ -78,7 +80,7 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		assertions(obj, 1) == ["x = 1"]
+		assertions(obj, 2) == ["x = 1"]
 	}
 
 	def "an assert before and after a while"() {
@@ -93,7 +95,7 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		assertions(obj, 1) == ["x = 1"]
+		assertions(obj, 2) == ["x = 1"]
 		emptyEnd(obj)
 		assertions(obj, emptyEnd(obj)) == ["x >= 10"]
 	}
@@ -112,10 +114,10 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		assertions(obj, 1) == ["x = 1"]
-		assertions(obj, 2) == ["x >= 10"]
-		assertions(obj, 3) == ["x = 0"]
+		assertions(obj, 2) == ["x = 1"]
+		assertions(obj, 4) == ["x >= 10"]
 		emptyEnd(obj)
+		assertions(obj, emptyEnd(obj)) == ["x = 0"]
 	}
 
 	def "an assert between ifs"() {
@@ -138,10 +140,10 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		assertions(obj, 1) == ["x > 0"]
-		assertions(obj, 2) == ["x < 0"]
-		assertions(obj, 3) == ["x > 0"]
+		assertions(obj, 2) == ["x > 0"]
+		assertions(obj, 4) == ["x < 0"]
 		emptyEnd(obj)
+		assertions(obj, emptyEnd(obj)) == ["x > 0"]
 	}
 
 	def "two decrementers"() {
@@ -156,7 +158,7 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		assertions(obj, 1) == ["x = 0"]
+		assertions(obj, 2) == ["x = 0"]
 		assertions(obj, emptyEnd(obj)) == ["y = 0"]
 	}
 
@@ -244,7 +246,7 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		assertions(obj, obj.algorithm.statements[0].block.statements[1]) == ["u > v"]
+		assertions(obj, obj.algorithm.statements[0].block.statements[2]) == ["u > v"]
 		assertions(obj, emptyEnd(obj)) == ["u|->m|->n : IsGCD"]
 	}
 
@@ -286,11 +288,11 @@ public class AssertionExtractorTest extends Specification {
 			Assert("m|->n|->v : GCD")//"TRUE = TRUE")
 			Assert("6 = 6")
 		})
-		def while0 = obj.algorithm.statements[0]
-		def if0 = while0.block.statements[0]
-		def then0 = if0.Then.statements[0]
-		def else0 = if0.Else.statements[0]
-		def loopToWhile = while0.block.statements[1]
+		def while0 = obj.algorithm.statements[1]
+		def if0 = while0.block.statements[1]
+		def then0 = if0.Then.statements[1]
+		def else0 = if0.Else.statements[1]
+		def loopToWhile = while0.block.statements[3]
 
 		then:
 		if (DEBUG) print(obj)
