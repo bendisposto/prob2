@@ -27,27 +27,6 @@ class Assignments extends Statement {
 		UnicodeTranslator.toUnicode(assignments.collect {it.getCode()}.iterator().join(" || "))
 	}
 
-	@Override
-	public boolean equals(Object that) {
-		if (that instanceof Assignments) {
-			if (this.assignments.size() != that.assignments.size()) {
-				return false
-			}
-			return [
-				this.assignments,
-				that.assignments
-			].transpose().inject(true) { acc, List<EventB> e ->
-				acc && e[0].getCode() == e[1].getCode()
-			}
-		}
-		return false
-	}
-
-	@Override
-	public int hashCode() {
-		return this.assignments.hashCode()
-	}
-
 	public List<Assignments> addAssignments(String... assignments) throws ModelGenerationException {
 		List<EventB> actions = new ArrayList<EventB>(this.assignments)
 		Set<String> identifiers = new HashSet<String>(identifiers)

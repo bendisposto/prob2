@@ -1,6 +1,8 @@
 import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
+import de.prob.model.eventb.algorithm.graph.GraphMerge
+import de.prob.model.eventb.algorithm.graph.NaiveGenerationAlgorithm
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
@@ -34,7 +36,7 @@ mm = new ModelModifier().make {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m).run()
+m = new AlgorithmTranslator(m, new NaiveGenerationAlgorithm([new GraphMerge()])).run()
 
 //mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "Bauern", "tmp/")

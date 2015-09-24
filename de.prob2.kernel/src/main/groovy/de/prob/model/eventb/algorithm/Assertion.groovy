@@ -16,23 +16,4 @@ class Assertion extends Statement {
 	def String toString() {
 		"assert ${assertion.toUnicode()}"
 	}
-
-	@Override
-	public boolean equals(Object that) {
-		if (that instanceof Assertion) {
-			if (assertion != null) {
-				return this.assertion.getCode().equals(that.getAssertion().getCode())
-			} else {
-				if (that.getAssertion() == null) {
-					return true
-				}
-			}
-		}
-		return false
-	}
-
-	@Override
-	public int hashCode() {
-		return this.assertion.hashCode();
-	}
 }

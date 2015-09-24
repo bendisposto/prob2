@@ -5,11 +5,15 @@ import spock.lang.Specification
 
 class AlgorithmPrettyPrinterTest extends Specification {
 
+	def DEBUG = false
+
 	def evalAndPrint(Closure definition) {
 		def Block b = new Block().make(definition)
 		def s = new AlgorithmPrettyPrinter(b).prettyPrint()
-		println s
-		println()
+		if (DEBUG) {
+			println s
+			println()
+		}
 		s
 	}
 
@@ -25,18 +29,14 @@ class AlgorithmPrettyPrinterTest extends Specification {
 	def "simple while loop"() {
 		expect:
 		evalAndPrint({
-			While("x < 1") {
-				Assign("y := 2", "z := 3")
-			}
+			While("x < 1") { Assign("y := 2", "z := 3") }
 		}) == "while (x < 1):\n  y \u2254 2 \u2225 z \u2254 3\n"
 	}
 
 	def "while loop with variant"() {
 		expect:
 		evalAndPrint({
-			While("x < 1", variant: "0 - x") {
-				Assign("x := x + 1")
-			}
+			While("x < 1", variant: "0 - x") { Assign("x := x + 1") }
 		}) == "while (x < 1):\n  variant: 0 \u2212 x\n  x \u2254 x + 1\n"
 	}
 
@@ -44,9 +44,7 @@ class AlgorithmPrettyPrinterTest extends Specification {
 		expect:
 		evalAndPrint({
 			While("u /= 0") {
-				If("u < v") {
-					Then("u := v", "v := u")
-				}
+				If("u < v") { Then("u := v", "v := u") }
 				Assign("u := u - v")
 			}
 			Assert("v|->m|->n : IsGCD")
@@ -62,5 +60,4 @@ class AlgorithmPrettyPrinterTest extends Specification {
 			}
 		}) == "if (x < y):\n  "+toUnicode("z := x")+"\nelse:\n  "+toUnicode("z := y")+"\n"
 	}
-
 }

@@ -86,19 +86,4 @@ public class If extends Statement {
 	def String toString() {
 		"if (${condition.toUnicode()}):"
 	}
-
-	@Override
-	public boolean equals(Object that) {
-		if (that instanceof If) {
-			return this.condition.getCode().equals(that.getCondition().getCode()) &&
-			this.Then.equals(that.getThen()) &&
-			this.Else.equals(that.getElse())
-		}
-		return false
-	}
-
-	@Override
-	public int hashCode() {
-		return this.condition.hashCode() * 7 + this.Then.hashCode() * 13 + this.Else.hashCode() * 17
-	}
 }

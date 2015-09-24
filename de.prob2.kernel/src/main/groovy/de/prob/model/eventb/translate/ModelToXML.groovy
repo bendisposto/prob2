@@ -94,7 +94,8 @@ public class ModelToXML {
 				m.invariants.each {
 					xml.'org.eventb.core.invariant'(name: genName(), 'org.eventb.core.label': it.getName(),
 					'org.eventb.core.predicate': it.getPredicate().toUnicode(),
-					'org.eventb.core.theorem': it.isTheorem())
+					'org.eventb.core.theorem': it.isTheorem(),
+					'org.eventb.core.comment': it.getComment())
 				}
 				m.events.each { extractEvent(xml, it) }
 			}

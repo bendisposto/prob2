@@ -19,21 +19,19 @@ class While extends Statement {
 		this.block = block
 	}
 
+	private While(EventB condition, EventB notCondition, EventB variant, Block block, Set<IFormulaExtension> typeEnvironment) {
+		super(typeEnvironment)
+		this.condition = condition
+		this.notCondition = notCondition
+		this.variant = variant
+		this.block = block
+	}
+
 	def String toString() {
 		"while (${condition.toUnicode()}):"
 	}
 
-	@Override
-	public boolean equals(Object that) {
-		if (that instanceof While) {
-			return this.condition.getCode().equals(that.getCondition().getCode()) &&
-					this.block.equals(that.getBlock())
-		}
-		return false
-	}
-
-	@Override
-	public int hashCode() {
-		return this.condition.hashCode() * 7 + this.block.hashCode() * 13;
+	public While updateBlock(Block newBlock) {
+		return new While(condition, notCondition, variant, newBlock, typeEnvironment)
 	}
 }

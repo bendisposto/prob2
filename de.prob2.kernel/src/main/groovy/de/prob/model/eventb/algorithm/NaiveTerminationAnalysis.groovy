@@ -2,6 +2,8 @@ package de.prob.model.eventb.algorithm
 
 import de.prob.animator.command.CbcSolveCommand
 import de.prob.animator.domainobjects.EvalResult
+import de.prob.model.eventb.Context
+import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.ModelModifier
@@ -37,22 +39,23 @@ class NaiveTerminationAnalysis {
 
 		def baseName = m.getName()
 		// change loop event to anticipated in the refinement
-		modelM = modelM.machine(name: baseName) {
-			event(name: loopInfo.lastStatement.getName(), type: EventType.ANTICIPATED) {}
+		loopInfo.loopStatements.each { Event loopE ->
+			modelM = modelM.machine(name: baseName) {
+				event(name: loopE.getName(), type: EventType.ANTICIPATED) {}
+			}
 		}
 
-		def refinementName = "${baseName}_loop${loopInfo.startPc}"
+		def refinementName = "${baseName}_${loopInfo.stmtName}"
 		modelM = modelM.refine(baseName, refinementName)
-
-		modelM = modelM.machine(name: refinementName, refines: baseName) {
+		def comment = "Termination Proof for: \n"+new AlgorithmPrettyPrinter().prettyPrint(loopInfo.stmt)
+		modelM = modelM.machine(name: refinementName, comment: comment,
+		refines: baseName, sees: m.getSees().collect { it.getName() }) {
 			variable "var"
 			invariant typingVar: typingVariant
-			initialisation(extended: true) {
-				then init
-			}
+			initialisation(extended: true) { then init }
 			variant "var"
-			refine(name: loopInfo.lastStatement.getName(), type: EventType.CONVERGENT, extended: true) {
-				then variant: "var := ${loopInfo.variant.getExpression().getCode()}"
+			loopInfo.loopStatements.each { Event e ->
+				refine(name: e.getName(), type: EventType.CONVERGENT, extended: true) { then variant: "var := ${loopInfo.variant.getExpression().getCode()}" }
 			}
 		}
 
@@ -62,7 +65,7 @@ class NaiveTerminationAnalysis {
 	def String typingForVariant(EventBMachine machine, StateSpace s, Variant variant) {
 		assert machine.variables.var == null
 
-		def invs = machine.invariants.collect { it.getPredicate().getCode() }.iterator().join(" & ")
+		def invs = machine.invariants.collect { "(${it.getPredicate().getCode()})" }.iterator().join(" & ")
 		def pred = "${invs} & var = ${variant.getExpression().getCode()}"
 
 		def result = cbc(s, pred).translate().var
@@ -75,9 +78,15 @@ class NaiveTerminationAnalysis {
 	def String initForVariant(EventBMachine machine, StateSpace s, Variant variant) {
 		assert machine.variables.var == null
 
+		def axioms = machine.sees.collect { Context c ->
+			c.axioms.collect { "(${it.getPredicate().getCode()})" }.iterator().join(" & ")
+		}.findAll { it != "" }.iterator().join(" & ")
+
+		axioms = axioms == "" ? "" : axioms + " & "
+
 		def init = machine.events.INITIALISATION
 		def assignments = init.getActions().collect { it.getCode().getCode().replace(":=","=") }.join(' & ')
-		def pred = "${assignments} & var = ${variant.getExpression().getCode()}"
+		def pred = "$axioms ${assignments} & var = ${variant.getExpression().getCode()}"
 		"var := ${cbc(s, pred).var}"
 	}
 

@@ -1,6 +1,9 @@
 import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
+import de.prob.model.eventb.algorithm.NaiveTerminationAnalysis
+import de.prob.model.eventb.algorithm.graph.GraphMerge
+import de.prob.model.eventb.algorithm.graph.OptimizedGenerationAlgorithm
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
@@ -19,6 +22,12 @@ axioms
   @axm3 (3↦9↦6) ∈ IsGCD
   @axm4 (5↦15↦25) ∈ IsGCD
 end
+
+Further axioms:
+			   "!x,y.x|->x|->y : GCD => x = y",
+			   "!v.GCD[{v|->v}] = {v}",
+			   "!x,y.y-x>0 => GCD[{x|->y}] = GCD[{x|->y-x}]",
+			   "!x,y.GCD[{x|->y}] = GCD[{y|->x}]"
  * 
  */
 
@@ -28,11 +37,8 @@ mm = new ModelModifier().make {
 		constants "Divides", "GCD"
 		
 		axioms "Divides = {i|->j | #k.k:0..j & j = i*k}",
-		       "GCD = {x|->y|->res | res|->x : Divides & res|->y : Divides & (!r. r : (0..x \\/ 0..y) => (r|->x : Divides & r|->y : Divides => r|->res : Divides) ) }",
-			   "!x,y.x|->x|->y : GCD => x = y",
-			   "!v.GCD[{v|->v}] = {v}",
-			   "!x,y.y-x>0 => GCD[{x|->y}] = GCD[{x|->y-x}]",
-			   "!x,y.GCD[{x|->y}] = GCD[{y|->x}]"
+		       "GCD = {x|->y|->res | res|->x : Divides & res|->y : Divides & (!r. r : (0..x \\/ 0..y) => (r|->x : Divides & r|->y : Divides => r|->res : Divides) ) }"
+
 	}
 	
 	context(name: "limits") {
@@ -50,7 +56,7 @@ mm = new ModelModifier().make {
 		invariant "GCD[{m|->n}] = GCD[{u|->v}]"
 		
 		algorithm {
-			While("u /= v") {
+			While("u /= v", variant: "u + v") {
 				If("u < v") {
 					Then("v := v - u")
 					Else("u := u - v")
@@ -70,7 +76,10 @@ def actions(evt) {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m).run()
+m = new AlgorithmTranslator(m, new OptimizedGenerationAlgorithm([new GraphMerge()])).run()
+
+//m = new AlgorithmTranslator(m, new NaiveAlgorithmPrototype()).run()
+//m = new NaiveTerminationAnalysis(m).run()
 
 /*
 e = m.euclid
