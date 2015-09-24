@@ -3,6 +3,7 @@ package de.prob.model.eventb.algorithm.graph
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.IAlgorithmASTTransformer;
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While

@@ -4,10 +4,6 @@ import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
-import de.prob.model.eventb.algorithm.graph.AlgorithmGraph
-import de.prob.model.eventb.algorithm.graph.AlgorithmToGraph
-import de.prob.model.eventb.algorithm.graph.BranchCondition
-import de.prob.model.eventb.algorithm.graph.EventInfo
 import de.prob.model.representation.Machine
 
 class AlgorithmTranslator {
