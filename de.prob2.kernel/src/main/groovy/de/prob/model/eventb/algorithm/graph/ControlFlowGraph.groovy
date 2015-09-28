@@ -3,13 +3,15 @@ package de.prob.model.eventb.algorithm.graph
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
+import de.prob.model.eventb.algorithm.Assumption
 import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.IProperty
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
 class ControlFlowGraph {
-	Map<Statement, Set<Assertion>> assertions
+	Map<Statement, Set<IProperty>> properties
 
 	LinkedHashSet<Statement> nodes = new LinkedHashSet<Statement>()
 	LinkedHashMap<Statement, Set<Edge>> outgoingEdges = new LinkedHashMap<Statement, Set<Edge>>()
@@ -24,9 +26,9 @@ class ControlFlowGraph {
 		if (!algorithm.statements.isEmpty()) {
 			// adding an assignments block to the end adds an extra event which goes into a deadlock.
 			Block a = new Block(algorithm.statements.addElement(new Assignments(algorithm.typeEnvironment)), algorithm.typeEnvironment)
-			AssertionExtractor e = new AssertionExtractor()
+			PropertyExtractor e = new PropertyExtractor()
 			this.algorithm = e.transform(a)
-			assertions = e.assertions
+			properties = e.properties
 			nodeMapping = new NodeNaming(this.algorithm)
 
 			if (!this.algorithm.statements.isEmpty()) {
@@ -61,6 +63,11 @@ class ControlFlowGraph {
 	}
 
 	def addNode(Assertion a, List<Statement> stmts) {
+		assert !stmts.isEmpty() // assertions are mapped to the next statement, so an assertion before empty statements is incorrect
+		addNode(stmts.first(), stmts.tail())
+	}
+
+	def addNode(Assumption a, List<Statement> stmts) {
 		assert !stmts.isEmpty() // assertions are mapped to the next statement, so an assertion before empty statements is incorrect
 		addNode(stmts.first(), stmts.tail())
 	}

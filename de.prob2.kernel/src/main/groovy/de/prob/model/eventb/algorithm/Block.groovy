@@ -44,6 +44,10 @@ class Block extends AbstractModifier {
 		newBlock(statements.addElement(new Assertion(condition, typeEnvironment)))
 	}
 
+	def Block Assume(String condition) throws ModelGenerationException {
+		newBlock(statements.addElement(new Assumption(condition, typeEnvironment)))
+	}
+
 	def Block Assign(String... assignments) throws ModelGenerationException {
 		def last = !statements.isEmpty() && statements[statements.size()-1] ? statements[statements.size()-1] : null
 		def stmts = statements

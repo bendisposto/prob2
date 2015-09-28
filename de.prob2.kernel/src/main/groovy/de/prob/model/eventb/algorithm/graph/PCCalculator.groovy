@@ -1,10 +1,9 @@
 package de.prob.model.eventb.algorithm.graph
 
-import de.prob.model.eventb.algorithm.AlgorithmASTVisitor;
+import de.prob.model.eventb.algorithm.AlgorithmASTVisitor
 import de.prob.model.eventb.algorithm.Assertion
-import de.prob.model.eventb.algorithm.AssignmentAnalysisVisitor;
 import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.Assumption
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
@@ -46,6 +45,10 @@ class PCCalculator extends AlgorithmASTVisitor {
 	}
 
 	def visit(Assertion s) {
+		// do nothing
+	}
+
+	def visit(Assumption a) {
 		// do nothing
 	}
 }

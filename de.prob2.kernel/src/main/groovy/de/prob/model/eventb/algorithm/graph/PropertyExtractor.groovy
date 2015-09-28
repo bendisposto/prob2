@@ -4,13 +4,20 @@ import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
 import de.prob.model.eventb.algorithm.IAlgorithmASTTransformer;
+import de.prob.model.eventb.algorithm.IProperty
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
-class AssertionExtractor implements IAlgorithmASTTransformer{
+/**
+ * Extracts assertions and assumptions from within the AST, adding nodes after
+ * the assertion/assumption if necessary.
+ * @author joy
+ *
+ */
+class PropertyExtractor implements IAlgorithmASTTransformer{
 
-	Map<Statement, Set<Assertion>> assertions = [:]
+	Map<Statement, Set<IProperty>> properties = [:]
 
 	@Override
 	public Block transform(Block algorithm) {
@@ -18,10 +25,10 @@ class AssertionExtractor implements IAlgorithmASTTransformer{
 	}
 
 	def addAssertions(Statement stmt, List<Assertion> stmts) {
-		if (assertions[stmt] == null) {
-			assertions[stmt] = stmts as LinkedHashSet
+		if (properties[stmt] == null) {
+			properties[stmt] = stmts as LinkedHashSet
 		} else {
-			assertions[stmt].addAll(stmts)
+			properties[stmt].addAll(stmts)
 		}
 	}
 
@@ -33,22 +40,22 @@ class AssertionExtractor implements IAlgorithmASTTransformer{
 		return new Block(stmts, b.typeEnvironment)
 	}
 
-	def List<Statement> extractAssertions(Assertion t, List<Statement> stmts) {
-		List<Assertion> myassertions = [t]
+	def List<Statement> extractAssertions(IProperty t, List<Statement> stmts) {
+		List<IProperty> myproperties = [t]
 		List<Statement> statements = stmts
-		while (!statements.isEmpty() && statements.head() instanceof Assertion) {
-			myassertions << statements.head()
+		while (!statements.isEmpty() && statements.head() instanceof IProperty) {
+			myproperties << statements.head()
 			statements = statements.tail()
 		}
 		if (statements.isEmpty()) {
 			Statement h = new Assignments(t.typeEnvironment)
-			addAssertions(h, myassertions)
-			return myassertions + [h]
+			addAssertions(h, myproperties)
+			return myproperties + [h]
 		}
 		List<Statement> nextS = extractAssertions(statements.head(), statements.tail())
-		assert !nextS.isEmpty() && !(nextS.first() instanceof Assertion)
-		addAssertions(nextS.first(), myassertions)
-		myassertions + nextS
+		assert !nextS.isEmpty() && !(nextS.first() instanceof IProperty)
+		addAssertions(nextS.first(), myproperties)
+		myproperties + nextS
 	}
 
 	def List<Statement> extractAssertions(While w, List<Statement> stmts) {

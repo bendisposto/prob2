@@ -12,9 +12,9 @@ public class AssertionExtractorTest extends Specification {
 
 	def run(Closure cls) {
 		Block b = new Block().make(cls)
-		def a = new AssertionExtractor()
+		def a = new PropertyExtractor()
 		def b2 = a.transform(b)
-		[assertions: a.assertions, algorithm: b2]
+		[assertions: a.properties, algorithm: b2]
 	}
 
 	def print(e) {
@@ -24,13 +24,13 @@ public class AssertionExtractorTest extends Specification {
 
 	def assertions(e, int index) {
 		e.assertions[e.algorithm.statements[index]].collect {
-			it.assertion.getCode()
+			it.getFormula().getCode()
 		}
 	}
 
 	def assertions(e, Statement statement) {
 		e.assertions[statement].collect {
-			it.assertion.getCode()
+			it.getFormula().getCode()
 		}
 	}
 

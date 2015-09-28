@@ -26,7 +26,11 @@ mm = new ModelModifier().make {
 		algorithm {
 			While("l /= 0") {
 				If("l mod 2 /= 0") {
-					Then("product := product + r")
+					Then {
+						Assume("l / 2 * 2 = l - 1")
+						Assign("l := l / 2", "r := r * 2", "product := product + r")
+					}
+					Else("l := l / 2", "r := r * 2")
 				}
 				Assign("l := l / 2", "r := r * 2")
 			}

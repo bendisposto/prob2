@@ -29,13 +29,12 @@ public class CGGConstructionTest extends Specification {
 		g.outgoingEdges[g.getNode(from)].findAll {
 			it.to == g.getNode(to)
 		}.collect {
-			it.conditions.collect { it.getCode()
-			} } as Set
+			it.conditions.collect { it.getCode() } } as Set
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
-		g.assertions[g.getNode(at)].collect {
-			it.assertion.getCode()
+		g.properties[g.getNode(at)].collect {
+			it.getFormula().getCode()
 		} as Set
 	}
 
