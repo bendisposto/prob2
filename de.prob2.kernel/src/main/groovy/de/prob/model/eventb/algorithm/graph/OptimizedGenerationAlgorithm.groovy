@@ -29,7 +29,9 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 
 	@Override
 	public MachineModifier run(MachineModifier machineM, Block algorithm) {
-		graph = transformers.inject(new ControlFlowGraph(algorithm)) { ControlFlowGraph g, IGraphTransformer t -> t.transform(g) }
+		graph = transformers.inject(new ControlFlowGraph(algorithm)) { ControlFlowGraph g, IGraphTransformer t ->
+			t.transform(g)
+		}
 		pcInformation = new PCCalculator(graph, true).pcInformation
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm).prettyPrint())
 		if (graph.entryNode) {
@@ -37,7 +39,9 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 			machineM = new AssertionTranslator(machineM, graph, pcInformation, true).getMachineM()
 			machineM =  addNode(machineM, graph.entryNode)
 			def loops = []
-			loopInfo.each { k, v -> loops << v }
+			loopInfo.each { k, v ->
+				loops << v
+			}
 			def loopI = new ModelElementList<LoopInformation>(loops)
 			machineM = new MachineModifier(machineM.getMachine().set(LoopInformation.class, loopI), machineM.typeEnvironment)
 		}
@@ -50,6 +54,10 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		}
 		generated << stmt
 		final pcs = pcInformation
+
+		if (stmt instanceof While && stmt.invariant != null) {
+			machineM = machineM.invariant(graph.nodeMapping.getName(stmt) +"_inv", "pc = ${pcs[stmt]} => (${stmt.invariant.getCode()})")
+		}
 
 		def branch = stmt instanceof While || stmt instanceof If
 		graph.outEdges(stmt).each { final Edge outEdge ->

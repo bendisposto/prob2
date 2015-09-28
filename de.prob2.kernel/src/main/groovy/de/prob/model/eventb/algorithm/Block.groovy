@@ -28,16 +28,16 @@ class Block extends AbstractModifier {
 	}
 
 	def Block While(String condition, Closure definition) throws ModelGenerationException {
-		newBlock(statements.addElement(new While(condition, null, newBlock().make(definition), typeEnvironment)))
+		newBlock(statements.addElement(new While(condition, null, null, newBlock().make(definition), typeEnvironment)))
 	}
 
 	def Block While(LinkedHashMap properties, String condition, Closure definition) throws ModelGenerationException {
-		def props = validateProperties(properties, [variant: [String, null]])
-		newBlock(statements.addElement(new While(condition, props.variant, newBlock().make(definition), typeEnvironment)))
+		def props = validateProperties(properties, [variant: [String, null], invariant: [String, null]])
+		newBlock(statements.addElement(new While(condition, props.variant, props.invariant, newBlock().make(definition), typeEnvironment)))
 	}
 
-	def Block While(String condition, Block block, String variant=null) throws ModelGenerationException {
-		newBlock(statements.addElement(new While(condition, variant, block, typeEnvironment)))
+	def Block While(String condition, Block block, String invariant=null, String variant=null) throws ModelGenerationException {
+		newBlock(statements.addElement(new While(condition, variant, invariant, block, typeEnvironment)))
 	}
 
 	def Block Assert(String condition) throws ModelGenerationException {

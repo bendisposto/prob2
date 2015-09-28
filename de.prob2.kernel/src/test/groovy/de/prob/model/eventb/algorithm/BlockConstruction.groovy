@@ -6,8 +6,7 @@ class BlockConstruction extends Specification {
 
 	def "it is possible to create a while loop"() {
 		when:
-		def b = new Block().make { While("x = 1") {
-			} }
+		def b = new Block().make { While("x = 1") { } }
 		then:
 		b.statements[0] instanceof While
 		b.statements[0].condition.getCode() == "x = 1"
@@ -60,12 +59,13 @@ class BlockConstruction extends Specification {
 		b.statements[0].block.statements[0] instanceof Assignments
 	}
 
-	def "it is possible to create a While with variant without a closure"() {
+	def "it is possible to create a While with invariant and variant without a closure"() {
 		when:
-		def b = new Block().While("x < 5", new Block().Assign("x := 2", "y := 3"), "x + 5")
+		def b = new Block().While("x < 5", new Block().Assign("x := 2", "y := 3"),"x < 5", "x + 5")
 
 		then:
 		b.statements[0] instanceof While
+		b.statements[0].invariant.getCode() == "x < 5"
 		b.statements[0].variant.getCode() == "x + 5"
 		b.statements[0].block.statements[0] instanceof Assignments
 	}
