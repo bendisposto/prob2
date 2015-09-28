@@ -33,8 +33,8 @@ public class MergedCGGConstructionTest extends Specification {
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
-		g.assertions[g.getNode(at)].collect {
-			it.assertion.getCode()
+		g.properties[g.getNode(at)].collect {
+			it.getFormula().getCode()
 		} as Set
 	}
 
@@ -43,7 +43,7 @@ public class MergedCGGConstructionTest extends Specification {
 		println "naming: ${graph.nodeMapping.nodes}"
 		println "incoming: ${graph.incomingEdges}"
 		println "outgoing: ${graph.outgoingEdges}"
-		println "assertions: ${graph.assertions}\n"
+		println "assertions: ${graph.properties}\n"
 	}
 
 	def "empty is empty"() {

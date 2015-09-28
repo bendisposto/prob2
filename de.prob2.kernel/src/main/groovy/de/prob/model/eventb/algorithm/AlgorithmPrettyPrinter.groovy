@@ -44,14 +44,23 @@ class AlgorithmPrettyPrinter {
 
 	def printStatement(While statement, StringBuilder sb, String indent) {
 		writeLine(sb,indent,statement.toString())
-		if (statement.variant) {
+		if (statement.variant || statement.invariant) {
 			def newindent = indent == null ? "" : "  ${indent}"
-			writeLine(sb,newindent,"variant: "+statement.variant.toUnicode())
+			if (statement.invariant) {
+				writeLine(sb, newindent,"invariant: "+statement.invariant.toUnicode())
+			}
+			if (statement.variant) {
+				writeLine(sb, newindent,"variant: "+statement.variant.toUnicode())
+			}
 		}
 		printBlock(statement.block, sb, indent)
 	}
 
 	def printStatement(Assignments statement, StringBuilder sb, String indent) {
+		writeLine(sb,indent,statement.toString())
+	}
+
+	def printStatement(Assumption statement, StringBuilder sb, String indent) {
 		writeLine(sb,indent,statement.toString())
 	}
 

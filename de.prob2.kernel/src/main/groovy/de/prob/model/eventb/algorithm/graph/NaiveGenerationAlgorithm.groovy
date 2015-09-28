@@ -50,6 +50,10 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 		generated << stmt
 		final pcs = pcInformation
 
+		if (stmt instanceof While && stmt.invariant != null) {
+			machineM = machineM.invariant(graph.nodeMapping.getName(stmt)+"_inv", "pc = ${pcs[stmt]} => (${stmt.invariant.getCode()})")
+		}
+
 		graph.outEdges(stmt).each { final Edge outEdge ->
 			def name = extractName(outEdge)
 
