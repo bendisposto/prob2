@@ -88,7 +88,12 @@ class Downloader {
 	 * @return
 	 * @throws ProBException
 	 */
+
 	def String downloadCli(final String targetVersion) {
+		downloadCli(targetVersion, false);
+	}
+
+	def String downloadCli(final String targetVersion, boolean forcedShutdown) {
 		def config = downloadConfig()
 		if( !config.containsKey(targetVersion)) {
 			return "There is no version available for version name <"+targetVersion+">\n"+listVersions()
@@ -97,7 +102,11 @@ class Downloader {
 
 		def numOfOpenCLIs = instances.numberOfCLIs()
 		if (numOfOpenCLIs != 0) {
-			return "--Cannot download the ProB binaries. Close the $numOfOpenCLIs CLIs that are open--"
+			if (forcedShutdown) {
+				instances.shutdownAll()
+			} else {
+				return "--Cannot download the ProB binaries. Close the $numOfOpenCLIs CLIs that are open--"
+			}
 		}
 
 		// Use operating system to download the correct zip file
@@ -122,6 +131,7 @@ class Downloader {
 
 		return "--Upgrade to version: ${targetVersion} (${url})  successful.--"
 	}
+
 
 	def String installCSPM() {
 		def target = probhome+"lib"+File.separator+"cspmf"
