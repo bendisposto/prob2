@@ -7,7 +7,7 @@ mm = new ModelModifier().make {
 	machine(name: "bowl1") {
 		var_block name: "size",
 		          invariant: "size : NAT",
-				  init: "size := 0"
+		          init: "size := 0"
 		invariant "size <= 50"
 		
 		event(name: "put") {
@@ -33,14 +33,14 @@ mm = new ModelModifier().make {
 	machine(name: "bowl2", sees: ["Cherries"], refines: "bowl1") {
 		var_block name: "bowl",
 		          invariant: "bowl <: cherries",
-				  init: "bowl := {}"
+			  init: "bowl := {}"
 		invariant gluing: "size = card(bowl)"
 
 		refine(name: "put") {
 			parameter "handfull"
 			guards    "handfull <: cherries",
 			          "card(handfull) : 1..5",
-					 "handfull /\\ bowl = {}"
+				  "handfull /\\ bowl = {}"
 			witness   for: "x", with: "card(handfull) = x"
 			action    "bowl := bowl \\/ handfull"
 		}
@@ -48,7 +48,7 @@ mm = new ModelModifier().make {
 		refine(name: "take") {
 			parameter "handfull"
 			guards    "handfull <: bowl",
-					  "card(handfull) : 1..5"
+				  "card(handfull) : 1..5"
 			witness   "x", "card(handfull) = x"
 			action    "bowl := bowl \\ handfull"
 		}
