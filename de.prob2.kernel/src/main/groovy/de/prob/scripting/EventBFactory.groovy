@@ -28,7 +28,6 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 	ModelTranslationError {
 		EventBModel model = modelCreator.get();
 		def validFileName = getValidFileName(modelPath)
-		model.setModelFile(new File(validFileName))
 		EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, validFileName);
 		new ExtractedModel<EventBModel>(translator.getModel(),translator.getMainComponent())
 	}
