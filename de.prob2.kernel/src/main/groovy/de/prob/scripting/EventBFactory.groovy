@@ -27,7 +27,9 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 	public ExtractedModel<EventBModel> extract(String modelPath) throws IOException,
 	ModelTranslationError {
 		EventBModel model = modelCreator.get();
-		EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, getValidFileName(modelPath));
+		def validFileName = getValidFileName(modelPath)
+		model.setModelFile(new File(validFileName))
+		EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, validFileName);
 		new ExtractedModel<EventBModel>(translator.getModel(),translator.getMainComponent())
 	}
 
