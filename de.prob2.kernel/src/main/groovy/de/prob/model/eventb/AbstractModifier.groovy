@@ -98,6 +98,10 @@ class AbstractModifier extends AbstractElement {
 		return parseFormula(formula, EvalElementType.EXPRESSION)
 	}
 
+	def EventB parseAssignment(String formula) throws ModelGenerationException {
+		return parseFormula(formula, EvalElementType.ASSIGNMENT)
+	}
+
 	def EventB parseFormula(String formula, EvalElementType expected) throws ModelGenerationException {
 		if (formula == null) {
 			throw new IllegalArgumentException("${expected.name().toLowerCase()} must not be null");

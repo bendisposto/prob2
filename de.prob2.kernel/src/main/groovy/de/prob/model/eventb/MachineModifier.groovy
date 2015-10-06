@@ -4,6 +4,7 @@ import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.Procedure;
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Invariant
@@ -324,6 +325,16 @@ public class MachineModifier extends AbstractModifier {
 
 	def MachineModifier addComment(String comment) {
 		comment ? newMM(machine.addTo(ElementComment.class, new ElementComment(comment))) : this
+	}
+
+	def MachineModifier procedure(LinkedHashMap properties, Closure definition) {
+		def props = validateProperties(properties, [name: String, variables: [List, []],
+			precondition: String, abstraction: String, locals: [Map, [:]]])
+		procedure(props["name"], props["variables"], props["precondition"], props["abstraction"], props["locals"], new Block([], typeEnvironment).make(definition))
+	}
+
+	def MachineModifier procedure(String name, List<String> variables, String precondition, String abstraction, Map<String, String> locals, Block algorithm) {
+		newMM(machine.addTo(Procedure.class, new Procedure(name, variables, precondition, abstraction, locals, algorithm)))
 	}
 
 	def MachineModifier algorithm(Closure definition) throws ModelGenerationException {
