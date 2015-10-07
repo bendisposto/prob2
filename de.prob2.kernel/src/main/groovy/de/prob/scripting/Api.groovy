@@ -7,6 +7,7 @@ import com.google.inject.Inject
 import com.google.inject.Provider
 
 import de.be4.classicalb.core.parser.exceptions.BException
+import de.be4.classicalb.core.parser.node.Start;
 import de.prob.Main
 import de.prob.animator.IAnimator
 import de.prob.animator.command.GetVersionCommand
@@ -117,6 +118,17 @@ public class Api {
 		StateSpace s = extracted.load(prefs)
 		loadClosure(s)
 		return s
+	}
+			
+	public StateSpace b_load(final Start ast,
+			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
+		ClassicalBFactory bFactory = modelFactoryProvider
+				.getClassicalBFactory();
+		Closure loadClosure=getSubscribeClosure(LoadClosures.B)
+				def extracted = bFactory.create(ast)
+				StateSpace s = extracted.load(prefs)
+				loadClosure(s)
+				return s
 	}
 
 	public StateSpace tla_load(final String file,

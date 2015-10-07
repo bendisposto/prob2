@@ -22,7 +22,7 @@ public class EventBDatabaseTranslator {
 	private AbstractElement mainComponent;
 	private EventBModel model;
 
-	public EventBDatabaseTranslator(EventBModel model,
+	public EventBDatabaseTranslator(EventBModel m,
 			final String fileName) throws FileNotFoundException {
 		try {
 			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
@@ -30,7 +30,7 @@ public class EventBDatabaseTranslator {
 
 			File modelFile = new File(fileName);
 			String fullFileName = modelFile.getAbsolutePath();
-			this.model = model.setModelFile(modelFile);
+			this.model = m.setModelFile(modelFile);
 
 			String directory = fullFileName.substring(0,
 					fullFileName.lastIndexOf(File.separatorChar));
@@ -43,7 +43,7 @@ public class EventBDatabaseTranslator {
 			if (!theoryFile.exists()) {
 				typeEnv = new HashSet<IFormulaExtension>();
 			} else {
-				TheoryXmlHandler theoryHandler = new TheoryXmlHandler(model,
+				TheoryXmlHandler theoryHandler = new TheoryXmlHandler(this.model,
 						workspacePath);
 				saxParser.parse(theoryFile, theoryHandler);
 				typeEnv = theoryHandler.getTypeEnv();
