@@ -324,14 +324,14 @@ public class MachineModifier extends AbstractModifier {
 		comment ? newMM(machine.addTo(ElementComment.class, new ElementComment(comment))) : this
 	}
 
-	def MachineModifier procedure(LinkedHashMap properties, Closure definition) {
-		def props = validateProperties(properties, [name: String, variables: [List, []],
-			precondition: String, abstraction: String, locals: [Map, [:]]])
-		procedure(props["name"], props["variables"], props["precondition"], props["abstraction"], props["locals"], new Block([], typeEnvironment).make(definition))
+	def MachineModifier procedure(LinkedHashMap properties, Closure definition) throws ModelGenerationException {
+		def props = validateProperties(properties, [name: String, arguments: [Map, [:]], result: [Map, [:]],
+			precondition: String, abstraction: String])
+		procedure(props["name"], props["arguments"], props["result"],props["precondition"], props["abstraction"],  new Block([], typeEnvironment).make(definition))
 	}
 
-	def MachineModifier procedure(String name, List<String> variables, String precondition, String abstraction, Map<String, String> locals, Block algorithm) {
-		newMM(machine.addTo(Procedure.class, new Procedure(name, variables, precondition, abstraction, locals, algorithm)))
+	def MachineModifier procedure(String name, Map<String,String> arguments, Map<String, String> result, String precondition, String abstraction, Block algorithm)throws ModelGenerationException {
+		newMM(machine.addTo(Procedure.class, new Procedure(name, arguments, result, precondition, abstraction, algorithm)))
 	}
 
 	def MachineModifier algorithm(Closure definition) throws ModelGenerationException {

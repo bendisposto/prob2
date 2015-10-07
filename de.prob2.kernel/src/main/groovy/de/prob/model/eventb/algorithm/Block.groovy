@@ -60,6 +60,18 @@ class Block extends AbstractModifier {
 		newBlock(stmts.addMultiple(a.addAssignments(assignments)))
 	}
 
+	def Block Return(String... returnVals) throws ModelGenerationException {
+		Return(returnVals as List)
+	}
+
+	def Block Return(List<String> returnVals) throws ModelGenerationException  {
+		newBlock(statements.addElement(new Return(returnVals, typeEnvironment)))
+	}
+
+	def Block Call(String name, List<String> arguments, List<String> results) throws ModelGenerationException{
+		newBlock(statements.addElement(new Call(name, arguments, results, typeEnvironment)))
+	}
+
 	def Block make(Closure definition) throws ModelGenerationException {
 		runClosure definition
 	}
