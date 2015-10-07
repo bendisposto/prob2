@@ -258,23 +258,24 @@ public class MachineModifier extends AbstractModifier {
 		if (refinedEvent && !machine.refines[0].getEvent(refinedEvent)) {
 			throw new IllegalArgumentException("The event $refinedEvent does not exist in the refined machine and therefore cannot be refined in the existing context.")
 		}
-		def mm = removePOsForEvent(name)
-		def refinedE = refinedEvent ? machine.refines[0].getEvent(refinedEvent) : null
-		def oldevent = machine.getEvent(name)
-		def event = oldevent ? oldevent.changeType(type) : new Event(name, type, extended)
-		if (comment) {
-			event = event.addTo(ElementComment.class, new ElementComment(comment))
+		def event = machine.getEvent(name) ?: new Event(name, type, extended)
+		def em = new EventModifier(event, "INITIALISATION" == name, typeEnvironment).setType(type)
+		em = refinedEvent ? em.refines(machine.refines[0].getEvent(refinedEvent), extended) : em
+		em = em.addComment(comment).make(cls)
+
+		addEvent(em.getEvent())
+	}
+
+	def MachineModifier addEvent(Event event) {
+		if (machine.getEvent(event.getName())) {
+			return replaceEvent(machine.getEvent(event.getName()), event)
 		}
-		def em = new EventModifier(event, "INITIALISATION" == name, typeEnvironment)
-		em = refinedEvent ? em.refines(refinedE, extended) : em
-		em = em.make(cls)
-		def m = mm.getMachine()
-		if (oldevent) {
-			m = m.replaceIn(BEvent.class, oldevent, em.getEvent())
-		} else {
-			m = m.addTo(BEvent.class, em.getEvent())
-		}
-		newMM(m)
+		newMM(removePOsForEvent(event.getName()).getMachine().addTo(BEvent.class, event))
+	}
+
+	def MachineModifier replaceEvent(Event oldEvent, Event newEvent) {
+		def mm = removePOsForEvent(oldEvent.name)
+		newMM(mm.getMachine().replaceIn(BEvent.class, oldEvent, newEvent))
 	}
 
 	/**
@@ -287,15 +288,11 @@ public class MachineModifier extends AbstractModifier {
 	 */
 	def MachineModifier duplicateEvent(String eventName, String newName) {
 		validateAll(eventName, newName)
-		MachineModifier mm = removePOsForEvent(newName)
 		Event event = machine.getEvent(eventName)
 		if (!event) {
 			throw new IllegalArgumentException("Can only duplicate an event that exists! Event with name $eventName was not found.")
 		}
-		Event event2 = new Event(newName, event.type, event.extended, event.children)
-		def oldE = mm.getMachine().events.getElement(newName)
-		def m = oldE ? mm.getMachine().replaceIn(BEvent.class, oldE, event2) : mm.getMachine().addTo(BEvent.class, event2)
-		return newMM(m)
+		addEvent(new Event(newName, event.type, event.extended, event.children))
 	}
 
 	def MachineModifier removeEvent(String name) {
