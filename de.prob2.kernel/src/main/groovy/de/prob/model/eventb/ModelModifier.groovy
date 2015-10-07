@@ -8,6 +8,7 @@ import org.eventb.core.ast.extension.IFormulaExtension
 import de.prob.Main
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.eventb.translate.TheoryExtractor
+import de.prob.model.representation.DependencyGraph.Edge;
 import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
@@ -37,38 +38,28 @@ public class ModelModifier extends AbstractModifier {
 		this(Main.getInjector().getInstance(EventBFactory.class).modelCreator.get())
 	}
 
+	def ModelModifier newMM(EventBModel model) {
+		new ModelModifier(model.calculateDependencies(), typeEnvironment)
+	}
+
 	def ModelModifier context(HashMap properties, Closure definition) throws ModelGenerationException {
 		def props = validateProperties(properties, [name: String, "extends": [String, null], comment: [String, null]])
 		def model = this.model
 		def name = properties["name"]
 		def oldcontext = model.getContexts().getElement(name)
 		def c = oldcontext ?: new Context(name)
-		if (props["comment"]) {
-			c = c.addTo(ElementComment.class, new ElementComment(props["comment"]))
-		}
+		ContextModifier cm = new ContextModifier(c, typeEnvironment).addComment(props["comment"])
 
-		def extended = c.getExtends() ? c.getExtends()[0] : null
-		def ext = props["extends"]
-		if (ext) {
-			Context ctx = model.getContexts().getElement(ext)
+		if (props["extends"]) {
+			Context ctx = model.getContexts().getElement(props["extends"])
 			if (ctx == null) {
-				throw new IllegalArgumentException("Tried to load context $ext but could not find it.")
+				throw new IllegalArgumentException("Tried to load context ${props['extends']} but could not find it.")
 			}
-			if (extended) {
-				model = model.removeRelationship(name, extended.getName(), ERefType.EXTENDS)
-			}
-			model = model.addRelationship(name, ctx.getName(), ERefType.EXTENDS)
-			extended = ctx
+			cm = cm.setExtends(ctx)
 		}
 
-		def cm = new ContextModifier(c, typeEnvironment)
-		if (extended) {
-			cm = cm.setExtends(extended)
-		}
 		cm = cm.make(definition)
-		model = oldcontext ? model.replaceIn(Context.class, oldcontext, cm.getContext()) :
-				model.addContext(cm.getContext())
-		new ModelModifier(model, typeEnvironment)
+		addContext(cm.getContext())
 	}
 
 	def ModelModifier machine(HashMap properties, Closure definition) throws ModelGenerationException {
@@ -77,22 +68,14 @@ public class ModelModifier extends AbstractModifier {
 		def name = props["name"]
 		def oldmachine = model.getMachines().getElement(name)
 		EventBMachine m = oldmachine ?: new EventBMachine(name)
-		if (props["comment"]) {
-			m = m.addTo(ElementComment.class, new ElementComment(props["comment"]))
-		}
+		MachineModifier mm = new MachineModifier(m, typeEnvironment).addComment(props["comment"])
 
-		EventBMachine refined = m.getRefines() ? m.getRefines()[0] : null
-		def refines = props["refines"]
-		if (refines) {
-			EventBMachine machine = model.getMachines().getElement(refines)
+		if (props["refines"]) {
+			EventBMachine machine = model.getMachines().getElement(props["refines"])
 			if (machine == null) {
-				throw new IllegalArgumentException("Tried to load machine ${refines} but could not find it")
+				throw new IllegalArgumentException("Tried to load machine ${props['refines']} but could not find it")
 			}
-			if (refined) {
-				model = model.removeRelationship(name, refined.getName(), ERefType.REFINES)
-			}
-			model = model.addRelationship(name, machine.getName(), ERefType.REFINES)
-			refined = machine
+			mm = mm.setRefines(machine)
 		}
 
 		ModelElementList<Context> seenContexts = m.getSees()
@@ -105,14 +88,9 @@ public class ModelModifier extends AbstractModifier {
 			model = model.addRelationship(name, c, ERefType.SEES)
 			seenContexts = seenContexts.addElement(context)
 		}
-		def mm = new MachineModifier(m, typeEnvironment)
-		if (refined) {
-			mm = mm.setRefines(refined)
-		}
+
 		mm = mm.setSees(seenContexts).make(definition)
-		model = oldmachine ? model.replaceIn(Machine.class, oldmachine, mm.getMachine()) :
-				model.addMachine(mm.getMachine())
-		new ModelModifier(model, typeEnvironment)
+		addMachine(mm.getMachine())
 	}
 
 	def ModelModifier refine(String machineName, String refinementName) {
@@ -132,16 +110,76 @@ public class ModelModifier extends AbstractModifier {
 		modelM
 	}
 
-	def ModelModifier make(Closure definition) throws ModelGenerationException {
-		runClosure definition
+	def ModelModifier addContext(Context newContext) {
+		if (model.getContext(newContext.getName())) {
+			return replaceContext(model.getContext(newContext.getName()), newContext)
+		}
+		newMM(model.addContext(newContext).calculateDependencies())
+	}
+
+	def ModelModifier addMachine(EventBMachine newMachine) {
+		if (model.getMachine(newMachine.getName())) {
+			return replaceMachine(model.getMachine(newMachine.getName()), newMachine)
+		}
+		newMM(model.addMachine(newMachine).calculateDependencies())
+	}
+
+	def ModelModifier removeContext(Context context) {
+		EventBModel m = model.removeFrom(Context.class, context)
+		m.graph.getIncomingEdges(context.getName()).each { Edge e ->
+			if (e.relationship == ERefType.EXTENDS) {
+				Context ctx = m.getContext(e.getFrom().getElementName())
+				Context ctx2 = ctx.removeFrom(Context.class, context)
+				m = newMM(m).replaceContext(ctx, ctx2).getModel()
+			} else if (e.relationship == ERefType.SEES) {
+				EventBMachine mch = m.getMachine(e.getFrom().getElementName())
+				EventBMachine mch2 = mch.removeFrom(Context.class, context)
+				m = newMM(m).replaceMachine(mch, mch2).getModel()
+			}
+		}
+		newMM(m)
+	}
+
+	def ModelModifier removeMachine(EventBMachine machine) {
+		EventBModel m = model.removeFrom(Machine.class, machine)
+		m.graph.getIncomingEdges(machine.getName()).each { Edge e ->
+			if (e.relationship == ERefType.REFINES) {
+				EventBMachine mch = m.getMachine(e.getFrom().getElementName())
+				EventBMachine mch2 = mch.removeFrom(Machine.class, machine)
+				m = newMM(m).replaceMachine(mch, mch2).getModel()
+			}
+		}
+		newMM(m)
 	}
 
 	def ModelModifier replaceContext(Context oldContext, Context newContext) {
-		new ModelModifier(model.replaceIn(Context.class, oldContext, newContext))
+		EventBModel m = model
+		m = m.replaceIn(Context.class, oldContext, newContext)
+		m.graph.getIncomingEdges(oldContext.getName()).each { Edge e ->
+			if (e.relationship == ERefType.EXTENDS) {
+				Context ctx = m.getContext(e.getFrom().getElementName())
+				Context ctx2 = ctx.replaceIn(Context.class, oldContext, newContext)
+				m = newMM(m).replaceContext(ctx, ctx2).getModel()
+			} else if (e.relationship == ERefType.SEES) {
+				EventBMachine mch = m.getMachine(e.getFrom().getElementName())
+				EventBMachine mch2 = mch.replaceIn(Context.class, oldContext, newContext)
+				m = newMM(m).replaceMachine(mch, mch2).getModel()
+			}
+		}
+		newMM(m)
 	}
 
 	def ModelModifier replaceMachine(EventBMachine oldMachine, EventBMachine newMachine) {
-		new ModelModifier(model.replaceIn(Machine.class, oldMachine, newMachine))
+		EventBModel m = model
+		m = m.replaceIn(Machine.class, oldMachine, newMachine)
+		m.graph.getIncomingEdges(oldMachine.getName()).each { Edge e ->
+			if (e.relationship == ERefType.REFINES) {
+				EventBMachine ma = m.getMachine(e.getFrom().getElementName())
+				EventBMachine ma2 = ma.replaceIn(Machine.class, oldMachine, newMachine)
+				m = newMM(m).replaceMachine(ma, ma2).getModel()
+			}
+		}
+		newMM(m)
 	}
 
 	def ModelModifier loadTheories(LinkedHashMap properties) {
@@ -164,5 +202,9 @@ public class ModelModifier extends AbstractModifier {
 		}
 		def model = model.set(Theory.class, theories)
 		new ModelModifier(model, types)
+	}
+
+	def ModelModifier make(Closure definition) throws ModelGenerationException {
+		runClosure definition
 	}
 }

@@ -286,6 +286,155 @@ class ModelModifierTest extends Specification {
 		model2.getMachines().B.variables.collect { it.getName() } == ["x", "y"]
 	}
 
+	def "deleting machine works"() {
+		when:
+		def mm = new ModelModifier().make {
+			context(name: "ctx0") {}
+			context(name: "ctx1", "extends": "ctx0") {}
+			machine(name: "mch0", sees: ["ctx0"]) {}
+			machine(name: "mch1", refines: "mch0", sees: ["ctx0", "ctx1"]) {}
+		}
+		def model = mm.getModel()
+		def model2 = mm.removeMachine(mm.getModel().mch0).getModel()
+
+		then:
+		model.getGraph().getVertices() == [
+			"ctx0",
+			"ctx1",
+			"mch0",
+			"mch1"] as Set
+		model.getRelationship("ctx1", "ctx0") == ERefType.EXTENDS
+		model.getRelationship("mch0", "ctx0") == ERefType.SEES
+		model.getRelationship("mch1", "ctx0") == ERefType.SEES
+		model.getRelationship("mch1", "ctx1") == ERefType.SEES
+		model.getRelationship("mch1", "mch0") == ERefType.REFINES
+
+		model2.getGraph().getVertices() == [
+			"ctx0",
+			"ctx1",
+			"mch1"] as Set
+		model2.getRelationship("ctx1", "ctx0") == ERefType.EXTENDS
+		model2.getRelationship("mch1", "ctx0") == ERefType.SEES
+		model2.getRelationship("mch1", "ctx1") == ERefType.SEES
+		model2.graph.getIncomingEdges("ctx0").size() == 2
+		model2.graph.getIncomingEdges("ctx1").size() == 1
+		model2.graph.getIncomingEdges("mch1").size() == 0
+		model2.mch1.getRefines().isEmpty()
+	}
+
+	def "deleting context works"() {
+		when:
+		def mm = new ModelModifier().make {
+			context(name: "ctx0") {}
+			context(name: "ctx1", "extends": "ctx0") {}
+			machine(name: "mch0", sees: ["ctx0"]) {}
+			machine(name: "mch1", refines: "mch0", sees: ["ctx0", "ctx1"]) {}
+		}
+		def model = mm.getModel()
+		def model2 = mm.removeContext(mm.getModel().ctx0).getModel()
+
+		then:
+		model.getGraph().getVertices() == [
+			"ctx0",
+			"ctx1",
+			"mch0",
+			"mch1"] as Set
+		model.getRelationship("ctx1", "ctx0") == ERefType.EXTENDS
+		model.getRelationship("mch0", "ctx0") == ERefType.SEES
+		model.getRelationship("mch1", "ctx0") == ERefType.SEES
+		model.getRelationship("mch1", "ctx1") == ERefType.SEES
+		model.getRelationship("mch1", "mch0") == ERefType.REFINES
+
+		model2.getGraph().getVertices() == [
+			"mch0",
+			"ctx1",
+			"mch1"] as Set
+		model.getRelationship("mch1", "mch0") == ERefType.REFINES
+		model2.getRelationship("mch1", "ctx1") == ERefType.SEES
+		model2.graph.getIncomingEdges("ctx1").size() == 1
+		model2.graph.getIncomingEdges("mch0").size() == 1
+		model2.graph.getIncomingEdges("mch1").size() == 0
+		model2.mch0.getSees().isEmpty()
+		model2.mch1.getSees().size() == 1
+		model2.ctx1.getExtends().isEmpty()
+	}
+
+	def "replacing machine (2) works"() {
+		when:
+		def mm = new ModelModifier().make {
+			context(name: "ctx0") {}
+			context(name: "ctx1", "extends": "ctx0") {}
+			machine(name: "mch0", sees: ["ctx0"]) {}
+			machine(name: "mch1", refines: "mch0", sees: ["ctx0", "ctx1"]) {}
+		}
+		def model = mm.getModel()
+		def m = new MachineModifier(new EventBMachine("mymch")).setSees(model.mch0.getSees()).getMachine()
+		def model2 = mm.replaceMachine(mm.getModel().mch0, m).getModel()
+
+		then:
+		model.getGraph().getVertices() == [
+			"ctx0",
+			"ctx1",
+			"mch0",
+			"mch1"] as Set
+		model.getRelationship("ctx1", "ctx0") == ERefType.EXTENDS
+		model.getRelationship("mch0", "ctx0") == ERefType.SEES
+		model.getRelationship("mch1", "ctx0") == ERefType.SEES
+		model.getRelationship("mch1", "ctx1") == ERefType.SEES
+		model.getRelationship("mch1", "mch0") == ERefType.REFINES
+
+		model2.getGraph().getVertices() == [
+			"ctx0",
+			"ctx1",
+			"mymch",
+			"mch1"] as Set
+		model2.getRelationship("ctx1", "ctx0") == ERefType.EXTENDS
+		model2.getRelationship("mymch", "ctx0") == ERefType.SEES
+		model2.getRelationship("mch1", "ctx0") == ERefType.SEES
+		model2.getRelationship("mch1", "ctx1") == ERefType.SEES
+		model2.getRelationship("mch1", "mymch") == ERefType.REFINES
+		model2.mch1.getRefines() == [m]
+	}
+
+	def "replacing context (2) works"() {
+		when:
+		def mm = new ModelModifier().make {
+			context(name: "ctx0") {}
+			context(name: "ctx1", "extends": "ctx0") {}
+			machine(name: "mch0", sees: ["ctx0"]) {}
+			machine(name: "mch1", refines: "mch0", sees: ["ctx0", "ctx1"]) {}
+		}
+		def model = mm.getModel()
+		def ctx = new ContextModifier(new Context("myctx")).getContext()
+		def model2 = mm.replaceContext(mm.getModel().ctx0, ctx).getModel()
+
+		then:
+		model.getGraph().getVertices() == [
+			"ctx0",
+			"ctx1",
+			"mch0",
+			"mch1"] as Set
+		model.getRelationship("ctx1", "ctx0") == ERefType.EXTENDS
+		model.getRelationship("mch0", "ctx0") == ERefType.SEES
+		model.getRelationship("mch1", "ctx0") == ERefType.SEES
+		model.getRelationship("mch1", "ctx1") == ERefType.SEES
+		model.getRelationship("mch1", "mch0") == ERefType.REFINES
+
+		model2.getGraph().getVertices() == [
+			"myctx",
+			"ctx1",
+			"mch0",
+			"mch1"] as Set
+		model2.getRelationship("ctx1", "myctx") == ERefType.EXTENDS
+		model2.getRelationship("mch0", "myctx") == ERefType.SEES
+		model2.getRelationship("mch1", "myctx") == ERefType.SEES
+		model2.getRelationship("mch1", "ctx1") == ERefType.SEES
+		model2.getRelationship("mch1", "mch0") == ERefType.REFINES
+		model2.mch0.getSees() == [ctx]
+		model2.mch1.getSees().contains(ctx)
+		model2.ctx1.getExtends() == [ctx]
+	}
+
 	def "load theories map cannot be empty"() {
 		when:
 		mm = new ModelModifier().loadTheories([:])
