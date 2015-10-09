@@ -15,6 +15,10 @@ import de.be4.classicalb.core.parser.node.Node
 class FormulaUtil {
 
 	def EventB substitute(EventB formula, Map<String, EventB> identifierMapping) {
+		if (formula.getKind() == EvalElementType.ASSIGNMENT.toString()) {
+			return substituteAssignment(formula, identifierMapping)
+		}
+
 		FormulaFactory ff = FormulaFactory.getInstance(formula.getTypes())
 		Map<FreeIdentifier, Expression> substitutions = identifierMapping.collectEntries { k, EventB v ->
 			if (v.getKind() != EvalElementType.EXPRESSION.toString()) {
@@ -25,11 +29,11 @@ class FormulaUtil {
 			[id, expr]
 		}
 		def f = getRodinFormula(formula)
-		def s = f instanceof Assignment ? substituteAssignment(formula, identifierMapping) : f.substituteFreeIdents(substitutions).toString()
+		def s = f.substituteFreeIdents(substitutions).toString()
 		new EventB(s)
 	}
 
-	def String substituteAssignment(EventB formula, Map<String, EventB> identifierMapping) {
+	def EventB substituteAssignment(EventB formula, Map<String, EventB> identifierMapping) {
 		assert formula.getKind() == EvalElementType.ASSIGNMENT.toString()
 		Node ast = formula.getAst()
 		if (ast instanceof AAssignSubstitution) {
@@ -41,10 +45,10 @@ class FormulaUtil {
 		if (ast instanceof ABecomesElementOfSubstitution) {
 			return substituteBecomeElementOf(formula, identifierMapping)
 		}
-		throw new IllegalArgumentException("Unknown type of assignment: "+ast.getClass()) // shouldn't be possible
+		// shouldn't be possible
 	}
 
-	def String substituteDeterministicAssignment(EventB formula, Map<String, EventB> identifierMapping) {
+	def EventB substituteDeterministicAssignment(EventB formula, Map<String, EventB> identifierMapping) {
 		String code = formula.getCode()
 		assert code.contains(":=")
 		String[] split = code.split(":=")
@@ -56,19 +60,20 @@ class FormulaUtil {
 		def rhs = split[1].split(",").collect {
 			substitute(new EventB(it), identifierMapping).getCode()
 		}.iterator().join(",")
-		lhs+":="+rhs
+		new EventB(lhs+":="+rhs)
 	}
 
-	def String substituteBecomeElementOf(EventB formula, Map<String, EventB> identifierMapping) {
+	def EventB substituteBecomeElementOf(EventB formula, Map<String, EventB> identifierMapping) {
 		String code = formula.getCode()
 		assert code.contains("::")
 		String[] split = code.split("::")
 		assert split.length == 2
 
-		substitute(new EventB(split[0]), identifierMapping).getCode()+"::"+substitute(new EventB(split[1]), identifierMapping).getCode()
+		def sub = substitute(new EventB(split[0]), identifierMapping).getCode()+"::"+substitute(new EventB(split[1]), identifierMapping).getCode()
+		new EventB(sub)
 	}
 
-	def String substituteBecomeSuchThat(EventB formula, Map<String, EventB> identifierMapping) {
+	def EventB substituteBecomeSuchThat(EventB formula, Map<String, EventB> identifierMapping) {
 		String code = formula.getCode()
 		assert code.contains(":|")
 		String[] split = code.split(":\\|")
@@ -84,7 +89,8 @@ class FormulaUtil {
 		}
 		def newMapping = identifierMapping + primed
 
-		substitute(new EventB(split[0]), newMapping).getCode()+":|"+substitute(new EventB(split[1]), newMapping).getCode()
+		def sub = substitute(new EventB(split[0]), newMapping).getCode()+":|"+substitute(new EventB(split[1]), newMapping).getCode()
+		new EventB(sub)
 	}
 
 	def getRodinFormula(EventB formula) {
@@ -97,6 +103,6 @@ class FormulaUtil {
 		if (formula.getKind() == EvalElementType.PREDICATE.toString()) {
 			return formula.getRodinParsedResult().getParsedPredicate()
 		}
-		throw new IllegalArgumentException("unknown type ${formula.getKind()} for formula $formula") // shouldn't be possible
+		// shouldn't be possible
 	}
 }

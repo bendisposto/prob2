@@ -1,5 +1,7 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.Assignment;
+
 import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 
@@ -49,6 +51,11 @@ class FormulaUtilTest extends Specification {
 
 		then:
 		e.getCode() == "p:|p'=x0*y0"
+	}
+
+	def "it is possible to abstract Assignment via util method"() {
+		expect:
+		fuu.getRodinFormula(new EventB("x := 1")) instanceof Assignment
 	}
 
 	def "substitutions work for become element of"() {
