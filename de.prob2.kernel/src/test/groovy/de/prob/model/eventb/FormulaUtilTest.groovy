@@ -1,12 +1,18 @@
 package de.prob.model.eventb
 
-import org.eventb.core.ast.Assignment;
+import org.codehaus.groovy.runtime.powerassert.PowerAssertionError
+import org.eventb.core.ast.Assignment
+import org.eventb.core.ast.FreeIdentifier
 
 import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 
 class FormulaUtilTest extends Specification {
 	FormulaUtil fuu
+
+	def formulas(String... fs) {
+		fs.collect { new EventB(it) }
+	}
 
 	def setup() {
 		fuu = new FormulaUtil()
@@ -88,5 +94,61 @@ class FormulaUtilTest extends Specification {
 
 		then:
 		thrown IllegalArgumentException
+	}
+
+	def "getting identifier works"() {
+		when:
+		def x = fuu.getIdentifier(new EventB("x"))
+
+		then:
+		x instanceof FreeIdentifier
+	}
+
+	def "getting identifier checks type"() {
+		when:
+		def x = fuu.getIdentifier(new EventB("x + 1"))
+
+		then:
+		thrown PowerAssertionError
+	}
+
+	def "getting identifier checks type 2"() {
+		when:
+		def x = fuu.getIdentifier(new EventB("x < 1"))
+
+		then:
+		thrown PowerAssertionError
+	}
+
+	def "find formulas which contain an identifier"() {
+		when:
+		def formulas = fuu.formulasWith(formulas("x := x + 1", "x < 10", "y > 10", "z + 1 + x"), new EventB("x"))
+
+		then:
+		formulas.size() == 3
+	}
+
+	def "find formulas which contain an identifier y"() {
+		when:
+		def formulas = fuu.formulasWith(formulas("x := x + 1", "x < 10", "y > 10", "z + 1 + x"), new EventB("y"))
+
+		then:
+		formulas.size() == 1
+	}
+
+	def "find formulas which contain an identifier z"() {
+		when:
+		def formulas = fuu.formulasWith(formulas("x := x + 1", "x < 10", "y > 10", "z + 1 + x"), new EventB("z"))
+
+		then:
+		formulas.size() == 1
+	}
+
+	def "find formulas which contain an identifier m"() {
+		when:
+		def formulas = fuu.formulasWith(formulas("x := x + 1", "x < 10", "y > 10", "z + 1 + x"), new EventB("m"))
+
+		then:
+		formulas.size() == 0
 	}
 }

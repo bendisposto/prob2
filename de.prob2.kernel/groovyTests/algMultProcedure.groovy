@@ -10,14 +10,16 @@ import de.prob.statespace.*
 mm = new ModelModifier().make {
 	
 	machine(name: "multiplication") {
-		var_block name: "x", invariant: "x : NAT", init: "x :: NAT"
-		var_block name: "y", invariant: "y : NAT", init: "y :: NAT"
+		var_block name: "x", invariant: "x : NAT", init: "x :: NAT1"
+		var_block name: "y", invariant: "y : NAT", init: "y :: NAT1"
 		var_block name: "product", invariant: "product : NAT", init: "product := 0"
 		var_block name: "ctr", invariant: "ctr : NAT", init: "ctr := 0"
+		var_block name: "s", invariant: "s : NAT +-> INT", init: "s := {}"
 		
-		procedure(name: "mult", arguments: [x0: "x", y0: "y"], result: [p: "product"],
+		procedure(name: "mult", arguments: ["x", "y"], results: ["product"],
+			locals: [x0: "x", y0: "y", p: "product"],
 			precondition: "x >= 0 & y >= 0", abstraction: "product := x * y") {
-			While("x0 > 0", invariant: "product + (x0*y0) = x*y") {
+			While("x0 > 0", invariant: "p + (x0*y0) = x*y") {
 				If("x0 mod 2 /= 0") {
 					Then {
 						Assume("x0 / 2 * 2 = x0 - 1")
@@ -26,24 +28,25 @@ mm = new ModelModifier().make {
 					Else("x0 := x0 / 2", "y0 := y0 * 2")
 				}
 			}
+			Assert("p = x * y")
 			Return("p")
 		}
 		
 		algorithm {
-			While("ctr < 10") {
-				Call("mult", ["ctr", "x"], ["product"])
-				Assert("product = ctr * x")
-				Assign("ctr := ctr + 1")
+			While("ctr < 10", invariant: "!i.i : dom(s) => s(i) = i*i") {
+				Call("mult", ["ctr", "ctr"], ["product"])
+				Assert("product = ctr*ctr")
+				Assign("s(ctr) := product","ctr := ctr + 1")
 			}
 		}
 	}
 }
 
 m = mm.getModel()
-//m = new AlgorithmTranslator(m, new OptimizedGenerationAlgorithm([new GraphMerge()])).run()
+m = new AlgorithmTranslator(m, new OptimizedGenerationAlgorithm([new GraphMerge()])).run()
 
-mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "ProcMult", "/tmp")
+//mtx = new ModelToXML()
+//d = mtx.writeToRodin(m, "ProcMult", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

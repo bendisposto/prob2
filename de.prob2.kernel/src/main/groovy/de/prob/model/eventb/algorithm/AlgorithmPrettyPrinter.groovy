@@ -26,6 +26,7 @@ class AlgorithmPrettyPrinter {
 		if (!procedures.isEmpty()) {
 			procedures.each { Procedure p ->
 				writeLine(sb, null, p.toString())
+				writeLine(sb, "  ", "locals: "+p.locals.collect {k,v -> "$k<-$v"}.iterator().join(", "))
 				writeLine(sb, "  ", "precondition: "+p.precondition.toUnicode())
 				writeLine(sb, "  ", "abstraction: "+p.abstraction.toUnicode())
 				writeLine(sb, "  ", "algorithm:")

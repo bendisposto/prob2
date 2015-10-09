@@ -55,10 +55,10 @@ class FormulaUtil {
 		assert split.length == 2
 
 		def lhs = split[0].split(",").collect {
-			substitute(new EventB(it), identifierMapping).getCode()
+			substitute(new EventB(it, formula.getTypes()), identifierMapping).getCode()
 		}.iterator().join(",")
 		def rhs = split[1].split(",").collect {
-			substitute(new EventB(it), identifierMapping).getCode()
+			substitute(new EventB(it, formula.getTypes()), identifierMapping).getCode()
 		}.iterator().join(",")
 		new EventB(lhs+":="+rhs)
 	}
@@ -69,7 +69,7 @@ class FormulaUtil {
 		String[] split = code.split("::")
 		assert split.length == 2
 
-		def sub = substitute(new EventB(split[0]), identifierMapping).getCode()+"::"+substitute(new EventB(split[1]), identifierMapping).getCode()
+		def sub = substitute(new EventB(split[0], formula.getTypes()), identifierMapping).getCode()+"::"+substitute(new EventB(split[1], formula.getTypes()), identifierMapping).getCode()
 		new EventB(sub)
 	}
 
@@ -89,8 +89,13 @@ class FormulaUtil {
 		}
 		def newMapping = identifierMapping + primed
 
-		def sub = substitute(new EventB(split[0]), newMapping).getCode()+":|"+substitute(new EventB(split[1]), newMapping).getCode()
+		def sub = substitute(new EventB(split[0], formula.getTypes()), newMapping).getCode()+":|"+substitute(new EventB(split[1], formula.getTypes()), newMapping).getCode()
 		new EventB(sub)
+	}
+
+	def List<EventB> formulasWith(List<EventB> formulas, EventB identifier) {
+		FreeIdentifier fi = getIdentifier(identifier)
+		formulas.findAll { getRodinFormula(it).getFreeIdentifiers().contains(fi) }
 	}
 
 	def getRodinFormula(EventB formula) {
@@ -104,5 +109,11 @@ class FormulaUtil {
 			return formula.getRodinParsedResult().getParsedPredicate()
 		}
 		// shouldn't be possible
+	}
+
+	def FreeIdentifier getIdentifier(EventB formula) {
+		assert formula.getKind() == EvalElementType.EXPRESSION.toString()
+		assert formula.getRodinParsedResult().getParsedExpression() instanceof FreeIdentifier
+		return formula.getRodinParsedResult().getParsedExpression()
 	}
 }

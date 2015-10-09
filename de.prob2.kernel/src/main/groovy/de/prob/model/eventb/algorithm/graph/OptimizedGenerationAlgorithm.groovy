@@ -16,6 +16,7 @@ import de.prob.model.eventb.algorithm.ITranslationAlgorithm
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.LoopInformation
 import de.prob.model.eventb.algorithm.Procedure
+import de.prob.model.eventb.algorithm.Return
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 import de.prob.model.representation.ModelElementList
@@ -30,10 +31,16 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 	List<IGraphTransformer> transformers
 	Map<String, Integer> assertCtr = [:]
 	final String pcname
+	Event refinedEvent
+	Procedure procedure
+	String prefix
 
-	def OptimizedGenerationAlgorithm(List<IGraphTransformer> transformers=[], String pcname) {
+	def OptimizedGenerationAlgorithm(List<IGraphTransformer> transformers=[], Procedure procedure=null, Event refinedEvent=null) {
 		this.transformers = transformers
-		this.pcname = pcname
+		this.prefix = procedure ? procedure.name + "_" : ""
+		this.pcname = procedure ? "pc_${procedure.name}" : "pc"
+		this.refinedEvent = refinedEvent
+		this.procedure = procedure
 	}
 
 	@Override
@@ -43,7 +50,9 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		}
 		this.procedures = procedures
 		pcInformation = new PCCalculator(graph, true).pcInformation
-		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm, procedures).prettyPrint())
+		if (procedure == null) {
+			machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm, procedures).prettyPrint())
+		}
 		if (graph.entryNode) {
 			machineM = machineM.var_block("$pcname", "$pcname : NAT", "$pcname := 0")
 			machineM = new AssertionTranslator(machineM, graph, pcInformation, true, pcname).getMachineM()
@@ -127,17 +136,17 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		Procedure procedure = procedures.getElement(a.getName())
 		assert procedure
 		assert procedure.arguments.size() == a.arguments.size()
-		assert procedure.result.size() == a.results.size()
+		assert procedure.results.size() == a.results.size()
 		FormulaUtil fuu = new FormulaUtil()
 		Map<String, EventB> subs = [:]
 		[
-			procedure.arguments.values() as List,
+			procedure.arguments,
 			a.arguments
 		].transpose().each { e ->
 			subs[e[0].getCode()] = e[1]
 		}
 		[
-			procedure.result.values() as List,
+			procedure.results,
 			a.results
 		].transpose().each { e ->
 			subs[e[0].getCode()] = e[1]
@@ -147,14 +156,31 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		em.action(n, fuu.substitute(procedure.getAbstraction(), subs), a.toString())
 	}
 
+	def EventModifier addAssignment(EventModifier em, Return a) {
+		if (procedure == null) {
+			throw new IllegalArgumentException("Return statements are only allowed within procedure definitions!")
+		}
+		assert procedure.results.size() == a.returnVals.size()
+
+		em = em.refines(refinedEvent, false)
+		[
+			procedure.results,
+			a.returnVals
+		].transpose().each { EventB r, EventB v ->
+			def n = "act${em.actctr + 1}"
+			em = em.action(n, r.getCode() +":="+v.getCode(), a.toString())
+		}
+		em
+	}
+
 	def String extractName(Edge e) {
 		List<Statement> statements = graph.edgeMapping[e]
 		if (statements.size() == 1 && statements[0] instanceof IAssignment) {
 			assert e.conditions.isEmpty()
-			return "${graph.nodeMapping.getName(statements[0])}"
+			return "${prefix}${graph.nodeMapping.getName(statements[0])}"
 		}
 		assert e.conditions.size() == statements.size()
-		[statements, e.conditions].transpose().collect { l ->
+		prefix + [statements, e.conditions].transpose().collect { l ->
 			extractName(l[0], l[1])
 		}.iterator().join("_")
 	}

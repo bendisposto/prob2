@@ -108,17 +108,17 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 		Procedure procedure = procedures.getElement(a.getName())
 		assert procedure
 		assert procedure.arguments.size() == a.arguments.size()
-		assert procedure.result.size() == a.results.size()
+		assert procedure.results.size() == a.results.size()
 		FormulaUtil fuu = new FormulaUtil()
 		Map<String, EventB> subs = [:]
 		[
-			procedure.arguments.values() as List,
+			procedure.arguments,
 			a.arguments
 		].transpose().each { e ->
 			subs[e[0].getCode()] = e[1]
 		}
 		[
-			procedure.result.values() as List,
+			procedure.results,
 			a.results
 		].transpose().each { e ->
 			subs[e[0].getCode()] = e[1]
