@@ -3,9 +3,11 @@ package de.prob.model.eventb.algorithm.graph
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
-import de.prob.model.eventb.algorithm.IAlgorithmASTTransformer;
+import de.prob.model.eventb.algorithm.Call
+import de.prob.model.eventb.algorithm.IAlgorithmASTTransformer
 import de.prob.model.eventb.algorithm.IProperty
 import de.prob.model.eventb.algorithm.If
+import de.prob.model.eventb.algorithm.Return
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
@@ -64,6 +66,14 @@ class PropertyExtractor implements IAlgorithmASTTransformer{
 	}
 
 	def List<Statement> extractAssertions(Assignments a, List<Statement> stmts) {
+		recurIfNecessary(a, stmts)
+	}
+
+	def List<Statement> extractAssertions(Call a, List<Statement> stmts) {
+		recurIfNecessary(a, stmts)
+	}
+
+	def List<Statement> extractAssertions(Return a, List<Statement> stmts) {
 		recurIfNecessary(a, stmts)
 	}
 

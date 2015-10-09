@@ -32,4 +32,12 @@ class Procedure extends AbstractModifier {
 		this.abstraction = parseAssignment(abstraction)
 		this.algorithm = algorithm
 	}
+
+	@Override
+	public String toString() {
+		def res = result.collect { k,v -> "$k<-$v"}.iterator().join(",")
+		res = res + " := " + name + "("
+		res = res + arguments.collect { k,v -> "$k<-$v" }.iterator().join(",")+ "):"
+		res
+	}
 }

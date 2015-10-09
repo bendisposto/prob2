@@ -5,8 +5,11 @@ import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Assumption
 import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.Call
+import de.prob.model.eventb.algorithm.IAssignment
 import de.prob.model.eventb.algorithm.IProperty
 import de.prob.model.eventb.algorithm.If
+import de.prob.model.eventb.algorithm.Return
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
@@ -53,7 +56,7 @@ class ControlFlowGraph {
 		e
 	}
 
-	def addNode(Assignments a, List<Statement> stmts) {
+	def addNode(IAssignment a, List<Statement> stmts) {
 		if (stmts.isEmpty()) {
 			nodes.add(a)
 			return a
@@ -62,12 +65,7 @@ class ControlFlowGraph {
 		a
 	}
 
-	def addNode(Assertion a, List<Statement> stmts) {
-		assert !stmts.isEmpty() // assertions are mapped to the next statement, so an assertion before empty statements is incorrect
-		addNode(stmts.first(), stmts.tail())
-	}
-
-	def addNode(Assumption a, List<Statement> stmts) {
+	def addNode(IProperty a, List<Statement> stmts) {
 		assert !stmts.isEmpty() // assertions are mapped to the next statement, so an assertion before empty statements is incorrect
 		addNode(stmts.first(), stmts.tail())
 	}

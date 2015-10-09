@@ -25,9 +25,9 @@ class AlgorithmTranslator {
 	def EventBMachine translate(EventBMachine machine) {
 		def machineM = new MachineModifier(machine)
 		List<Block> block = machine.getChildrenOfType(Block.class)
+		List<Procedure> procedures = machine.getChildrenOfType(Procedure.class)
 		if (block.size() == 1) {
-			// Might need to change? Should there be more than one block? Perhaps for procedure definitions?
-			machineM = translator.run(machineM, block[0])
+			machineM = translator.run(machineM, block[0], procedures)
 		}
 		machineM.getMachine()
 	}

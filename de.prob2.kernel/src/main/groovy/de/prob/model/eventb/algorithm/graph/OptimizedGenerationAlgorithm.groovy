@@ -2,14 +2,20 @@ package de.prob.model.eventb.algorithm.graph
 
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event
+import de.prob.model.eventb.EventModifier
+import de.prob.model.eventb.FormulaUtil;
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.Variant
+import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.Call
+import de.prob.model.eventb.algorithm.IAssignment
 import de.prob.model.eventb.algorithm.ITranslationAlgorithm
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.LoopInformation
+import de.prob.model.eventb.algorithm.Procedure
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 import de.prob.model.representation.ModelElementList
@@ -17,6 +23,7 @@ import de.prob.model.representation.ModelElementList
 class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 
 	ControlFlowGraph graph
+	ModelElementList<Procedure> procedures
 	Map<Statement, Integer> pcInformation
 	final Set<Statement> generated = [] as Set
 	Map<Statement, LoopInformation> loopInfo = [:]
@@ -28,12 +35,13 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 	}
 
 	@Override
-	public MachineModifier run(MachineModifier machineM, Block algorithm) {
+	public MachineModifier run(MachineModifier machineM, Block algorithm, ModelElementList<Procedure> procedures) {
 		graph = transformers.inject(new ControlFlowGraph(algorithm)) { ControlFlowGraph g, IGraphTransformer t ->
 			t.transform(g)
 		}
+		this.procedures = procedures
 		pcInformation = new PCCalculator(graph, true).pcInformation
-		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm).prettyPrint())
+		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm, procedures).prettyPrint())
 		if (graph.entryNode) {
 			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
 			machineM = new AssertionTranslator(machineM, graph, pcInformation, true).getMachineM()
@@ -48,7 +56,7 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		return machineM
 	}
 
-	def MachineModifier addNode(MachineModifier machineM, Statement stmt) {
+	def MachineModifier addNode(MachineModifier machineM, final Statement stmt) {
 		if (generated.contains(stmt)) {
 			return machineM
 		}
@@ -63,7 +71,7 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		graph.outEdges(stmt).each { final Edge outEdge ->
 			def name = extractName(outEdge)
 			def node = null
-			if (branch && outEdge.to instanceof Assignments) {
+			if (branch && outEdge.to instanceof IAssignment) {
 				generated << outEdge.to
 				if (!graph.outEdges(outEdge.to).isEmpty()) {
 					node = graph.outEdges(outEdge.to).first().to
@@ -71,18 +79,19 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 			}
 			final nextN = node ?: outEdge.to
 
-			machineM = machineM.event(name: name, comment: stmt.toString()) {
-				guard "pc = ${pcs[stmt]}"
-				outEdge.conditions.each { guard it }
-				if (stmt instanceof Assignments) {
-					stmt.assignments.each { action it }
-				} else if (branch && outEdge.to instanceof Assignments) {
-					outEdge.to.assignments.each { action it }
-				}
-				if (pcs[nextN] != null) {
-					action "pc := ${pcs[nextN]}"
-				}
+			EventModifier em = new EventModifier(new Event(name, EventType.ORDINARY, false))
+					.addComment(stmt.toString())
+					.guard("pc = ${pcs[stmt]}")
+			outEdge.conditions.each { em = em.guard(it) }
+			if (stmt instanceof IAssignment) {
+				em = addAssignment(em, stmt)
+			} else if (branch && outEdge.to instanceof IAssignment) {
+				em = addAssignment(em, outEdge.to)
 			}
+			if (pcs[nextN] != null) {
+				em = em.action("pc := ${pcs[nextN]}")
+			}
+			machineM = machineM.addEvent(em.getEvent())
 
 			machineM = addNode(machineM, nextN)
 			if (outEdge.loopToWhile) {
@@ -102,9 +111,40 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		machineM
 	}
 
+	def EventModifier addAssignment(EventModifier em, Assignments a) {
+		a.assignments.each {
+			em = em.action(it)
+		}
+		em
+	}
+
+	def EventModifier addAssignment(EventModifier em, Call a) {
+		Procedure procedure = procedures.getElement(a.getName())
+		assert procedure
+		assert procedure.arguments.size() == a.arguments.size()
+		assert procedure.result.size() == a.results.size()
+		FormulaUtil fuu = new FormulaUtil()
+		Map<String, EventB> subs = [:]
+		[
+			procedure.arguments.values() as List,
+			a.arguments
+		].transpose().each { e ->
+			subs[e[0].getCode()] = e[1]
+		}
+		[
+			procedure.result.values() as List,
+			a.results
+		].transpose().each { e ->
+			subs[e[0].getCode()] = e[1]
+		}
+		em = em.guard(fuu.substitute(procedure.getPrecondition(), subs))
+		def n = "act${em.actctr + 1}"
+		em.action(n, fuu.substitute(procedure.getAbstraction(), subs), a.toString())
+	}
+
 	def String extractName(Edge e) {
 		List<Statement> statements = graph.edgeMapping[e]
-		if (statements.size() == 1 && statements[0] instanceof Assignments) {
+		if (statements.size() == 1 && statements[0] instanceof IAssignment) {
 			assert e.conditions.isEmpty()
 			return "${graph.nodeMapping.getName(statements[0])}"
 		}

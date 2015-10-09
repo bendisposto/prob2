@@ -3,6 +3,8 @@ package de.prob.model.eventb.algorithm.graph
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.Call
+import de.prob.model.eventb.algorithm.IAssignment
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
@@ -26,7 +28,7 @@ class GraphMerge implements IGraphTransformer {
 		return this.graph
 	}
 
-	def Statement mergeGraph(ControlFlowGraph g, Assignments a) {
+	def Statement mergeGraph(ControlFlowGraph g, IAssignment a) {
 		if (graph.nodes.contains(a)) {
 			return a
 		}

@@ -42,8 +42,8 @@ mm = new ModelModifier().make {
 m = mm.getModel()
 //m = new AlgorithmTranslator(m, new OptimizedGenerationAlgorithm([new GraphMerge()])).run()
 
-//mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "Bauern", "/tmp")
+mtx = new ModelToXML()
+d = mtx.writeToRodin(m, "ProcMult", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

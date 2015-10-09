@@ -6,8 +6,10 @@ import de.prob.model.eventb.algorithm.AlgorithmASTVisitor
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Assumption
+import de.prob.model.eventb.algorithm.Call;
 import de.prob.model.eventb.algorithm.IProperty
 import de.prob.model.eventb.algorithm.If
+import de.prob.model.eventb.algorithm.Return;
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
@@ -63,19 +65,33 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 
 	@Override
 	public visit(Assignments a) {
+		forSingleSimpleStatement(a)
+	}
+
+	@Override
+	public visit(Call a) {
+		forSingleSimpleStatement(a)
+	}
+
+	@Override
+	public visit(Return a) {
+		forSingleSimpleStatement(a)
+	}
+
+	def forSingleSimpleStatement(Statement s) {
 		if (!optimized) {
-			assert pcInfo[a] != null
-			machineM = writeAssertions(machineM, a, "pc = ${pcInfo[a]}")
+			assert pcInfo[s] != null
+			machineM = writeAssertions(machineM, s, "pc = ${pcInfo[s]}")
 		} else {
-			Set<Edge> inE = graph.inEdges(a)
+			Set<Edge> inE = graph.inEdges(s)
 			inE.each { Edge e ->
 				if (e.conditions.isEmpty()) {
-					assert pcInfo[a] != null
-					machineM = writeAssertions(machineM, a, "pc = ${pcInfo[a]}")
+					assert pcInfo[s] != null
+					machineM = writeAssertions(machineM, s, "pc = ${pcInfo[s]}")
 				} else {
 					def pred = "pc = ${pcInfo[e.from]}"
 					def rcond = e.conditions.collect { it.getCode() }.iterator().join(" & ")
-					machineM = writeAssertions(machineM, a, "$pred & $rcond")
+					machineM = writeAssertions(machineM, s, "$pred & $rcond")
 				}
 			}
 		}

@@ -5,7 +5,9 @@ import de.prob.model.eventb.algorithm.Assertion;
 import de.prob.model.eventb.algorithm.Assignments;
 import de.prob.model.eventb.algorithm.Assumption;
 import de.prob.model.eventb.algorithm.Block;
+import de.prob.model.eventb.algorithm.Call;
 import de.prob.model.eventb.algorithm.If
+import de.prob.model.eventb.algorithm.Return;
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
@@ -15,6 +17,8 @@ class NodeNaming extends AlgorithmASTVisitor {
 	int assignctr = 0
 	int assertctr = 0
 	int assumectr = 0
+	int callctr = 0
+	int returnctr = 0
 	Map<String, Statement> nodes = [:]
 	Map<Statement, String> naming = [:]
 
@@ -55,6 +59,20 @@ class NodeNaming extends AlgorithmASTVisitor {
 		def name = "while${whilectr++}"
 		nodes[name] = w
 		naming[w] = name
+	}
+
+	@Override
+	public visit(Call a) {
+		def name = "call${callctr++}"
+		nodes[name] = a
+		naming[a] = name
+	}
+
+	@Override
+	public visit(Return a) {
+		def name = "return${returnctr++}"
+		nodes[name] = a
+		naming[a] = name
 	}
 
 	def Statement getNode(String name) {

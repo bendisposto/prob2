@@ -4,7 +4,9 @@ import de.prob.model.eventb.algorithm.AlgorithmASTVisitor
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
 import de.prob.model.eventb.algorithm.Assumption
+import de.prob.model.eventb.algorithm.Call
 import de.prob.model.eventb.algorithm.If
+import de.prob.model.eventb.algorithm.Return
 import de.prob.model.eventb.algorithm.Statement
 import de.prob.model.eventb.algorithm.While
 
@@ -35,6 +37,18 @@ class PCCalculator extends AlgorithmASTVisitor {
 	}
 
 	def visit(Assignments s) {
+		forSingleSimpleStatement(s)
+	}
+
+	def visit(Call s) {
+		forSingleSimpleStatement(s)
+	}
+
+	public visit(Return s) {
+		forSingleSimpleStatement(s)
+	}
+
+	def forSingleSimpleStatement(Statement s) {
 		if (!optimized && graph.nodes.contains(s)) {
 			pcInformation[s] = pc++
 		} else if(optimized && graph.entryNode == s) {

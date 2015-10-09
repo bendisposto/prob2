@@ -5,7 +5,7 @@ import org.eventb.core.ast.extension.IFormulaExtension
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.ModelGenerationException
 
-class Call extends Statement {
+class Call extends Statement implements IAssignment {
 
 	String name
 	List<EventB> arguments
@@ -17,6 +17,12 @@ class Call extends Statement {
 		this.arguments = arguments.collect { parseIdentifier(it) }
 		this.results = results.collect { parseIdentifier(it) }
 	}
+
+	@Override
+	public String toString() {
+		results.collect { it.getCode() }.iterator().join(",") + " := "+name+"("+arguments.collect { it.getCode() }.iterator().join(",")+")"
+	}
+
 
 	//	def EventB renamedAssignment(Procedure procedure) {
 	//		if (procedure.getArguments().size() != arguments.size() || procedure.getResult().size() != results.size()) {

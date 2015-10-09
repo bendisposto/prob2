@@ -1,5 +1,7 @@
 package de.prob.model.eventb.algorithm
 
+import java.util.List;
+
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EvalElementType
@@ -7,7 +9,7 @@ import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.ModelGenerationException
 import de.prob.unicode.UnicodeTranslator
 
-class Assignments extends Statement {
+class Assignments extends Statement implements IAssignment {
 	List<EventB> assignments
 	Set<String> identifiers
 
