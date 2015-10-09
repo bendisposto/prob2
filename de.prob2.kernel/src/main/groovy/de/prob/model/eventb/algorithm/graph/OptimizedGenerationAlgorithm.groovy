@@ -29,9 +29,11 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 	Map<Statement, LoopInformation> loopInfo = [:]
 	List<IGraphTransformer> transformers
 	Map<String, Integer> assertCtr = [:]
+	final String pcname
 
-	def OptimizedGenerationAlgorithm(List<IGraphTransformer> transformers=[]) {
+	def OptimizedGenerationAlgorithm(List<IGraphTransformer> transformers=[], String pcname) {
 		this.transformers = transformers
+		this.pcname = pcname
 	}
 
 	@Override
@@ -43,8 +45,8 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		pcInformation = new PCCalculator(graph, true).pcInformation
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm, procedures).prettyPrint())
 		if (graph.entryNode) {
-			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
-			machineM = new AssertionTranslator(machineM, graph, pcInformation, true).getMachineM()
+			machineM = machineM.var_block("$pcname", "$pcname : NAT", "$pcname := 0")
+			machineM = new AssertionTranslator(machineM, graph, pcInformation, true, pcname).getMachineM()
 			machineM =  addNode(machineM, graph.entryNode)
 			def loops = []
 			loopInfo.each { k, v ->
@@ -62,14 +64,17 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 		}
 		generated << stmt
 		final pcs = pcInformation
+		final pcname = pcname
 
 		if (stmt instanceof While && stmt.invariant != null) {
-			machineM = machineM.invariant(graph.nodeMapping.getName(stmt) +"_inv", "pc = ${pcs[stmt]} => (${stmt.invariant.getCode()})")
+			machineM = machineM.invariant(graph.nodeMapping.getName(stmt) +"_inv", "$pcname = ${pcs[stmt]} => (${stmt.invariant.getCode()})")
 		}
 
 		def branch = stmt instanceof While || stmt instanceof If
+
 		graph.outEdges(stmt).each { final Edge outEdge ->
 			def name = extractName(outEdge)
+
 			def node = null
 			if (branch && outEdge.to instanceof IAssignment) {
 				generated << outEdge.to
@@ -81,7 +86,7 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 
 			EventModifier em = new EventModifier(new Event(name, EventType.ORDINARY, false))
 					.addComment(stmt.toString())
-					.guard("pc = ${pcs[stmt]}")
+					.guard("$pcname = ${pcs[stmt]}")
 			outEdge.conditions.each { em = em.guard(it) }
 			if (stmt instanceof IAssignment) {
 				em = addAssignment(em, stmt)
@@ -89,7 +94,7 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 				em = addAssignment(em, outEdge.to)
 			}
 			if (pcs[nextN] != null) {
-				em = em.action("pc := ${pcs[nextN]}")
+				em = em.action("$pcname := ${pcs[nextN]}")
 			}
 			machineM = machineM.addEvent(em.getEvent())
 
@@ -105,7 +110,7 @@ class OptimizedGenerationAlgorithm implements ITranslationAlgorithm {
 				throw new IllegalArgumentException("Algorithm must deadlock on empty assignments block")
 			}
 
-			machineM = machineM.event(name: name) { guard "pc = ${pcs[stmt]}" }
+			machineM = machineM.event(name: name) { guard "$pcname = ${pcs[stmt]}" }
 		}
 
 		machineM

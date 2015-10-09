@@ -25,25 +25,27 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 	def Map<Statement, Integer> pcInfo
 	Map<String, Integer> assertCtr = [:]
 	boolean optimized
+	String pcname
 
-	def AssertionTranslator(MachineModifier machineM, ControlFlowGraph graph, Map<Statement, Integer> pcInfo, boolean optimized) {
+	def AssertionTranslator(MachineModifier machineM, ControlFlowGraph graph, Map<Statement, Integer> pcInfo, boolean optimized, String pcname) {
 		this.graph = graph
 		this.machineM = machineM
 		this.pcInfo = pcInfo
 		this.optimized = optimized
+		this.pcname = pcname
 		visit(graph.algorithm)
 	}
 
 	@Override
 	public visit(While w) {
 		assert pcInfo[w] != null
-		machineM = writeAssertions(machineM, w, "pc = ${pcInfo[w]}")
+		machineM = writeAssertions(machineM, w, "$pcname = ${pcInfo[w]}")
 	}
 
 	@Override
 	public visit(If stmt) {
 		if (pcInfo[stmt] != null) {
-			machineM = writeAssertions(machineM, stmt, "pc = ${pcInfo[stmt]}")
+			machineM = writeAssertions(machineM, stmt, "$pcname = ${pcInfo[stmt]}")
 		} else if (graph.properties[stmt] != null) {
 			// only enter this loop when there are actually assertions to print. performance reasons
 			Set<Edge> allEdges = [] as Set
@@ -54,7 +56,7 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 				def cond = e.conditions[0..i-1]
 				if (!conds.contains(cond)) {
 					conds << cond
-					def pred = "pc = ${pcInfo[e.from]}"
+					def pred = "$pcname = ${pcInfo[e.from]}"
 					def rcond = cond.collect { it.getCode() }.iterator().join(" & ")
 					pred = rcond = "" ? pred : "$pred & $rcond"
 					machineM = writeAssertions(machineM, stmt, pred)
@@ -81,15 +83,15 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 	def forSingleSimpleStatement(Statement s) {
 		if (!optimized) {
 			assert pcInfo[s] != null
-			machineM = writeAssertions(machineM, s, "pc = ${pcInfo[s]}")
+			machineM = writeAssertions(machineM, s, "$pcname = ${pcInfo[s]}")
 		} else {
 			Set<Edge> inE = graph.inEdges(s)
 			inE.each { Edge e ->
 				if (e.conditions.isEmpty()) {
 					assert pcInfo[s] != null
-					machineM = writeAssertions(machineM, s, "pc = ${pcInfo[s]}")
+					machineM = writeAssertions(machineM, s, "$pcname = ${pcInfo[s]}")
 				} else {
-					def pred = "pc = ${pcInfo[e.from]}"
+					def pred = "$pcname = ${pcInfo[e.from]}"
 					def rcond = e.conditions.collect { it.getCode() }.iterator().join(" & ")
 					machineM = writeAssertions(machineM, s, "$pred & $rcond")
 				}

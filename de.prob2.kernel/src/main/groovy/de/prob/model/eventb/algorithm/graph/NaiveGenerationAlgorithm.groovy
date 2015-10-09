@@ -28,9 +28,11 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 	Set<Statement> generated = [] as Set
 	Map<Statement, LoopInformation> loopInfo = [:]
 	List<IGraphTransformer> transformers
+	final String pcname
 
-	def NaiveGenerationAlgorithm(List<IGraphTransformer> transformers=[]) {
+	def NaiveGenerationAlgorithm(List<IGraphTransformer> transformers=[], String pcname="pc") {
 		this.transformers = transformers
+		this.pcname = pcname
 	}
 
 	@Override
@@ -40,8 +42,8 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 		pcInformation = new PCCalculator(graph, false).pcInformation
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm, procedures).prettyPrint())
 		if (graph.entryNode) {
-			machineM = machineM.var_block("pc", "pc : NAT", "pc := 0")
-			machineM = new AssertionTranslator(machineM, graph, pcInformation, false).getMachineM()
+			machineM = machineM.var_block("$pcname", "$pcname : NAT", "$pcname := 0")
+			machineM = new AssertionTranslator(machineM, graph, pcInformation, false, pcname).getMachineM()
 			machineM =  addNode(machineM, graph.entryNode)
 			def loops = []
 			loopInfo.each { k, v -> loops << v }
@@ -57,9 +59,10 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 		}
 		generated << stmt
 		final pcs = pcInformation
+		final pcname = pcname
 
 		if (stmt instanceof While && stmt.invariant != null) {
-			machineM = machineM.invariant(graph.nodeMapping.getName(stmt)+"_inv", "pc = ${pcs[stmt]} => (${stmt.invariant.getCode()})")
+			machineM = machineM.invariant(graph.nodeMapping.getName(stmt)+"_inv", "$pcname = ${pcs[stmt]} => (${stmt.invariant.getCode()})")
 		}
 
 		graph.outEdges(stmt).each { final Edge outEdge ->
@@ -67,13 +70,13 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 
 			EventModifier em = new EventModifier(new Event(name, EventType.ORDINARY, false))
 					.addComment(stmt.toString())
-					.guard("pc = ${pcs[stmt]}")
+					.guard("$pcname = ${pcs[stmt]}")
 			outEdge.conditions.each { em = em.guard(it) }
 			if (stmt instanceof IAssignment) {
 				em = addAssignment(em, stmt)
 			}
 			if (pcs[outEdge.to] != null) {
-				em = em.action("pc := ${pcs[outEdge.to]}")
+				em = em.action("$pcname := ${pcs[outEdge.to]}")
 			}
 			machineM = machineM.addEvent(em.getEvent())
 
@@ -88,7 +91,7 @@ class NaiveGenerationAlgorithm implements ITranslationAlgorithm {
 				throw new IllegalArgumentException("Algorithm must deadlock on empty assignments block")
 			}
 
-			machineM = machineM.event(name: name) { guard "pc = ${pcs[stmt]}" }
+			machineM = machineM.event(name: name) { guard "$pcname = ${pcs[stmt]}" }
 		}
 
 		machineM
