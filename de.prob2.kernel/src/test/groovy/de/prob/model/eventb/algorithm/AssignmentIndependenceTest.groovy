@@ -18,6 +18,11 @@ class AssignmentIndependenceTest extends Specification {
 		identifiers("x := 1") == ["x"] as Set
 	}
 
+	def "deterministic assignment function calls"() {
+		expect:
+		identifiers("f(x) := 1") == ["f"] as Set
+	}
+
 	def "multiple deterministic assignment"() {
 		expect:
 		identifiers("x,y,z := 1,2,3")== ["x", "y", "z"] as Set
