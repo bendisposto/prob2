@@ -97,6 +97,25 @@ public class MachineModifier extends AbstractModifier {
 		mm
 	}
 
+	def MachineModifier var(LinkedHashMap properties) throws ModelGenerationException {
+		Map validated = validateProperties(validate("properties", properties), [name: String, invariant: Object, init: Object])
+		var_block(validated.name, validated.invariant, validated.init)
+	}
+
+	def MachineModifier var(String name, String invariant, String init) throws ModelGenerationException {
+		MachineModifier mm = variable(name)
+		mm = mm.invariant(invariant)
+		mm = mm.initialisation({ action init })
+		mm
+	}
+
+	def MachineModifier var(String name, Map inv, Map init) throws ModelGenerationException {
+		MachineModifier mm = variable(name)
+		mm = mm.invariant(inv)
+		mm = mm.initialisation({ action init })
+		mm
+	}
+
 	def MachineModifier removeVariable(String name) {
 		def var = machine.variables.getElement(name)
 		var ? removeVariable(var) : this
@@ -322,16 +341,6 @@ public class MachineModifier extends AbstractModifier {
 
 	def MachineModifier addComment(String comment) {
 		comment ? newMM(machine.addTo(ElementComment.class, new ElementComment(comment))) : this
-	}
-
-	def MachineModifier procedure(LinkedHashMap properties, Closure definition) throws ModelGenerationException {
-		def props = validateProperties(properties, [name: String, arguments: [List, []], results: [List, []],
-			locals: [Map, []], precondition: String, abstraction: String])
-		procedure(props["name"], props["arguments"], props["results"], props["locals"], props["precondition"], props["abstraction"],  new Block([], typeEnvironment).make(definition))
-	}
-
-	def MachineModifier procedure(String name, List<String> arguments, List<String> results, Map<String, String> locals, String precondition, String abstraction, Block algorithm)throws ModelGenerationException {
-		newMM(machine.addTo(Procedure.class, new Procedure(name, arguments, results, locals, precondition, abstraction, algorithm)))
 	}
 
 	def MachineModifier algorithm(Closure definition) throws ModelGenerationException {

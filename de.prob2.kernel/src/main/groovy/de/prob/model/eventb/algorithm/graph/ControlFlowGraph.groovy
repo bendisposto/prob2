@@ -1,12 +1,13 @@
 package de.prob.model.eventb.algorithm.graph
 
+import org.eventb.core.ast.Assignment
+
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.Assertion
 import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Assumption
 import de.prob.model.eventb.algorithm.Block
 import de.prob.model.eventb.algorithm.Call
-import de.prob.model.eventb.algorithm.IAssignment
+import de.prob.model.eventb.algorithm.DeadCodeRemover
 import de.prob.model.eventb.algorithm.IProperty
 import de.prob.model.eventb.algorithm.If
 import de.prob.model.eventb.algorithm.Return
@@ -24,13 +25,16 @@ class ControlFlowGraph {
 	Statement entryNode
 
 	Block algorithm
+	Statement lastNode
 
-	def ControlFlowGraph(Block algorithm) {
-		if (!algorithm.statements.isEmpty()) {
+	def ControlFlowGraph(Block b) {
+		if (!b.statements.isEmpty()) {
 			// adding an assignments block to the end adds an extra event which goes into a deadlock.
-			Block a = new Block(algorithm.statements.addElement(new Assignments(algorithm.typeEnvironment)), algorithm.typeEnvironment)
+			Block deadCodeRemoval = new DeadCodeRemover().transform(b)
+			Block a = new Block(deadCodeRemoval.statements.addElement(new Assignments(deadCodeRemoval.typeEnvironment)), deadCodeRemoval.typeEnvironment)
 			PropertyExtractor e = new PropertyExtractor()
 			this.algorithm = e.transform(a)
+			lastNode = this.algorithm.statements.last()
 			properties = e.properties
 			nodeMapping = new NodeNaming(this.algorithm)
 
@@ -40,10 +44,10 @@ class ControlFlowGraph {
 		}
 	}
 
-	def addEdge(Statement from, Statement to, List<EventB> conditions, boolean loopToWhile=false) {
+	def addEdge(Statement from, Statement to, List<EventB> conditions) {
 		nodes.add(from)
 		nodes.add(to)
-		Edge e = new Edge(from, to, conditions, loopToWhile)
+		Edge e = new Edge(from, to, conditions)
 		if (!outgoingEdges[from]) {
 			outgoingEdges[from] = new LinkedHashSet<Edge>()
 		}
@@ -56,12 +60,30 @@ class ControlFlowGraph {
 		e
 	}
 
-	def addNode(IAssignment a, List<Statement> stmts) {
+	def addNode(Assignments a, List<Statement> stmts) {
 		if (stmts.isEmpty()) {
 			nodes.add(a)
 			return a
 		}
 		addEdge(a, addNode(stmts.first(), stmts.tail()), [])
+		a
+	}
+
+	def addNode(Call a, List<Statement> stmts) {
+		if (stmts.isEmpty()) {
+			nodes.add(a)
+			return a
+		}
+		addEdge(a, addNode(stmts.first(), stmts.tail()), [])
+		a
+	}
+
+	def addNode(Return a, List<Statement> stmts) {
+		if (stmts.isEmpty()) {
+			nodes.add(a)
+			return a
+		}
+		addEdge(a, lastNode, [])
 		a
 	}
 
@@ -76,7 +98,7 @@ class ControlFlowGraph {
 			throw new IllegalArgumentException("While loops cannot be null!")
 		}
 		addEdge(w, addNode(block.first(), block.tail()), [w.condition])
-		addSpecialEdge(block.last(), w, true)
+		addSpecialEdge(block.last(), w)
 
 		if (!stmts.isEmpty()) {
 			addEdge(w, addNode(stmts.first(), stmts.tail()), [w.notCondition])
@@ -89,7 +111,7 @@ class ControlFlowGraph {
 		if (!i.Then.statements.isEmpty()) {
 			addEdge(i, addNode(i.Then.statements.first(), i.Then.statements.tail()), [i.condition])
 			if (nextN) {
-				addSpecialEdge(i.Then.statements.last(), nextN, false)
+				addSpecialEdge(i.Then.statements.last(), nextN)
 			}
 		} else if (nextN) {
 			addEdge(i, nextN, [i.condition])
@@ -98,7 +120,7 @@ class ControlFlowGraph {
 		if (!i.Else.statements.isEmpty()) {
 			addEdge(i, addNode(i.Else.statements.first(), i.Else.statements.tail()), [i.elseCondition])
 			if (nextN) {
-				addSpecialEdge(i.Else.statements.last(), nextN, false)
+				addSpecialEdge(i.Else.statements.last(), nextN)
 			}
 		} else if (nextN) {
 			addEdge(i, nextN, [i.elseCondition])
@@ -106,28 +128,36 @@ class ControlFlowGraph {
 		i
 	}
 
-	def addSpecialEdge(Assignments from, Statement to, boolean loopToWhile) {
-		addEdge(from, to, [], loopToWhile)
+	def addSpecialEdge(Assignments from, Statement to) {
+		addEdge(from, to, [])
 	}
 
-	def addSpecialEdge(Assertion from, Statement to, boolean loopToWhile) {
+	def addSpecialEdge(Call from, Statement to) {
+		addEdge(from, to, [])
+	}
+
+	def addSpecialEdge(Return from, Statement to) {
+		addEdge(from, lastNode, [])
+	}
+
+	def addSpecialEdge(Assertion from, Statement to) {
 		throw new IllegalArgumentException("Assertion is not allowed to be alone at the end of a statement!")
 	}
 
-	def addSpecialEdge(While from, Statement to, boolean loopToWhile) {
-		addEdge(from, to, [from.notCondition], loopToWhile)
+	def addSpecialEdge(While from, Statement to) {
+		addEdge(from, to, [from.notCondition])
 	}
 
-	def addSpecialEdge(If from, Statement to, boolean loopToWhile) {
+	def addSpecialEdge(If from, Statement to) {
 		if (from.Then.statements.isEmpty()) {
-			addEdge(from, to, [from.condition], loopToWhile)
+			addEdge(from, to, [from.condition])
 		} else {
-			addSpecialEdge(from.Then.statements.last(), to, loopToWhile)
+			addSpecialEdge(from.Then.statements.last(), to)
 		}
 		if (from.Else.statements.isEmpty()) {
-			addEdge(from, to, [from.elseCondition], loopToWhile)
+			addEdge(from, to, [from.elseCondition])
 		} else {
-			addSpecialEdge(from.Else.statements.last(), to, loopToWhile)
+			addSpecialEdge(from.Else.statements.last(), to)
 		}
 	}
 

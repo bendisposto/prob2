@@ -43,7 +43,7 @@ public class CGGConstructionTest extends Specification {
 		println "naming: ${graph.nodeMapping.nodes}"
 		println "incoming: ${graph.incomingEdges}"
 		println "outgoing: ${graph.outgoingEdges}"
-		println "assertions: ${graph.assertions}\n"
+		println "properties: ${graph.properties}\n"
 	}
 
 	def "empty is empty"() {
@@ -490,5 +490,34 @@ public class CGGConstructionTest extends Specification {
 		edge(graph, "if1", "assign2") == ["not(z < 0)"]
 		edge(graph, "assign2", "while2") == []
 		edge(graph, "while2", "assign3") == ["not(z < 50)"]
+	}
+
+	def "correct return"() {
+		when:
+		def DEBUG = false
+		def graph = graph({
+			If ("x = 5") {
+				Then { Return("x") }
+			}
+			If ("y = 5") {
+				Then { Return("x") }
+			}
+			Assign("z := 5")
+			Return("z")
+		})
+
+		then:
+		if (DEBUG) print(graph)
+		graph.size() == 7
+		graph.nodes == nodes(graph, "if0", "return0", "if1", "return1",
+				"assign0", "return2", "assign1")
+		edge(graph, "if0", "return0") == ["x = 5"]
+		edge(graph, "return0", "assign1") == []
+		edge(graph, "if0", "if1") == ["not(x = 5)"]
+		edge(graph, "if1", "return1") == ["y = 5"]
+		edge(graph, "if1", "assign0") == ["not(y = 5)"]
+		edge(graph, "return1", "assign1") == []
+		edge(graph, "assign0", "return2") == []
+		edge(graph, "return2", "assign1") == []
 	}
 }

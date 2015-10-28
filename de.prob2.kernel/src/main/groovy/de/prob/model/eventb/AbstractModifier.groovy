@@ -25,6 +25,9 @@ class AbstractModifier extends AbstractElement {
 			if (type instanceof List && type.size() == 2) {
 				return validateOptionalProperty(properties, prop, type)
 			}
+			if (type instanceof EvalElementType) {
+				return validateFormula(properties, prop, type)
+			}
 			if (type instanceof Class) {
 				return validateRequiredProperty(properties, prop, type)
 			}
@@ -43,6 +46,17 @@ class AbstractModifier extends AbstractElement {
 			]
 		} else {
 			return [property, type[1]]
+		}
+	}
+
+	protected validateFormula(LinkedHashMap properties, String property, EvalElementType formulaType) {
+		if (properties[property]) {
+			return [
+				property,
+				parseFormula(properties[property], formulaType)
+			]
+		} else {
+			throw new IllegalArgumentException("Could not find required property $property")
 		}
 	}
 

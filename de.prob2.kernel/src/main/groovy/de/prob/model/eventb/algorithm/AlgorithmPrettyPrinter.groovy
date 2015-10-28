@@ -5,7 +5,7 @@ import de.prob.model.representation.ModelElementList
 
 class AlgorithmPrettyPrinter {
 
-	Block algorithm
+	def algorithm
 	ModelElementList<Procedure> procedures
 
 	def AlgorithmPrettyPrinter() {
@@ -26,12 +26,9 @@ class AlgorithmPrettyPrinter {
 		if (!procedures.isEmpty()) {
 			procedures.each { Procedure p ->
 				writeLine(sb, null, p.toString())
-				writeLine(sb, "  ", "locals: "+p.locals.collect {k,v -> "$k<-$v"}.iterator().join(", "))
-				writeLine(sb, "  ", "precondition: "+p.precondition.toUnicode())
-				writeLine(sb, "  ", "abstraction: "+p.abstraction.toUnicode())
-				writeLine(sb, "  ", "algorithm:")
-				printBlock(p.algorithm, sb, "  ")
-				sb.append("\n")
+				writeLine(sb, "  ", "when: "+p.precondition.toUnicode())
+				writeLine(sb, "  ", "then: "+p.postcondition.toUnicode())
+				writeLine(sb, "  ", "");
 			}
 		}
 

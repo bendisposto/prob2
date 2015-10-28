@@ -29,7 +29,8 @@ public class MergedCGGConstructionTest extends Specification {
 		g.outgoingEdges[g.getNode(from)].findAll {
 			it.to == g.getNode(to)
 		}.collect {
-			it.conditions.collect { it.getCode() } } as Set
+			it.conditions.collect { it.getCode()
+			} } as Set
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
@@ -497,5 +498,33 @@ public class MergedCGGConstructionTest extends Specification {
 		edge(graph, "while2", "assign2") == ["z < 50", "not(z < 0)"]
 		edge(graph, "assign2", "while2") == []
 		edge(graph, "while2", "assign3") == ["not(z < 50)"]
+	}
+
+	def "correct return"() {
+		when:
+		def DEBUG = false
+		def graph = graph({
+			If ("x = 5") {
+				Then { Return("x") }
+			}
+			If ("y = 5") {
+				Then { Return("y") }
+			}
+			Assign("z := 5")
+			Return("z")
+		})
+
+		then:
+		if (DEBUG) print(graph)
+		graph.size() == 6
+		graph.nodes == nodes(graph, "if0", "return0", "return1",
+				"assign0", "return2", "assign1")
+		edge(graph, "if0", "return0") == ["x = 5"]
+		edge(graph, "if0", "return1") == ["not(x = 5)", "y = 5"]
+		edge(graph, "if0", "assign0") == ["not(x = 5)", "not(y = 5)"]
+		edge(graph, "return0", "assign1") == []
+		edge(graph, "return1", "assign1") == []
+		edge(graph, "assign0", "return2") == []
+		edge(graph, "return2", "assign1") == []
 	}
 }

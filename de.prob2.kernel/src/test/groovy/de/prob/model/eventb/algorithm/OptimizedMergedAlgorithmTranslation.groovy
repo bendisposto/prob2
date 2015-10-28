@@ -4,9 +4,9 @@ import spock.lang.Specification
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBInvariant
 import de.prob.model.eventb.EventBMachine
+import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
-import de.prob.model.eventb.algorithm.graph.GraphMerge
-import de.prob.model.eventb.algorithm.graph.OptimizedGenerationAlgorithm
+import de.prob.model.representation.ModelElementList
 
 class OptimizedMergedAlgorithmTranslation extends Specification {
 	def MachineModifier mm
@@ -18,7 +18,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 	}
 
 	def translate(MachineModifier mm) {
-		new AlgorithmTranslator(null, new OptimizedGenerationAlgorithm([new GraphMerge()])).translate(mm.getMachine())
+		new AlgorithmTranslator(new EventBModel(null), new AlgorithmGenerationOptions().DEFAULT).translate(mm.getMachine(), new ModelElementList<Procedure>())
 	}
 
 	def guards(Event evt) {

@@ -65,4 +65,8 @@ class PCCalculator extends AlgorithmASTVisitor {
 	def visit(Assumption a) {
 		// do nothing
 	}
+
+	def int lastPc() {
+		return pc - 1
+	}
 }

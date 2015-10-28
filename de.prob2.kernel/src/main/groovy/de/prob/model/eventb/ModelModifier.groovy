@@ -6,6 +6,7 @@ import javax.xml.parsers.SAXParserFactory
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.Main
+import de.prob.model.eventb.algorithm.Procedure
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.eventb.translate.TheoryExtractor
 import de.prob.model.representation.DependencyGraph.Edge;
@@ -180,6 +181,13 @@ public class ModelModifier extends AbstractModifier {
 			}
 		}
 		newMM(m)
+	}
+
+	def ModelModifier procedure(LinkedHashMap properties, Closure definition) {
+		validateProperties(properties, [name: String])
+		Procedure proc = new Procedure(properties["name"], typeEnvironment).make(definition)
+		ModelModifier mm = this.addMachine(proc.machineM.getMachine()).addMachine(proc.implementation)
+		newMM(mm.getModel().addTo(Procedure.class, proc))
 	}
 
 	def ModelModifier loadTheories(LinkedHashMap properties) {

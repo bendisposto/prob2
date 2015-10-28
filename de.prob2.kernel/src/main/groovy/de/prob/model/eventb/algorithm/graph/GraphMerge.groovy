@@ -35,7 +35,7 @@ class GraphMerge implements IGraphTransformer {
 		graph.nodes.add(a)
 		g.outEdges(a).each { Edge e ->
 			Statement stmt = mergeGraph(g, e.to)
-			graph.addEdge(a, stmt, [], e.loopToWhile)
+			graph.addEdge(a, stmt, [])
 		}
 		return a
 	}
@@ -73,7 +73,7 @@ class GraphMerge implements IGraphTransformer {
 		} else {
 			Edge oldEdge = g.outEdges(statements.last()).find { Edge e -> e.to == nextStmt }
 			Statement stmt = mergeGraph(g, nextStmt)
-			Edge e = graph.addEdge(startNode, stmt, conditions, oldEdge.loopToWhile)
+			Edge e = graph.addEdge(startNode, stmt, conditions)
 			graph.edgeMapping[e] = statements
 		}
 	}

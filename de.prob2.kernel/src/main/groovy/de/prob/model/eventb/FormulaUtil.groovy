@@ -95,7 +95,9 @@ class FormulaUtil {
 
 	def List<EventB> formulasWith(List<EventB> formulas, EventB identifier) {
 		FreeIdentifier fi = getIdentifier(identifier)
-		formulas.findAll { getRodinFormula(it).getFreeIdentifiers().contains(fi) }
+		formulas.findAll {
+			getRodinFormula(it).getFreeIdentifiers().contains(fi)
+		}
 	}
 
 	def getRodinFormula(EventB formula) {
@@ -115,5 +117,44 @@ class FormulaUtil {
 		assert formula.getKind() == EvalElementType.EXPRESSION.toString()
 		assert formula.getRodinParsedResult().getParsedExpression() instanceof FreeIdentifier
 		return formula.getRodinParsedResult().getParsedExpression()
+	}
+
+
+	/**
+	 * @param assignment for the specified var
+	 * @param var variable for which the assignment should be copied
+	 * @param newVar new variable which should be set to the same value as the specified var
+	 * @return new assigment. After this assignment is executed, newVar = var
+	 */
+	def EventB copyVarAssignment(EventB assignment, String var, String newVar) {
+		if (assignment.getAst() instanceof AAssignSubstitution) {
+			def code = assignment.getCode()
+			def split = code.split(":=")
+			def slhs = split[0].split(",").collect { it.trim() }
+			def srhs = split[1].split(",").collect { it.trim() }
+
+			def newVal = [slhs, srhs].transpose().inject(null) { acc, l ->
+				l[0] == var ? l[1] : acc
+			}
+			if (newVal == null) {
+				throw new IllegalArgumentException("Could not find value for $var in assignment $assignment")
+			}
+			return new EventB(split[0].trim()+",$newVar"+" := "+split[1].trim()+",$newVal",assignment.getTypes())
+		}
+		if (assignment.getAst() instanceof ABecomesSuchSubstitution) {
+			def code = assignment.getCode()
+			def split = code.split(":\\|")
+			def lhs = split[0].trim() + ",$newVar"
+			def rhs = split[1] + " & "+"${var}' = ${newVar}'"
+			return new EventB(lhs+":|"+rhs, assignment.getTypes())
+		}
+		if (assignment.getAst() instanceof ABecomesElementOfSubstitution) {
+			def code = assignment.getCode()
+			def split = code.split("::")
+			assert split[0].trim() == var
+			def formula = "${var},${newVar} :| ${var}' : ${split[1].trim()} & ${var}' = ${newVar}'"
+			return new EventB(formula, assignment.getTypes())
+		}
+		throw new IllegalArgumentException(assignment+" must be of type assignment");
 	}
 }
