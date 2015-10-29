@@ -2,28 +2,30 @@ package de.prob.model.eventb.algorithm
 
 import de.prob.model.eventb.algorithm.ast.Assignments;
 import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.transform.AssignmentCombiner
 import spock.lang.Specification
 
 class AssignmentConstruction extends Specification {
 
-	def "disjoint returns one element"() {
+	def "all are combined"() {
 		when:
-		def a = new Assignments().addAssignments("x := 1","y := 2","z := 3")
+		def b = new Block().Assign("x := 1","y := 2","z := 3")
+		def b2 = new AssignmentCombiner().transform(b)
 
 		then:
-		a.size() == 1
-		a[0].getAssignments().collect { it.getCode() } ==  ["x := 1", "y := 2", "z := 3"]
+		b2.statements.size() == 1
+		b2.statements[0].getAssignments().collect { it.getCode() } ==  ["x := 1", "y := 2", "z := 3"]
 	}
 
 	def "more complicated"() {
 		when:
-		def a = new Assignments().addAssignments("x := 1","y := 2","z := 3")
-		def b = a[0].addAssignments("x,z :| x=1 & z=5", "y :: {1,2,3}", "a := 3")
+		def b = new Block().Assign("x := 1","y := 2","z := 3").Assign("x,z :| x=1 & z=5", "y :: {1,2,3}", "a := 3")
+		def b2 = new AssignmentCombiner().transform(b)
 
 		then:
-		b.size() == 2
-		b[0].getAssignments().collect { it.getCode() } ==  ["x := 1", "y := 2", "z := 3"]
-		b[1].getAssignments().collect { it.getCode() } == [
+		b2.statements.size() == 2
+		b2.statements[0].getAssignments().collect { it.getCode() } ==  ["x := 1", "y := 2", "z := 3"]
+		b2.statements[1].getAssignments().collect { it.getCode() } == [
 			"x,z :| x=1 & z=5",
 			"y :: {1,2,3}",
 			"a := 3"
@@ -33,13 +35,14 @@ class AssignmentConstruction extends Specification {
 	def "via block interface"() {
 		when:
 		Block b = new Block().Assign("v := v - u").Assign("v,u := u - v,m").Assign("z,m := x,y")
+		def b2 = new AssignmentCombiner().transform(b)
 
 		then:
-		b.statements.size() == 2
-		b.statements[0] instanceof Assignments
-		b.statements[1] instanceof Assignments
-		b.statements[0].getAssignments().collect { it.getCode() } == ["v := v - u"]
-		b.statements[1].getAssignments().collect { it.getCode() } == [
+		b2.statements.size() == 2
+		b2.statements[0] instanceof Assignments
+		b2.statements[1] instanceof Assignments
+		b2.statements[0].getAssignments().collect { it.getCode() } == ["v := v - u"]
+		b2.statements[1].getAssignments().collect { it.getCode() } == [
 			"v,u := u - v,m",
 			"z,m := x,y"
 		]

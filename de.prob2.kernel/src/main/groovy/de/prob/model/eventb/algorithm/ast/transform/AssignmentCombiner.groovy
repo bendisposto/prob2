@@ -1,36 +1,45 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
-import de.prob.model.eventb.algorithm.ast.Block
-import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.algorithm.AssignmentAnalysisVisitor
+import de.prob.model.eventb.algorithm.ast.Assignments
 import de.prob.model.eventb.algorithm.ast.Statement
-import de.prob.model.eventb.algorithm.ast.While
 
-class AssignmentCombiner implements IAlgorithmASTTransformer {
+class AssignmentCombiner extends AlgorithmASTTransformer {
 
 	@Override
-	public Block transform(Block algorithm) {
-		if (algorithm.statements.isEmpty()) {
-			return algorithm
+	public List<Statement> transform(Assignments a, List<Statement> rest) {
+		List<Statement> nextS = rest
+		List<EventB> allAssignments = []
+		allAssignments.addAll(a.assignments)
+		while (nextS && nextS.first() instanceof Assignments) {
+			allAssignments.addAll(nextS.first().assignments)
+			nextS = nextS.tail()
 		}
-		List<Statement> stmts = mergeAssignments(algorithm.statements.first(), algorithm.statements.tail())
-		new Block(stmts, algorithm.typeEnvironment)
-	}
 
-	def List<Statement> mergeAssignments(While w, List<Statement> stmts) {
-		While newWhile = w.updateBlock(transform(w.block))
-		recurIfNecessary(newWhile, stmts)
-	}
+		List<Assignments> assignments = []
 
-	def List<Statement> mergeAssignments(If i, List<Statement> stmts) {
-		If newIf = i.newIf(transform(i.Then), transform(i.Else))
-		recurIfNecessary()
-	}
-
-	def List<Statement> recurIfNecessary(Statement transformedStmt, List<Statement> nextS) {
-		def list = [transformedStmt]
+		List<EventB> actions = []
+		Set<String> identifiers = [] as Set
+		allAssignments.each { EventB formula ->
+			AssignmentAnalysisVisitor v = new AssignmentAnalysisVisitor()
+			formula.getAst().apply(v)
+			boolean disjoint = v.getIdentifiers().inject(true) { acc, e -> acc && !identifiers.contains(e) }
+			if (disjoint) {
+				actions << formula
+				identifiers.addAll(v.getIdentifiers())
+			} else {
+				assignments << new Assignments(actions, a.typeEnvironment)
+				identifiers = v.getIdentifiers()
+				actions = [formula]
+			}
+		}
+		if (actions) {
+			assignments << new Assignments(actions, a.typeEnvironment)
+		}
 		if (nextS) {
-			list.addAll(mergeAssignments(nextS.head(), nextS.tail()))
+			assignments.addAll(transform(nextS.head(), nextS.tail()))
 		}
-		list
+		assignments
 	}
 }

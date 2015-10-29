@@ -1,19 +1,18 @@
 package de.prob.model.eventb.algorithm.graph
 
-import org.eventb.core.ast.Assignment
-
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.ast.Assertion;
-import de.prob.model.eventb.algorithm.ast.Assignments;
-import de.prob.model.eventb.algorithm.ast.Block;
-import de.prob.model.eventb.algorithm.ast.Call;
-import de.prob.model.eventb.algorithm.ast.IProperty;
-import de.prob.model.eventb.algorithm.ast.If;
-import de.prob.model.eventb.algorithm.ast.Return;
-import de.prob.model.eventb.algorithm.ast.Statement;
-import de.prob.model.eventb.algorithm.ast.While;
-import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover;
-import de.prob.model.eventb.algorithm.ast.transform.PropertyExtractor;
+import de.prob.model.eventb.algorithm.ast.Assertion
+import de.prob.model.eventb.algorithm.ast.Assignments
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.Call
+import de.prob.model.eventb.algorithm.ast.IProperty
+import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Return
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.While
+import de.prob.model.eventb.algorithm.ast.transform.AssignmentCombiner
+import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
+import de.prob.model.eventb.algorithm.ast.transform.PropertyExtractor
 
 class ControlFlowGraph {
 	Map<Statement, Set<IProperty>> properties
@@ -32,7 +31,9 @@ class ControlFlowGraph {
 		if (!b.statements.isEmpty()) {
 			// adding an assignments block to the end adds an extra event which goes into a deadlock.
 			Block deadCodeRemoval = new DeadCodeRemover().transform(b)
-			Block a = new Block(deadCodeRemoval.statements.addElement(new Assignments(deadCodeRemoval.typeEnvironment)), deadCodeRemoval.typeEnvironment)
+			Block combinedAssignments = new AssignmentCombiner().transform(deadCodeRemoval)
+			Block a = new Block(combinedAssignments.statements.addElement(new Assignments(combinedAssignments.typeEnvironment)), combinedAssignments.typeEnvironment)
+
 			PropertyExtractor e = new PropertyExtractor()
 			this.algorithm = e.transform(a)
 			lastNode = this.algorithm.statements.last()
