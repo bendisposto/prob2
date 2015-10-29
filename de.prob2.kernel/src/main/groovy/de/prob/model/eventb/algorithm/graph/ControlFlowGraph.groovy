@@ -3,16 +3,17 @@ package de.prob.model.eventb.algorithm.graph
 import org.eventb.core.ast.Assignment
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.Assertion
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Block
-import de.prob.model.eventb.algorithm.Call
-import de.prob.model.eventb.algorithm.DeadCodeRemover
-import de.prob.model.eventb.algorithm.IProperty
-import de.prob.model.eventb.algorithm.If
-import de.prob.model.eventb.algorithm.Return
-import de.prob.model.eventb.algorithm.Statement
-import de.prob.model.eventb.algorithm.While
+import de.prob.model.eventb.algorithm.ast.Assertion;
+import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.Call;
+import de.prob.model.eventb.algorithm.ast.IProperty;
+import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.Return;
+import de.prob.model.eventb.algorithm.ast.Statement;
+import de.prob.model.eventb.algorithm.ast.While;
+import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover;
+import de.prob.model.eventb.algorithm.ast.transform.PropertyExtractor;
 
 class ControlFlowGraph {
 	Map<Statement, Set<IProperty>> properties

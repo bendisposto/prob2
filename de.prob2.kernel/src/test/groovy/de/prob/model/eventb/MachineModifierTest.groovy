@@ -5,8 +5,8 @@ import org.eventb.core.ast.extension.IFormulaExtension
 import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event.EventType
-import de.prob.model.eventb.algorithm.Block
 import de.prob.model.eventb.algorithm.Procedure
+import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.representation.ElementComment
 import de.prob.model.representation.ModelElementList
 

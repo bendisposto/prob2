@@ -1,10 +1,11 @@
-package de.prob.model.eventb.algorithm.graph
+package de.prob.model.eventb.algorithm.ast.transform
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Block
-import de.prob.model.eventb.algorithm.DeadCodeRemover
+import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover;
+import de.prob.model.eventb.algorithm.graph.NodeNaming;
 
 public class DeadCodeRemovalTest extends Specification {
 

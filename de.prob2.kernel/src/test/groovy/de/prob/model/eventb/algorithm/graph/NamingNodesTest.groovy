@@ -2,9 +2,9 @@ package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Block
-import de.prob.model.eventb.algorithm.Statement
+import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.Statement;
 
 public class NamingNodesTest extends Specification {
 

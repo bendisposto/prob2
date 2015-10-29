@@ -1,4 +1,4 @@
-package de.prob.model.eventb.algorithm.graph
+package de.prob.model.eventb.algorithm
 
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event
@@ -6,19 +6,20 @@ import de.prob.model.eventb.EventModifier
 import de.prob.model.eventb.FormulaUtil
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.Event.EventType
-import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
-import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Block
-import de.prob.model.eventb.algorithm.Call
-import de.prob.model.eventb.algorithm.IAssignment
-import de.prob.model.eventb.algorithm.ITranslationAlgorithm
-import de.prob.model.eventb.algorithm.If
-import de.prob.model.eventb.algorithm.Procedure
-import de.prob.model.eventb.algorithm.Return;
-import de.prob.model.eventb.algorithm.Statement
-import de.prob.model.eventb.algorithm.While
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions.Options
+import de.prob.model.eventb.algorithm.ast.Assignments
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.Call
+import de.prob.model.eventb.algorithm.ast.IAssignment
+import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Return
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.While
+import de.prob.model.eventb.algorithm.graph.AssertionTranslator
+import de.prob.model.eventb.algorithm.graph.ControlFlowGraph
+import de.prob.model.eventb.algorithm.graph.Edge
+import de.prob.model.eventb.algorithm.graph.GraphTransformer
+import de.prob.model.eventb.algorithm.graph.PCCalculator
 import de.prob.model.representation.ModelElementList
 
 class TranslationAlgorithm implements ITranslationAlgorithm {

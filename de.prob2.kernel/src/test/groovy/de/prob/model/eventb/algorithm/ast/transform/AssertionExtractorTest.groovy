@@ -1,12 +1,13 @@
-package de.prob.model.eventb.algorithm.graph
+package de.prob.model.eventb.algorithm.ast.transform
 
 import static org.junit.Assert.*
 import spock.lang.Specification
 import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Block
-import de.prob.model.eventb.algorithm.If
-import de.prob.model.eventb.algorithm.Statement
+import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.Statement;
+import de.prob.model.eventb.algorithm.ast.transform.PropertyExtractor;
 
 public class AssertionExtractorTest extends Specification {
 

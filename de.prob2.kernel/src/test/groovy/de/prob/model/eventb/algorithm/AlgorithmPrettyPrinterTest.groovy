@@ -1,6 +1,7 @@
 package de.prob.model.eventb.algorithm
 
 import static de.prob.unicode.UnicodeTranslator.toUnicode
+import de.prob.model.eventb.algorithm.ast.Block;
 import spock.lang.Specification
 
 class AlgorithmPrettyPrinterTest extends Specification {

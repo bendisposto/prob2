@@ -1,13 +1,13 @@
 package de.prob.model.eventb.algorithm.graph
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Block
-import de.prob.model.eventb.algorithm.Call
-import de.prob.model.eventb.algorithm.IAssignment
-import de.prob.model.eventb.algorithm.If
-import de.prob.model.eventb.algorithm.Statement
-import de.prob.model.eventb.algorithm.While
+import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.Call;
+import de.prob.model.eventb.algorithm.ast.IAssignment;
+import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.Statement;
+import de.prob.model.eventb.algorithm.ast.While;
 import de.prob.model.representation.ModelElementList
 
 class GraphMerge implements IGraphTransformer {

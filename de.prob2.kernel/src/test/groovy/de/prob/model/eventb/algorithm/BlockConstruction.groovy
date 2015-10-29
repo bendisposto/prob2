@@ -1,5 +1,10 @@
 package de.prob.model.eventb.algorithm
 
+import de.prob.model.eventb.algorithm.ast.Assertion;
+import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.While;
 import spock.lang.Specification
 
 class BlockConstruction extends Specification {

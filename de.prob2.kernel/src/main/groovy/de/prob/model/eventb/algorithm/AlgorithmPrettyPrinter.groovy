@@ -1,6 +1,12 @@
 package de.prob.model.eventb.algorithm
 
 import static de.prob.unicode.UnicodeTranslator.toUnicode
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.IAssignment;
+import de.prob.model.eventb.algorithm.ast.IProperty;
+import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.Statement;
+import de.prob.model.eventb.algorithm.ast.While;
 import de.prob.model.representation.ModelElementList
 
 class AlgorithmPrettyPrinter {

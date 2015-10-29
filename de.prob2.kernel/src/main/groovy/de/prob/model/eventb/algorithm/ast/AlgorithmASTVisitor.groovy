@@ -1,4 +1,5 @@
-package de.prob.model.eventb.algorithm
+package de.prob.model.eventb.algorithm.ast
+
 
 abstract class AlgorithmASTVisitor {
 

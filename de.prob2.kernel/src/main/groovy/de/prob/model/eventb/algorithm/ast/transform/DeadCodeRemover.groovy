@@ -1,4 +1,10 @@
-package de.prob.model.eventb.algorithm
+package de.prob.model.eventb.algorithm.ast.transform
+
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.Return;
+import de.prob.model.eventb.algorithm.ast.Statement;
+import de.prob.model.eventb.algorithm.ast.While;
 
 class DeadCodeRemover implements IAlgorithmASTTransformer {
 

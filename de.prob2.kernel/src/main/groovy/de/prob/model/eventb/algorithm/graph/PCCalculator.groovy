@@ -1,14 +1,14 @@
 package de.prob.model.eventb.algorithm.graph
 
-import de.prob.model.eventb.algorithm.AlgorithmASTVisitor
-import de.prob.model.eventb.algorithm.Assertion
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Assumption
-import de.prob.model.eventb.algorithm.Call
-import de.prob.model.eventb.algorithm.If
-import de.prob.model.eventb.algorithm.Return
-import de.prob.model.eventb.algorithm.Statement
-import de.prob.model.eventb.algorithm.While
+import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor;
+import de.prob.model.eventb.algorithm.ast.Assertion;
+import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Assumption;
+import de.prob.model.eventb.algorithm.ast.Call;
+import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.Return;
+import de.prob.model.eventb.algorithm.ast.Statement;
+import de.prob.model.eventb.algorithm.ast.While;
 
 
 class PCCalculator extends AlgorithmASTVisitor {

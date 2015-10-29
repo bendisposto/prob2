@@ -4,7 +4,7 @@ import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.ModelModifier
-import de.prob.model.eventb.algorithm.graph.TranslationAlgorithm
+import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
 
