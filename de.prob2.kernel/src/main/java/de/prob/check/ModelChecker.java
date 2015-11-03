@@ -7,15 +7,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import de.prob.animator.command.ComputeCoverageCommand;
+import de.prob.animator.command.ComputeCoverageCommand.ComputeCoverageResult;
 import de.prob.statespace.StateSpace;
 
 /**
  * The ModelChecker is a thread safe encapsulation of the model checking
  * process. It uses the {@link Callable} and {@link Future} objects to make a
  * thread that can be started, executed, and cancelled.
- * 
+ *
  * @author joy
- * 
+ *
  */
 public class ModelChecker {
 
@@ -113,6 +115,12 @@ public class ModelChecker {
 	 */
 	public StateSpace getStateSpace() {
 		return stateSpace;
+	}
+
+	public ComputeCoverageResult getCoverage() {
+		ComputeCoverageCommand cmd = new ComputeCoverageCommand();
+		stateSpace.execute(cmd);
+		return cmd.getResult();
 	}
 
 	public static RuntimeException launderThrowable(final Throwable t) {
