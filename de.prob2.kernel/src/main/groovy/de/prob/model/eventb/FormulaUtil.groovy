@@ -1,6 +1,5 @@
 package de.prob.model.eventb
 
-import org.eventb.core.ast.Assignment
 import org.eventb.core.ast.Expression
 import org.eventb.core.ast.FormulaFactory
 import org.eventb.core.ast.FreeIdentifier
@@ -8,9 +7,13 @@ import org.eventb.core.ast.FreeIdentifier
 import de.be4.classicalb.core.parser.node.AAssignSubstitution
 import de.be4.classicalb.core.parser.node.ABecomesElementOfSubstitution
 import de.be4.classicalb.core.parser.node.ABecomesSuchSubstitution
+import de.be4.classicalb.core.parser.node.AConjunctPredicate
+import de.be4.classicalb.core.parser.node.AEqualPredicate
+import de.be4.classicalb.core.parser.node.AIdentifierExpression
+import de.be4.classicalb.core.parser.node.Node
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.EventB
-import de.be4.classicalb.core.parser.node.Node
+import de.prob.model.eventb.algorithm.AssignmentAnalysisVisitor
 
 class FormulaUtil {
 
@@ -156,5 +159,57 @@ class FormulaUtil {
 			return new EventB(formula, assignment.getTypes())
 		}
 		throw new IllegalArgumentException(assignment+" must be of type assignment");
+	}
+
+
+	/**
+	 * Attempts to transform formula into a deterministic assignment.
+	 * @param formula (a conjunct of equivalences) to be transformed
+	 * @param output identifiers that specify the output variables
+	 * @param input identifiers that specify the input variables
+	 * @return transformed formula
+	 * @throws IllegalArgumentException if the transformation is not successful
+	 */
+	def List<EventB> conjunctToAssignments(EventB formula, Set<String> output, Set<String> input) {
+		if (!(formula.getAst() instanceof AConjunctPredicate)) {
+			throw new IllegalArgumentException("Expected conjunct predicate.")
+		}
+		List<EventB> split = formula.getCode().split("&").collect { new EventB(it.trim()) }
+		split.collect { EventB f ->
+			if (!(f.getAst() instanceof AEqualPredicate)) {
+				throw new IllegalArgumentException("Expected predicate to be conjunct of equivalences.")
+			}
+			def split2 = f.getCode().split("=")
+			assert split2.length == 2
+			def lhs = new EventB(split2[0]).getAst()
+			if (!(lhs instanceof AIdentifierExpression)) {
+				throw new IllegalArgumentException("Left hand side must be a single identifier")
+			}
+			def identifier = lhs.getIdentifier().get(0).getText()
+			if (!(output.contains(identifier))) {
+				throw new IllegalArgumentException("output must contain the identifiers that are defined on the left hand side")
+			}
+			def rf = getRodinFormula(new EventB(split2[1]))
+			rf.getFreeIdentifiers().each { id ->
+				if (!input.contains(id.getName())) {
+					throw new IllegalArgumentException("$id is not defined as an input element")
+				}
+			}
+			[identifier, split2[1]]
+		}.collect { l ->
+			new EventB("${l[0]} := ${l[1]}")
+		}
+	}
+
+	def EventB predicateToBecomeSuchThat(EventB predicate, List<String> lhsIdentifiers) {
+		if (predicate.getKind() != EvalElementType.PREDICATE.toString()) {
+			throw new IllegalArgumentException("expected $predicate to be a predicate" )
+		}
+		Map<String, EventB> subMap = lhsIdentifiers.inject([:]) { acc, String id ->
+			acc[id] = new EventB("${id}'")
+			acc
+		}
+		EventB substituted = substitute(predicate, subMap)
+		new EventB(lhsIdentifiers.iterator().join(",") + " :| "+substituted.getCode())
 	}
 }

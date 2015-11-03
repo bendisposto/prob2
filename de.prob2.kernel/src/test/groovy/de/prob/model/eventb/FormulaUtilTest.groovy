@@ -151,4 +151,23 @@ class FormulaUtilTest extends Specification {
 		then:
 		formulas.size() == 0
 	}
+
+	def "conjuncts to assignments"() {
+		when:
+		def f = new EventB("res = x / y & rem = x mod y")
+		def formula = fuu.conjunctToAssignments(f, ["res", "rem"] as Set, ["x", "y"] as Set)
+
+		then:
+		formula[0].getCode() == "res := x / y"
+		formula[1].getCode() == "rem := x mod y"
+	}
+
+	def "predicates to become such that"() {
+		when:
+		def f = new EventB("res = x / y & rem = x mod y")
+		def formula = fuu.predicateToBecomeSuchThat(f, ["res", "rem"])
+
+		then:
+		println formula
+	}
 }
