@@ -6,6 +6,7 @@ import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
 
+final workspace = dir + File.separator + "TheoryExamples"
 mm = new ModelModifier().make {
 	
 	procedure(name: "mult") {
@@ -34,10 +35,40 @@ mm = new ModelModifier().make {
 				Return("p")
 			}
 		}
-		
 	}
 	
-	machine(name: "apply_mult") {
+	procedure(name: "map_square") {
+		argument "s", "INT +-> INT"
+		result "mapped", "INT +-> INT"
+		
+		precondition "finite(s)"
+		postcondition  "mapped = (λx·x∈dom(s) ∣ s(x)∗s(x))"
+		//postcondition "mapped : INT +-> INT & dom(s) = dom(mapped) & (!i.i : dom(s) => (mapped(i) = s(i) * s(i)))"
+		
+		implementation {
+			var "key", "key : INT", "key := 0"
+			var "value", "value : INT", "value := 0"
+			var "res", "res : INT +-> INT", "res := {}"
+			var "l", "l : INT +-> INT", "l := s"
+			var "element", "element : INT**INT", "element := 0|->0"
+			var "product", "product : NAT", "product :: NAT"
+			invariant "finite(l)"
+			algorithm {
+				While("card(l) > 0", invariant: "!i.i : dom(res) & i : dom(s) => res(i) = s(i)*s(i)") {
+					Assign("element :: l")
+					Assign("key, value :| key'|->value'=element")
+					Assert("key : dom(s) & s(key) = value")
+					Call("mult", ["value", "value"], ["product"])
+					Assert("key : dom(s) & product = s(key) * s(key)")
+					Assign("res(key) := product")
+					Assign("l := {key} <<| l")
+				}
+				Return("res")
+			}
+		}
+	}
+	
+	/*machine(name: "apply_mult") {
 		var "product", "product : NAT", "product := 0"
 		var "ctr", "ctr : NAT", "ctr := 0"
 		var "s", "s : NAT +-> INT", "s := {}"
@@ -50,7 +81,7 @@ mm = new ModelModifier().make {
 				Assign("s(ctr) := product","ctr := ctr + 1")
 			}
 		}
-	}
+	}*/
 }
 
 m = mm.getModel()

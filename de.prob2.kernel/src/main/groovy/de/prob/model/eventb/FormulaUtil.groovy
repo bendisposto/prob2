@@ -174,14 +174,14 @@ class FormulaUtil {
 		if (!(formula.getAst() instanceof AConjunctPredicate || formula.getAst() instanceof AEqualPredicate)) {
 			throw new IllegalArgumentException("Expected conjunct predicate.")
 		}
-		List<EventB> split = formula.getCode().split("&").collect { new EventB(it.trim()) }
+		List<EventB> split = formula.getCode().split("&").collect { new EventB(it.trim(), formula.getTypes()) }
 		split.collect { EventB f ->
 			if (!(f.getAst() instanceof AEqualPredicate)) {
 				throw new IllegalArgumentException("Expected predicate to be conjunct of equivalences.")
 			}
 			def split2 = f.getCode().split("=")
 			assert split2.length == 2
-			def lhs = new EventB(split2[0]).getAst()
+			def lhs = new EventB(split2[0], formula.getTypes()).getAst()
 			if (!(lhs instanceof AIdentifierExpression)) {
 				throw new IllegalArgumentException("Left hand side must be a single identifier")
 			}
@@ -189,7 +189,7 @@ class FormulaUtil {
 			if (!(output.contains(identifier))) {
 				throw new IllegalArgumentException("output must contain the identifiers that are defined on the left hand side")
 			}
-			def rf = getRodinFormula(new EventB(split2[1]))
+			def rf = getRodinFormula(new EventB(split2[1], formula.getTypes()))
 			rf.getFreeIdentifiers().each { id ->
 				if (!input.contains(id.getName())) {
 					throw new IllegalArgumentException("$id is not defined as an input element")
@@ -197,7 +197,7 @@ class FormulaUtil {
 			}
 			[identifier, split2[1]]
 		}.collect { l ->
-			new EventB("${l[0]} := ${l[1]}")
+			new EventB("${l[0]} := ${l[1]}", formula.getTypes())
 		}
 	}
 
@@ -206,10 +206,10 @@ class FormulaUtil {
 			throw new IllegalArgumentException("expected $predicate to be a predicate" )
 		}
 		Map<String, EventB> subMap = lhsIdentifiers.inject([:]) { acc, String id ->
-			acc[id] = new EventB("${id}'")
+			acc[id] = new EventB("${id}'", predicate.getTypes())
 			acc
 		}
 		EventB substituted = substitute(predicate, subMap)
-		new EventB(lhsIdentifiers.iterator().join(",") + " :| "+substituted.getCode())
+		new EventB(lhsIdentifiers.iterator().join(",") + " :| "+substituted.getCode(), predicate.getTypes())
 	}
 }

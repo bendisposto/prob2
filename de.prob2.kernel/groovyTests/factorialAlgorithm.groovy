@@ -11,8 +11,11 @@ mm = new ModelModifier().make {
 	context(name: "definitions") {
 		constant "fac"
 		axioms "fac : NAT --> NAT",
-		       "fac(0) = 0",
-			   "!m,n.(m > 0 & n > 0 => fac(m) = fac(m - 1)* m)"
+		       "fac(0) = 1",
+			   "!m.(m > 0 & m : dom(fac) & m - 1 : dom(fac) => fac(m) = fac(m - 1) * m)"
+		theorem "dom(fac) = NAT"
+		theorem "!m.(m : dom(fac) & m + 1 : dom(fac) => fac(m + 1) = fac(m) * (m + 1))"
+		theorem "fac(0) = fac(1)"
 	}
 	
 	context(name: "fac_ctx", extends: "definitions") {
@@ -30,12 +33,18 @@ mm = new ModelModifier().make {
 		var "u", "u : NAT", "u := 1"
 		
 		algorithm {
-			While("r < n") {
-				While("s < r") {
+			Assert("u = v")
+			Assert("s = 0")
+			While("r < n", invariant: "v = fac(r)") {
+				Assert("v = fac(r)")
+				Assert("r < n")
+				While("s < r", invariant: "u = (s + 1) ∗ v") {
 					Assign("u,s := u+v, s+1")
 				}
-				Assign("u,r,s := u,r+1,0")
+				Assert("r : dom(fac) => u = fac(r + 1)")
+				Assign("v,r,s := u,r+1,0")	
 			}
+			Assert("v = factorial")
 		}
 	}
 }

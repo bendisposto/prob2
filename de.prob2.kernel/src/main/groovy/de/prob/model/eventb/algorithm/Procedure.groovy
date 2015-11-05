@@ -37,11 +37,11 @@ class Procedure extends AbstractModifier {
 		this.name = name
 		this.arguments = new ModelElementList<String>()
 		this.results = new ModelElementList<String>()
-		this.contextM = new ContextModifier(new Context(name+CONTEXT_SUFFIX))
+		this.contextM = new ContextModifier(new Context(name+CONTEXT_SUFFIX), typeEnvironment)
 		def sees = new ModelElementList<Context>([contextM.getContext()])
-		this.absM = new MachineModifier(new EventBMachine(name+ABSTRACT_SUFFIX)).setSees(sees).var("apc", [grd_apc: "apc : NAT"], [act_apc: "apc := 0"])
-		this.concreteM = new MachineModifier(new EventBMachine(name+IMPL_SUFFIX)).setSees(sees).setRefines(absM.getMachine())
-		this.eventM = new EventModifier(new Event(name, EventType.ORDINARY, false)).guard("grd_apc", "apc = 0").action("act_apc", "apc := 1")
+		this.absM = new MachineModifier(new EventBMachine(name+ABSTRACT_SUFFIX), typeEnvironment).setSees(sees).var("apc", [grd_apc: "apc : NAT"], [act_apc: "apc := 0"])
+		this.concreteM = new MachineModifier(new EventBMachine(name+IMPL_SUFFIX), typeEnvironment).setSees(sees).setRefines(absM.getMachine())
+		this.eventM = new EventModifier(new Event(name, EventType.ORDINARY, false), false, typeEnvironment).guard("grd_apc", "apc = 0").action("act_apc", "apc := 1")
 	}
 
 	def Procedure(String name, Set<IFormulaExtension> typeEnv, ModelElementList<String> arguments,

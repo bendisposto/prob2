@@ -171,6 +171,7 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 		}
 		assert procedure.results.size() == a.returnVals.size()
 
+		em = em.addComment(a.toString())
 		em = em.refines(procedure.getEvent(), false)
 		[
 			procedure.results,
