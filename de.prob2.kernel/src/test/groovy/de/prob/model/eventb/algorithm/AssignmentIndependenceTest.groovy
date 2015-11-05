@@ -8,7 +8,7 @@ class AssignmentIndependenceTest extends Specification {
 
 	def identifiers(String assignment) {
 		Node ast = new EventB(assignment).getAst()
-		AssignmentAnalysisVisitor v = new AssignmentAnalysisVisitor()
+		IdentifierExtractor v = new IdentifierExtractor()
 		ast.apply(v)
 		v.getIdentifiers()
 	}
@@ -20,7 +20,7 @@ class AssignmentIndependenceTest extends Specification {
 
 	def "deterministic assignment function calls"() {
 		expect:
-		identifiers("f(x) := 1") == ["f"] as Set
+		identifiers("f(x) := 1") == ["f", "x"] as Set
 	}
 
 	def "multiple deterministic assignment"() {
@@ -40,34 +40,34 @@ class AssignmentIndependenceTest extends Specification {
 
 	def "union"() {
 		expect:
-		AssignmentAnalysisVisitor.union(new EventB("x,y,z := 1,2,3").getAst(),
+		IdentifierExtractor.union(new EventB("x,y,z := 1,2,3").getAst(),
 				new EventB("a,b :| a=1 & b=4").getAst(),
 				new EventB("y :: {1,2,3}").getAst()) == ["x", "y", "z", "a", "b"] as Set
 	}
 
 	def "intersection"() {
 		expect:
-		AssignmentAnalysisVisitor.intersection(new EventB("x,y,z := 1,2,3").getAst(),
+		IdentifierExtractor.intersection(new EventB("x,y,z := 1,2,3").getAst(),
 				new EventB("a,b :| a=1 & b=4").getAst()) == [] as Set
 	}
 
 
 	def "intersection 2"() {
 		expect:
-		AssignmentAnalysisVisitor.intersection(new EventB("x,y,z := 1,2,3").getAst(),
+		IdentifierExtractor.intersection(new EventB("x,y,z := 1,2,3").getAst(),
 				new EventB("y :: {1,2,3}").getAst()) == ["y"] as Set
 	}
 
 	def "disjoint"() {
 		expect:
-		AssignmentAnalysisVisitor.disjoint(new EventB("x,y,z := 1,2,3").getAst(),
+		IdentifierExtractor.disjoint(new EventB("x,y,z := 1,2,3").getAst(),
 				new EventB("a,b :| a=1 & b=4").getAst())
 	}
 
 
 	def "disjoint 2"() {
 		expect:
-		!AssignmentAnalysisVisitor.disjoint(new EventB("x,y,z := 1,2,3").getAst(),
+		!IdentifierExtractor.disjoint(new EventB("x,y,z := 1,2,3").getAst(),
 				new EventB("y :: {1,2,3}").getAst())
 	}
 }

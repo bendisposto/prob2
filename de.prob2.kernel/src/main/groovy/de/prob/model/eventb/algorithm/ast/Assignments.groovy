@@ -5,7 +5,7 @@ import org.eventb.core.ast.extension.IFormulaExtension
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.ModelGenerationException
-import de.prob.model.eventb.algorithm.AssignmentAnalysisVisitor
+import de.prob.model.eventb.algorithm.IdentifierExtractor
 import de.prob.model.representation.ModelElementList
 import de.prob.unicode.UnicodeTranslator
 

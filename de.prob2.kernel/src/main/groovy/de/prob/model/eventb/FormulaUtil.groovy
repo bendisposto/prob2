@@ -13,7 +13,7 @@ import de.be4.classicalb.core.parser.node.AIdentifierExpression
 import de.be4.classicalb.core.parser.node.Node
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.AssignmentAnalysisVisitor
+import de.prob.model.eventb.algorithm.IdentifierExtractor
 
 class FormulaUtil {
 

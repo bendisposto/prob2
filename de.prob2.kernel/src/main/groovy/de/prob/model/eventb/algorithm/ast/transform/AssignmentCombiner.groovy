@@ -1,7 +1,7 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.AssignmentAnalysisVisitor
+import de.prob.model.eventb.algorithm.IdentifierExtractor
 import de.prob.model.eventb.algorithm.ast.Assignments
 import de.prob.model.eventb.algorithm.ast.Statement
 
@@ -22,7 +22,7 @@ class AssignmentCombiner extends AlgorithmASTTransformer {
 		List<EventB> actions = []
 		Set<String> identifiers = [] as Set
 		allAssignments.each { EventB formula ->
-			AssignmentAnalysisVisitor v = new AssignmentAnalysisVisitor()
+			IdentifierExtractor v = new IdentifierExtractor()
 			formula.getAst().apply(v)
 			boolean disjoint = v.getIdentifiers().inject(true) { acc, e -> acc && !identifiers.contains(e) }
 			if (disjoint) {
