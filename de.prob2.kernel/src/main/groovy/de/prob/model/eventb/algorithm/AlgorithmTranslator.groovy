@@ -37,7 +37,7 @@ class AlgorithmTranslator {
 		List<Procedure> proc = machine.getChildrenOfType(Procedure.class)
 		if (proc.size() > 0) {
 			if (machine.getName().endsWith(Procedure.ABSTRACT_SUFFIX)) {
-				return machineM.addEvent(proc[0].abstractEvent).getMachine()
+				return machineM.addEvent(proc[0].getEvent()).getMachine()
 			}
 		}
 

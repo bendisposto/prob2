@@ -2,6 +2,8 @@ package de.prob.model.eventb.algorithm
 
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event
+import de.prob.model.eventb.EventBAction
+import de.prob.model.eventb.EventBGuard
 import de.prob.model.eventb.EventModifier
 import de.prob.model.eventb.FormulaUtil
 import de.prob.model.eventb.MachineModifier
@@ -53,6 +55,12 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 			def endPc = pcCalc.lastPc()
 			machineM = machineM.invariant("ipc /= $endPc => apc = 0")
 			machineM = machineM.invariant("ipc = $endPc => apc = 1")
+			def absMachine = procedure.getAbstractMachine()
+			procedure.results.each { String varName ->
+				def inv = absMachine.invariants["typing_$varName"]
+				def init = absMachine.getEvent("INITIALISATION").actions["init_$varName"]
+				machineM = machineM.variable(varName).invariant(inv).initialisation({ action init })
+			}
 		}
 
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm, procedures).prettyPrint())
@@ -139,17 +147,22 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 			procedure.arguments,
 			a.arguments
 		].transpose().each { e ->
-			subs[e[0].getName()] = e[1]
+			subs[e[0]] = e[1]
 		}
 		[
 			procedure.results,
 			a.results
 		].transpose().each { e ->
-			subs[e[0].getName()] = e[1]
+			subs[e[0]] = e[1]
 		}
-		em = em.guard(fuu.substitute(procedure.getPrecondition(), subs))
-		def n = "act${em.actctr + 1}"
-		em.action(n, fuu.substitute(procedure.getPostcondition(), subs), a.toString())
+		em = em.addComment(a.toString())
+		procedure.getEvent().guards.findAll{it.getName() != "grd_apc"}.each { EventBGuard grd ->
+			em = em.guard(fuu.substitute(grd.getPredicate(), subs))
+		}
+		procedure.getEvent().actions.findAll{it.getName() != "act_apc" }.each {EventBAction act ->
+			em = em.action(fuu.substitute(act.getCode(), subs))
+		}
+		em
 	}
 
 	def EventModifier addAssignment(EventModifier em, Return a) {
@@ -158,9 +171,9 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 		}
 		assert procedure.results.size() == a.returnVals.size()
 
-		em = em.refines(procedure.abstractEvent, false)
+		em = em.refines(procedure.getEvent(), false)
 		[
-			procedure.results.collect { it.name },
+			procedure.results,
 			a.returnVals
 		].transpose().each { String r, EventB v ->
 			def n = "act${em.actctr + 1}"

@@ -181,12 +181,14 @@ public class MachineModifier extends AbstractModifier {
 
 	def MachineModifier invariant(String name, String predicate, boolean theorem=false, String comment="") throws ModelGenerationException {
 		validateAll(name, predicate)
+		invariant(new EventBInvariant(name, parsePredicate(predicate), theorem, comment))
+	}
 
+	def MachineModifier invariant(EventBInvariant invariant) {
 		def newproofs = machine.getProofs().findAll { ProofObligation po ->
 			!po.getName().endsWith("/INV")
 		}
 
-		def invariant = new EventBInvariant(name, parsePredicate(predicate), theorem, comment)
 		machine = machine.addTo(Invariant.class, invariant)
 		machine = machine.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs))
 		newMM(machine)

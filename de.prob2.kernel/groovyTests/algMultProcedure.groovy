@@ -9,26 +9,32 @@ import de.prob.statespace.*
 mm = new ModelModifier().make {
 	
 	procedure(name: "mult") {
-		argument "x", "NAT", "x :: NAT1"
-		argument "y", "NAT", "y :: NAT1"
-		result "product", "NAT", "product := 0"
+		argument "x", "NAT"
+		argument "y", "NAT"
+		result "product", "NAT"
 		
-		abstraction pre: "x >= 0 & y >= 0", 
-			post: "product := x * y"
+		precondition "x >= 0 & y >= 0"
+		postcondition "product = x * y"
 			
-		algorithm([x0: "x", "y0": "y", "p": "product"]) {
-			While("x0 > 0", invariant: "p + (x0*y0) = x*y") {
-				If("x0 mod 2 /= 0") {
-					Then {
-						Assume("x0 / 2 * 2 = x0 - 1")
-						Assign("x0 := x0 / 2", "y0 := y0 * 2", "p := p + y0")
+		implementation {
+			var "x0", "x0 : NAT", "x0 := x"
+			var "y0", "y0 : NAT", "y0 := y"
+			var "p", "p : NAT", "p := 0"
+			algorithm {
+				While("x0 > 0", invariant: "p + (x0*y0) = x*y") {
+					If("x0 mod 2 /= 0") {
+						Then {
+							Assume("x0 / 2 * 2 = x0 - 1")
+							Assign("x0 := x0 / 2", "y0 := y0 * 2", "p := p + y0")
+						}
+						Else("x0 := x0 / 2", "y0 := y0 * 2")
 					}
-					Else("x0 := x0 / 2", "y0 := y0 * 2")
 				}
+				Assert("p = x * y")
+				Return("p")
 			}
-			Assert("p = x * y")
-			Return("p")
 		}
+		
 	}
 	
 	machine(name: "apply_mult") {
@@ -40,6 +46,7 @@ mm = new ModelModifier().make {
 			While("ctr < 10", invariant: "!i.i : dom(s) => s(i) = i*i") {
 				Call("mult", ["ctr", "ctr"], ["product"])
 				Assert("product = ctr*ctr")
+				Assert( "!i.i : dom(s) => s(i) = i*i")
 				Assign("s(ctr) := product","ctr := ctr + 1")
 			}
 		}
@@ -49,8 +56,8 @@ mm = new ModelModifier().make {
 m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
 
-//mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "MultWithProcedures", "/tmp")
+mtx = new ModelToXML()
+d = mtx.writeToRodin(m, "MultWithProcedures", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

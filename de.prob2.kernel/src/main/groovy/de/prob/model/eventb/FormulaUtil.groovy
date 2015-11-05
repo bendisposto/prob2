@@ -170,8 +170,8 @@ class FormulaUtil {
 	 * @return transformed formula
 	 * @throws IllegalArgumentException if the transformation is not successful
 	 */
-	def List<EventB> conjunctToAssignments(EventB formula, Set<String> output, Set<String> input) {
-		if (!(formula.getAst() instanceof AConjunctPredicate)) {
+	def List<EventB> conjunctToAssignments(EventB formula, Set<String> input, Set<String> output) {
+		if (!(formula.getAst() instanceof AConjunctPredicate || formula.getAst() instanceof AEqualPredicate)) {
 			throw new IllegalArgumentException("Expected conjunct predicate.")
 		}
 		List<EventB> split = formula.getCode().split("&").collect { new EventB(it.trim()) }

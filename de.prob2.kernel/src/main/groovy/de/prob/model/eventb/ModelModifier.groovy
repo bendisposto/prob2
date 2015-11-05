@@ -186,7 +186,7 @@ public class ModelModifier extends AbstractModifier {
 	def ModelModifier procedure(LinkedHashMap properties, Closure definition) {
 		validateProperties(properties, [name: String])
 		Procedure proc = new Procedure(properties["name"], typeEnvironment).make(definition)
-		ModelModifier mm = this.addMachine(proc.machineM.getMachine()).addMachine(proc.implementation)
+		ModelModifier mm = this.addContext(proc.getContext()).addMachine(proc.getAbstractMachine()).addMachine(proc.getImplementation())
 		newMM(mm.getModel().addTo(Procedure.class, proc))
 	}
 
