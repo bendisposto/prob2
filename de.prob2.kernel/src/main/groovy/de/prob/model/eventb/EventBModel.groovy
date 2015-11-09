@@ -88,6 +88,26 @@ public class EventBModel extends AbstractModel {
 		return new EventBModel(stateSpaceProvider, children, graph.removeEdge(element1, element2, relationship), modelFile);
 	}
 
+	public EventBModel calculateDependencies() {
+		DependencyGraph graph = new DependencyGraph()
+		getMachines().each { EventBMachine m ->
+			graph = graph.addVertex(m.getName())
+			m.getRefines().each { EventBMachine m2 ->
+				graph = graph.addEdge(m.getName(), m2.getName(), ERefType.REFINES)
+			}
+			m.getSees().each { Context c ->
+				graph = graph.addEdge(m.getName(), c.getName(), ERefType.SEES)
+			}
+		}
+		getContexts().each { Context c ->
+			graph = graph.addVertex(c.getName())
+			c.getExtends().each { Context c2 ->
+				graph = graph.addEdge(c.getName(), c2.getName(), ERefType.EXTENDS)
+			}
+		}
+		return new EventBModel(stateSpaceProvider, children, graph, modelFile)
+	}
+
 	@Override
 	public ERefType getRelationship(final String from, final String to) {
 		List<ERefType> relationships = graph.getRelationships(from, to);
@@ -147,5 +167,4 @@ public class EventBModel extends AbstractModel {
 	public Object getAt(String name) {
 		getComponent(name);
 	}
-
 }

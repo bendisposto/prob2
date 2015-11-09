@@ -12,24 +12,24 @@ mm = new ModelModifier().make {
 
 	
 	machine(name: "multiplication") {
-		variables "m","n"
-		var_block name: "l", invariant: "l : NAT", init: "l,m :| l' : NAT1 & l'=m'"
-		var_block name: "r", invariant: "r : NAT", init: "r,n :| r' : NAT1 & r'=n'"
+		variables "x","y"
+		var_block name: "x0", invariant: "x0 : NAT", init: "x0,x :| x0' : NAT1 & x0'=x'"
+		var_block name: "y0", invariant: "y0 : NAT", init: "y0,y :| y0' : NAT1 & y0'=y'"
 		var_block name: "product", invariant: "product : NAT", init: "product := 0"
 		
-		invariants "m : NAT", "n : NAT"
+		invariants "x : NAT", "y : NAT"
 		
 		algorithm {
-			While("l > 0", invariant: "product + (l*r) = m*n") {
-				If("l mod 2 /= 0") {
+			While("x0 > 0", invariant: "product + (x0*y0) = x*y") {
+				If("x0 mod 2 /= 0") {
 					Then {
-						Assume("l / 2 * 2 = l - 1")
-						Assign("l := l / 2", "r := r * 2", "product := product + r")
+						Assume("x0 / 2 * 2 = x0 - 1")
+						Assign("x0 := x0 / 2", "y0 := y0 * 2", "product := product + y0")
 					}
-					Else("l := l / 2", "r := r * 2")
+					Else("x0 := x0 / 2", "y0 := y0 * 2")
 				}
 			}
-			Assert("product = m * n")
+			Assert("product = x * y")
 		}
 	}
 }
