@@ -4,8 +4,10 @@ import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.ModelModifier
-import de.prob.model.eventb.algorithm.ast.Block;
-import de.prob.model.representation.Machine
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.transform.AssertionPropagator
+import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
+import de.prob.model.eventb.algorithm.ast.transform.IAlgorithmASTTransformer
 import de.prob.model.representation.ModelElementList
 
 class AlgorithmTranslator {
@@ -43,8 +45,19 @@ class AlgorithmTranslator {
 
 		List<Block> block = machine.getChildrenOfType(Block.class)
 		if (block.size() == 1) {
-			machineM = new TranslationAlgorithm(options, procedures, proc.size() > 0 ? "ipc" : "pc").run(machineM, block[0])
+			Block b = runASTTransformations(block[0], procedures)
+			machineM = new TranslationAlgorithm(options, procedures, proc.size() > 0 ? "ipc" : "pc").run(machineM, b)
 		}
 		machineM.getMachine()
+	}
+
+	def Block runASTTransformations(Block block, ModelElementList<Procedure> procedures) {
+		def transformers = [new DeadCodeRemover()]
+		if (options.isPropagateAssertions()) {
+			transformers << new AssertionPropagator(procedures)
+		}
+		transformers.inject(block) { Block b, IAlgorithmASTTransformer t ->
+			t.transform(b)
+		}
 	}
 }

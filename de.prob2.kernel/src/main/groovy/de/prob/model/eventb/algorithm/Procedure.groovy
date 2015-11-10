@@ -108,13 +108,7 @@ class Procedure extends AbstractModifier {
 		}
 		EventB post = parsePredicate(postcondition)
 		FormulaUtil fuu = new FormulaUtil()
-		List<EventB> assignments = []
-		try {
-			List<EventB> split = fuu.conjunctToAssignments(post, arguments as Set, results as Set)
-			assignments.addAll(split)
-		} catch(IllegalArgumentException ex) {
-			assignments <<  fuu.predicateToBecomeSuchThat(post, results)
-		}
+		List<EventB> assignments = fuu.predicateToAssignments(post, arguments as Set, results as Set)
 		def em = assignments.inject(eventM) { EventModifier evM, EventB a ->
 			evM.action(a)
 		}

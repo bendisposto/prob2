@@ -42,7 +42,8 @@ mm = new ModelModifier().make {
 					//Assert("p+x0*(y0*2)=x*y")
 					Assign("y0 := y0 * 2")
 				}
-				//Assert("x0 = 0 & p = x * y")
+				Assert("x0 = 0")
+				Assert("p = x*y")
 				Return("p")
 			}
 		}
@@ -96,7 +97,7 @@ mm = new ModelModifier().make {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions()).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().propagateAssertions(true)).run()
 
 mtx = new ModelToXML()
 d = mtx.writeToRodin(m, "MultWithProcedures", "/tmp")

@@ -65,6 +65,11 @@ class Block extends AbstractModifier {
 		newBlock(statements.addElement(new Call(name, arguments, results, typeEnvironment)))
 	}
 
+	// Add ending Skip statement to algorithm
+	def Block finish() {
+		newBlock(statements.addElement(new Skip()))
+	}
+
 	def Block make(Closure definition) throws ModelGenerationException {
 		runClosure definition
 	}

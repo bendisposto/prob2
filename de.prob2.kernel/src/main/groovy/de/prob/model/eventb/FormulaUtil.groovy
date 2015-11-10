@@ -214,9 +214,26 @@ class FormulaUtil {
 		new EventB(lhsIdentifiers.iterator().join(",") + " :| "+substituted.getCode(), predicate.getTypes())
 	}
 
+	def List<EventB> predicateToAssignments(EventB predicate, Set<String> input, Set<String> output) {
+		List<EventB> assignments = []
+		try {
+			List<EventB> split = conjunctToAssignments(predicate, input, output)
+			assignments.addAll(split)
+		} catch(IllegalArgumentException ex) {
+			assignments <<  predicateToBecomeSuchThat(predicate, output)
+		}
+		assignments
+	}
+
 	def EventB applyAssignment(EventB predicate, EventB assignment) {
 		Predicate p = getRodinFormula(predicate)
 		Assignment a = getRodinFormula(assignment)
 		new EventB(p.applyAssignment(a).toString(), predicate.getTypes())
+	}
+
+	def EventB applyAssignments(EventB predicate, List<EventB> assignments) {
+		assignments.inject(predicate) { p, assignment ->
+			applyAssignment(p, assignment)
+		}
 	}
 }

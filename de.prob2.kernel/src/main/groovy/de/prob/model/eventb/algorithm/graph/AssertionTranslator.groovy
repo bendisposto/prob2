@@ -1,18 +1,19 @@
 package de.prob.model.eventb.algorithm.graph
 
+import de.be4.classicalb.core.parser.node.AImplicationPredicate
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.MachineModifier
-import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor;
-import de.prob.model.eventb.algorithm.ast.Assertion;
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Assumption;
-import de.prob.model.eventb.algorithm.ast.Call;
-import de.prob.model.eventb.algorithm.ast.IProperty;
-import de.prob.model.eventb.algorithm.ast.If;
-import de.prob.model.eventb.algorithm.ast.Return;
-import de.prob.model.eventb.algorithm.ast.Skip;
-import de.prob.model.eventb.algorithm.ast.Statement;
-import de.prob.model.eventb.algorithm.ast.While;
+import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor
+import de.prob.model.eventb.algorithm.ast.Assertion
+import de.prob.model.eventb.algorithm.ast.Assignment
+import de.prob.model.eventb.algorithm.ast.Assumption
+import de.prob.model.eventb.algorithm.ast.Call
+import de.prob.model.eventb.algorithm.ast.IProperty
+import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Return
+import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.While
 
 /**
  * Translates assertions and assumptions
@@ -40,7 +41,12 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 	@Override
 	public visit(While w) {
 		assert pcInfo[w] != null
-		machineM = writeAssertions(machineM, w, "$pcname = ${pcInfo[w]}")
+		def prefix = "$pcname = ${pcInfo[w]}"
+		if (w.invariant) {
+			def name = graph.nodeMapping.getName(w)+"_inv"
+			machineM = writeAssertion(machineM, name, prefix, w.invariant)
+		}
+		machineM = writeAssertions(machineM, w, prefix)
 	}
 
 	@Override
@@ -129,7 +135,15 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 		} else {
 			assertCtr[name] = 0
 		}
-		machineM = machineM.invariant(name, "$pred => (${property.getFormula().getCode()})", property instanceof Assumption, property.toString())
+		def ast = property.getFormula().getAst()
+		def formula = ast instanceof AImplicationPredicate ? "$pred & ${property.getFormula().getCode()}" : "$pred => (${property.getFormula().getCode()})"
+		machineM = machineM.invariant(name, formula, property instanceof Assumption, property.toString())
+	}
+
+	def MachineModifier writeAssertion(MachineModifier machineM, String name, String prefix, EventB predicate) {
+		def ast = predicate.getAst()
+		def formula = ast instanceof AImplicationPredicate ? "$prefix & ${predicate.getCode()}" : "$prefix => (${predicate.getCode()})"
+		machineM = machineM.invariant(name, formula)
 	}
 
 

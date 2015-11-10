@@ -34,14 +34,15 @@ mm = new ModelModifier().make {
 		
 		algorithm {
 			Assert("u = v")
-			Assert("s = 0")
-			While("r < n", invariant: "v = fac(r)") {
+			Assert("u = (s+1) * v")
+			While("r < n", invariant: "r : dom(fac) & v = fac(r)") {
 				Assert("v = fac(r)")
 				Assert("r < n")
 				While("s < r", invariant: "u = (s + 1) ∗ v") {
 					Assign("u,s := u+v, s+1")
 				}
 				Assert("r : dom(fac) => u = fac(r + 1)")
+				Assert("r < n")
 				Assign("v,r,s := u,r+1,0")	
 			}
 			Assert("v = factorial")
@@ -50,7 +51,7 @@ mm = new ModelModifier().make {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.propagateAssertions(true)).run()
 
 mtx = new ModelToXML()
 d = mtx.writeToRodin(m, "Factorial", "/tmp")

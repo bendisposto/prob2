@@ -79,9 +79,9 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 		}
 		generated << stmt
 
-		if (stmt instanceof While && stmt.invariant != null) {
-			machineM = machineM.invariant(graph.nodeMapping.getName(stmt) +"_inv", "$pcname = ${pcInformation[stmt]} => (${stmt.invariant.getCode()})")
-		}
+		//if (stmt instanceof While && stmt.invariant != null) {
+		//	machineM = machineM.invariant(graph.nodeMapping.getName(stmt) +"_inv", "$pcname = ${pcInformation[stmt]} => (${stmt.invariant.getCode()})")
+		//}
 
 		def merge = (stmt instanceof While || stmt instanceof If) && optimized
 
@@ -140,23 +140,8 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 
 	def EventModifier addAssignment(EventModifier em, Call a) {
 		Procedure procedure = procedures.getElement(a.getName())
-		assert procedure
-		assert procedure.arguments.size() == a.arguments.size()
-		assert procedure.results.size() == a.results.size()
 		FormulaUtil fuu = new FormulaUtil()
-		Map<String, EventB> subs = [:]
-		[
-			procedure.arguments,
-			a.arguments
-		].transpose().each { e ->
-			subs[e[0]] = e[1]
-		}
-		[
-			procedure.results,
-			a.results
-		].transpose().each { e ->
-			subs[e[0]] = e[1]
-		}
+		Map<String, EventB> subs = a.getSubstitutions(procedure)
 		em = em.addComment(a.toString())
 		procedure.getEvent().guards.findAll{it.getName() != "grd_apc"}.each { EventBGuard grd ->
 			em = em.guard(fuu.substitute(grd.getPredicate(), subs))

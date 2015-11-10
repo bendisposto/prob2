@@ -29,13 +29,8 @@ class ControlFlowGraph {
 
 	def ControlFlowGraph(Block b) {
 		if (!b.statements.isEmpty()) {
-			// adding an assignments block to the end adds an extra event which goes into a deadlock.
-			Block deadCodeRemoval = new DeadCodeRemover().transform(b)
-			//Block combinedAssignments = new AssignmentCombiner().transform(deadCodeRemoval)
-			Block a = new Block(deadCodeRemoval.statements.addElement(new Skip(deadCodeRemoval.typeEnvironment)), deadCodeRemoval.typeEnvironment)
-
 			PropertyExtractor e = new PropertyExtractor()
-			this.algorithm = e.transform(a)
+			this.algorithm = e.transform(b.finish())
 			lastNode = this.algorithm.statements.last()
 			properties = e.properties
 			nodeMapping = new NodeNaming(this.algorithm)
