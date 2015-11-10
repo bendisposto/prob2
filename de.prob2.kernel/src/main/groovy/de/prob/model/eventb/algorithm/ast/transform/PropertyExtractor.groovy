@@ -1,17 +1,10 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
-import java.util.List;
-
-import de.prob.model.eventb.algorithm.ast.Assertion;
-import de.prob.model.eventb.algorithm.ast.Assignments;
-import de.prob.model.eventb.algorithm.ast.Assumption;
-import de.prob.model.eventb.algorithm.ast.Block;
-import de.prob.model.eventb.algorithm.ast.Call;
-import de.prob.model.eventb.algorithm.ast.IProperty;
-import de.prob.model.eventb.algorithm.ast.If;
-import de.prob.model.eventb.algorithm.ast.Return;
-import de.prob.model.eventb.algorithm.ast.Statement;
-import de.prob.model.eventb.algorithm.ast.While;
+import de.prob.model.eventb.algorithm.ast.Assertion
+import de.prob.model.eventb.algorithm.ast.Assumption
+import de.prob.model.eventb.algorithm.ast.IProperty
+import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Statement
 
 /**
  * Extracts assertions and assumptions from within the AST, adding nodes after
@@ -49,7 +42,7 @@ class PropertyExtractor extends AlgorithmASTTransformer {
 			statements = statements.tail()
 		}
 		if (statements.isEmpty()) {
-			Statement h = new Assignments(t.typeEnvironment)
+			Statement h = new Skip(t.typeEnvironment)
 			addAssertions(h, myproperties)
 			return myproperties + [h]
 		}

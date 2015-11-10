@@ -30,8 +30,11 @@ class AlgorithmPrettyPrinterTest extends Specification {
 	def "simple while loop"() {
 		expect:
 		evalAndPrint({
-			While("x < 1") { Assign("y := 2", "z := 3") }
-		}) == "while (x < 1):\n  y \u2254 2 \u2225 z \u2254 3\n"
+			While("x < 1") {
+				Assign("y := 2")
+				Assign("z := 3")
+			}
+		}) == "while (x < 1):\n  y \u2254 2\n  z \u2254 3\n"
 	}
 
 	def "while loop with variant"() {
@@ -49,7 +52,7 @@ class AlgorithmPrettyPrinterTest extends Specification {
 				Assign("u := u - v")
 			}
 			Assert("v|->m|->n : IsGCD")
-		}) == "while (u \u2260 0):\n  if (u < v):\n    u \u2254 v \u2225 v \u2254 u\n  u \u2254 u \u2212 v\nassert v\u21A6m\u21A6n \u2208 IsGCD\n"
+		}) == "while (u \u2260 0):\n  if (u < v):\n    u \u2254 v\n    v \u2254 u\n  u \u2254 u \u2212 v\nassert v\u21A6m\u21A6n \u2208 IsGCD\n"
 	}
 
 	def "if with else"() {

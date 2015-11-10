@@ -2,7 +2,7 @@ package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Assignment;
 import de.prob.model.eventb.algorithm.ast.Block;
 
 public class PCCalculationOptTest extends Specification {
@@ -39,7 +39,7 @@ public class PCCalculationOptTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, if0: 1, assign1: 2]
+		pcInfo(graph) == [while0: 0, if0: 1, assign1: 2, assign2: 3]
 	}
 
 	def "russische bauernmultiplikation"(){
@@ -47,7 +47,8 @@ public class PCCalculationOptTest extends Specification {
 		def DEBUG = false
 		def graph = graph({
 			While("l /= 1") {
-				Assign("l := l / 2", "r := r * 2")
+				Assign("l := l / 2")
+				Assign("r := r * 2")
 				If("l mod 2 /= 0") { Then("product := product + r") }
 			}
 			Assert("product = m * n")
@@ -55,7 +56,7 @@ public class PCCalculationOptTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, if0: 1]
+		pcInfo(graph) == [while0: 0, assign1: 1, if0: 2]
 	}
 
 	def "complicated while if"() {
@@ -96,18 +97,22 @@ public class PCCalculationOptTest extends Specification {
 		when:
 		def DEBUG = false
 		def graph = graph({
-			Assign("y := 0", "x := 2")
+			Assign("y := 0")
+			Assign("x := 2")
 			While("x = 2") {
 				Assign("y := y + 1")
 				If ("y > 10")  { Then("x := 3") }
 			}
-			While("x + y < 20") { Assign("x := x + 1", "y := y + 1") }
+			While("x + y < 20") {
+				Assign("x := x + 1")
+				Assign("y := y + 1")
+			}
 			Assert("x + y > 20")
 		})
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [assign0: 0, while0: 1, if0: 2, while1: 3]
+		pcInfo(graph) == [assign0: 0, assign1: 1, while0: 2, if0: 3, while1: 4, assign5: 5]
 	}
 
 	def "loop within loop"() {
@@ -120,13 +125,14 @@ public class PCCalculationOptTest extends Specification {
 						While("x < y") { Assign("x := x + 1") }
 					}
 				}
-				Assign("y := y / 2", "x := x / 2")
+				Assign("y := y / 2")
+				Assign("x := x / 2")
 			}
 			Assign("z := y + x")
 		})
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, if0: 1, while1: 2, assign3: 3]
+		pcInfo(graph) == [while0: 0, if0: 1, while1: 2, assign2: 3, assign4: 4]
 	}
 }

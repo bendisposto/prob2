@@ -9,12 +9,13 @@ import de.prob.model.eventb.FormulaUtil
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions.Options
-import de.prob.model.eventb.algorithm.ast.Assignments
+import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Call
 import de.prob.model.eventb.algorithm.ast.IAssignment
 import de.prob.model.eventb.algorithm.ast.If
 import de.prob.model.eventb.algorithm.ast.Return
+import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
 import de.prob.model.eventb.algorithm.graph.AssertionTranslator
@@ -90,7 +91,7 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 
 		if (graph.outEdges(stmt) == []) {
 			def name = graph.nodeMapping.getName(stmt)
-			if (stmt instanceof Assignments && !stmt.assignments.isEmpty()) {
+			if (stmt instanceof Assignment && !stmt.assignments.isEmpty()) {
 				throw new IllegalArgumentException("Algorithm must deadlock on empty assignment")
 			}
 			final pcname = pcname
@@ -129,10 +130,11 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 		return addNode(mm, nextN)
 	}
 
-	def EventModifier addAssignment(EventModifier em, Assignments a) {
-		a.assignments.each {
-			em = em.action(it)
-		}
+	def EventModifier addAssignment(EventModifier em, Assignment a) {
+		em.action(a.assignment)
+	}
+
+	def EventModifier addAssignment(EventModifier em, Skip s) {
 		em
 	}
 

@@ -1,7 +1,7 @@
 package de.prob.model.eventb.algorithm.graph
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Assignment;
 import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.eventb.algorithm.ast.Call;
 import de.prob.model.eventb.algorithm.ast.IAssignment;

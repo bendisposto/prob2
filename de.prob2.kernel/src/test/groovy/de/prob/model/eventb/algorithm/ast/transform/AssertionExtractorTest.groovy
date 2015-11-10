@@ -3,9 +3,10 @@ package de.prob.model.eventb.algorithm.ast.transform
 import static org.junit.Assert.*
 import spock.lang.Specification
 import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter
-import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Assignment;
 import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.Skip;
 import de.prob.model.eventb.algorithm.ast.Statement;
 import de.prob.model.eventb.algorithm.ast.transform.PropertyExtractor;
 
@@ -36,7 +37,7 @@ public class AssertionExtractorTest extends Specification {
 	}
 
 	def emptyEnd(e) {
-		e.algorithm.statements.last().assignments == []? e.algorithm.statements.last() : null
+		e.algorithm.statements.last() instanceof Skip ? e.algorithm.statements.last() : null
 	}
 
 	def "empty is empty"() {
@@ -52,7 +53,7 @@ public class AssertionExtractorTest extends Specification {
 	def "one assignment block has two nodes"() {
 		when:
 		def DEBUG = false
-		def obj = run({ Assign("x := 1", "y := 1") })
+		def obj = run({ Assign("x := 1") })
 
 		then:
 		if (DEBUG) print(obj)
@@ -256,7 +257,8 @@ public class AssertionExtractorTest extends Specification {
 		def DEBUG = false
 		def obj = run({
 			While("l /= 1") {
-				Assign("l := l / 2", "r := r * 2")
+				Assign("l := l / 2")
+				Assign("r := r * 2")
 				If("l mod 2 /= 0") { Then("product := product + r") }
 			}
 			Assert("product = m * n")
@@ -301,11 +303,11 @@ public class AssertionExtractorTest extends Specification {
 		assertions(obj, emptyEnd(obj)) == ["m|->n|->v : GCD", "6 = 6"]
 		if0 instanceof If
 		assertions(obj, if0) == ["2 = 2"]
-		then0 instanceof Assignments
+		then0 instanceof Assignment
 		assertions(obj, then0) == ["3 = 3"]
-		else0 instanceof Assignments
+		else0 instanceof Assignment
 		assertions(obj, else0) == ["4 = 4"]
-		loopToWhile instanceof Assignments
+		loopToWhile instanceof Skip
 		assertions(obj, loopToWhile) == ["5 = 5"]
 	}
 }

@@ -2,7 +2,7 @@ package de.prob.model.eventb.algorithm.ast.transform
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Assignment;
 import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover;
 import de.prob.model.eventb.algorithm.graph.NodeNaming;

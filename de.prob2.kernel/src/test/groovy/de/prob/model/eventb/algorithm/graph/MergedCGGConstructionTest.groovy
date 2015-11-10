@@ -2,7 +2,7 @@ package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Assignment;
 import de.prob.model.eventb.algorithm.ast.Block;
 
 public class MergedCGGConstructionTest extends Specification {
@@ -29,8 +29,7 @@ public class MergedCGGConstructionTest extends Specification {
 		g.outgoingEdges[g.getNode(from)].findAll {
 			it.to == g.getNode(to)
 		}.collect {
-			it.conditions.collect { it.getCode()
-			} } as Set
+			it.conditions.collect { it.getCode() } } as Set
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
@@ -61,7 +60,7 @@ public class MergedCGGConstructionTest extends Specification {
 	def "one assignment block has two nodes"() {
 		when:
 		def DEBUG = false
-		def graph = graph({ Assign("x := 1", "y := 1") })
+		def graph = graph({ Assign("x := 1") })
 
 		then:
 		if (DEBUG) print(graph)
@@ -293,7 +292,7 @@ public class MergedCGGConstructionTest extends Specification {
 		def DEBUG = false
 		def graph = graph({
 			While("u /= 0") {
-				If ("u < v") { Then("u := v", "v := u") }
+				If ("u < v") { Then("u,v := v,u") }
 				Assert("u > v")
 				Assign("u := u - v")
 			}
@@ -318,7 +317,7 @@ public class MergedCGGConstructionTest extends Specification {
 		def DEBUG = false
 		def graph = graph({
 			While("l /= 1") {
-				Assign("l := l / 2", "r := r * 2")
+				Assign("l,r := l / 2, r * 2")
 				If("l mod 2 /= 0") { Then("product := product + r") }
 			}
 			Assert("product = m * n")
@@ -405,16 +404,12 @@ public class MergedCGGConstructionTest extends Specification {
 		when:
 		def DEBUG = false
 		def graph = graph({
-			Assign("y := 0")
-			Assign("x := 2")
+			Assign("y,x := 0,2")
 			While("x = 2") {
 				Assign("y := y + 1")
 				If ("y > 10")  { Then("x := 3") }
 			}
-			While("x + y < 20") {
-				Assign("x := x + 1")
-				Assign("y := y + 1")
-			}
+			While("x + y < 20") { Assign("x,y := x + 1, y + 1") }
 			Assert("x + y > 20")
 		})
 
@@ -445,7 +440,7 @@ public class MergedCGGConstructionTest extends Specification {
 						While("x < y") { Assign("x := x + 1") }
 					}
 				}
-				Assign("y := y / 2", "x := x / 2")
+				Assign("y,x := y / 2, x / 2")
 			}
 			Assign("z := y + x")
 		})

@@ -9,11 +9,12 @@ abstract class AlgorithmASTVisitor {
 
 	public abstract visit(While w);
 	public abstract visit(If i);
-	public abstract visit(Assignments a);
+	public abstract visit(Assignment a);
 	public abstract visit(Assertion a);
 	public abstract visit(Assumption a);
 	public abstract visit(Call a);
 	public abstract visit(Return a);
+	public abstract visit(Skip a);
 
 	public traverse(While s) {
 		visit(s)
@@ -26,7 +27,7 @@ abstract class AlgorithmASTVisitor {
 		visit(i.Else)
 	}
 
-	public traverse(Assignments a) {
+	public traverse(Assignment a) {
 		visit(a)
 	}
 
@@ -43,6 +44,10 @@ abstract class AlgorithmASTVisitor {
 	}
 
 	public traverse(Return a) {
+		visit(a)
+	}
+
+	public traverse(Skip a) {
 		visit(a)
 	}
 }

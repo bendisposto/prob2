@@ -244,7 +244,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		when:
 		def m = translate(mm.algorithm {
 			While("u /= 0") {
-				If ("u < v") { Then("u := v", "v := u") }
+				If ("u < v") { Then("u,v := v,u") }
 				Assert("u > v")
 				Assign("u := u - v")
 			}
@@ -256,8 +256,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		e.enter_while0_if0_then != null
 		guards(e.enter_while0_if0_then) == ["pc = 0", "u /= 0", "u < v"]
 		actions(e.enter_while0_if0_then) == [
-			"u := v",
-			"v := u",
+			"u,v := v,u",
 			"pc := 1"
 		]
 

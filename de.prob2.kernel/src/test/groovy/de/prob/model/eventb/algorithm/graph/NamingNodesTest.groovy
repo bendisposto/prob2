@@ -2,7 +2,7 @@ package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Assignment;
 import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.eventb.algorithm.ast.Statement;
 
@@ -30,7 +30,7 @@ public class NamingNodesTest extends Specification {
 	def "one assignment block has two nodes"() {
 		when:
 		def DEBUG = false
-		def names = name({ Assign("x := 1", "y := 1") })
+		def names = name({ Assign("x := 1") })
 
 		then:
 		if (DEBUG) print(names)
@@ -208,7 +208,7 @@ public class NamingNodesTest extends Specification {
 		def DEBUG = false
 		def names = name({
 			While("u /= 0") {
-				If ("u < v") { Then("u := v", "v := u") }
+				If ("u < v") { Then("u,v := v,u") }
 				Assert("u > v")
 				Assign("u := u - v")
 			}
@@ -231,7 +231,7 @@ public class NamingNodesTest extends Specification {
 		def DEBUG = false
 		def names = name({
 			While("l /= 1") {
-				Assign("l := l / 2", "r := r * 2")
+				Assign("l,r := l / 2, r * 2")
 				If("l mod 2 /= 0") { Then("product := product + r") }
 			}
 			Assert("product = m * n")

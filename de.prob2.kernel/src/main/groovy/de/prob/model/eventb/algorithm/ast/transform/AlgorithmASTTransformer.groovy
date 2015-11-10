@@ -1,12 +1,13 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
 import de.prob.model.eventb.algorithm.ast.Assertion
-import de.prob.model.eventb.algorithm.ast.Assignments
+import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Assumption
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Call
-import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.If
 import de.prob.model.eventb.algorithm.ast.Return
+import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
 
@@ -31,7 +32,7 @@ class AlgorithmASTTransformer implements IAlgorithmASTTransformer {
 		recurIfNecessary(newI, rest)
 	}
 
-	def List<Statement> transform(Assignments a, List<Statement> rest) {
+	def List<Statement> transform(Assignment a, List<Statement> rest) {
 		recurIfNecessary(a, rest)
 	}
 
@@ -49,6 +50,10 @@ class AlgorithmASTTransformer implements IAlgorithmASTTransformer {
 
 	def List<Statement> transform(Assumption a, List<Statement> rest) {
 		recurIfNecessary(a, rest)
+	}
+
+	def List<Statement> transform(Skip s, List<Statement> rest) {
+		recurIfNecessary(s, rest)
 	}
 
 	def List<Statement> recurIfNecessary(Statement transformed, List<Statement> rest) {

@@ -2,15 +2,15 @@ package de.prob.model.eventb.algorithm.graph
 
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.ast.Assertion
-import de.prob.model.eventb.algorithm.ast.Assignments
+import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Call
 import de.prob.model.eventb.algorithm.ast.IProperty
 import de.prob.model.eventb.algorithm.ast.If
 import de.prob.model.eventb.algorithm.ast.Return
+import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
-import de.prob.model.eventb.algorithm.ast.transform.AssignmentCombiner
 import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
 import de.prob.model.eventb.algorithm.ast.transform.PropertyExtractor
 
@@ -31,8 +31,8 @@ class ControlFlowGraph {
 		if (!b.statements.isEmpty()) {
 			// adding an assignments block to the end adds an extra event which goes into a deadlock.
 			Block deadCodeRemoval = new DeadCodeRemover().transform(b)
-			Block combinedAssignments = new AssignmentCombiner().transform(deadCodeRemoval)
-			Block a = new Block(combinedAssignments.statements.addElement(new Assignments(combinedAssignments.typeEnvironment)), combinedAssignments.typeEnvironment)
+			//Block combinedAssignments = new AssignmentCombiner().transform(deadCodeRemoval)
+			Block a = new Block(deadCodeRemoval.statements.addElement(new Skip(deadCodeRemoval.typeEnvironment)), deadCodeRemoval.typeEnvironment)
 
 			PropertyExtractor e = new PropertyExtractor()
 			this.algorithm = e.transform(a)
@@ -62,7 +62,7 @@ class ControlFlowGraph {
 		e
 	}
 
-	def addNode(Assignments a, List<Statement> stmts) {
+	def addNode(Assignment a, List<Statement> stmts) {
 		if (stmts.isEmpty()) {
 			nodes.add(a)
 			return a
@@ -86,6 +86,15 @@ class ControlFlowGraph {
 			return a
 		}
 		addEdge(a, lastNode, [])
+		a
+	}
+
+	def addNode(Skip a, List<Statement> stmts) {
+		if (stmts.isEmpty()) {
+			nodes.add(a)
+			return a
+		}
+		addEdge(a, addNode(stmts.first(), stmts.tail()), [])
 		a
 	}
 
@@ -130,11 +139,15 @@ class ControlFlowGraph {
 		i
 	}
 
-	def addSpecialEdge(Assignments from, Statement to) {
+	def addSpecialEdge(Assignment from, Statement to) {
 		addEdge(from, to, [])
 	}
 
 	def addSpecialEdge(Call from, Statement to) {
+		addEdge(from, to, [])
+	}
+
+	def addSpecialEdge(Skip from, Statement to) {
 		addEdge(from, to, [])
 	}
 

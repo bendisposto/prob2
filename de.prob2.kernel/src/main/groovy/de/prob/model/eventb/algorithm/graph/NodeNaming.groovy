@@ -2,12 +2,13 @@ package de.prob.model.eventb.algorithm.graph
 
 import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor;
 import de.prob.model.eventb.algorithm.ast.Assertion;
-import de.prob.model.eventb.algorithm.ast.Assignments;
+import de.prob.model.eventb.algorithm.ast.Assignment;
 import de.prob.model.eventb.algorithm.ast.Assumption;
 import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.eventb.algorithm.ast.Call;
 import de.prob.model.eventb.algorithm.ast.If;
 import de.prob.model.eventb.algorithm.ast.Return;
+import de.prob.model.eventb.algorithm.ast.Skip;
 import de.prob.model.eventb.algorithm.ast.Statement;
 import de.prob.model.eventb.algorithm.ast.While;
 
@@ -34,7 +35,7 @@ class NodeNaming extends AlgorithmASTVisitor {
 	}
 
 	@Override
-	public Object visit(Assignments a) {
+	public Object visit(Assignment a) {
 		def name = "assign${assignctr++}"
 		nodes[name] = a
 		naming[a] = name
@@ -71,6 +72,13 @@ class NodeNaming extends AlgorithmASTVisitor {
 	@Override
 	public visit(Return a) {
 		def name = "return${returnctr++}"
+		nodes[name] = a
+		naming[a] = name
+	}
+
+	@Override
+	public Object visit(Skip a) {
+		def name = "assign${assignctr++}"
 		nodes[name] = a
 		naming[a] = name
 	}
