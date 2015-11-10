@@ -32,13 +32,15 @@ class Procedure extends AbstractModifier {
 	EventB precondition
 	EventB postcondition
 
-	def Procedure(String name, Set<IFormulaExtension> typeEnvironment) {
+	def Procedure(String name, Context seen, Set<IFormulaExtension> typeEnvironment) {
 		super(typeEnvironment)
 		this.name = name
 		this.arguments = new ModelElementList<String>()
 		this.results = new ModelElementList<String>()
-		this.contextM = new ContextModifier(new Context(name+CONTEXT_SUFFIX), typeEnvironment)
-		def sees = new ModelElementList<Context>([contextM.getContext()])
+		def ctxM = new ContextModifier(new Context(name+CONTEXT_SUFFIX), typeEnvironment)
+		this.contextM = seen ? ctxM.setExtends(seen) : ctxM
+		def ctxL = seen ? [seen, contextM.getContext()]: [contextM.getContext()]
+		def sees = new ModelElementList<Context>(ctxL)
 		this.absM = new MachineModifier(new EventBMachine(name+ABSTRACT_SUFFIX), typeEnvironment).setSees(sees).var("apc", [grd_apc: "apc : NAT"], [act_apc: "apc := 0"])
 		this.concreteM = new MachineModifier(new EventBMachine(name+IMPL_SUFFIX), typeEnvironment).setSees(sees).setRefines(absM.getMachine())
 		this.eventM = new EventModifier(new Event(name, EventType.ORDINARY, false), false, typeEnvironment).guard("grd_apc", "apc = 0").action("act_apc", "apc := 1")
@@ -67,7 +69,7 @@ class Procedure extends AbstractModifier {
 
 	def Procedure argument(final String name, final String type) {
 		ContextModifier cm = contextM.constant(name).axiom("typing_$name", "$name : $type")
-		def sees = new ModelElementList<Context>([contextM.getContext()])
+		def sees = new ModelElementList<Context>([contextM.getContext()]).addMultiple(contextM.getContext().getExtends())
 		def abstractM = absM.setSees(sees)
 		def concM = concreteM.setSees(sees)
 		return new Procedure(this.name, typeEnvironment, arguments.addElement(name), results, cm, abstractM, concM, eventM, precondition, postcondition)
@@ -88,12 +90,22 @@ class Procedure extends AbstractModifier {
 	}
 
 	def Procedure precondition(String precondition) {
+		if (this.precondition) {
+			throw new IllegalArgumentException("Precondition has already been set.")
+		}
 		EventB pre = parsePredicate(precondition)
 		def em = eventM.guard("precondition", pre)
-		return new Procedure(this.name, typeEnvironment, arguments, results, contextM, absM, concreteM, em, pre, postcondition)
+		def ctxM = contextM.axiom("precondition", precondition)
+		def sees = new ModelElementList<Context>([contextM.getContext()]).addMultiple(contextM.getContext().getExtends())
+		def abstractM = absM.setSees(sees)
+		def concM = concreteM.setSees(sees)
+		return new Procedure(this.name, typeEnvironment, arguments, results, ctxM, abstractM, concM, em, pre, postcondition)
 	}
 
 	def Procedure postcondition(String postcondition) {
+		if (this.postcondition) {
+			throw new IllegalArgumentException("Postcondition has already been set.")
+		}
 		EventB post = parsePredicate(postcondition)
 		FormulaUtil fuu = new FormulaUtil()
 		List<EventB> assignments = []
@@ -117,8 +129,7 @@ class Procedure extends AbstractModifier {
 		if (impl.getMachine().getChildrenOfType(Block.class).isEmpty()) {
 			throw new IllegalArgumentException("the implementation of a procedure must define an algorithm")
 		}
-		def sees = new ModelElementList<Context>([contextM.getContext()])
-		def mm = impl.setRefines(absM.getMachine()).setSees(sees)
+		def mm = impl.setRefines(absM.getMachine())
 		return new Procedure(this.name, typeEnvironment, arguments, results, contextM, absM, mm, eventM, precondition, postcondition)
 	}
 
