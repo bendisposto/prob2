@@ -155,7 +155,7 @@ class FormulaUtilTest extends Specification {
 	def "conjuncts to assignments"() {
 		when:
 		def f = new EventB("res = x / y & rem = x mod y")
-		def formula = fuu.conjunctToAssignments(f, ["res", "rem"] as Set, ["x", "y"] as Set)
+		def formula = fuu.conjunctToAssignments(f, ["x", "y"] as Set, ["res", "rem"] as Set)
 
 		then:
 		formula[0].getCode() == "res := x / y"
@@ -169,5 +169,17 @@ class FormulaUtilTest extends Specification {
 
 		then:
 		println formula
+	}
+
+	def "apply assignments"() {
+		when:
+		def f1 = fuu.applyAssignment(new EventB("p + (x0*y0) = x*y"),  new EventB("y0 := y0*2"))
+		def f2 = fuu.applyAssignment(f1, new EventB("x0 := x0 / 2"))
+		def f3 = fuu.applyAssignment(f2, new EventB("p := p + y0"))
+
+		then:
+		f1.getCode() == "p+x0*(y0*2)=x*y"
+		f2.getCode() == "p+x0 / 2*(y0*2)=x*y"
+		f3.getCode() == "(p+y0)+x0 / 2*(y0*2)=x*y"
 	}
 }

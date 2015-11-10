@@ -21,17 +21,28 @@ mm = new ModelModifier().make {
 			var "x0", "x0 : NAT", "x0 := x"
 			var "y0", "y0 : NAT", "y0 := y"
 			var "p", "p : NAT", "p := 0"
+			theorem "x0 mod 2 /= 0 => x0 / 2 * 2 = x0 - 1"
+			theorem "x0 / 2*y0*2 = x0 / 2*2*y0"
+			theorem "x mod 2 /= 0 => x / 2 * 2 = x - 1"
+			theorem "x / 2*y*2 = x / 2*2*y"
 			algorithm {
+				//Assert("x0 > 0 & x0 mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)")
+				//Assert("x0 > 0 & not(x0 mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)")
 				While("x0 > 0", invariant: "p + (x0*y0) = x*y") {
+					//Assert("x0 mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)")
+					//Assert("not(x0 mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)")
 					If("x0 mod 2 /= 0") {
 						Then {
-							Assume("x0 / 2 * 2 = x0 - 1")
-							Assign("x0 := x0 / 2", "y0 := y0 * 2", "p := p + y0")
+					//		Assert("(p+y0)+x0 / 2*(y0*2)=x*y")
+							Assign("p := p + y0")
 						}
-						Else("x0 := x0 / 2", "y0 := y0 * 2")
 					}
+				//Assert("p+x0 / 2*(y0*2)=x*y")
+					Assign("x0 := x0 / 2")
+					//Assert("p+x0*(y0*2)=x*y")
+					Assign("y0 := y0 * 2")
 				}
-				Assert("p = x * y")
+				//Assert("x0 = 0 & p = x * y")
 				Return("p")
 			}
 		}
@@ -85,7 +96,7 @@ mm = new ModelModifier().make {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions()).run()
 
 mtx = new ModelToXML()
 d = mtx.writeToRodin(m, "MultWithProcedures", "/tmp")

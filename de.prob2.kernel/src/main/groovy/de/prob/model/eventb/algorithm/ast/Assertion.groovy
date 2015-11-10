@@ -13,6 +13,11 @@ class Assertion extends Statement implements IProperty {
 		this.assertion = parsePredicate(assertion)
 	}
 
+	def Assertion(EventB assertion) {
+		super(assertion.getTypes())
+		this.assertion = assertion
+	}
+
 	def String toString() {
 		"assert ${assertion.toUnicode()}"
 	}

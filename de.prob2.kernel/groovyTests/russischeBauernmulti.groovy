@@ -23,9 +23,9 @@ mm = new ModelModifier().make {
 				If("x0 mod 2 /= 0") {
 					Then {
 						Assume("x0 / 2 * 2 = x0 - 1")
-						Assign("x0 := x0 / 2", "y0 := y0 * 2", "product := product + y0")
+						Assign("x0,y0,product := x0 / 2, y0 * 2, product + y0")
 					}
-					Else("x0 := x0 / 2", "y0 := y0 * 2")
+					Else("x0,y0 := x0 / 2, y0 * 2")
 				}
 			}
 			Assert("product = x * y")

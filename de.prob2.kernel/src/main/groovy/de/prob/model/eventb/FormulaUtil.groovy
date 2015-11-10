@@ -1,8 +1,10 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.Assignment
 import org.eventb.core.ast.Expression
 import org.eventb.core.ast.FormulaFactory
 import org.eventb.core.ast.FreeIdentifier
+import org.eventb.core.ast.Predicate
 
 import de.be4.classicalb.core.parser.node.AAssignSubstitution
 import de.be4.classicalb.core.parser.node.ABecomesElementOfSubstitution
@@ -13,7 +15,6 @@ import de.be4.classicalb.core.parser.node.AIdentifierExpression
 import de.be4.classicalb.core.parser.node.Node
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.IdentifierExtractor
 
 class FormulaUtil {
 
@@ -187,7 +188,7 @@ class FormulaUtil {
 			}
 			def identifier = lhs.getIdentifier().get(0).getText()
 			if (!(output.contains(identifier))) {
-				throw new IllegalArgumentException("output must contain the identifiers that are defined on the left hand side")
+				throw new IllegalArgumentException("output ($output) must contain the identifiers ($identifier) that are defined on the left hand side")
 			}
 			def rf = getRodinFormula(new EventB(split2[1], formula.getTypes()))
 			rf.getFreeIdentifiers().each { id ->
@@ -211,5 +212,11 @@ class FormulaUtil {
 		}
 		EventB substituted = substitute(predicate, subMap)
 		new EventB(lhsIdentifiers.iterator().join(",") + " :| "+substituted.getCode(), predicate.getTypes())
+	}
+
+	def EventB applyAssignment(EventB predicate, EventB assignment) {
+		Predicate p = getRodinFormula(predicate)
+		Assignment a = getRodinFormula(assignment)
+		new EventB(p.applyAssignment(a).toString(), predicate.getTypes())
 	}
 }
