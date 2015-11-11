@@ -53,9 +53,6 @@ class AlgorithmTranslator {
 
 	def Block runASTTransformations(Block block, ModelElementList<Procedure> procedures) {
 		def transformers = [new DeadCodeRemover()]
-		if (options.isPropagateAssertions()) {
-			transformers << new AssertionPropagator(procedures)
-		}
 		transformers.inject(block) { Block b, IAlgorithmASTTransformer t ->
 			t.transform(b)
 		}

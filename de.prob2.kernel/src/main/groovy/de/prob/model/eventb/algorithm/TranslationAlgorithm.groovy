@@ -33,12 +33,14 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 	final Set<Statement> generated = [] as Set
 	Procedure procedure
 	Map<Statement, Integer> pcInformation
+	final AlgorithmGenerationOptions options
 	final String pcname
 	boolean optimized
 
 	def TranslationAlgorithm(AlgorithmGenerationOptions options, ModelElementList<Procedure> procedures, String pcname="pc") {
 		this.transformer = new GraphTransformer(options)
 		this.optimized = options.getOptions().contains(Options.optimize)
+		this.options = options
 		this.procedures = procedures
 		this.pcname = pcname
 	}
@@ -67,7 +69,7 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(algorithm, procedures).prettyPrint())
 		if (graph.entryNode) {
 			machineM = machineM.var_block("$pcname", "$pcname : NAT", "$pcname := 0")
-			machineM = new AssertionTranslator(machineM, graph, pcInformation, optimized, pcname).getMachineM()
+			machineM = new AssertionTranslator(machineM, procedures, graph, pcInformation, options, pcname).getMachineM()
 			machineM =  addNode(machineM, graph.entryNode)
 		}
 		return machineM;

@@ -15,6 +15,6 @@ class Return extends Statement implements IAssignment {
 
 	@Override
 	public String toString() {
-		return "return "+returnVals.collect { it.getCode() }.join(",")
+		return "return "+returnVals.collect { it.getCode() }.iterator().join(",")
 	}
 }

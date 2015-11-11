@@ -1,6 +1,7 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
-import de.be4.classicalb.core.parser.node.ABecomesSuchSubstitution;
+import de.be4.classicalb.core.parser.node.ABecomesElementOfSubstitution
+import de.be4.classicalb.core.parser.node.ABecomesSuchSubstitution
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.FormulaUtil
 import de.prob.model.eventb.algorithm.Procedure
@@ -11,12 +12,13 @@ import de.prob.model.eventb.algorithm.ast.Call
 import de.prob.model.eventb.algorithm.ast.IProperty
 import de.prob.model.eventb.algorithm.ast.If
 import de.prob.model.eventb.algorithm.ast.Return
+import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
 import de.prob.model.representation.ModelElementList
 import de.prob.util.Tuple2
 
-class AssertionPropagator implements IAlgorithmASTTransformer {
+class AssertionPropagator  {
 
 	def FormulaUtil fuu
 	def Map<Statement, List<Tuple2<List<EventB>, EventB>>> assertionMap = [:]
@@ -27,78 +29,65 @@ class AssertionPropagator implements IAlgorithmASTTransformer {
 		this.procedures = procedures
 	}
 
-	@Override
-	public Block transform(Block algorithm) {
-		transformBlock(algorithm, [])
+	public traverse(Block algorithm) {
+		traverseBlock(algorithm, [])
 	}
 
-	public Block transformBlock(Block b, List<Tuple2<List<EventB>,EventB>> toPropagate) {
-		if (b.statements.isEmpty()) {
-			return b
+	public traverseBlock(Block b, List<Tuple2<List<EventB>,EventB>> toPropagate) {
+		if (!b.statements.isEmpty()) {
+			List<Statement> stmts = []
+			stmts.addAll(b.statements)
+			Collections.reverse(stmts)
+			traverse(stmts.first(), toPropagate, stmts.tail())
 		}
-		List<Statement> stmts = []
-		stmts.addAll(b.statements)
-		Collections.reverse(stmts)
-		stmts = transform(stmts.first(), toPropagate, stmts.tail())
-		Collections.reverse(stmts)
-		return new Block(stmts, b.typeEnvironment)
 	}
 
-	public List<Statement> transform(Assignment a, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
-		if (a.assignment.getAst() instanceof ABecomesSuchSubstitution) {
-			return recurAndCache(a, [], rest) // nothing can be propagated up
-		}
-
-		def newPreds = toAssertions(toPropagate).collect {
-			new Tuple2<List<EventB>, EventB>([], fuu.applyAssignment(it.getAssertion(), a.assignment))
-		}
-		recurAndCache(a, newPreds, rest)
+	public traverse(Assignment a, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
+		recurAndCache(a, applyAssignment(toPropagate, a.assignment), rest)
 	}
 
-	public List<Statement> transform(Return a, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
-		if (toPropagate) {
-			throw new IllegalArgumentException("Cannot propagate assertions over a return statement")
-		}
-		normalRecur(a, toPropagate, rest)
+	public traverse(Skip a, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
+		recurAndCache(a, toPropagate, rest)
 	}
 
-	public List<Statement> transform(Call a, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
+	public traverse(Return a, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
+		normalRecur(a, [], rest) // cannot propagate assertions up
+	}
+
+	public traverse(Call a, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
 		Procedure p = procedures.getElement(a.getName())
 		Map<String,EventB> subs = a.getSubstitutions(p)
 		List<EventB> assignments = fuu.predicateToAssignments(p.postcondition, p.arguments as Set, p.results as Set).collect {
 			fuu.substitute(it, subs)
 		}
-		if (assignments.size() == 1 && assignments[0].getAst() instanceof ABecomesSuchSubstitution) {
-			return recurAndCache(a, [], rest) // nothing can be propagated up
-		}
-
-		def newPreds = toAssertions(toPropagate).collect {
-			new Tuple2<List<EventB>, EventB>([], fuu.applyAssignments(it.getAssertion(), assignments))
+		def newPreds = assignments.inject(toPropagate) { props, EventB assignment ->
+			applyAssignment(props, assignment)
 		}
 		recurAndCache(a, newPreds, rest)
 	}
 
-	public List<Statement> transform(Assertion a, List<Tuple2<List<EventB>, EventB>> toPropagate, List<Statement> rest) {
+	public traverse(Assertion a, List<Tuple2<List<EventB>, EventB>> toPropagate, List<Statement> rest) {
 		normalRecur(a, toPropagate, rest)
 	}
 
-	public List<Statement> transform(While w, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
-		While newWhile = w.updateBlock(transformBlock(w.block, copyAndAdd([], w.invariant)))
+	public traverse(While w, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
+		traverseBlock(w.block, copyAndAdd([], w.invariant))
 
-		List<Tuple2<List<EventB>,EventB>> prop = toPropagate.inject([]) { acc, Tuple2<List<EventB>,EventB> f ->
-			def l = [newWhile.notCondition]
+		List<Tuple2<List<EventB>,EventB>> prop = getAssertionsForHead(w.block.statements, w.condition, [])
+		prop = toPropagate.inject(prop) { acc, Tuple2<List<EventB>,EventB> f ->
+			def l = [w.notCondition]
 			l.addAll(f.getFirst())
 			acc << new Tuple2<List<EventB>, EventB>(l, f.getSecond())
 		}
-		prop.addAll(getAssertionsForHead(newWhile.block.statements, newWhile.condition, []))
-		recurAndCache(newWhile, prop, rest)
+		recurAndCache(w, prop, rest)
 	}
 
-	public List<Statement> transform(If i, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
-		If newIf = i.newIf(transformBlock(i.Then, copyAndAdd(toPropagate)), transformBlock(i.Else, copyAndAdd(toPropagate)))
-		List<Tuple2<List<EventB>,EventB>> prop = getAssertionsForHead(newIf.Else.statements, newIf.elseCondition, toPropagate)
-		prop.addAll(getAssertionsForHead(newIf.Then.statements, newIf.condition, toPropagate))
-		recurAndCache(newIf, prop, rest)
+	public traverse(If i, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
+		traverseBlock(i.Then, copyAndAdd(toPropagate))
+		traverseBlock(i.Else, copyAndAdd(toPropagate))
+		List<Tuple2<List<EventB>,EventB>> prop = getAssertionsForHead(i.Then.statements, i.condition, toPropagate)
+		prop.addAll(getAssertionsForHead(i.Else.statements, i.elseCondition, toPropagate))
+		recurAndCache(i, prop, rest)
 	}
 
 	public List<Tuple2<List<EventB>,EventB>> copyAndAdd(List<Tuple2<List<EventB>,EventB>> list, EventB... newF) {
@@ -134,32 +123,29 @@ class AssertionPropagator implements IAlgorithmASTTransformer {
 		}
 	}
 
-	private List<Assertion> toAssertions(List<Tuple2<List<EventB>, EventB>> assertions) {
-		assertions.collect { Tuple2<List<EventB>, EventB> tuple ->
-			if (tuple.getFirst().isEmpty()) {
-				return new Assertion(tuple.getSecond())
+	private List<Tuple2<List<EventB>, EventB>> applyAssignment(List<Tuple2<List<EventB>, EventB>> preds, EventB assignment) {
+		if (assignment.getAst() instanceof ABecomesSuchSubstitution ||
+		assignment.getAst() instanceof ABecomesElementOfSubstitution) {
+			return [] // nothing can be propagated up
+		}
+		preds.collect { Tuple2<List<EventB>, EventB> pred ->
+			def conditions = pred.getFirst().collect {
+				fuu.applyAssignment(pred, assignment)
 			}
-			String lhs = tuple.getFirst().collect { it.getCode() }.iterator().join(" & ")
-			EventB pred = new EventB(lhs + " => ("+tuple.getSecond().getCode()+")", tuple.getSecond().getTypes())
-			new Assertion(pred)
+			new Tuple2<List<EventB>, EventB>(conditions, fuu.applyAssignment(pred.getSecond(), assignment))
 		}
 	}
 
-	private List<Statement> recurAndCache(Statement s, List<Tuple2<List<EventB>,EventB>> assertions, List<Statement> rest) {
-		def stmts = [s]
-		stmts.addAll(toAssertions(assertions))
+	private recurAndCache(Statement s, List<Tuple2<List<EventB>,EventB>> assertions, List<Statement> rest) {
 		assertionMap[s] = assertions
 		if (rest) {
-			stmts.addAll(transform(rest.first(), assertions, rest.tail()))
+			traverse(rest.first(), assertions, rest.tail())
 		}
-		stmts
 	}
 
 	private List<Statement> normalRecur(Statement s, List<Tuple2<List<EventB>,EventB>> assertions, List<Statement> rest) {
-		def stmts = [s]
 		if (rest) {
-			stmts.addAll(transform(rest.first(), assertions, rest.tail()))
+			traverse(rest.first(), assertions, rest.tail())
 		}
-		stmts
 	}
 }
