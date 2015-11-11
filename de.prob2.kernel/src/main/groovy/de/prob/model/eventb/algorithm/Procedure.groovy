@@ -39,8 +39,7 @@ class Procedure extends AbstractModifier {
 		this.results = new ModelElementList<String>()
 		def ctxM = new ContextModifier(new Context(name+CONTEXT_SUFFIX), typeEnvironment)
 		this.contextM = seen ? ctxM.setExtends(seen) : ctxM
-		def ctxL = seen ? [seen, contextM.getContext()]: [contextM.getContext()]
-		def sees = new ModelElementList<Context>(ctxL)
+		def sees = new ModelElementList<Context>([contextM.getContext()])
 		this.absM = new MachineModifier(new EventBMachine(name+ABSTRACT_SUFFIX), typeEnvironment).setSees(sees).var("apc", [grd_apc: "apc : NAT"], [act_apc: "apc := 0"])
 		this.concreteM = new MachineModifier(new EventBMachine(name+IMPL_SUFFIX), typeEnvironment).setSees(sees).setRefines(absM.getMachine())
 		this.eventM = new EventModifier(new Event(name, EventType.ORDINARY, false), false, typeEnvironment).guard("grd_apc", "apc = 0").action("act_apc", "apc := 1")
@@ -69,7 +68,7 @@ class Procedure extends AbstractModifier {
 
 	def Procedure argument(final String name, final String type) {
 		ContextModifier cm = contextM.constant(name).axiom("typing_$name", "$name : $type")
-		def sees = new ModelElementList<Context>([contextM.getContext()]).addMultiple(contextM.getContext().getExtends())
+		def sees = new ModelElementList<Context>([contextM.getContext()])
 		def abstractM = absM.setSees(sees)
 		def concM = concreteM.setSees(sees)
 		return new Procedure(this.name, typeEnvironment, arguments.addElement(name), results, cm, abstractM, concM, eventM, precondition, postcondition)
@@ -96,7 +95,7 @@ class Procedure extends AbstractModifier {
 		EventB pre = parsePredicate(precondition)
 		def em = eventM.guard("precondition", pre)
 		def ctxM = contextM.axiom("precondition", precondition)
-		def sees = new ModelElementList<Context>([contextM.getContext()]).addMultiple(contextM.getContext().getExtends())
+		def sees = new ModelElementList<Context>([contextM.getContext()])
 		def abstractM = absM.setSees(sees)
 		def concM = concreteM.setSees(sees)
 		return new Procedure(this.name, typeEnvironment, arguments, results, ctxM, abstractM, concM, em, pre, postcondition)

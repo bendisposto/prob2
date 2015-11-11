@@ -15,6 +15,7 @@ import de.be4.classicalb.core.parser.node.AIdentifierExpression
 import de.be4.classicalb.core.parser.node.Node
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.EventB
+import de.prob.unicode.UnicodeTranslator
 
 class FormulaUtil {
 
@@ -93,7 +94,11 @@ class FormulaUtil {
 		}
 		def newMapping = identifierMapping + primed
 
-		def sub = substitute(new EventB(split[0], formula.getTypes()), newMapping).getCode()+":|"+substitute(new EventB(split[1], formula.getTypes()), newMapping).getCode()
+		def lhs = split[0].trim().split(",").collect {
+			newMapping[it.trim()]
+		}.iterator().join(",")
+
+		def sub = lhs+":|"+substitute(new EventB(split[1], formula.getTypes()), newMapping).getCode()
 		new EventB(sub)
 	}
 
@@ -177,10 +182,11 @@ class FormulaUtil {
 		}
 		List<EventB> split = formula.getCode().split("&").collect { new EventB(it.trim(), formula.getTypes()) }
 		split.collect { EventB f ->
+			def rodinF = getRodinFormula(f)
 			if (!(f.getAst() instanceof AEqualPredicate)) {
 				throw new IllegalArgumentException("Expected predicate to be conjunct of equivalences.")
 			}
-			def split2 = f.getCode().split("=")
+			def split2 = f.toUnicode().split(UnicodeTranslator.toUnicode("="))
 			assert split2.length == 2
 			def lhs = new EventB(split2[0], formula.getTypes()).getAst()
 			if (!(lhs instanceof AIdentifierExpression)) {
@@ -202,7 +208,7 @@ class FormulaUtil {
 		}
 	}
 
-	def EventB predicateToBecomeSuchThat(EventB predicate, List<String> lhsIdentifiers) {
+	def EventB predicateToBecomeSuchThat(EventB predicate, Set<String> lhsIdentifiers) {
 		if (predicate.getKind() != EvalElementType.PREDICATE.toString()) {
 			throw new IllegalArgumentException("expected $predicate to be a predicate" )
 		}
