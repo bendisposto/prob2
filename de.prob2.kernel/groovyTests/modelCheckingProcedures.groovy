@@ -22,9 +22,38 @@ mm = new ModelModifier().make {
 				"root : STATES"
 	}
 	
-	context(name: "c3_ModelCheckResults") {
+	context(name: "c3_ModelCheckResults", extends: "c2_StateSpace") {
 		enumerated_set name: "MCResult",
 			constants: ["mc_ok","counter_example", "deadlock"] 
+	}
+	
+	context(name: "c4_AnimationStateSpace", extends: "c3_ModelCheckResults") {
+		(0..5).each {
+			constant "s${it}"
+		}
+		axiom "partition(STATES,{root},"+(0..5).collect { "{s${it}}"}.iterator().join(",") +")"
+	   	(0..4).each {
+			constant "i${it}"
+		}
+		axiom "partition(INVARIANTS,"+(0..4).collect { "{i${it}}" }.iterator().join(",")+")"
+	}
+
+	context(name: "c5_CorrectStateSpace", extends: "c4_AnimationStateSpace") {
+		axiom "truth = STATES ** INVARIANTS"
+		axiom "transitions = {root|->s0,"+
+		        (0..4).collect { "s${it}|->s${it+1},s${it+1}|->s${it}" }.iterator().join(",") + "}"
+	}
+	
+	context(name: "c6_InvKOStateSpace", extends: "c4_AnimationStateSpace") {
+		axiom "truth = (STATES ** INVARIANTS) \\ {s4|->i3}"
+		axiom "transitions = {root|->s0,"+
+				(0..4).collect { "s${it}|->s${it+1},s${it+1}|->s${it}" }.iterator().join(",") + "}"
+	}
+	
+	context(name: "c7_DeadlockStateSpace", extends: "c4_AnimationStateSpace") {
+		axiom "truth = STATES ** INVARIANTS"
+		axiom "transitions = {root|->s0,"+
+				(0..4).collect { "s${it}|->s${it+1}" }.iterator().join(",") + "}"
 	}
 	
 	procedure(name: "dequeue", seen: "c1_ModelElements") {
@@ -32,7 +61,7 @@ mm = new ModelModifier().make {
 		result "newQueue", "POW(STATES)"
 		result "element", "STATES"
 		
-		precondition "queue /= {}"
+		precondition "queue /= {} & (#z.z : queue)"
 		postcondition "element : queue & newQueue = queue \\ {element}"
 		
 		implementation {
@@ -88,34 +117,6 @@ mm = new ModelModifier().make {
 		}
 	}
 	
-	procedure(name: "take_element", "seen": "c2_StateSpace") {
-		argument "trans", "STATES <-> STATES"
-		result "from", "STATES"
-		result "to", "STATES"
-		result "tail", "STATES <-> STATES"
-		
-		precondition "trans /= {}"
-		postcondition "from|->to : trans & tail = trans \\ {from|->to}"
-		
-		implementation {
-			var "res", "res : STATES <-> STATES", "res := trans"
-			var "e", "e : STATES ** STATES", "e :: STATES ** STATES"
-			var "f", "f : STATES", "f :: STATES"
-			var "t", "t : STATES", "t :: STATES"
-			algorithm {
-				Assert("trans /= {}")
-				Assert("res = trans")
-				Assign("e :: res")
-				Assert("e : res & res = trans")
-				Assign("f,t :| f'|->t'=e")
-				Assert("e : res & f|->t = e & res = trans")
-				Assign("res := res \\ {e}")
-				Assert("f|->t = e & f|->t : trans & res = trans \\ {e}")
-				Return("f","t","res")
-			}
-		}
-	}
-	
 	procedure(name: "successors", seen: "c2_StateSpace") {
 		argument "s", "STATES"
 		result "successors", "POW(STATES)"
@@ -125,14 +126,13 @@ mm = new ModelModifier().make {
 		
 		implementation {
 			var "succs", "succs : POW(STATES)", "succs := {}"
-			var "notsuccs", "succs : POW(STATES)", "notsuccs := {}"
-			var "trans", "trans <: transitions", "trans := transitions"
-			var "from", "from : STATES", "from :: STATES"
+			var "notsuccs", "notsuccs : POW(STATES)", "notsuccs := {}"
+			var "unchecked", "unchecked <: ran(transitions)", "unchecked := ran(transitions)"
 			var "to", "to : STATES", "to :: STATES"
 			algorithm {
-				While("trans /= {}", invariant: "succs <: {t | s|->t : transitions}") {
-					Call("take_element",["trans"],["from","to","trans"])
-					If ("from = s") {
+				While("unchecked /= {}", invariant: "succs <: {t | s|->t : transitions} & notsuccs <: {t | s|->t /: transitions} & succs \\/ notsuccs \\/ unchecked = ran(transitions)") {
+					Call("dequeue",["unchecked"],["unchecked","to"])
+					If ("s |-> to : transitions") {
 						Then {
 							Assign("succs := succs \\/ {to}")
 						}
@@ -143,6 +143,64 @@ mm = new ModelModifier().make {
 				}
 				Return("succs")
 			}
+		}
+	}
+	
+	procedure(name: "model_check", seen: "c5_CorrectStateSpace") {
+		result "result", "MCResult"
+		result "state", "STATES"
+		
+		precondition "TRUE=TRUE"
+		postcondition "(result = mc_ok => state = root) &"+
+					  "(result = counter_example => (#i.i : INVARIANTS & state|->i /: truth)) &"+
+					  "(result = deadlock => {t | state|->t : transitions} = {})"
+		
+		implementation {
+			var "queue", "queue : POW(STATES)", "queue := {root}"
+			var "known", "known : POW(STATES)", "known := {root}"
+			var "s", "s : STATES", "s :: STATES"
+			var "invok", "invok : BOOL", "invok := TRUE"
+			var "res", "res : MCResult", "res :: MCResult"
+			var "succs", "succs : POW(STATES)", "succs := {}"
+			algorithm {
+				While("queue /= {}") {
+					Call("dequeue",["queue"],["queue","s"])
+					Call("check_inv",["s"],["invok"])
+					If ("invok = FALSE") {
+						Then {
+							Assert("#i.i : INVARIANTS & s|->i /: truth")
+							Assign("res := counter_example")
+							Assert("#i.i : INVARIANTS & s|->i /: truth")
+							Assert("res = counter_example")
+							Return("res", "s")
+						}
+					}
+					Call("successors", ["s"], ["succs"])
+					If ("succs = {}") {
+						Then {
+							Assert("{t | s|->t : transitions} = {}")
+							Assign("res := deadlock")
+							Assert("res = deadlock")
+							Assert("{t | s|->t : transitions} = {}")
+							Return("res", "s")
+						}
+					}
+					While("succs /= {}") {
+						Call("dequeue", ["succs"], ["succs","s"])
+						If ("s /: known") {
+							Then {
+								Assign("queue := queue \\/ {s}")
+								Assign("known := known \\/ {s}")
+							}
+						}
+					}
+				}
+				Assign("res := mc_ok")
+				Assert("res = mc_ok")
+				Assign("s := root")
+				Assert("res = mc_ok & s = root")
+				Return("res","s")
+			} 
 		}
 	}
 }

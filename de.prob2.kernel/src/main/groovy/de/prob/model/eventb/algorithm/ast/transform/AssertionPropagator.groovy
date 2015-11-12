@@ -130,7 +130,7 @@ class AssertionPropagator  {
 		}
 		preds.collect { Tuple2<List<EventB>, EventB> pred ->
 			def conditions = pred.getFirst().collect {
-				fuu.applyAssignment(pred, assignment)
+				fuu.applyAssignment(it, assignment)
 			}
 			new Tuple2<List<EventB>, EventB>(conditions, fuu.applyAssignment(pred.getSecond(), assignment))
 		}

@@ -14,6 +14,7 @@ import de.be4.classicalb.core.parser.node.AEqualPredicate
 import de.be4.classicalb.core.parser.node.AIdentifierExpression
 import de.be4.classicalb.core.parser.node.Node
 import de.prob.animator.domainobjects.EvalElementType
+import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.EventB
 import de.prob.unicode.UnicodeTranslator
 
@@ -180,31 +181,35 @@ class FormulaUtil {
 		if (!(formula.getAst() instanceof AConjunctPredicate || formula.getAst() instanceof AEqualPredicate)) {
 			throw new IllegalArgumentException("Expected conjunct predicate.")
 		}
-		List<EventB> split = formula.getCode().split("&").collect { new EventB(it.trim(), formula.getTypes()) }
-		split.collect { EventB f ->
-			def rodinF = getRodinFormula(f)
-			if (!(f.getAst() instanceof AEqualPredicate)) {
-				throw new IllegalArgumentException("Expected predicate to be conjunct of equivalences.")
-			}
-			def split2 = f.toUnicode().split(UnicodeTranslator.toUnicode("="))
-			assert split2.length == 2
-			def lhs = new EventB(split2[0], formula.getTypes()).getAst()
-			if (!(lhs instanceof AIdentifierExpression)) {
-				throw new IllegalArgumentException("Left hand side must be a single identifier")
-			}
-			def identifier = lhs.getIdentifier().get(0).getText()
-			if (!(output.contains(identifier))) {
-				throw new IllegalArgumentException("output ($output) must contain the identifiers ($identifier) that are defined on the left hand side")
-			}
-			def rf = getRodinFormula(new EventB(split2[1], formula.getTypes()))
-			rf.getFreeIdentifiers().each { id ->
-				if (!input.contains(id.getName())) {
-					throw new IllegalArgumentException("$id is not defined as an input element")
+		try {
+			List<EventB> split = formula.getCode().split("&").collect { new EventB(it.trim(), formula.getTypes()) }
+			split.collect { EventB f ->
+				def rodinF = getRodinFormula(f)
+				if (!(f.getAst() instanceof AEqualPredicate)) {
+					throw new IllegalArgumentException("Expected predicate to be conjunct of equivalences.")
 				}
+				def split2 = f.toUnicode().split(UnicodeTranslator.toUnicode("="))
+				assert split2.length == 2
+				def lhs = new EventB(split2[0], formula.getTypes()).getAst()
+				if (!(lhs instanceof AIdentifierExpression)) {
+					throw new IllegalArgumentException("Left hand side must be a single identifier")
+				}
+				def identifier = lhs.getIdentifier().get(0).getText()
+				if (!(output.contains(identifier))) {
+					throw new IllegalArgumentException("output ($output) must contain the identifiers ($identifier) that are defined on the left hand side")
+				}
+				def rf = getRodinFormula(new EventB(split2[1], formula.getTypes()))
+				rf.getFreeIdentifiers().each { id ->
+					if (!input.contains(id.getName())) {
+						throw new IllegalArgumentException("$id is not defined as an input element")
+					}
+				}
+				[identifier, split2[1]]
+			}.collect { l ->
+				new EventB("${l[0]} := ${l[1]}", formula.getTypes())
 			}
-			[identifier, split2[1]]
-		}.collect { l ->
-			new EventB("${l[0]} := ${l[1]}", formula.getTypes())
+		} catch(EvaluationException e) {
+			throw new IllegalArgumentException("Transformation was unsuccessful")
 		}
 	}
 
