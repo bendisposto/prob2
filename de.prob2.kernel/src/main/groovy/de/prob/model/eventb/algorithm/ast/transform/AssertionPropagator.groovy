@@ -67,7 +67,7 @@ class AssertionPropagator  {
 	}
 
 	public traverse(Assertion a, List<Tuple2<List<EventB>, EventB>> toPropagate, List<Statement> rest) {
-		normalRecur(a, toPropagate, rest)
+		normalRecur(a, copyAndAdd(toPropagate, a.assertion), rest)
 	}
 
 	public traverse(While w, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
@@ -79,7 +79,8 @@ class AssertionPropagator  {
 			l.addAll(f.getFirst())
 			acc << new Tuple2<List<EventB>, EventB>(l, f.getSecond())
 		}
-		recurAndCache(w, prop, rest)
+		assertionMap[w] = prop
+		normalRecur(w, [], rest)
 	}
 
 	public traverse(If i, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
