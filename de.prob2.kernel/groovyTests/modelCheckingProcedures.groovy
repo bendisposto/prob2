@@ -70,9 +70,7 @@ mm = new ModelModifier().make {
 			invariant "q <: queue"
 			algorithm {
 				Assert("q /= {} & q = queue")
-				//Assert("q = queue")
 				Assign("e :: q")
-				//Assert("e : queue & q = queue")
 				Assign("q := q \\ {e}")
 				Assert("e : queue & q = queue \\ {e}")
 				Return("q", "e")
@@ -99,18 +97,14 @@ mm = new ModelModifier().make {
 					If ("not(s|->i:truth)") {
 						Then {
 							Assign("r := FALSE")
-							//Assert("r = FALSE")
 							Assert("r = FALSE & not(s|->i:truth)")
 							Return("r")
 						}
 					}
-					//Assert("s|->i:truth")
 					Assign("checked := checked \\/ {i}")
 					Assign("invs := invs \\ {i}")
 				}
-				//Assert("checked = INVARIANTS")
 				Assign("r := TRUE")
-				//Assert("r = TRUE")
 				Assert("r = TRUE & checked = INVARIANTS & (!iv.iv : INVARIANTS => s|->iv:truth)")
 				Return("r")
 			}
@@ -168,9 +162,7 @@ mm = new ModelModifier().make {
 					Call("check_inv",["s"],["invok"])
 					If ("invok = FALSE") {
 						Then {
-							//Assert("#i.i : INVARIANTS & s|->i /: truth")
 							Assign("res := counter_example")
-							//Assert("#i.i : INVARIANTS & s|->i /: truth")
 							Assert("res = counter_example & (#i.i : INVARIANTS & s|->i /: truth)")
 							Return("res", "s")
 						}
@@ -178,9 +170,7 @@ mm = new ModelModifier().make {
 					Call("successors", ["s"], ["succs"])
 					If ("succs = {}") {
 						Then {
-							//Assert("{t | s|->t : transitions} = {}")
 							Assign("res := deadlock")
-							//Assert("res = deadlock")
 							Assert("res = deadlock & {t | s|->t : transitions} = {}")
 							Return("res", "s")
 						}
@@ -196,7 +186,6 @@ mm = new ModelModifier().make {
 					}
 				}
 				Assign("res := mc_ok")
-				//Assert("res = mc_ok")
 				Assign("s := root")
 				Assert("res = mc_ok & s = root")
 				Return("res","s")
