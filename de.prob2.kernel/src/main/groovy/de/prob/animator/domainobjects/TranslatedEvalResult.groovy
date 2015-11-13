@@ -44,4 +44,15 @@ public class TranslatedEvalResult extends AbstractEvalResult {
 	def String toString() {
 		return value.toString();
 	}
+	
+	def getValue() {
+		return value
+	}
+	
+	def getKeys() {
+		return solutions.keySet()
+	}
+	
+	
+	
 }
