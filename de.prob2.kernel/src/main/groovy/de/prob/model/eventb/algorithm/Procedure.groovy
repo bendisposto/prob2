@@ -122,7 +122,8 @@ class Procedure extends AbstractModifier {
 		if (impl.getMachine().getChildrenOfType(Block.class).isEmpty()) {
 			throw new IllegalArgumentException("the implementation of a procedure must define an algorithm")
 		}
-		def mm = impl.setRefines(absM.getMachine())
+		def sees = new ModelElementList<Context>([contextM.getContext()])
+		def mm = impl.setRefines(absM.getMachine()).setSees(sees)
 		return new Procedure(this.name, typeEnvironment, arguments, results, contextM, absM, mm, eventM, precondition, postcondition)
 	}
 
