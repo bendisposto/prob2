@@ -17,12 +17,11 @@ mm = new ModelModifier().make {
 		var_block name: "product", invariant: "product : NAT", init: "product := 0"
 		
 		invariants "x : NAT", "y : NAT"
-		
+		theorem "x0 / 2 * 2 = x0 - 1"
 		algorithm {
 			While("x0 > 0", invariant: "product + (x0*y0) = x*y") {
 				If("x0 mod 2 /= 0") {
 					Then {
-						Assume("x0 / 2 * 2 = x0 - 1")
 						Assign("x0,y0,product := x0 / 2, y0 * 2, product + y0")
 					}
 					Else("x0,y0 := x0 / 2, y0 * 2")

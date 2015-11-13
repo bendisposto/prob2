@@ -106,7 +106,7 @@ class AssertionPropagator  {
 		}
 		def head = stmts.first()
 		def tail = stmts.tail()
-		while (head instanceof IProperty) {
+		while (head instanceof Assertion) {
 			if (tail.isEmpty()) {
 				return addCondition(newCondition, defaultL)
 			}

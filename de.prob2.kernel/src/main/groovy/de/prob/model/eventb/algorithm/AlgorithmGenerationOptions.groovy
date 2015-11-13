@@ -7,7 +7,7 @@ import de.prob.check.ModelCheckingOptions.Options;
 
 public class AlgorithmGenerationOptions {
 	public static AlgorithmGenerationOptions DEFAULT = new AlgorithmGenerationOptions()
-	.mergeBranches(true).optimize(true)
+	.mergeBranches(true).optimize(true).propagateAssertions(true)
 	private final EnumSet<Options> options;
 
 	public enum Options {

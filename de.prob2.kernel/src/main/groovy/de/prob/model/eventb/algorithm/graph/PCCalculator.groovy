@@ -1,15 +1,14 @@
 package de.prob.model.eventb.algorithm.graph
 
-import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor;
-import de.prob.model.eventb.algorithm.ast.Assertion;
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Assumption;
-import de.prob.model.eventb.algorithm.ast.Call;
-import de.prob.model.eventb.algorithm.ast.If;
-import de.prob.model.eventb.algorithm.ast.Return;
-import de.prob.model.eventb.algorithm.ast.Skip;
-import de.prob.model.eventb.algorithm.ast.Statement;
-import de.prob.model.eventb.algorithm.ast.While;
+import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor
+import de.prob.model.eventb.algorithm.ast.Assertion
+import de.prob.model.eventb.algorithm.ast.Assignment
+import de.prob.model.eventb.algorithm.ast.Call
+import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Return
+import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.While
 
 
 class PCCalculator extends AlgorithmASTVisitor {
@@ -65,10 +64,6 @@ class PCCalculator extends AlgorithmASTVisitor {
 	}
 
 	def visit(Assertion s) {
-		// do nothing
-	}
-
-	def visit(Assumption a) {
 		// do nothing
 	}
 

@@ -11,7 +11,6 @@ abstract class AlgorithmASTVisitor {
 	public abstract visit(If i);
 	public abstract visit(Assignment a);
 	public abstract visit(Assertion a);
-	public abstract visit(Assumption a);
 	public abstract visit(Call a);
 	public abstract visit(Return a);
 	public abstract visit(Skip a);
@@ -32,10 +31,6 @@ abstract class AlgorithmASTVisitor {
 	}
 
 	public traverse(Assertion a) {
-		visit(a)
-	}
-
-	public traverse(Assumption a) {
 		visit(a)
 	}
 

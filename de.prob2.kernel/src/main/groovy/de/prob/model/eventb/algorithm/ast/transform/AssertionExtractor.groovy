@@ -1,8 +1,6 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
 import de.prob.model.eventb.algorithm.ast.Assertion
-import de.prob.model.eventb.algorithm.ast.Assumption
-import de.prob.model.eventb.algorithm.ast.IProperty
 import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 
@@ -12,9 +10,9 @@ import de.prob.model.eventb.algorithm.ast.Statement
  * @author joy
  *
  */
-class PropertyExtractor extends AlgorithmASTTransformer {
+class AssertionExtractor extends AlgorithmASTTransformer {
 
-	Map<Statement, Set<IProperty>> properties = [:]
+	Map<Statement, Set<Assertion>> properties = [:]
 
 	def addAssertions(Statement stmt, List<Assertion> stmts) {
 		if (properties[stmt] == null) {
@@ -29,15 +27,10 @@ class PropertyExtractor extends AlgorithmASTTransformer {
 		extractAssertions(a, rest)
 	}
 
-	@Override
-	def List<Statement> transform(Assumption a, List<Statement> rest) {
-		extractAssertions(a, rest)
-	}
-
-	def List<Statement> extractAssertions(IProperty t, List<Statement> stmts) {
-		List<IProperty> myproperties = [t]
+	def List<Statement> extractAssertions(Assertion t, List<Statement> stmts) {
+		List<Assertion> myproperties = [t]
 		List<Statement> statements = stmts
-		while (!statements.isEmpty() && statements.head() instanceof IProperty) {
+		while (!statements.isEmpty() && statements.head() instanceof Assertion) {
 			myproperties << statements.head()
 			statements = statements.tail()
 		}
@@ -47,7 +40,7 @@ class PropertyExtractor extends AlgorithmASTTransformer {
 			return myproperties + [h]
 		}
 		List<Statement> nextS = transform(statements.head(), statements.tail())
-		assert !nextS.isEmpty() && !(nextS.first() instanceof IProperty)
+		assert !nextS.isEmpty() && !(nextS.first() instanceof Assertion)
 		addAssertions(nextS.first(), myproperties)
 		myproperties + nextS
 	}

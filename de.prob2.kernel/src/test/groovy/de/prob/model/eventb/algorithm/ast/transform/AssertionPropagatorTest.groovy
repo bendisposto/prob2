@@ -2,20 +2,24 @@ package de.prob.model.eventb.algorithm.ast.transform
 
 import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.algorithm.Procedure
 import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.graph.NodeNaming
+import de.prob.model.representation.ModelElementList
 import de.prob.util.Tuple2
 
 class AssertionPropagatorTest extends Specification {
 
 	def block(Closure input) {
-		new AssertionPropagator().transform(new Block().make(input))
+		new Block().make(input)
 	}
 
 	def block(String assertion, Closure input) {
 		List<Tuple2<List<EventB>, EventB>> toPropagate = [
 			new Tuple2<List<EventB>, EventB>([], new EventB(assertion))
 		]
-		new AssertionPropagator().transformBlock(new Block().make(input), toPropagate)
+		new AssertionPropagator().traverseBlock(new Block().make(input), toPropagate)
 	}
 
 	def equal(Block input, Closure expected) {
@@ -23,20 +27,31 @@ class AssertionPropagatorTest extends Specification {
 		new ASTEquivalence().assertEqual(input, e)
 	}
 
+	def assertions(Block b) {
+		NodeNaming n = new NodeNaming(b)
+		AssertionPropagator ap = new AssertionPropagator(new ModelElementList<Procedure>())
+		ap.traverse(b)
+		ap.assertionMap.collectEntries { Statement stmt, List<Tuple2<List<EventB>,EventB>> v ->
+			def formulas = v.collect { Tuple2<List<EventB>,EventB> f ->
+				if (f.first.isEmpty()) {
+					return f.second.getCode()
+				}
+				return f.first.collect { it.getCode() }.iterator().join(" & ") + " => ("+f.second.getCode() + ")"
+			}
+			[n.getName(stmt), formulas]
+		}
+	}
+
 	def "one assignment"() {
 		when:
-		def b = block("b = 3 - y", {
+		def b = block({
 			Assign("b := 5")
 			Assign("y := x + 1")
+			Assert("b = 3 - y")
 		})
 
 		then:
-		equal(b, {
-			Assert("5=3 - (x+1)")
-			Assign("b := 5")
-			Assert("b=3 - (x+1)")
-			Assign("y := x + 1")
-		})
+		assertions(b) == [assign0: ["5=3 - (x+1)"], assign1: ["b=3 - (x+1)"]]
 	}
 
 	def "while loop for multiplication"() {
@@ -50,64 +65,59 @@ class AssertionPropagatorTest extends Specification {
 		})
 
 		then:
-		equal(b, {
-			Assert("x > 0 & x mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)")
-			Assert("x > 0 & not(x mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)")
-			While("x > 0", invariant: "p + x0*y0 = x*y") {
-				Assert("x mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)")
-				Assert("not(x mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)")
-				If("x mod 2 /= 0") {
-					Then {
-						Assert("(p+y0)+x0 / 2*(y0*2)=x*y")
-						Assign("p := p + y0")
-					}
-				}
-				Assert("p+x0 / 2*(y0*2)=x*y")
-				Assign("x0 := x0 / 2")
-				Assert("p+x0*(y0*2)=x*y")
-				Assign("y0 := y0 * 2")
-			}
-		})
+		assertions(b) == [while0: [
+				"x > 0 & x mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)",
+				"x > 0 & not(x mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)"
+			],
+			if0: [
+				"x mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)",
+				"not(x mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)"
+			],
+			assign0: ["(p+y0)+x0 / 2*(y0*2)=x*y"],
+			assign1: ["p+x0 / 2*(y0*2)=x*y"],
+			assign2: ["p+x0*(y0*2)=x*y"]]
 	}
+
 
 	def "while loop with extra predicate"() {
 		when:
-		def b = block("p : NAT & x0 : NAT & y0 : NAT", {
+		def b = block( {
 			While("x > 0", invariant: "p + (x0*y0) = x*y") {
 				If("x mod 2 /= 0") { Then("p := p + y0") }
 				Assign("x0 := x0 / 2")
 				Assign("y0 := y0 * 2")
+				Assert("p : NAT & x0 : NAT & y0 : NAT")
 			}
+			Assert("p : NAT & x0 : NAT & y0 : NAT")
 		})
 
 		then:
-		equal(b, {
-			Assert("x > 0 & x mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)")
-			Assert("x > 0 & x mod 2 /= 0 => (p+y0:NAT&x0 / 2:NAT&y0*2:NAT)")
-			Assert("x > 0 & not(x mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)")
-			Assert("x > 0 & not(x mod 2 /= 0) => (p:NAT&x0 / 2:NAT&y0*2:NAT)")
-			Assert("not(x > 0) => (p : NAT & x0 : NAT & y0 : NAT)")
-			While("x > 0", invariant: "p + x0*y0 = x*y") {
-				Assert("x mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)")
-				Assert("x mod 2 /= 0 => (p+y0:NAT&x0 / 2:NAT&y0*2:NAT)")
-				Assert("not(x mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)")
-				Assert("not(x mod 2 /= 0) => (p:NAT&x0 / 2:NAT&y0*2:NAT)")
-				If("x mod 2 /= 0") {
-					Then {
-						Assert("(p+y0)+x0 / 2*(y0*2)=x*y")
-						Assert("p+y0:NAT&x0 / 2:NAT&y0*2:NAT")
-						Assign("p := p + y0")
-					}
-				}
-				Assert("p+x0 / 2*(y0*2)=x*y")
-				Assert("p:NAT&x0 / 2:NAT&y0*2:NAT")
-				Assign("x0 := x0 / 2")
 
-				Assert("p+x0*(y0*2)=x*y")
-				Assert("p:NAT&x0:NAT&y0*2:NAT")
-				Assign("y0 := y0 * 2")
-			}
-		})
+		assertions(b) == [while0: [
+				"x > 0 & x mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)",
+				"x > 0 & x mod 2 /= 0 => (p+y0:NAT&x0 / 2:NAT&y0*2:NAT)",
+				"x > 0 & not(x mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)",
+				"x > 0 & not(x mod 2 /= 0) => (p:NAT&x0 / 2:NAT&y0*2:NAT)",
+				"not(x > 0) => (p : NAT & x0 : NAT & y0 : NAT)"
+			],
+			if0: [
+				"x mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)",
+				"x mod 2 /= 0 => (p+y0:NAT&x0 / 2:NAT&y0*2:NAT)",
+				"not(x mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)",
+				"not(x mod 2 /= 0) => (p:NAT&x0 / 2:NAT&y0*2:NAT)"
+			],
+			assign0: [
+				"(p+y0)+x0 / 2*(y0*2)=x*y",
+				"p+y0:NAT&x0 / 2:NAT&y0*2:NAT"
+			],
+			assign1: [
+				"p+x0 / 2*(y0*2)=x*y",
+				"p:NAT&x0 / 2:NAT&y0*2:NAT"
+			],
+			assign2: [
+				"p+x0*(y0*2)=x*y",
+				"p:NAT&x0:NAT&y0*2:NAT"
+			]]
 	}
 
 	def "factorial example"() {
@@ -126,30 +136,17 @@ class AssertionPropagatorTest extends Specification {
 		})
 
 		then:
-		equal(b, {
-			Assert("r < n & s < r => (u+v=((s+1)+1)*v)")
-			Assert("r < n & s < r => (u+v=fac(r+1))")
-			Assert("r < n & not(s < r) => (u=fac(r+1))")
-			While("r < n", invariant: "v = fac(r)") {
-				Assert("s < r => (u+v=((s+1)+1)*v)")
-				Assert("s < r => (u+v=fac(r+1))")
-				Assert("not(s < r) => (u=fac(r+1))")
-				While("s < r", invariant: "u = (s + 1) ∗ v") {
-					Assert("u+v=((s+1)+1)*v")
-					Assert("u+v=fac(r+1)")
-					Assign("u := u + v")
-					Assert("u=((s+1)+1)*v")
-					Assert("u=fac(r+1)")
-					Assign("s := s + 1")
-				}
-				Assert("u=fac(r+1)")
-				Assign("v := u")
-				Assert("v=fac(r+1)")
-				Assign("r := r + 1")
-				Assert("v=fac(r)")
-				Assign("s := 0")
-			}
-			Assert("v = factorial")
-		})
+		assertions(b) == [while0: [
+				"r < n & s < r => (u+v=((s+1)+1)*v)",
+				"r < n & not(s < r) => (u=fac(r+1))",
+				"not(r < n) => (v = factorial)"
+			], while1: [
+				"s < r => (u+v=((s+1)+1)*v)",
+				"not(s < r) => (u=fac(r+1))"
+			], assign0: ["u+v=((s+1)+1)*v"],
+			assign1: ["u=((s+1)+1)*v"],
+			assign2: ["u=fac(r+1)"],
+			assign3: ["v=fac(r+1)"],
+			assign4: ["v=fac(r)"]]
 	}
 }

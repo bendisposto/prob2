@@ -26,20 +26,13 @@ mm = new ModelModifier().make {
 			theorem "x mod 2 /= 0 => x / 2 * 2 = x - 1"
 			theorem "x / 2*y*2 = x / 2*2*y"
 			algorithm {
-				//Assert("x0 > 0 & x0 mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)")
-				//Assert("x0 > 0 & not(x0 mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)")
 				While("x0 > 0", invariant: "p + (x0*y0) = x*y") {
-					//Assert("x0 mod 2 /= 0 => ((p+y0)+x0 / 2*(y0*2)=x*y)")
-					//Assert("not(x0 mod 2 /= 0) => (p+x0 / 2*(y0*2)=x*y)")
 					If("x0 mod 2 /= 0") {
 						Then {
-					//		Assert("(p+y0)+x0 / 2*(y0*2)=x*y")
 							Assign("p := p + y0")
 						}
 					}
-				//Assert("p+x0 / 2*(y0*2)=x*y")
 					Assign("x0 := x0 / 2")
-					//Assert("p+x0*(y0*2)=x*y")
 					Assign("y0 := y0 * 2")
 				}
 				Assert("x0 = 0")
@@ -49,7 +42,7 @@ mm = new ModelModifier().make {
 		}
 	}
 	
-	procedure(name: "map_square") {
+	/*procedure(name: "map_square") {
 		argument "s", "INT +-> INT"
 		result "mapped", "INT +-> INT"
 		
@@ -78,7 +71,7 @@ mm = new ModelModifier().make {
 				Return("res")
 			}
 		}
-	}
+	}*/
 	
 	/*machine(name: "apply_mult") {
 		var "product", "product : NAT", "product := 0"
@@ -97,10 +90,10 @@ mm = new ModelModifier().make {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().propagateAssertions(true)).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "MultWithProcedures", "/tmp")
+//d = mtx.writeToRodin(m, "MultWithProcedures", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

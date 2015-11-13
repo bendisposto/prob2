@@ -2,7 +2,6 @@ package de.prob.model.eventb.algorithm.ast.transform
 
 import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Assignment
-import de.prob.model.eventb.algorithm.ast.Assumption
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Call
 import de.prob.model.eventb.algorithm.ast.If
@@ -45,10 +44,6 @@ class AlgorithmASTTransformer implements IAlgorithmASTTransformer {
 	}
 
 	def List<Statement> transform(Assertion a, List<Statement> rest) {
-		recurIfNecessary(a, rest)
-	}
-
-	def List<Statement> transform(Assumption a, List<Statement> rest) {
 		recurIfNecessary(a, rest)
 	}
 

@@ -12,10 +12,10 @@ import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
 import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
-import de.prob.model.eventb.algorithm.ast.transform.PropertyExtractor
+import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
 
 class ControlFlowGraph {
-	Map<Statement, Set<IProperty>> properties
+	Map<Statement, Set<Assertion>> properties
 
 	LinkedHashSet<Statement> nodes = new LinkedHashSet<Statement>()
 	LinkedHashMap<Statement, Set<Edge>> outgoingEdges = new LinkedHashMap<Statement, Set<Edge>>()
@@ -29,7 +29,7 @@ class ControlFlowGraph {
 
 	def ControlFlowGraph(Block b) {
 		if (!b.statements.isEmpty()) {
-			PropertyExtractor e = new PropertyExtractor()
+			AssertionExtractor e = new AssertionExtractor()
 			this.algorithm = e.transform(b.finish())
 			lastNode = this.algorithm.statements.last()
 			properties = e.properties
@@ -93,7 +93,7 @@ class ControlFlowGraph {
 		a
 	}
 
-	def addNode(IProperty a, List<Statement> stmts) {
+	def addNode(Assertion a, List<Statement> stmts) {
 		assert !stmts.isEmpty() // assertions are mapped to the next statement, so an assertion before empty statements is incorrect
 		addNode(stmts.first(), stmts.tail())
 	}

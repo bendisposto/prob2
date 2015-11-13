@@ -8,7 +8,6 @@ import de.prob.model.eventb.algorithm.Procedure
 import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor
 import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Assignment
-import de.prob.model.eventb.algorithm.ast.Assumption
 import de.prob.model.eventb.algorithm.ast.Call
 import de.prob.model.eventb.algorithm.ast.IProperty
 import de.prob.model.eventb.algorithm.ast.If
@@ -144,14 +143,9 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 		// do nothing
 	}
 
-	@Override
-	public visit(Assumption a) {
-		// do nothing
-	}
-
 	def MachineModifier writeAssertions(MachineModifier machineM, Statement stmt, String pred) {
-		graph.properties[stmt].each { IProperty p ->
-			machineM = writeProperty(machineM, p, pred)
+		graph.properties[stmt].each { Assertion a ->
+			machineM = writeProperty(machineM, a, pred)
 		}
 		machineM
 	}
@@ -165,16 +159,9 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 		name
 	}
 
-	def MachineModifier writeProperty(MachineModifier machineM, Assumption property, String pred) {
-		def name = graph.nodeMapping.getName(property)
-		def ast = property.getFormula().getAst()
-		def formula = ast instanceof AImplicationPredicate ? "$pred & ${property.getFormula().getCode()}" : "$pred => (${property.getFormula().getCode()})"
-		machineM = machineM.invariant(getName(name), formula, true, property.toString())
-	}
-
 	def MachineModifier writeProperty(MachineModifier machineM, Assertion property, String pred) {
 		def name = graph.nodeMapping.getName(property)
-		writeAssertion(machineM, name, pred, property.getFormula())
+		writeAssertion(machineM, name, pred, property.assertion)
 	}
 
 	def MachineModifier writeAssertion(MachineModifier machineM, String name, String prefix, EventB predicate) {

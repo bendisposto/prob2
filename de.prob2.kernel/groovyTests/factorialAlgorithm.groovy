@@ -54,7 +54,7 @@ m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.propagateAssertions(true)).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "Factorial", "/tmp")
+//d = mtx.writeToRodin(m, "Factorial", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

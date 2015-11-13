@@ -165,10 +165,10 @@ class FormulaUtilTest extends Specification {
 	def "predicates to become such that"() {
 		when:
 		def f = new EventB("res = x / y & rem = x mod y")
-		def formula = fuu.predicateToBecomeSuchThat(f, ["res", "rem"])
+		def formula = fuu.predicateToBecomeSuchThat(f, ["res", "rem"] as Set)
 
 		then:
-		println formula
+		formula.getCode() == "res,rem :| res'=x / y&rem'=x mod y"
 	}
 
 	def "apply assignments"() {

@@ -44,10 +44,6 @@ class Block extends AbstractModifier {
 		newBlock(statements.addElement(new Assertion(condition, typeEnvironment)))
 	}
 
-	def Block Assume(String condition) throws ModelGenerationException {
-		newBlock(statements.addElement(new Assumption(condition, typeEnvironment)))
-	}
-
 	def Block Assign(String assignment) throws ModelGenerationException {
 		Assignment a = new Assignment(assignment, typeEnvironment)
 		newBlock(statements.addElement(a))

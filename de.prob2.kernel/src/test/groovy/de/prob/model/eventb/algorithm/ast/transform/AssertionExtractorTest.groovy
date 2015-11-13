@@ -8,13 +8,13 @@ import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.eventb.algorithm.ast.If;
 import de.prob.model.eventb.algorithm.ast.Skip;
 import de.prob.model.eventb.algorithm.ast.Statement;
-import de.prob.model.eventb.algorithm.ast.transform.PropertyExtractor;
+import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor;
 
 public class AssertionExtractorTest extends Specification {
 
 	def run(Closure cls) {
 		Block b = new Block().make(cls)
-		def a = new PropertyExtractor()
+		def a = new AssertionExtractor()
 		def b2 = a.transform(b)
 		[assertions: a.properties, algorithm: b2]
 	}
@@ -26,13 +26,13 @@ public class AssertionExtractorTest extends Specification {
 
 	def assertions(e, int index) {
 		e.assertions[e.algorithm.statements[index]].collect {
-			it.getFormula().getCode()
+			it.getAssertion().getCode()
 		}
 	}
 
 	def assertions(e, Statement statement) {
 		e.assertions[statement].collect {
-			it.getFormula().getCode()
+			it.getAssertion().getCode()
 		}
 	}
 
