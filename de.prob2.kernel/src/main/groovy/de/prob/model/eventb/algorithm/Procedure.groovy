@@ -118,7 +118,7 @@ class Procedure extends AbstractModifier {
 		implementation(concreteM.make(cls))
 	}
 
-	def Procedure implementation(MachineModifier impl) throws ModelGenerationException {
+	def Procedure implementation(MachineModifier impl) {
 		if (impl.getMachine().getChildrenOfType(Block.class).isEmpty()) {
 			throw new IllegalArgumentException("the implementation of a procedure must define an algorithm")
 		}
