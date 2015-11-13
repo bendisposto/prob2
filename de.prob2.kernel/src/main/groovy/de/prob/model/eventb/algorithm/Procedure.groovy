@@ -156,9 +156,13 @@ class Procedure extends AbstractModifier {
 		if (proc.precondition == null || proc.postcondition == null || proc.getImplementation().getChildrenOfType(Block.class).isEmpty()) {
 			throw new IllegalArgumentException("procedure definition must define a precondition, postcondition, and algorithm for the implementation")
 		}
-		def procs = new ModelElementList<Procedure>([proc])
-		MachineModifier mm = new MachineModifier(proc.getAbstractMachine().set(Procedure.class, procs))
-		MachineModifier impl = new MachineModifier(proc.getImplementation().set(Procedure.class, procs))
-		return new Procedure(this.name, proc.typeEnvironment, proc.arguments, proc.results, proc.contextM, mm, impl, proc.eventM, proc.precondition, proc.postcondition)
+		proc.finish()
+	}
+
+	def Procedure finish() {
+		def procs = new ModelElementList<Procedure>([this])
+		MachineModifier mm = new MachineModifier(getAbstractMachine().set(Procedure.class, procs))
+		MachineModifier impl = new MachineModifier(getImplementation().set(Procedure.class, procs))
+		return new Procedure(this.name, typeEnvironment, arguments, results, contextM, mm, impl, eventM, precondition, postcondition)
 	}
 }
