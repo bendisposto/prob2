@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eventb.core.ast.Assignment;
+import org.eventb.core.ast.BecomesSuchThat;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
@@ -26,6 +27,7 @@ import de.prob.formula.TranslationVisitor;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.statespace.BasicStateTest;
 import de.prob.statespace.State;
 import de.prob.translator.TranslatingVisitor;
 import de.prob.translator.types.BObject;

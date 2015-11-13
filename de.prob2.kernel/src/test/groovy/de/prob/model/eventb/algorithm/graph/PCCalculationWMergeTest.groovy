@@ -2,8 +2,8 @@ package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.ast.Assignment;
+import de.prob.model.eventb.algorithm.ast.Block;
 
 public class PCCalculationWMergeTest extends Specification {
 
@@ -39,7 +39,7 @@ public class PCCalculationWMergeTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, assign0: 1, assign1: 2, assign2: 3]
+		pcInfo(graph) == [while0: 0, assign0: 1, assign1: 2, assign2: 3, assign3: 4]
 	}
 
 	def "russische bauernmultiplikation"(){
@@ -47,7 +47,8 @@ public class PCCalculationWMergeTest extends Specification {
 		def DEBUG = false
 		def graph = graph({
 			While("l /= 1") {
-				Assign("l := l / 2", "r := r * 2")
+				Assign("l := l / 2")
+				Assign("r := r * 2")
 				If("l mod 2 /= 0") { Then("product := product + r") }
 			}
 			Assert("product = m * n")
@@ -55,7 +56,7 @@ public class PCCalculationWMergeTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, assign0: 1, if0: 2, assign1: 3, assign2: 4]
+		pcInfo(graph) == [while0: 0, assign0: 1, assign1: 2, if0: 3, assign2: 4, assign3: 5]
 	}
 
 	def "complicated while if"() {
@@ -111,8 +112,8 @@ public class PCCalculationWMergeTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [assign0: 0, while0: 1, assign1: 2, if0: 3,
-			assign2: 4, while1: 5, assign3: 6, assign4: 7]
+		pcInfo(graph) == [assign0: 0, assign1: 1, while0: 2, assign2: 3, if0: 4, assign3: 5,
+			while1: 6, assign4: 7, assign5: 8, assign6: 9]
 	}
 
 	def "loop within loop"() {
@@ -125,13 +126,14 @@ public class PCCalculationWMergeTest extends Specification {
 						While("x < y") { Assign("x := x + 1") }
 					}
 				}
-				Assign("y := y / 2", "x := x / 2")
+				Assign("y := y / 2")
+				Assign("x := x / 2")
 			}
 			Assign("z := y + x")
 		})
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, while1: 1, assign0: 2, assign1: 3, assign2: 4, assign3: 5]
+		pcInfo(graph) == [while0: 0, while1: 1, assign0: 2, assign1: 3, assign2: 4, assign3: 5, assign4: 6]
 	}
 }

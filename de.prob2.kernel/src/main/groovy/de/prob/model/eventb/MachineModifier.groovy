@@ -3,7 +3,8 @@ package de.prob.model.eventb
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.model.eventb.Event.EventType
-import de.prob.model.eventb.algorithm.Block
+import de.prob.model.eventb.algorithm.Procedure;
+import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.ElementComment
 import de.prob.model.representation.Invariant
@@ -96,6 +97,25 @@ public class MachineModifier extends AbstractModifier {
 		mm
 	}
 
+	def MachineModifier var(LinkedHashMap properties) throws ModelGenerationException {
+		Map validated = validateProperties(validate("properties", properties), [name: String, invariant: Object, init: Object])
+		var_block(validated.name, validated.invariant, validated.init)
+	}
+
+	def MachineModifier var(String name, String invariant, String init) throws ModelGenerationException {
+		MachineModifier mm = variable(name)
+		mm = mm.invariant(invariant)
+		mm = mm.initialisation({ action init })
+		mm
+	}
+
+	def MachineModifier var(String name, Map inv, Map init) throws ModelGenerationException {
+		MachineModifier mm = variable(name)
+		mm = mm.invariant(inv)
+		mm = mm.initialisation({ action init })
+		mm
+	}
+
 	def MachineModifier removeVariable(String name) {
 		def var = machine.variables.getElement(name)
 		var ? removeVariable(var) : this
@@ -161,12 +181,14 @@ public class MachineModifier extends AbstractModifier {
 
 	def MachineModifier invariant(String name, String predicate, boolean theorem=false, String comment="") throws ModelGenerationException {
 		validateAll(name, predicate)
+		invariant(new EventBInvariant(name, parsePredicate(predicate), theorem, comment))
+	}
 
+	def MachineModifier invariant(EventBInvariant invariant) {
 		def newproofs = machine.getProofs().findAll { ProofObligation po ->
 			!po.getName().endsWith("/INV")
 		}
 
-		def invariant = new EventBInvariant(name, parsePredicate(predicate), theorem, comment)
 		machine = machine.addTo(Invariant.class, invariant)
 		machine = machine.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs))
 		newMM(machine)

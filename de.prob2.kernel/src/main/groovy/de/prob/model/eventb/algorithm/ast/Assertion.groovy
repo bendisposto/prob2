@@ -1,11 +1,11 @@
-package de.prob.model.eventb.algorithm
+package de.prob.model.eventb.algorithm.ast
 
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.ModelGenerationException
 
-class Assertion extends Statement implements IProperty {
+class Assertion extends Statement {
 	def EventB assertion
 
 	def Assertion(String assertion, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) throws ModelGenerationException {
@@ -13,12 +13,12 @@ class Assertion extends Statement implements IProperty {
 		this.assertion = parsePredicate(assertion)
 	}
 
-	def String toString() {
-		"assert ${assertion.toUnicode()}"
+	def Assertion(EventB assertion) {
+		super(assertion.getTypes())
+		this.assertion = assertion
 	}
 
-	@Override
-	public EventB getFormula() {
-		return assertion
+	def String toString() {
+		"assert ${assertion.toUnicode()}"
 	}
 }

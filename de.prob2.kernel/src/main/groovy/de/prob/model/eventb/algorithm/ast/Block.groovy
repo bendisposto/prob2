@@ -1,4 +1,4 @@
-package de.prob.model.eventb.algorithm
+package de.prob.model.eventb.algorithm.ast
 
 import org.eventb.core.ast.extension.IFormulaExtension
 
@@ -44,20 +44,26 @@ class Block extends AbstractModifier {
 		newBlock(statements.addElement(new Assertion(condition, typeEnvironment)))
 	}
 
-	def Block Assume(String condition) throws ModelGenerationException {
-		newBlock(statements.addElement(new Assumption(condition, typeEnvironment)))
+	def Block Assign(String assignment) throws ModelGenerationException {
+		Assignment a = new Assignment(assignment, typeEnvironment)
+		newBlock(statements.addElement(a))
 	}
 
-	def Block Assign(String... assignments) throws ModelGenerationException {
-		def last = !statements.isEmpty() && statements[statements.size()-1] ? statements[statements.size()-1] : null
-		def stmts = statements
-		Assignments a = new Assignments(typeEnvironment)
-		if (last instanceof Assignments) {
-			a = last
-			stmts = stmts.removeElement(last)
-		}
+	def Block Return(String... returnVals) throws ModelGenerationException {
+		Return(returnVals as List)
+	}
 
-		newBlock(stmts.addMultiple(a.addAssignments(assignments)))
+	def Block Return(List<String> returnVals) throws ModelGenerationException  {
+		newBlock(statements.addElement(new Return(returnVals, typeEnvironment)))
+	}
+
+	def Block Call(String name, List<String> arguments, List<String> results) throws ModelGenerationException{
+		newBlock(statements.addElement(new Call(name, arguments, results, typeEnvironment)))
+	}
+
+	// Add ending Skip statement to algorithm
+	def Block finish() {
+		newBlock(statements.addElement(new Skip()))
 	}
 
 	def Block make(Closure definition) throws ModelGenerationException {

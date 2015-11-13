@@ -1,8 +1,7 @@
 import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
+import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
-import de.prob.model.eventb.algorithm.graph.GraphMerge
-import de.prob.model.eventb.algorithm.graph.NaiveGenerationAlgorithm
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
@@ -27,7 +26,7 @@ m = new ModelModifier().make {
 		}
 	}
 }.getModel()
-m = new AlgorithmTranslator(m, new NaiveGenerationAlgorithm([new GraphMerge()])).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().mergeBranches(true)).run()
 
 
 //mtx = new ModelToXML()

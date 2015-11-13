@@ -2,6 +2,8 @@ package de.prob.model.eventb.algorithm;
 
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.Variant
+import de.prob.model.eventb.algorithm.ast.Statement;
+import de.prob.model.eventb.algorithm.ast.While;
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.ModelElementList
 

@@ -1,8 +1,7 @@
 import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
+import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
-import de.prob.model.eventb.algorithm.NaiveTerminationAnalysis
-import de.prob.model.eventb.algorithm.graph.NaiveGenerationAlgorithm
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
@@ -36,9 +35,9 @@ def actions(evt) {
 	evt.actions.collect { it.getCode().getCode() }
 }
 
-m = new AlgorithmTranslator(mm.getModel(), new NaiveGenerationAlgorithm()).run()
-m = new NaiveTerminationAnalysis(m).run()
-e = m.MyLoop
+m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions()).run()
+//m = new NaiveTerminationAnalysis(m).run()
+//e = m.MyLoop
 //TODO: retranslate this
 //evt0_enter_while = e.events.evt0_enter_while
 //assert evt0_enter_while != null
