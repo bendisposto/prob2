@@ -187,8 +187,12 @@ public class ModelModifier extends AbstractModifier {
 		def props = validateProperties(properties, [name: String, seen: [String, null]])
 		Context ctx = props["seen"] ? model.getContext(props["seen"]) : null
 		Procedure proc = new Procedure(properties["name"], ctx, typeEnvironment).make(definition)
-		ModelModifier mm = this.addContext(proc.getContext()).addMachine(proc.getAbstractMachine()).addMachine(proc.getImplementation())
-		newMM(mm.getModel().addTo(Procedure.class, proc))
+		addProcedure(proc)
+	}
+
+	def ModelModifier addProcedure(Procedure procedure) {
+		ModelModifier mm = this.addContext(procedure.getContext()).addMachine(procedure.getAbstractMachine()).addMachine(procedure.getImplementation())
+		newMM(mm.getModel().addTo(Procedure.class, procedure))
 	}
 
 	def ModelModifier loadTheories(LinkedHashMap properties) {
