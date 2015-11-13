@@ -61,12 +61,12 @@ class Procedure extends AbstractModifier {
 		this.postcondition = postcondition
 	}
 
-	def Procedure argument(LinkedHashMap definition) {
+	def Procedure argument(LinkedHashMap definition) throws ModelGenerationException {
 		def properties = validateProperties(definition, [name: String, type: String])
 		return argument(properties["name"], properties["type"])
 	}
 
-	def Procedure argument(final String name, final String type) {
+	def Procedure argument(final String name, final String type) throws ModelGenerationException {
 		ContextModifier cm = contextM.constant(name).axiom("typing_$name", "$name : $type")
 		def sees = new ModelElementList<Context>([contextM.getContext()])
 		def abstractM = absM.setSees(sees)
@@ -74,12 +74,12 @@ class Procedure extends AbstractModifier {
 		return new Procedure(this.name, typeEnvironment, arguments.addElement(name), results, cm, abstractM, concM, eventM, precondition, postcondition)
 	}
 
-	def Procedure result(LinkedHashMap definition) {
+	def Procedure result(LinkedHashMap definition) throws ModelGenerationException {
 		def properties = validateProperties(definition, [name: String, type: String])
 		return result(properties["name"], properties["type"])
 	}
 
-	def Procedure result(String name, String type) {
+	def Procedure result(String name, String type) throws ModelGenerationException {
 		MachineModifier mm = absM.variable(name).invariant("typing_$name", "$name : $type")
 				.initialisation({
 					action("init_$name", "$name :: $type")
@@ -88,7 +88,7 @@ class Procedure extends AbstractModifier {
 		return new Procedure(this.name, typeEnvironment, arguments, results.addElement(name), contextM, mm, concM, eventM, precondition, postcondition)
 	}
 
-	def Procedure precondition(String precondition) {
+	def Procedure precondition(String precondition) throws ModelGenerationException {
 		if (this.precondition) {
 			throw new IllegalArgumentException("Precondition has already been set.")
 		}
@@ -101,7 +101,7 @@ class Procedure extends AbstractModifier {
 		return new Procedure(this.name, typeEnvironment, arguments, results, ctxM, abstractM, concM, em, pre, postcondition)
 	}
 
-	def Procedure postcondition(String postcondition) {
+	def Procedure postcondition(String postcondition) throws ModelGenerationException {
 		if (this.postcondition) {
 			throw new IllegalArgumentException("Postcondition has already been set.")
 		}
@@ -114,11 +114,11 @@ class Procedure extends AbstractModifier {
 		return new Procedure(this.name, typeEnvironment, arguments, results, contextM, absM, concreteM, em, precondition, post)
 	}
 
-	def Procedure implementation(Closure cls) {
+	def Procedure implementation(Closure cls) throws ModelGenerationException {
 		implementation(concreteM.make(cls))
 	}
 
-	def Procedure implementation(MachineModifier impl) {
+	def Procedure implementation(MachineModifier impl) throws ModelGenerationException {
 		if (impl.getMachine().getChildrenOfType(Block.class).isEmpty()) {
 			throw new IllegalArgumentException("the implementation of a procedure must define an algorithm")
 		}
