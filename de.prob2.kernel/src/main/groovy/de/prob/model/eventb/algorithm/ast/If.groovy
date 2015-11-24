@@ -1,4 +1,4 @@
-package de.prob.model.eventb.algorithm
+package de.prob.model.eventb.algorithm.ast
 
 import org.eventb.core.ast.extension.IFormulaExtension
 
@@ -36,7 +36,12 @@ public class If extends Statement {
 		if(Then != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		newIf(newBlock().Assign(assignments), Else)
+		assignments.inject(newBlock()) { Block b, String assignment ->
+			b.Assign(assignment)
+		}
+		newIf(assignments.inject(newBlock()) { Block b, String assignment ->
+			b.Assign(assignment)
+		}, Else)
 	}
 
 	def If Then(Closure definition) {
@@ -57,7 +62,9 @@ public class If extends Statement {
 		if(Else != null) {
 			throw new IllegalModificationException("The Then block of this If statement has already been defined. Cannot be redefined.")
 		}
-		newIf(Then, newBlock().Assign(assignments))
+		newIf(Then, assignments.inject(newBlock()) { Block b, String assignment ->
+			b.Assign(assignment)
+		})
 	}
 
 	def If Else(Closure definition) {

@@ -1,7 +1,7 @@
 package de.prob.model.eventb.algorithm.graph;
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.Statement
+import de.prob.model.eventb.algorithm.ast.Statement;
 
 
 public class Edge {

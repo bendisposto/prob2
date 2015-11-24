@@ -1,11 +1,13 @@
 package de.prob.model.eventb.algorithm.graph
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Block
-import de.prob.model.eventb.algorithm.If
-import de.prob.model.eventb.algorithm.Statement
-import de.prob.model.eventb.algorithm.While
+import de.prob.model.eventb.algorithm.ast.Assignment;
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.Call;
+import de.prob.model.eventb.algorithm.ast.IAssignment;
+import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.Statement;
+import de.prob.model.eventb.algorithm.ast.While;
 import de.prob.model.representation.ModelElementList
 
 class GraphMerge implements IGraphTransformer {
@@ -26,14 +28,14 @@ class GraphMerge implements IGraphTransformer {
 		return this.graph
 	}
 
-	def Statement mergeGraph(ControlFlowGraph g, Assignments a) {
+	def Statement mergeGraph(ControlFlowGraph g, IAssignment a) {
 		if (graph.nodes.contains(a)) {
 			return a
 		}
 		graph.nodes.add(a)
 		g.outEdges(a).each { Edge e ->
 			Statement stmt = mergeGraph(g, e.to)
-			graph.addEdge(a, stmt, [], e.loopToWhile)
+			graph.addEdge(a, stmt, [])
 		}
 		return a
 	}
@@ -71,7 +73,7 @@ class GraphMerge implements IGraphTransformer {
 		} else {
 			Edge oldEdge = g.outEdges(statements.last()).find { Edge e -> e.to == nextStmt }
 			Statement stmt = mergeGraph(g, nextStmt)
-			Edge e = graph.addEdge(startNode, stmt, conditions, oldEdge.loopToWhile)
+			Edge e = graph.addEdge(startNode, stmt, conditions)
 			graph.edgeMapping[e] = statements
 		}
 	}

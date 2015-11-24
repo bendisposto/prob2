@@ -1,6 +1,6 @@
 package de.prob.util;
 
-public class Tuple2<S,T> {
+public class Tuple2<S, T> {
 	private final S first;
 	private final T second;
 
@@ -15,5 +15,10 @@ public class Tuple2<S,T> {
 
 	public T getSecond() {
 		return second;
+	}
+
+	@Override
+	public String toString() {
+		return "(" + first + "," + second + ")";
 	}
 }

@@ -2,10 +2,11 @@ package de.prob.model.eventb.algorithm
 
 import spock.lang.Specification
 import de.prob.model.eventb.Event
-import de.prob.model.eventb.EventBInvariant;
+import de.prob.model.eventb.EventBInvariant
 import de.prob.model.eventb.EventBMachine
+import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
-import de.prob.model.eventb.algorithm.graph.NaiveGenerationAlgorithm
+import de.prob.model.representation.ModelElementList
 
 class NaiveAlgorithmTranslation extends Specification {
 	def MachineModifier mm
@@ -17,7 +18,7 @@ class NaiveAlgorithmTranslation extends Specification {
 	}
 
 	def translate(MachineModifier mm) {
-		new AlgorithmTranslator(null, new NaiveGenerationAlgorithm()).translate(mm.getMachine())
+		new AlgorithmTranslator(new EventBModel(null), new AlgorithmGenerationOptions()).translate(mm.getMachine(), new ModelElementList<Procedure>())
 	}
 
 	def guards(Event evt) {

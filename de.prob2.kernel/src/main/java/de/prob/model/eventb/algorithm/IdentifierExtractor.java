@@ -12,11 +12,11 @@ import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.PExpression;
 
-public class AssignmentAnalysisVisitor extends DepthFirstAdapter {
+public class IdentifierExtractor extends DepthFirstAdapter {
 
 	private final Set<String> identifiers;
 
-	public AssignmentAnalysisVisitor() {
+	public IdentifierExtractor() {
 		identifiers = new HashSet<String>();
 	}
 
@@ -25,34 +25,40 @@ public class AssignmentAnalysisVisitor extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void inAAssignSubstitution(final AAssignSubstitution node) {
-		addAll(node.getLhsExpression());
+	public void inAIdentifierExpression(AIdentifierExpression node) {
+		this.identifiers.add(node.getIdentifier().getFirst().getText());
 	}
 
-	@Override
-	public void inABecomesSuchSubstitution(final ABecomesSuchSubstitution node) {
-		addAll(node.getIdentifiers());
-	}
+	// @Override
+	// public void inAAssignSubstitution(final AAssignSubstitution node) {
+	// addAll(node.getLhsExpression());
+	// }
 
-	@Override
-	public void inABecomesElementOfSubstitution(
-			final ABecomesElementOfSubstitution node) {
-		addAll(node.getIdentifiers());
-	}
-
-	public void addAll(final LinkedList<PExpression> identifiers) {
-		for (PExpression pExpression : identifiers) {
-			if (pExpression instanceof AIdentifierExpression) {
-				this.identifiers.add(((AIdentifierExpression) pExpression)
-						.getIdentifier().getFirst().getText());
-			}
-		}
-	}
+	// @Override
+	// public void inABecomesSuchSubstitution(final ABecomesSuchSubstitution
+	// node) {
+	// addAll(node.getIdentifiers());
+	// }
+	//
+	// @Override
+	// public void inABecomesElementOfSubstitution(
+	// final ABecomesElementOfSubstitution node) {
+	// addAll(node.getIdentifiers());
+	// }
+	//
+	// public void addAll(final LinkedList<PExpression> identifiers) {
+	// for (PExpression pExpression : identifiers) {
+	// if (pExpression instanceof AIdentifierExpression) {
+	// this.identifiers.add(((AIdentifierExpression) pExpression)
+	// .getIdentifier().getFirst().getText());
+	// }
+	// }
+	// }
 
 	public static Set<String> union(final Node... assignments) {
 		Set<String> union = new HashSet<String>();
 		for (Node assignment : assignments) {
-			AssignmentAnalysisVisitor v = new AssignmentAnalysisVisitor();
+			IdentifierExtractor v = new IdentifierExtractor();
 			assignment.apply(v);
 			union.addAll(v.getIdentifiers());
 		}
@@ -61,8 +67,8 @@ public class AssignmentAnalysisVisitor extends DepthFirstAdapter {
 
 	public static Set<String> intersection(final Node assignment1,
 			final Node assignment2) {
-		AssignmentAnalysisVisitor v1 = new AssignmentAnalysisVisitor();
-		AssignmentAnalysisVisitor v2 = new AssignmentAnalysisVisitor();
+		IdentifierExtractor v1 = new IdentifierExtractor();
+		IdentifierExtractor v2 = new IdentifierExtractor();
 		assignment1.apply(v1);
 		assignment2.apply(v2);
 		Set<String> intersection = new HashSet<String>();

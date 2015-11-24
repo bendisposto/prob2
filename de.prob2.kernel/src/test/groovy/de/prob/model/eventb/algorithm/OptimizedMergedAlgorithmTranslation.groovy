@@ -4,9 +4,9 @@ import spock.lang.Specification
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBInvariant
 import de.prob.model.eventb.EventBMachine
+import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
-import de.prob.model.eventb.algorithm.graph.GraphMerge
-import de.prob.model.eventb.algorithm.graph.OptimizedGenerationAlgorithm
+import de.prob.model.representation.ModelElementList
 
 class OptimizedMergedAlgorithmTranslation extends Specification {
 	def MachineModifier mm
@@ -18,7 +18,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 	}
 
 	def translate(MachineModifier mm) {
-		new AlgorithmTranslator(null, new OptimizedGenerationAlgorithm([new GraphMerge()])).translate(mm.getMachine())
+		new AlgorithmTranslator(new EventBModel(null), new AlgorithmGenerationOptions().DEFAULT).translate(mm.getMachine(), new ModelElementList<Procedure>())
 	}
 
 	def guards(Event evt) {
@@ -244,7 +244,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		when:
 		def m = translate(mm.algorithm {
 			While("u /= 0") {
-				If ("u < v") { Then("u := v", "v := u") }
+				If ("u < v") { Then("u,v := v,u") }
 				Assert("u > v")
 				Assign("u := u - v")
 			}
@@ -256,8 +256,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		e.enter_while0_if0_then != null
 		guards(e.enter_while0_if0_then) == ["pc = 0", "u /= 0", "u < v"]
 		actions(e.enter_while0_if0_then) == [
-			"u := v",
-			"v := u",
+			"u,v := v,u",
 			"pc := 1"
 		]
 

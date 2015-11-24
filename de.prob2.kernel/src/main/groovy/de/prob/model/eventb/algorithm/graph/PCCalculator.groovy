@@ -1,12 +1,14 @@
 package de.prob.model.eventb.algorithm.graph
 
-import de.prob.model.eventb.algorithm.AlgorithmASTVisitor
-import de.prob.model.eventb.algorithm.Assertion
-import de.prob.model.eventb.algorithm.Assignments
-import de.prob.model.eventb.algorithm.Assumption
-import de.prob.model.eventb.algorithm.If
-import de.prob.model.eventb.algorithm.Statement
-import de.prob.model.eventb.algorithm.While
+import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor
+import de.prob.model.eventb.algorithm.ast.Assertion
+import de.prob.model.eventb.algorithm.ast.Assignment
+import de.prob.model.eventb.algorithm.ast.Call
+import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Return
+import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.While
 
 
 class PCCalculator extends AlgorithmASTVisitor {
@@ -34,7 +36,24 @@ class PCCalculator extends AlgorithmASTVisitor {
 		}
 	}
 
-	def visit(Assignments s) {
+	def visit(Assignment s) {
+		forSingleSimpleStatement(s)
+	}
+
+	def visit(Call s) {
+		forSingleSimpleStatement(s)
+	}
+
+	public visit(Return s) {
+		forSingleSimpleStatement(s)
+	}
+
+	@Override
+	public Object visit(Skip a) {
+		forSingleSimpleStatement(a)
+	}
+
+	def forSingleSimpleStatement(Statement s) {
 		if (!optimized && graph.nodes.contains(s)) {
 			pcInformation[s] = pc++
 		} else if(optimized && graph.entryNode == s) {
@@ -48,7 +67,7 @@ class PCCalculator extends AlgorithmASTVisitor {
 		// do nothing
 	}
 
-	def visit(Assumption a) {
-		// do nothing
+	def int lastPc() {
+		return pc - 1
 	}
 }

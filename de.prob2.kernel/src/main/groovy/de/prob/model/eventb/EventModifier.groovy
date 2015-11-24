@@ -179,14 +179,18 @@ public class EventModifier extends AbstractModifier {
 		action("act$ctr", act)
 	}
 
-	def EventModifier action(String name, String action, String comment="") throws ModelGenerationException {
-		def a = new EventBAction(validate('name',name), parseFormula(action, EvalElementType.ASSIGNMENT), comment)
-		newEM(event.addTo(Action.class, a))
+	def EventModifier action(String name, String act, String comment="") throws ModelGenerationException {
+		def a = new EventBAction(validate('name',name), parseFormula(act, EvalElementType.ASSIGNMENT), comment)
+		action(a)
 	}
 
-	def EventModifier action(String name, EventB action, String comment="") throws ModelGenerationException {
-		def a = new EventBAction(validate('name',name), ensureType(action, EvalElementType.ASSIGNMENT), comment)
-		newEM(event.addTo(Action.class, a))
+	def EventModifier action(String name, EventB act, String comment="") throws ModelGenerationException {
+		def a = new EventBAction(validate('name',name), ensureType(act, EvalElementType.ASSIGNMENT), comment)
+		action(a)
+	}
+
+	def EventModifier action(EventBAction act) {
+		newEM(event.addTo(Action.class, act))
 	}
 
 	def EventModifier removeAction(String name) {

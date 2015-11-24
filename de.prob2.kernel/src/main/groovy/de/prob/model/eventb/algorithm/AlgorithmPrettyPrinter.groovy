@@ -1,20 +1,43 @@
 package de.prob.model.eventb.algorithm
 
 import static de.prob.unicode.UnicodeTranslator.toUnicode
+import de.prob.model.eventb.algorithm.ast.Assertion
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.IAssignment
+import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.While
+import de.prob.model.representation.ModelElementList
 
 class AlgorithmPrettyPrinter {
 
-	Block algorithm
+	def algorithm
+	ModelElementList<Procedure> procedures
 
 	def AlgorithmPrettyPrinter() {
 	}
 
 	def AlgorithmPrettyPrinter(Block algorithm) {
 		this.algorithm = algorithm
+		this.procedures = new ModelElementList<Procedure>()
+	}
+
+	def AlgorithmPrettyPrinter(Block algorithm, ModelElementList<Procedure> procedures) {
+		this.algorithm = algorithm
+		this.procedures = procedures
 	}
 
 	def String prettyPrint() {
 		StringBuilder sb = new StringBuilder()
+		if (!procedures.isEmpty()) {
+			procedures.each { Procedure p ->
+				writeLine(sb, null, p.toString())
+				writeLine(sb, "  ", "when: "+p.precondition.toUnicode())
+				writeLine(sb, "  ", "then: "+p.postcondition.toUnicode())
+				writeLine(sb, "  ", "");
+			}
+		}
+
 		printBlock(algorithm, sb, null)
 		sb.toString()
 	}
@@ -56,11 +79,11 @@ class AlgorithmPrettyPrinter {
 		printBlock(statement.block, sb, indent)
 	}
 
-	def printStatement(Assignments statement, StringBuilder sb, String indent) {
+	def printStatement(IAssignment statement, StringBuilder sb, String indent) {
 		writeLine(sb,indent,statement.toString())
 	}
 
-	def printStatement(Assumption statement, StringBuilder sb, String indent) {
+	def printStatement(Assertion statement, StringBuilder sb, String indent) {
 		writeLine(sb,indent,statement.toString())
 	}
 
@@ -71,10 +94,6 @@ class AlgorithmPrettyPrinter {
 			writeLine(sb,indent,"else:")
 			printBlock(statement.Else, sb, indent)
 		}
-	}
-
-	def printStatement(Assertion statement, StringBuilder sb, String indent) {
-		writeLine(sb,indent,statement.toString())
 	}
 
 	def writeLine(StringBuilder sb, String indent, String line) {

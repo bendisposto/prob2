@@ -1,5 +1,6 @@
 package de.prob.model.eventb.algorithm
 
+import de.prob.model.eventb.algorithm.ast.If;
 import spock.lang.Specification
 
 class IfConstruction extends Specification {
@@ -23,8 +24,8 @@ class IfConstruction extends Specification {
 			Else("x := 5")
 		}
 		then:
-		s.Then.statements[0].assignments.collect { it.getCode() } == ["x := 2", "y := 5", "z := 4"]
-		s.Else.statements[0].assignments.collect { it.getCode() } == ["x := 5"]
+		s.Then.statements.collect { it.assignment.getCode() } == ["x := 2", "y := 5", "z := 4"]
+		s.Else.statements.collect { it.assignment.getCode() } == ["x := 5"]
 	}
 
 	def "it is possible to construct an If with closures"() {
