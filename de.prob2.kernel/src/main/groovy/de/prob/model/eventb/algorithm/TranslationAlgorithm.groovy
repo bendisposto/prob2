@@ -105,7 +105,7 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 	}
 
 	def MachineModifier addEdge(MachineModifier machineM, Edge e, Statement stmt, boolean merge) {
-		String name = extractName(e)
+		String name = graph.getEventName(e)
 		def node = null
 		if (merge && e.to instanceof IAssignment) {
 			generated << e.to
@@ -172,37 +172,4 @@ class TranslationAlgorithm implements ITranslationAlgorithm {
 		em
 	}
 
-	def String extractName(Edge e) {
-		List<Statement> statements = graph.edgeMapping[e]
-		if (statements.size() == 1 && statements[0] instanceof IAssignment) {
-			assert e.conditions.isEmpty()
-			return "${graph.nodeMapping.getName(statements[0])}"
-		}
-		assert e.conditions.size() == statements.size()
-		[statements, e.conditions].transpose().collect { l ->
-			extractName(l[0], l[1])
-		}.iterator().join("_")
-	}
-
-	def String extractName(While s, EventB condition) {
-		def name = graph.nodeMapping.getName(s)
-		if (condition == s.condition) {
-			return "enter_$name"
-		}
-		if (condition == s.notCondition) {
-			return "exit_$name"
-		}
-		return "unknown_branch_$name"
-	}
-
-	def String extractName(If s, EventB condition) {
-		def name = graph.nodeMapping.getName(s)
-		if (condition == s.condition) {
-			return "${name}_then"
-		}
-		if (condition == s.elseCondition) {
-			return "${name}_else"
-		}
-		return "unknown_branch_$name"
-	}
 }

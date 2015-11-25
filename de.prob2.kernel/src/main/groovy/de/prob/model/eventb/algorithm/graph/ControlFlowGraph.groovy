@@ -5,13 +5,12 @@ import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Call
-import de.prob.model.eventb.algorithm.ast.IProperty
+import de.prob.model.eventb.algorithm.ast.IAssignment
 import de.prob.model.eventb.algorithm.ast.If
 import de.prob.model.eventb.algorithm.ast.Return
 import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
-import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
 import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
 
 class ControlFlowGraph {
@@ -21,6 +20,7 @@ class ControlFlowGraph {
 	LinkedHashMap<Statement, Set<Edge>> outgoingEdges = new LinkedHashMap<Statement, Set<Edge>>()
 	LinkedHashMap<Statement, Set<Edge>> incomingEdges = new LinkedHashMap<Statement, Set<Edge>>()
 	Map<Edge, List<Statement>> edgeMapping = [:]
+	Map<While, List<Edge>> loopsForTermination = [:]
 	NodeNaming nodeMapping
 	Statement entryNode
 
@@ -104,6 +104,9 @@ class ControlFlowGraph {
 			throw new IllegalArgumentException("While loops cannot be null!")
 		}
 		addEdge(w, addNode(block.first(), block.tail()), [w.condition])
+		if (w.variant) {
+			loopsForTermination[w] = []
+		}
 		addSpecialEdge(block.last(), w)
 
 		if (!stmts.isEmpty()) {
@@ -135,15 +138,18 @@ class ControlFlowGraph {
 	}
 
 	def addSpecialEdge(Assignment from, Statement to) {
-		addEdge(from, to, [])
+		def e = addEdge(from, to, [])
+		addTerminationLoop(e, to)
 	}
 
 	def addSpecialEdge(Call from, Statement to) {
-		addEdge(from, to, [])
+		def e = addEdge(from, to, [])
+		addTerminationLoop(e, to)
 	}
 
 	def addSpecialEdge(Skip from, Statement to) {
-		addEdge(from, to, [])
+		def e = addEdge(from, to, [])
+		addTerminationLoop(e, to)
 	}
 
 	def addSpecialEdge(Return from, Statement to) {
@@ -155,19 +161,28 @@ class ControlFlowGraph {
 	}
 
 	def addSpecialEdge(While from, Statement to) {
-		addEdge(from, to, [from.notCondition])
+		def e = addEdge(from, to, [from.notCondition])
+		addTerminationLoop(e, to)
 	}
 
 	def addSpecialEdge(If from, Statement to) {
 		if (from.Then.statements.isEmpty()) {
-			addEdge(from, to, [from.condition])
+			def e = addEdge(from, to, [from.condition])
+			addTerminationLoop(e, to)
 		} else {
 			addSpecialEdge(from.Then.statements.last(), to)
 		}
 		if (from.Else.statements.isEmpty()) {
-			addEdge(from, to, [from.elseCondition])
+			def e = addEdge(from, to, [from.elseCondition])
+			addTerminationLoop(e, to)
 		} else {
 			addSpecialEdge(from.Else.statements.last(), to)
+		}
+	}
+
+	def addTerminationLoop(Edge edge, Statement to) {
+		if (loopsForTermination[to] != null) {
+			loopsForTermination[to].add(edge)
 		}
 	}
 
@@ -185,5 +200,39 @@ class ControlFlowGraph {
 
 	def inEdges(Statement stmt) {
 		incomingEdges[stmt] ?: []
+	}
+
+	def getEventName(Edge e) {
+		List<Statement> statements = edgeMapping[e]
+		if (statements.size() == 1 && statements[0] instanceof IAssignment) {
+			assert e.conditions.isEmpty()
+			return "${nodeMapping.getName(statements[0])}"
+		}
+		assert e.conditions.size() == statements.size()
+		[statements, e.conditions].transpose().collect { l ->
+			getEventName(l[0], l[1])
+		}.iterator().join("_")
+	}
+
+	def String getEventName(While s, EventB condition) {
+		def name = nodeMapping.getName(s)
+		if (condition == s.condition) {
+			return "enter_$name"
+		}
+		if (condition == s.notCondition) {
+			return "exit_$name"
+		}
+		return "unknown_branch_$name"
+	}
+
+	def String getEventName(If s, EventB condition) {
+		def name = nodeMapping.getName(s)
+		if (condition == s.condition) {
+			return "${name}_then"
+		}
+		if (condition == s.elseCondition) {
+			return "${name}_else"
+		}
+		return "unknown_branch_$name"
 	}
 }

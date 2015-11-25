@@ -21,6 +21,7 @@ class GraphMerge implements IGraphTransformer {
 			this.graph.nodeMapping = graph.nodeMapping
 			this.graph.algorithm = graph.algorithm
 			this.graph.properties = graph.properties
+			this.graph.loopsForTermination = graph.loopsForTermination
 			this.graph.entryNode = mergeGraph(graph, graph.entryNode)
 		} else {
 			this.graph = graph
