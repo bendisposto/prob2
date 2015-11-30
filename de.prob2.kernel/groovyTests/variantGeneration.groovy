@@ -30,6 +30,6 @@ mm = new ModelModifier().make {
 m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "MyLoopProject", "/tmp")
+//d = mtx.writeToRodin(m, "MyLoopProject", "/tmp")
 
 "it is possible to generate models to check the termination of loops"

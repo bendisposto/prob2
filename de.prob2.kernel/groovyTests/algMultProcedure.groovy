@@ -92,7 +92,7 @@ m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "MultWithProcedures", "/tmp")
+//d = mtx.writeToRodin(m, "MultWithProcedures", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

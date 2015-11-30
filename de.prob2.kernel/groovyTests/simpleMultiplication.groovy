@@ -37,7 +37,7 @@ m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().propagateAssertions(true)).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "SimpleMult", "/tmp")
+//d = mtx.writeToRodin(m, "SimpleMult", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

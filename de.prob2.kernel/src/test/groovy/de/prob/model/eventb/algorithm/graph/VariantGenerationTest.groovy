@@ -276,7 +276,6 @@ class VariantGenerationTest extends Specification {
 		})
 
 		then:
-		println loops
 		loops == [while1: ["assign0"],
 			while2: ["assign1"],
 			while3: ["assign2"],
