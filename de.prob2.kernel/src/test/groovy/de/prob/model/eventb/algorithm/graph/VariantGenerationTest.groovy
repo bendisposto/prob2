@@ -27,6 +27,17 @@ class VariantGenerationTest extends Specification {
 		}
 	}
 
+	def mergeLoops(Closure cls) {
+		Block b = new Block().make(cls)
+		ControlFlowGraph g = new GraphMerge().transform(new ControlFlowGraph(b))
+		g.loopsForTermination.collectEntries { w, o ->
+			[
+				g.nodeMapping.getName(w),
+				o.collect { g.getEventName(it) }
+			]
+		}
+	}
+
 	def propagate(Closure cls) {
 		Block b = new Block().make(cls)
 		NodeNaming n = new NodeNaming(b)
@@ -69,6 +80,30 @@ class VariantGenerationTest extends Specification {
 	def "ll parsing algorithm node loops"() {
 		when:
 		def loops = nodeLoops({
+			While("chng = TRUE", variant: "2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng)") {
+				Assign("chng := FALSE")
+				While("worklist /= {}", invariant: "worklist <: G & next : G", variant: "card(worklist)") {
+					// Assert("worklist /= {}")
+					Assign("next :: worklist")
+					Assign("worklist := worklist \\ {next}")
+					If ("prj1(next) /: nullable & ran(prj2(next)) <: nullable") {
+						Then {
+							Assign("nullable := nullable \\/ {prj1(next)}")
+							Assign("chng := TRUE")
+						}
+					}
+				}
+			}
+		})
+
+		then:
+		loops == [
+			while0: ["exit_while1"], while1: ["assign4", "if0_else"]]
+	}
+
+	def "ll parsing algorithm node loops graph merge"() {
+		when:
+		def loops = mergeLoops({
 			While("chng = TRUE", variant: "2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng)") {
 				Assign("chng := FALSE")
 				While("worklist /= {}", invariant: "worklist <: G & next : G", variant: "card(worklist)") {
@@ -221,5 +256,30 @@ class VariantGenerationTest extends Specification {
 		loops == [while0: ["assign0"],
 			while1: ["assign1"],
 			while2: ["assign2"]]
+	}
+
+	def "while if merge"() {
+		when:
+		def loops = mergeLoops({
+			While("x < z", variant: "x") {
+				If("x /= y") {
+					Then {
+						While("x < 10",variant: "x") { Assign("x := x - 1") }
+						While("y < 10",variant: "y") { Assign("y := y - 1") }
+					}
+					Else {
+						While("z < 10",variant: "z") { Assign("z := z - 2") }
+					}
+				}
+			}
+
+		})
+
+		then:
+		println loops
+		loops == [while1: ["assign0"],
+			while2: ["assign1"],
+			while3: ["assign2"],
+			while0: ["exit_while2", "exit_while3"]]
 	}
 }

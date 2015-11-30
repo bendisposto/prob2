@@ -13,6 +13,7 @@ import de.prob.model.eventb.algorithm.ast.While;
 class VariantGenerator extends AlgorithmASTVisitor {
 
 	def NodeNaming naming
+
 	def VariantGenerator(NodeNaming naming) {
 		this.naming = naming
 	}

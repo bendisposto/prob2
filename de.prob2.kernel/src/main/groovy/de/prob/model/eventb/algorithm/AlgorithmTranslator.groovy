@@ -1,7 +1,5 @@
 package de.prob.model.eventb.algorithm
 
-import java.util.Map;
-
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBAction
@@ -22,6 +20,7 @@ import de.prob.model.eventb.algorithm.ast.Return
 import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
+import de.prob.model.eventb.algorithm.ast.transform.AddSkipForVariant
 import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
 import de.prob.model.eventb.algorithm.ast.transform.IAlgorithmASTTransformer
 import de.prob.model.eventb.algorithm.graph.AssertionTranslator
@@ -29,6 +28,8 @@ import de.prob.model.eventb.algorithm.graph.ControlFlowGraph
 import de.prob.model.eventb.algorithm.graph.Edge
 import de.prob.model.eventb.algorithm.graph.GraphTransformer
 import de.prob.model.eventb.algorithm.graph.PCCalculator
+import de.prob.model.eventb.algorithm.graph.VariantAssertionTranslator
+import de.prob.model.eventb.algorithm.graph.VariantGenerator
 import de.prob.model.representation.ModelElementList
 
 class AlgorithmTranslator {
@@ -66,6 +67,9 @@ class AlgorithmTranslator {
 			ControlFlowGraph graph = new GraphTransformer(options).transform(new ControlFlowGraph(algorithm))
 			EventBMachine newM = translateAlgorithm(oldM, graph)
 			modelM = modelM.replaceMachine(oldM, newM)
+			if (options.isTerminationAnalysis()) {
+				modelM = runTerminationAnalysis(modelM, name, graph)
+			}
 		}
 		return modelM
 	}
@@ -119,6 +123,14 @@ class AlgorithmTranslator {
 			machineM = new AssertionTranslator(machineM, procedures, graph, pcCalc.pcInformation, options, pcname).getMachineM()
 			machineM =  addNode([] as Set, graph, machineM, procedure, graph.entryNode, pcCalc.pcInformation)
 		}
+		if (options.isTerminationAnalysis()) {
+			graph.loopsForTermination.each { While loop, List<Edge> edges ->
+				edges.each { Edge e ->
+					machineM = machineM.event(name: graph.getEventName(e), type: EventType.ANTICIPATED)
+				}
+			}
+		}
+
 		machineM.getMachine()
 	}
 
@@ -219,8 +231,40 @@ class AlgorithmTranslator {
 
 	def Block runASTTransformations(Block block) {
 		def transformers = [new DeadCodeRemover()]
+		if (options.isTerminationAnalysis()) {
+			transformers << new AddSkipForVariant()
+		}
 		transformers.inject(block) { Block b, IAlgorithmASTTransformer t ->
 			t.transform(b)
 		}
+	}
+
+	def ModelModifier runTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {\
+		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
+		def variant = new VariantGenerator(graph.nodeMapping).visit(graph.algorithm)
+		if (!variant) {
+			return modelM
+		}
+
+		def pcname = getProcedure(modelM.getModel().getMachine(mchName)) ? "ipc" : "pc"
+
+		def newName = "${mchName}_termination"
+		modelM = modelM.refine(mchName, newName)
+		def oldM = modelM.getModel().getMachine(newName)
+		def mM = new MachineModifier(oldM)
+		mM = mM.variant(variant.iterator().join(" + "))
+		graph.loopsForTermination.each { While loop, List<Edge> edges ->
+			def vName = graph.nodeMapping.getName(loop) + "_variant"
+			mM = mM.var(vName, "$vName : NAT", "$vName :: NAT")
+			def final setVariant = "$vName := ${loop.variant.getCode()}"
+			mM = mM.event(name: "enter_"+graph.nodeMapping.getName(loop)) { action setVariant }
+			edges.each { Edge e ->
+				mM = mM.event(name: graph.getEventName(e), type: EventType.CONVERGENT) { action setVariant }
+			}
+		}
+		mM = mM.initialisation(extended: true)
+		mM = new VariantAssertionTranslator(mM, procedures, graph, pcCalc.pcInformation, options, pcname).getMachineM()
+
+		modelM.replaceMachine(oldM, mM.getMachine())
 	}
 }

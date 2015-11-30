@@ -132,6 +132,9 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 				} else {
 					def pred = "$pcname = ${pcInfo[e.from]}"
 					def rcond = e.conditions.collect { it.getCode() }.iterator().join(" & ")
+					if (propagated[s]) {
+						machineM = writePropagated(machineM, propagated[s], "$pred & $rcond")
+					}
 					machineM = writeAssertions(machineM, s, "$pred & $rcond")
 				}
 			}

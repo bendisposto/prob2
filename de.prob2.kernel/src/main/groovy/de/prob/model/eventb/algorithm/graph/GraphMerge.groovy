@@ -21,7 +21,10 @@ class GraphMerge implements IGraphTransformer {
 			this.graph.nodeMapping = graph.nodeMapping
 			this.graph.algorithm = graph.algorithm
 			this.graph.properties = graph.properties
-			this.graph.loopsForTermination = graph.loopsForTermination
+			this.graph.loopsForTermination = graph.loopsForTermination.collectEntries { w,l ->
+				[w, []]
+			}
+			//		this.graph.loopsForTermination = graph.loopsForTermination
 			this.graph.entryNode = mergeGraph(graph, graph.entryNode)
 		} else {
 			this.graph = graph
@@ -36,7 +39,10 @@ class GraphMerge implements IGraphTransformer {
 		graph.nodes.add(a)
 		g.outEdges(a).each { Edge e ->
 			Statement stmt = mergeGraph(g, e.to)
-			graph.addEdge(a, stmt, [])
+			def nE = graph.addEdge(a, stmt, [])
+			if (g.loopsForTermination[e.to] != null && g.loopsForTermination[e.to].contains(e)) {
+				graph.loopsForTermination[e.to] << nE
+			}
 		}
 		return a
 	}
@@ -76,6 +82,9 @@ class GraphMerge implements IGraphTransformer {
 			Statement stmt = mergeGraph(g, nextStmt)
 			Edge e = graph.addEdge(startNode, stmt, conditions)
 			graph.edgeMapping[e] = statements
+			if (g.loopsForTermination[oldEdge.to] != null && g.loopsForTermination[oldEdge.to].contains(oldEdge)) {
+				graph.loopsForTermination[e.to] << e
+			}
 		}
 	}
 
