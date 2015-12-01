@@ -11,7 +11,7 @@ public class AlgorithmGenerationOptions {
 	private final EnumSet<Options> options;
 
 	public enum Options {
-		mergeBranches, optimize, propagateAssertions
+		mergeBranches, optimize, propagateAssertions, terminationAnalysis
 	}
 
 	public AlgorithmGenerationOptions() {
@@ -34,6 +34,10 @@ public class AlgorithmGenerationOptions {
 		changeOption(value, Options.propagateAssertions)
 	}
 
+	public AlgorithmGenerationOptions terminationAnalysis(final boolean value) {
+		changeOption(value, Options.terminationAnalysis)
+	}
+
 	public boolean isMergeBranches() {
 		return options.contains(Options.mergeBranches)
 	}
@@ -44,6 +48,10 @@ public class AlgorithmGenerationOptions {
 
 	public boolean isPropagateAssertions() {
 		return options.contains(Options.propagateAssertions)
+	}
+
+	public boolean isTerminationAnalysis() {
+		return options.contains(Options.terminationAnalysis)
 	}
 
 	private AlgorithmGenerationOptions changeOption(final boolean value,

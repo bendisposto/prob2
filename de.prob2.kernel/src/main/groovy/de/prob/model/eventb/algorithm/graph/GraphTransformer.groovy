@@ -3,7 +3,7 @@ package de.prob.model.eventb.algorithm.graph
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions.Options;
 
-class GraphTransformer implements IGraphTransformer {
+public class GraphTransformer implements IGraphTransformer {
 
 	List<IGraphTransformer> transformers
 
