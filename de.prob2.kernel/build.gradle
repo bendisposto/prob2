@@ -150,7 +150,7 @@ task downloadCli << {
 		target += ".exe"
 	}
 
-	download("http://nightly.cobra.cs.uni-duesseldorf.de/cspmf/"+targetName,target)
+	download("http://www3.hhu.de/stups/downloads/cspmf/"+targetName,target)
 	new File(target).setExecutable(true)
 }
 
