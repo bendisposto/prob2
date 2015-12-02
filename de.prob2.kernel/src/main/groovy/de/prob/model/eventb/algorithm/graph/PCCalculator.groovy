@@ -50,7 +50,9 @@ class PCCalculator extends AlgorithmASTVisitor {
 
 	@Override
 	public Object visit(Skip a) {
-		forSingleSimpleStatement(a)
+		if (graph.nodes.contains(a)) {
+			pcInformation[a] = pc++
+		}
 	}
 
 	def forSingleSimpleStatement(Statement s) {

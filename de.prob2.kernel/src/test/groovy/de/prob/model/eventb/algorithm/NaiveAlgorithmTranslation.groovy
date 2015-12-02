@@ -57,9 +57,9 @@ class NaiveAlgorithmTranslation extends Specification {
 		guards(e.assign0) == ["pc = 1"]
 		actions(e.assign0) == ["x := 0", "pc := 2"]
 
-		e.assign1 != null
-		guards(e.assign1) == ["pc = 2"]
-		actions(e.assign1) == []
+		e.end != null
+		guards(e.end) == ["pc = 2"]
+		actions(e.end) == []
 	}
 
 	def "translate an if with an else"() {
@@ -89,9 +89,9 @@ class NaiveAlgorithmTranslation extends Specification {
 		guards(e.assign1) == ["pc = 2"]
 		actions(e.assign1) == ["x := 2", "pc := 3"]
 
-		e.assign2 != null
-		guards(e.assign2) == ["pc = 3"]
-		actions(e.assign2) == []
+		e.end != null
+		guards(e.end) == ["pc = 3"]
+		actions(e.end) == []
 	}
 
 	def "translate a while loop"() {
@@ -114,9 +114,9 @@ class NaiveAlgorithmTranslation extends Specification {
 		guards(e.assign0) == ["pc = 1"]
 		actions(e.assign0) == ["x := 0", "pc := 0"]
 
-		e.assign1 != null
-		guards(e.assign1) == ["pc = 2"]
-		actions(e.assign1) == []
+		e.end != null
+		guards(e.end) == ["pc = 2"]
+		actions(e.end) == []
 	}
 
 	def "test assertion generation"() {
@@ -162,9 +162,9 @@ class NaiveAlgorithmTranslation extends Specification {
 		guards(e.assign0) == ["pc = 2"]
 		actions(e.assign0) == ["x := 2", "pc := 3"]
 
-		e.assign1 != null
-		guards(e.assign1) == ["pc = 3"]
-		actions(e.assign1) == ["pc := 4"]
+		e.if0_then_end != null
+		guards(e.if0_then_end) == ["pc = 3"]
+		actions(e.if0_then_end) == ["pc := 4"]
 
 		e.if0_else != null
 		guards(e.if0_else) == [
@@ -173,20 +173,20 @@ class NaiveAlgorithmTranslation extends Specification {
 		]
 		actions(e.if0_else) == ["pc := 4"]
 
-		e.assign2 != null
-		guards(e.assign2) == ["pc = 4"]
-		actions(e.assign2) == ["x := z - 90", "pc := 5"]
+		e.assign1 != null
+		guards(e.assign1) == ["pc = 4"]
+		actions(e.assign1) == ["x := z - 90", "pc := 5"]
 
-		e.assign3 != null
-		guards(e.assign3) == ["pc = 5"]
-		actions(e.assign3) == ["pc := 0"]
+		e.loop_to_while0 != null
+		guards(e.loop_to_while0) == ["pc = 5"]
+		actions(e.loop_to_while0) == ["pc := 0"]
 
 		e.exit_while0 != null
 		guards(e.exit_while0) == ["pc = 0", "not(x < 1)"]
 		actions(e.exit_while0) == ["pc := 6"]
 
-		e.assign4 != null
-		guards(e.assign4) == ["pc = 6"]
-		actions(e.assign4) == []
+		e.end != null
+		guards(e.end) == ["pc = 6"]
+		actions(e.end) == []
 	}
 }

@@ -204,7 +204,7 @@ class ControlFlowGraph {
 
 	def getEventName(Edge e) {
 		List<Statement> statements = edgeMapping[e]
-		if (statements.size() == 1 && statements[0] instanceof IAssignment) {
+		if (statements.size() == 1 && statements[0] instanceof IAssignment || statements[0] instanceof Skip) {
 			assert e.conditions.isEmpty()
 			return "${nodeMapping.getName(statements[0])}"
 		}

@@ -126,6 +126,7 @@ class AlgorithmTranslator {
 		if (options.isTerminationAnalysis()) {
 			graph.loopsForTermination.each { While loop, List<Edge> edges ->
 				edges.each { Edge e ->
+					def inE = graph.inEdges(e.from)
 					machineM = machineM.event(name: graph.getEventName(e), type: EventType.ANTICIPATED)
 				}
 			}
@@ -191,10 +192,6 @@ class AlgorithmTranslator {
 
 	def EventModifier addAssignment(EventModifier em, Assignment a, Procedure procedure) {
 		em.action(a.assignment)
-	}
-
-	def EventModifier addAssignment(EventModifier em, Skip s, Procedure procedure) {
-		em
 	}
 
 	def EventModifier addAssignment(EventModifier em, Call a, Procedure p) {

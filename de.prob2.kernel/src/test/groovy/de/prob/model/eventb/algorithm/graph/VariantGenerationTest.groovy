@@ -6,6 +6,7 @@ import de.prob.model.eventb.FormulaUtil
 import de.prob.model.eventb.algorithm.Procedure
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.transform.AddSkipForVariant
 import de.prob.model.eventb.algorithm.ast.transform.VariantAssertion
 import de.prob.model.eventb.algorithm.ast.transform.VariantPropagator
 import de.prob.model.representation.ModelElementList
@@ -28,7 +29,7 @@ class VariantGenerationTest extends Specification {
 	}
 
 	def mergeLoops(Closure cls) {
-		Block b = new Block().make(cls)
+		Block b = new AddSkipForVariant().transform(new Block().make(cls))
 		ControlFlowGraph g = new GraphMerge().transform(new ControlFlowGraph(b))
 		g.loopsForTermination.collectEntries { w, o ->
 			[
@@ -39,7 +40,7 @@ class VariantGenerationTest extends Specification {
 	}
 
 	def propagate(Closure cls) {
-		Block b = new Block().make(cls)
+		Block b = new AddSkipForVariant().transform(new Block().make(cls))
 		NodeNaming n = new NodeNaming(b)
 		VariantPropagator ap = new VariantPropagator(new ModelElementList<Procedure>(), n)
 		ap.traverse(b)
@@ -122,7 +123,7 @@ class VariantGenerationTest extends Specification {
 
 		then:
 		loops == [
-			while0: ["exit_while1"], while1: ["assign4", "if0_else"]]
+			while0: ["loop_to_while0"], while1: ["loop_to_while1"]]
 	}
 
 	def "formula equivalence"() {
@@ -159,7 +160,14 @@ class VariantGenerationTest extends Specification {
 				}
 			}
 		})
-		def expected = [assign4:[
+		def expected = [
+			loop_to_while0:[
+				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant & while0_variant > 0"
+			],
+			loop_to_while1:[
+				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant & while0_variant > 0",
+				"card(worklist) < while1_variant & while1_variant > 0"
+			],assign4:[
 				"2*(card(Symbols) - card(nullable))+{TRUE |-> 1,FALSE |-> 0}(TRUE)<while0_variant & while0_variant>0",
 				"card(worklist)<while1_variant & while1_variant>0"
 			], assign3:[
@@ -183,7 +191,6 @@ class VariantGenerationTest extends Specification {
 			], while0:[]]
 
 		then:
-		//println propagated
 		propagated == expected
 
 	}
@@ -276,9 +283,9 @@ class VariantGenerationTest extends Specification {
 		})
 
 		then:
-		loops == [while1: ["assign0"],
-			while2: ["assign1"],
-			while3: ["assign2"],
-			while0: ["exit_while2", "exit_while3"]]
+		loops == [while1: ["loop_to_while1"],
+			while2: ["loop_to_while2"],
+			while3: ["loop_to_while3"],
+			while0: ["loop_to_while0"]]
 	}
 }

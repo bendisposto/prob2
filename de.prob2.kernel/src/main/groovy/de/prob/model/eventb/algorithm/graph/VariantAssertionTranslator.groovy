@@ -82,7 +82,12 @@ class VariantAssertionTranslator extends AlgorithmASTVisitor {
 
 	@Override
 	public Object visit(Skip a) {
-		forSingleSimpleStatement(a)
+		if (pcInfo[a] != null) {
+			def prefix = "$pcname = ${pcInfo[a]}"
+			if (propagated[a]) {
+				machineM = writePropagated(machineM, propagated[a], prefix)
+			}
+		}
 	}
 
 	def forSingleSimpleStatement(Statement s) {
@@ -100,12 +105,6 @@ class VariantAssertionTranslator extends AlgorithmASTVisitor {
 					def prefix = "$pcname = ${pcInfo[s]}"
 					if (propagated[s]) {
 						machineM = writePropagated(machineM, propagated[s], prefix)
-					}
-				} else {
-					def pred = "$pcname = ${pcInfo[e.from]}"
-					def rcond = e.conditions.collect { it.getCode() }.iterator().join(" & ")
-					if (propagated[s]) {
-						machineM = writePropagated(machineM, propagated[s], "$pred & $rcond")
 					}
 				}
 			}

@@ -39,7 +39,7 @@ public class PCCalculationOptTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, if0: 1, assign1: 2, assign2: 3]
+		pcInfo(graph) == [while0: 0, if0: 1, assign1: 2, assign2: 3, end: 4]
 	}
 
 	def "russische bauernmultiplikation"(){
@@ -56,7 +56,7 @@ public class PCCalculationOptTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, assign1: 1, if0: 2]
+		pcInfo(graph) == [while0: 0, assign1: 1, if0: 2, end: 3]
 	}
 
 	def "complicated while if"() {
@@ -90,7 +90,7 @@ public class PCCalculationOptTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		pcInfo(graph) == [while0: 0, if0: 1, if1: 2, if2: 3, if3: 4,
-			assign6: 5, assign8: 6]
+			assign6: 5, end: 6]
 	}
 
 	def "complicated while if 2"() {
@@ -112,7 +112,7 @@ public class PCCalculationOptTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [assign0: 0, assign1: 1, while0: 2, if0: 3, while1: 4, assign5: 5]
+		pcInfo(graph) == [assign0: 0, assign1: 1, while0: 2, if0: 3, while1: 4, assign5: 5, end: 6]
 	}
 
 	def "loop within loop"() {
@@ -133,6 +133,6 @@ public class PCCalculationOptTest extends Specification {
 
 		then:
 		if (DEBUG) print(graph)
-		pcInfo(graph) == [while0: 0, if0: 1, while1: 2, assign2: 3, assign4: 4]
+		pcInfo(graph) == [while0: 0, if0: 1, while1: 2, assign2: 3, end: 4]
 	}
 }

@@ -9,7 +9,7 @@ import org.eventb.core.ast.extension.IFormulaExtension;
  * @author joy
  *
  */
-class Skip extends Statement implements IAssignment {
+class Skip extends Statement {
 
 	def Skip(Set<IFormulaExtension> typeEnvironment) {
 		super(typeEnvironment)

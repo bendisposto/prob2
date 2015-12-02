@@ -5,6 +5,7 @@ import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.IAssignment
 import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
 import de.prob.model.representation.ModelElementList
@@ -81,6 +82,10 @@ class AlgorithmPrettyPrinter {
 
 	def printStatement(IAssignment statement, StringBuilder sb, String indent) {
 		writeLine(sb,indent,statement.toString())
+	}
+
+
+	def printStatement(Skip statement, StringBuilder sb, String indent) {
 	}
 
 	def printStatement(Assertion statement, StringBuilder sb, String indent) {

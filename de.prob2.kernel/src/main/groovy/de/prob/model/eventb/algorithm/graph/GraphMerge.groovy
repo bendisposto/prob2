@@ -1,13 +1,12 @@
 package de.prob.model.eventb.algorithm.graph
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Block;
-import de.prob.model.eventb.algorithm.ast.Call;
-import de.prob.model.eventb.algorithm.ast.IAssignment;
-import de.prob.model.eventb.algorithm.ast.If;
-import de.prob.model.eventb.algorithm.ast.Statement;
-import de.prob.model.eventb.algorithm.ast.While;
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.IAssignment
+import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.While
 import de.prob.model.representation.ModelElementList
 
 class GraphMerge implements IGraphTransformer {
@@ -45,6 +44,21 @@ class GraphMerge implements IGraphTransformer {
 			}
 		}
 		return a
+	}
+
+	def Statement mergeGraph(ControlFlowGraph g, Skip s) {
+		if (graph.nodes.contains(s)) {
+			return s
+		}
+		graph.nodes.add(s)
+		g.outEdges(s).each { Edge e ->
+			Statement stmt = mergeGraph(g, e.to)
+			def nE = graph.addEdge(s, stmt, [])
+			if (g.loopsForTermination[e.to] != null && g.loopsForTermination[e.to].contains(e)) {
+				graph.loopsForTermination[e.to] << nE
+			}
+		}
+		return s
 	}
 
 	def Statement mergeGraph(ControlFlowGraph g, While w) {

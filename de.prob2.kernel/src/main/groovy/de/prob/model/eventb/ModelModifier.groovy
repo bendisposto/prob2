@@ -101,7 +101,8 @@ public class ModelModifier extends AbstractModifier {
 		}
 
 		def comment = m.getChildrenOfType(ElementComment.class) ? m.getChildrenOfType(ElementComment.class).collect { it.comment }.join("\n") : null
-		ModelModifier modelM = machine(name: refinementName, refines: machineName, comment: comment) {
+		def sees = m.getSees().collect { it.getName() }
+		ModelModifier modelM = machine(name: refinementName, refines: machineName, sees: sees, comment: comment) {
 			m.variables.each { variable(it) }
 			m.events.each { Event e ->
 				refine(name: e.getName(), extended: true,

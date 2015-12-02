@@ -22,6 +22,8 @@ class NodeNaming extends AlgorithmASTVisitor {
 	Map<String, Statement> nodes = [:]
 	Map<Statement, String> naming = [:]
 
+	def blockScope = null
+
 	def NodeNaming(Block algorithm) {
 		visit(algorithm)
 	}
@@ -47,6 +49,24 @@ class NodeNaming extends AlgorithmASTVisitor {
 		naming[i] = name
 	}
 
+	public traverse(While s) {
+		def oldS = blockScope
+		visit(s)
+		blockScope = "loop_to_"+ naming[s]
+		visit(s.block)
+		blockScope = oldS
+	}
+
+	public traverse(If i) {
+		def oldS = blockScope
+		visit(i)
+		blockScope = naming[i] + "_then_end"
+		visit(i.Then)
+		blockScope = naming[i] + "_else_end"
+		visit(i.Else)
+		blockScope = oldS
+	}
+
 	@Override
 	public visit(While w) {
 		def name = "while${whilectr++}"
@@ -70,7 +90,7 @@ class NodeNaming extends AlgorithmASTVisitor {
 
 	@Override
 	public Object visit(Skip a) {
-		def name = "assign${assignctr++}"
+		def name = blockScope ? blockScope : "end"
 		nodes[name] = a
 		naming[a] = name
 	}

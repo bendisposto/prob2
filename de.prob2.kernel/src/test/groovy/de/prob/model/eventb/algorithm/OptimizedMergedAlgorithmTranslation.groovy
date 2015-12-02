@@ -51,9 +51,9 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		guards(e.if0_else) == ["pc = 0", "not(x < 0)"]
 		actions(e.if0_else) == ["pc := 1"]
 
-		e.assign1 != null
-		guards(e.assign1) == ["pc = 1"]
-		actions(e.assign1) == []
+		e.end != null
+		guards(e.end) == ["pc = 1"]
+		actions(e.end) == []
 	}
 
 	def "translate an if with an else"() {
@@ -75,8 +75,8 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		guards(e.if0_else) == ["pc = 0", "not(x < 0)"]
 		actions(e.if0_else) == ["x := 2", "pc := 1"]
 
-		e.assign2 != null
-		guards(e.assign2) == ["pc = 1"]
+		e.end != null
+		guards(e.end) == ["pc = 1"]
 	}
 
 	def "translate a while loop"() {
@@ -93,7 +93,11 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 
 		e.exit_while0 != null
 		guards(e.exit_while0) == ["pc = 0", "not(x < 0)"]
-		actions(e.exit_while0) == []
+		actions(e.exit_while0) == ["pc := 1"]
+
+		e.end != null
+		guards(e.end) == ["pc = 1"]
+		actions(e.end) == []
 	}
 
 	def "translate a complicated while if"() {
@@ -174,9 +178,9 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		guards(e.exit_while0) == ["pc = 0", "not(x : ODD)"]
 		actions(e.exit_while0) == ["z := x + y", "pc := 3"]
 
-		e.assign8 != null
-		guards(e.assign8) == ["pc = 3"]
-		actions(e.assign8) == []
+		e.end != null
+		guards(e.end) == ["pc = 3"]
+		actions(e.end) == []
 	}
 
 	def "translate a loopity loop loop loop"() {
@@ -239,7 +243,11 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 
 		e.exit_while2 != null
 		guards(e.exit_while2) == ["pc = 2", "not(z < 50)"]
-		actions(e.exit_while2) == []
+		actions(e.exit_while2) == ["pc := 4"]
+
+		e.end != null
+		guards(e.end) == ["pc = 4"]
+		actions(e.end) == []
 	}
 
 	def "euclid algorithm"() {
@@ -279,7 +287,11 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 			"pc = 0",
 			"not(u /= 0)",
 		]
-		actions(e.exit_while0) == []
+		actions(e.exit_while0) == ["pc := 2"]
+
+		e.end != null
+		guards(e.end) == ["pc = 2"]
+		actions(e.end) == []
 	}
 
 	def "empty if then while"() {
@@ -305,7 +317,11 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 
 		e.exit_while0 != null
 		guards(e.exit_while0) == ["pc = 1", "not(u /= 0)"]
-		actions(e.exit_while0) == []
+		actions(e.exit_while0) == ["pc := 2"]
+
+		e.end != null
+		guards(e.end) == ["pc = 2"]
+		actions(e.end) == []
 	}
 
 	def "test assertion generation"() {
@@ -342,7 +358,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 			"pc = 0 & x < 1 & not(x + y > 10) => (5 = 5)"
 		] as Set)
 		inv(i.assert5) == "pc = 3 => (6 = 6)"
-		inv(i.assert6) == "pc = 0 & not(x < 1) => (7 = 7)"
+		inv(i.assert6) == "pc = 4 => (7 = 7)"
 
 		def e = m.events
 		e.enter_while0_if0_then != null
@@ -353,9 +369,13 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		]
 		actions(e.enter_while0_if0_then) == ["x := 2", "pc := 1"]
 
-		e.assign1 != null
-		guards(e.assign1) == ["pc = 1"]
-		actions(e.assign1) == ["pc := 2"]
+		e.if0_then_end != null
+		guards(e.if0_then_end) == ["pc = 1"]
+		actions(e.if0_then_end) == ["pc := 2"]
+
+		e.loop_to_while0 != null
+		guards(e.loop_to_while0) == ["pc = 3"]
+		actions(e.loop_to_while0) == ["pc := 0"]
 
 		e.enter_while0_if0_else != null
 		guards(e.enter_while0_if0_else) == [
@@ -365,16 +385,16 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		]
 		actions(e.enter_while0_if0_else) == ["x := z - 90", "pc := 3"]
 
-		e.assign2 != null
-		guards(e.assign2) == ["pc = 2"]
-		actions(e.assign2) == ["x := z - 90", "pc := 3"]
-
-		e.assign3 != null
-		guards(e.assign3) == ["pc = 3"]
-		actions(e.assign3) == ["pc := 0"]
+		e.assign1 != null
+		guards(e.assign1) == ["pc = 2"]
+		actions(e.assign1) == ["x := z - 90", "pc := 3"]
 
 		e.exit_while0 != null
 		guards(e.exit_while0) == ["pc = 0", "not(x < 1)"]
-		actions(e.exit_while0) == []
+		actions(e.exit_while0) == ["pc := 4"]
+
+		e.end != null
+		guards(e.end) == ["pc = 4"]
+		actions(e.end) == []
 	}
 }
