@@ -15,7 +15,7 @@ public class EventBMachine extends Machine {
 		super(
 				name,
 				PersistentHashMap
-						.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
+				.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
 	}
 
 	private EventBMachine(
@@ -63,6 +63,15 @@ public class EventBMachine extends Machine {
 
 	public ModelElementList<EventBInvariant> getInvariants() {
 		return getChildrenAndCast(Invariant.class, EventBInvariant.class);
+	}
+
+	public ModelElementList<EventBInvariant> getAllInvariants() {
+		ModelElementList<EventBInvariant> invs = new ModelElementList<EventBInvariant>();
+		for (EventBMachine m : getRefines()) {
+			invs = invs.addMultiple(m.getAllInvariants());
+		}
+		invs = invs.addMultiple(getInvariants());
+		return invs;
 	}
 
 	public Variant getVariant() {

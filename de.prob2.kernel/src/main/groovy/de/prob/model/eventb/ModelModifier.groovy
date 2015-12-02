@@ -105,7 +105,7 @@ public class ModelModifier extends AbstractModifier {
 		ModelModifier modelM = machine(name: refinementName, refines: machineName, sees: sees, comment: comment) {
 			m.variables.each { variable(it) }
 			m.events.each { Event e ->
-				refine(name: e.getName(), extended: true,
+				refine(name: e.getName(), extended: true, type: e.getType(),
 				comment: e.getChildrenOfType(ElementComment.class) ? e.getChildrenOfType(ElementComment.class).collect { it.comment }.join("\n") : null) {}
 			}
 		}

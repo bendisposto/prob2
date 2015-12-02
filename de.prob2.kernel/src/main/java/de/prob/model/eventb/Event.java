@@ -78,8 +78,24 @@ public class Event extends BEvent {
 		return getChildrenAndCast(Guard.class, EventBGuard.class);
 	}
 
+	public ModelElementList<EventBGuard> getAllGuards() {
+		ModelElementList<EventBGuard> acts = new ModelElementList<EventBGuard>();
+		for (Event e : getRefines()) {
+			acts = acts.addMultiple(e.getAllGuards());
+		}
+		return acts.addMultiple(getGuards());
+	}
+
 	public ModelElementList<EventBAction> getActions() {
 		return getChildrenAndCast(Action.class, EventBAction.class);
+	}
+
+	public ModelElementList<EventBAction> getAllActions() {
+		ModelElementList<EventBAction> acts = new ModelElementList<EventBAction>();
+		for (Event e : getRefines()) {
+			acts = acts.addMultiple(e.getAllActions());
+		}
+		return acts.addMultiple(getActions());
 	}
 
 	public ModelElementList<Witness> getWitnesses() {

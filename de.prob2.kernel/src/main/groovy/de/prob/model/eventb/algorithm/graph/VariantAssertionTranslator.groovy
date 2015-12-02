@@ -1,6 +1,7 @@
 package de.prob.model.eventb.algorithm.graph
 
 import de.be4.classicalb.core.parser.node.AImplicationPredicate
+import de.be4.ltl.core.parser.node.THistorically;
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
@@ -32,13 +33,15 @@ class VariantAssertionTranslator extends AlgorithmASTVisitor {
 	Map<Statement, List<VariantAssertion>> propagated
 	boolean optimized
 	String pcname
+	While stmt
 
-	def VariantAssertionTranslator(MachineModifier machineM, List<Procedure> procedures, ControlFlowGraph graph, Map<Statement, Integer> pcInfo, AlgorithmGenerationOptions options, String pcname) {
+	def VariantAssertionTranslator(MachineModifier machineM, While stmt, List<Procedure> procedures, ControlFlowGraph graph, Map<Statement, Integer> pcInfo, AlgorithmGenerationOptions options, String pcname) {
 		this.graph = graph
 		this.machineM = machineM
 		this.pcInfo = pcInfo
 		this.optimized = options.isOptimize()
 		this.pcname = pcname
+		this.stmt = stmt
 		def p = new VariantPropagator(procedures, graph.nodeMapping)
 		p.traverse(graph.algorithm)
 		this.propagated = p.assertionMap
@@ -127,10 +130,15 @@ class VariantAssertionTranslator extends AlgorithmASTVisitor {
 
 	def MachineModifier writePropagated(MachineModifier machineM, List<VariantAssertion> properties, String prefix) {
 		properties.inject(machineM) { MachineModifier mm, VariantAssertion prop ->
-			def preds = [prefix]+ prop.conditions.collect { it.getCode() }
-			def formula1 = preds.iterator().join(" & ") + " => (${prop.variantCondition.getCode()})"
-			def formula2 = preds.iterator().join(" & ") + " => (${prop.positive.getCode()})"
-			mm.invariant(getName("variant_assert"), formula1).invariant(getName("variant_assert"), formula2)
+			if (prop.stmt == stmt) {
+				def n = "variant_"+graph.nodeMapping.getName(stmt)
+				def preds = [prefix]+ prop.conditions.collect { it.getCode() }
+				def formula1 = preds.iterator().join(" & ") + " => (${prop.variantCondition.getCode()})"
+				def formula2 = preds.iterator().join(" & ") + " => (${prop.positive.getCode()})"
+				return mm.invariant(getName(n), formula1).invariant(getName(n), formula2)
+			} else {
+				return mm
+			}
 		}
 	}
 }

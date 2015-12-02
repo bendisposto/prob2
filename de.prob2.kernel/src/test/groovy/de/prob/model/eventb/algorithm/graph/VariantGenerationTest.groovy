@@ -17,6 +17,14 @@ class VariantGenerationTest extends Specification {
 		new VariantGenerator(new NodeNaming(b)).visit(b)
 	}
 
+	def order(Closure cls) {
+		Block b = new Block().make(cls)
+		def v = new VariantOrdering()
+		v.visit(b)
+		def naming = new NodeNaming(b)
+		v.ordering.collect { naming.getName(it) }
+	}
+
 	def nodeLoops(Closure cls) {
 		Block b = new Block().make(cls)
 		ControlFlowGraph g = new ControlFlowGraph(b)
@@ -76,6 +84,29 @@ class VariantGenerationTest extends Specification {
 		var == [
 			"while0_variant * while1_variant + while0_variant"
 		]
+	}
+
+	def "ll parsing algorithm order"() {
+		when:
+		def var = order({
+			While("chng = TRUE", variant: "2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng)") {
+				Assign("chng := FALSE")
+				While("worklist /= {}", invariant: "worklist <: G & next : G", variant: "card(worklist)") {
+					// Assert("worklist /= {}")
+					Assign("next :: worklist")
+					Assign("worklist := worklist \\ {next}")
+					If ("prj1(next) /: nullable & ran(prj2(next)) <: nullable") {
+						Then {
+							Assign("nullable := nullable \\/ {prj1(next)}")
+							Assign("chng := TRUE")
+						}
+					}
+				}
+			}
+		})
+
+		then:
+		var == ["while1", "while0"]
 	}
 
 	def "ll parsing algorithm node loops"() {
@@ -210,6 +241,17 @@ class VariantGenerationTest extends Specification {
 		]
 	}
 
+	def "two while loops after each other order"() {
+		when:
+		def var = order({
+			While("x < 10",variant: "x") { Assign("x := x - 1") }
+			While("y < 10",variant: "y") { Assign("y := y - 1") }
+		})
+
+		then:
+		var == ["while0", "while1"]
+	}
+
 	def "two while loops after each other (node loops)"() {
 		when:
 		def loops = nodeLoops({
@@ -241,6 +283,29 @@ class VariantGenerationTest extends Specification {
 		then:
 		var == [
 			"while0_variant + while1_variant + while2_variant"
+		]
+	}
+
+	def "in an if statement order"() {
+		when:
+		def var = order({
+			If("x < z") {
+				Then {
+					While("x < 10",variant: "x") { Assign("x := x - 1") }
+					While("y < 10",variant: "y") { Assign("y := y - 1") }
+				}
+				Else {
+					While("z < 10",variant: "z") { Assign("z := z - 2") }
+				}
+			}
+
+		})
+
+		then:
+		var == [
+			"while0",
+			"while1",
+			"while2"
 		]
 	}
 
@@ -287,5 +352,31 @@ class VariantGenerationTest extends Specification {
 			while2: ["loop_to_while2"],
 			while3: ["loop_to_while3"],
 			while0: ["loop_to_while0"]]
+	}
+
+	def "while if order"() {
+		when:
+		def loops = order({
+			While("x < z", variant: "x") {
+				If("x /= y") {
+					Then {
+						While("x < 10",variant: "x") { Assign("x := x - 1") }
+						While("y < 10",variant: "y") { Assign("y := y - 1") }
+					}
+					Else {
+						While("z < 10",variant: "z") { Assign("z := z - 2") }
+					}
+				}
+			}
+
+		})
+
+		then:
+		loops == [
+			"while1",
+			"while2",
+			"while3",
+			"while0"
+		]
 	}
 }

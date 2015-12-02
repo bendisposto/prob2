@@ -175,7 +175,7 @@ public class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier invariant(String pred, boolean theorem=false) throws ModelGenerationException {
-		int ctr = extractCounter("inv", machine.invariants) + 1
+		int ctr = extractCounter("inv", machine.getAllInvariants()) + 1
 		invariant("inv$ctr", validate("pred", pred), theorem)
 	}
 

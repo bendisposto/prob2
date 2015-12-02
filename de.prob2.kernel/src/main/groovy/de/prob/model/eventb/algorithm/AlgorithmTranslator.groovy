@@ -29,7 +29,7 @@ import de.prob.model.eventb.algorithm.graph.Edge
 import de.prob.model.eventb.algorithm.graph.GraphTransformer
 import de.prob.model.eventb.algorithm.graph.PCCalculator
 import de.prob.model.eventb.algorithm.graph.VariantAssertionTranslator
-import de.prob.model.eventb.algorithm.graph.VariantGenerator
+import de.prob.model.eventb.algorithm.graph.VariantOrdering
 import de.prob.model.representation.ModelElementList
 
 class AlgorithmTranslator {
@@ -236,32 +236,36 @@ class AlgorithmTranslator {
 		}
 	}
 
-	def ModelModifier runTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {\
+	def ModelModifier runTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {
 		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
-		def variant = new VariantGenerator(graph.nodeMapping).visit(graph.algorithm)
-		if (!variant) {
-			return modelM
-		}
-
 		def pcname = getProcedure(modelM.getModel().getMachine(mchName)) ? "ipc" : "pc"
 
-		def newName = "${mchName}_termination"
-		modelM = modelM.refine(mchName, newName)
-		def oldM = modelM.getModel().getMachine(newName)
-		def mM = new MachineModifier(oldM)
-		mM = mM.variant(variant.iterator().join(" + "))
-		graph.loopsForTermination.each { While loop, List<Edge> edges ->
-			def vName = graph.nodeMapping.getName(loop) + "_variant"
-			mM = mM.var(vName, "$vName : NAT", "$vName :: NAT")
-			def final setVariant = "$vName := ${loop.variant.getCode()}"
-			mM = mM.event(name: "enter_"+graph.nodeMapping.getName(loop)) { action setVariant }
-			edges.each { Edge e ->
-				mM = mM.event(name: graph.getEventName(e), type: EventType.CONVERGENT) { action setVariant }
-			}
+		def ordering = new VariantOrdering()
+		ordering.visit(graph.algorithm)
+		def refName = mchName
+		def ctr = 0
+		ordering.ordering.each { While stmt ->
+			def newName = "${mchName}_term${ctr++}_"+graph.nodeMapping.getName(stmt)
+			modelM = modelM.refine(refName, newName)
+			def oldM = modelM.getModel().getMachine(newName)
+			def mM = new MachineModifier(oldM)
+			def newM = createLoopTermination(mM, stmt, graph, pcCalc, pcname)
+			refName = newName
+			modelM = modelM.replaceMachine(oldM, newM)
+		}
+		modelM
+	}
+
+	def EventBMachine createLoopTermination(MachineModifier machineM, While stmt, ControlFlowGraph graph, PCCalculator pcCalc, String pcname) {
+		String variantName = graph.nodeMapping.getName(stmt)+"_variant"
+		def mM = machineM.variant(variantName).var(variantName, variantName + " : NAT", variantName + " :: NAT")
+		def final setVariant = variantName+" := ${stmt.variant.getCode()}"
+		mM = mM.event(name: "enter_"+graph.nodeMapping.getName(stmt)) { action setVariant }
+		graph.loopsForTermination[stmt].each { Edge edge ->
+			mM = mM.event(name: graph.getEventName(edge), type: EventType.CONVERGENT) { action setVariant }
 		}
 		mM = mM.initialisation(extended: true)
-		mM = new VariantAssertionTranslator(mM, procedures, graph, pcCalc.pcInformation, options, pcname).getMachineM()
-
-		modelM.replaceMachine(oldM, mM.getMachine())
+		mM = new VariantAssertionTranslator(mM, stmt, procedures, graph, pcCalc.pcInformation, options, pcname).getMachineM()
+		mM.getMachine()
 	}
 }
