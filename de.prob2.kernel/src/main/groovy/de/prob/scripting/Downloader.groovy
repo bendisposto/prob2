@@ -151,7 +151,7 @@ class Downloader {
 		if(dirName == "win32" || dirName == "win64") {
 			targetName += "windows"
 		}
-		download("http://nightly.cobra.cs.uni-duesseldorf.de/cspmf/"+targetName,target)
+		download("http://www3.hhu.de/stups/downloads/cspmf/"+targetName,target)
 		new File(target).setExecutable(true)
 
 		return "--CSP Parser cspmf upgraded to latest copy--"
