@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 
+import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.Downloader;
 import de.prob.scripting.FileHandler;
 
@@ -179,6 +180,7 @@ public class Main {
 
 			main.run(args);
 		} catch (Throwable e) {
+			getInjector().getInstance(ProBInstanceProvider.class).shutdownAll();
 			e.printStackTrace();
 			System.exit(-1);
 		}
