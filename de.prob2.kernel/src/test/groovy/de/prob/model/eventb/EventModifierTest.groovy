@@ -630,7 +630,8 @@ class EventModifierTest extends Specification {
 		then:
 		modifier.getEvent().guards.collect { it.getName() } == [
 			"grd4",
-			"grd5",
+			"grd0",
+			// grd0 doesn't exist yet, so it is added
 			"grd10",
 			"grd11",
 			"grd12"
@@ -648,7 +649,7 @@ class EventModifierTest extends Specification {
 		then:
 		modifier.getEvent().actions.collect { it.getName() } == [
 			"act4",
-			"act5",
+			"act0",
 			"act10",
 			"act11",
 			"act12"
@@ -989,11 +990,11 @@ class EventModifierTest extends Specification {
 		event.guards.collect { it.getName() } == ["grd2", "grd3", "grd4"]
 	}
 
-	def "only those names with a correct prefix will be changed"() {
+	def "renaming will only happen if necessary be changed"() {
 		when:
 		Event refined = new EventModifier(new Event("refined", EventType.ORDINARY, false)).make {
-			when grd10: "x < y", blah: "y < 6"
-			then foo: "x := x + 1", bar: "y := y + 1", act97: "z := z + 1"
+			when blah: "x < y", grd1: "y < 6"
+			then foo: "x := x + 1", act0: "y := y + 1", act97: "z := z + 1"
 		}.getEvent()
 		def refacts = refined.actions.collect { it.getName() }
 		def refgrds = refined.guards.collect { it.getName() }
@@ -1006,12 +1007,12 @@ class EventModifierTest extends Specification {
 		def event = modifier.refines(refined, true).getEvent()
 
 		then:
-		refacts == ["foo", "bar", "act97"]
-		refgrds == ["grd10", "blah"]
+		refacts == ["foo", "act0", "act97"]
+		refgrds == ["blah", "grd1"]
 		b4acts == ["act0", "act1", "act2"]
 		b4grds == ["grd0", "grd1", "grd2"]
-		event.actions.collect { it.getName() } == ["act98", "act99", "act100"]
-		event.guards.collect { it.getName() } == ["grd11", "grd12", "grd13"]
+		event.actions.collect { it.getName() } == ["act98", "act1", "act2"]
+		event.guards.collect { it.getName() } == ["grd0", "grd2", "grd3"]
 	}
 
 	def "adding a an empty refined event will not affect naming"() {

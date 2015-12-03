@@ -266,7 +266,7 @@ class MachineModifierTest extends Specification {
 		def thm = modifier.getMachine().invariants[0]
 
 		then:
-		thm.getName() == "inv0"
+		thm.getName() == "thm0"
 		thm.isTheorem()
 		thm.getPredicate().getCode() == "1 = 1"
 	}
@@ -392,7 +392,7 @@ class MachineModifierTest extends Specification {
 		def invariants = modifier.getMachine().invariants
 
 		then:
-		invariants.collect { it.getName() } == ["inv0", "inv1", "inv2"]
+		invariants.collect { it.getName() } == ["thm0", "thm1", "thm2"]
 		invariants[0].getPredicate().getCode() == "x : NAT"
 		invariants[1].getPredicate().getCode() == "x = 4"
 		invariants[2].getPredicate().getCode() == "r : NAT"
@@ -741,7 +741,7 @@ class MachineModifierTest extends Specification {
 		then:
 		modifier.getMachine().invariants.collect { it.getName() } == [
 			"inv4",
-			"inv5",
+			"inv0",
 			"inv10",
 			"inv11",
 			"inv12"

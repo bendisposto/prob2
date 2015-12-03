@@ -83,10 +83,10 @@ public class MachineModifier extends AbstractModifier {
 		var(validated.name, validated.invariant, validated.init)
 	}
 
-	def MachineModifier var(String name, String invariant, String init) throws ModelGenerationException {
+	def MachineModifier var(final String name, String invariant, String init) throws ModelGenerationException {
 		MachineModifier mm = variable(name)
-		mm = mm.invariant(invariant)
-		mm = mm.initialisation({ action init })
+		mm = mm.invariant("typing_$name", invariant)
+		mm = mm.initialisation({ action "init_$name", init })
 		mm
 	}
 
@@ -156,8 +156,7 @@ public class MachineModifier extends AbstractModifier {
 	}
 
 	def MachineModifier invariant(String pred, boolean theorem=false) throws ModelGenerationException {
-		int ctr = extractCounter("inv", machine.getAllInvariants()) + 1
-		invariant("inv$ctr", validate("pred", pred), theorem)
+		invariant(theorem ? "thm0" : "inv0", validate("pred", pred), theorem)
 	}
 
 	def MachineModifier invariant(String name, String predicate, boolean theorem=false, String comment="") throws ModelGenerationException {
@@ -170,7 +169,13 @@ public class MachineModifier extends AbstractModifier {
 			!po.getName().endsWith("/INV")
 		}
 
-		machine = machine.addTo(Invariant.class, invariant)
+		def inv = invariant
+		def uniqueName = getUniqueName(invariant.getName(), machine.getAllInvariants())
+		if (uniqueName != invariant.getName()) {
+			inv = new EventBInvariant(uniqueName, invariant.getPredicate(), invariant.isTheorem(), invariant.getComment())
+		}
+
+		machine = machine.addTo(Invariant.class, inv)
 		machine = machine.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs))
 		newMM(machine)
 	}

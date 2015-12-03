@@ -439,7 +439,7 @@ class ContextModifierTest extends Specification {
 		then:
 		modifier.getContext().axioms.collect { it.getName() } == [
 			"axm4",
-			"axm5",
+			"axm0",
 			"axm10",
 			"axm11",
 			"axm12"

@@ -102,15 +102,16 @@ assert model.levels.axioms.always_true.isTheorem()
 lift0 = model.lift0
 assert lift0 != null
 assert lift0.variables.level != null
-assert lift0.invariants.collect { it.getName() } == ["inv_level","inv0","always_true","also_always_true","inv1"]
+assert lift0.invariants.collect { it.getName() } == ["inv_level","typing_door_open","always_true","also_always_true","inv0"]
 assert lift0.invariants.inv_level.getPredicate().getCode() == "level : BOTTOM..TOP"
-assert lift0.invariants.inv1.getPredicate().getCode() == "level > 0"
+assert lift0.invariants.inv0.getPredicate().getCode() == "level > 0"
+assert lift0.invariants.typing_door_open.getPredicate().getCode() == "door_open : BOOL"
 assert lift0.invariants.always_true.isTheorem()
 assert lift0.invariants.also_always_true.isTheorem()
 init = lift0.events.INITIALISATION
-assert init.actions.collect { it.getName() } == ["act_level", "act0"]
+assert init.actions.collect { it.getName() } == ["act_level", "init_door_open"]
 init.actions.act_level.getCode().getCode() == "level := 1"
-init.actions.act0.getCode().getCode() == "door_open := FALSE"
+init.actions.init_door_open.getCode().getCode() == "door_open := FALSE"
 assert lift0.events.down.guards.always_true.isTheorem()
 
 assert model.door.getExtends()[0].getName() == "IDoNothing"

@@ -75,18 +75,28 @@ class AbstractModifier extends AbstractElement {
 		new Definition(definition)
 	}
 
-	def static int extractCounter(String prefix, List elements) {
-		int counter = -1
+	def String getUniqueName(String name, List elements) {
+		def element = elements.find { it.getName() == name }
+		if (!element) {
+			return name
+		}
+
+		def pre = name
+		def counter = 0
+		if ((name =~ "[0-9]+\$").find()) {
+			pre = name.replaceAll("[0-9]+\$","")
+			counter = name.replace(pre, "") as Integer
+		}
 		elements.each { e ->
-			if (e.getName() ==~ "$prefix[0-9]+") {
-				def str = e.getName().replace(prefix, "")
+			if (e.getName() ==~ "$pre[0-9]+") {
+				def str = e.getName().replace(pre, "")
 				int cnt = str as Integer
-				if (cnt > counter) {
-					counter = cnt
+				if (cnt >= counter) {
+					counter = cnt + 1
 				}
 			}
 		}
-		counter
+		return pre + counter
 	}
 
 	def EventB parseIdentifier(String formula) throws ModelGenerationException {

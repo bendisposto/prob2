@@ -11,17 +11,13 @@ import de.prob.model.representation.Guard
 import de.prob.model.representation.ModelElementList
 
 public class EventModifier extends AbstractModifier {
-	private final actctr
-	private final grdctr
 	def Event event
 	boolean initialisation
 
 	public EventModifier(Event event, boolean initialisation=false, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
 		super(typeEnvironment)
 		this.initialisation = initialisation
-		this.actctr = extractCounter("act", event.getAllActions())
 		this.event = event
-		this.grdctr = extractCounter("grd", event.getAllGuards())
 	}
 
 	private EventModifier newEM(Event event) {
@@ -33,17 +29,23 @@ public class EventModifier extends AbstractModifier {
 		Event e = event.toggleExtended(extended)
 		e = e.set(Event.class, new ModelElementList<Event>([refinedEvent]))
 		if (extended) {
-			def actctr = extractCounter("act", refinedEvent.getAllActions())
-			if (actctr > -1) {
-				e = e.set(Action.class, new ModelElementList<EventBAction>(e.actions.collect { EventBAction a ->
-					a.getName().startsWith("act") ? new EventBAction("act${++actctr}", a.getCode(), a.getComment()) : a
-				}))
+			def actions = refinedEvent.getAllActions()
+			if (e.actions) {
+				def acts = e.actions.inject([]) { List<EventBAction> added, EventBAction a ->
+					def newName = getUniqueName(a.getName(), actions + added)
+					def newA = newName == a.getName() ? a : new EventBAction(newName, a.getCode(), a.getComment())
+					added << newA
+				}
+				e = e.set(Action.class, new ModelElementList<EventBAction>(acts))
 			}
-			def grdctr = extractCounter("grd", refinedEvent.getAllGuards())
-			if (grdctr > -1) {
-				e = e.set(Guard.class, new ModelElementList<EventBGuard>(e.guards.collect { EventBGuard g ->
-					g.getName().startsWith("grd") ? new EventBGuard("grd${++grdctr}", g.getPredicate(), g.isTheorem(), g.getComment()) : g
-				}))
+			def guards = refinedEvent.getAllGuards()
+			if (e.guards) {
+				def grds = e.guards.inject([]) { List<EventBGuard> added, EventBGuard g ->
+					def newName = getUniqueName(g.getName(), guards + added)
+					def newG = newName == g.getName() ? g : new EventBGuard(newName, g.getPredicate(), g.isTheorem(), g.getComment())
+					added << newG
+				}
+				e = e.set(Guard.class, new ModelElementList<EventBGuard>(grds))
 			}
 		}
 		newEM(e)
@@ -90,13 +92,11 @@ public class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier guard(String pred, boolean theorem=false) throws ModelGenerationException {
-		def ctr = grdctr + 1
-		guard("grd$ctr", pred, theorem)
+		guard(theorem ? "thm0" : "grd0", pred, theorem)
 	}
 
 	def EventModifier guard(EventB predicate, boolean theorem=false) throws ModelGenerationException {
-		def ctr = grdctr + 1
-		guard("grd$ctr", predicate, theorem)
+		guard(theorem ? "thm0" : "grd0", predicate, theorem)
 	}
 
 	def EventModifier guard(LinkedHashMap properties, boolean theorem=false) throws ModelGenerationException {
@@ -105,18 +105,15 @@ public class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier guard(String name, String pred, boolean theorem=false, String comment="") throws ModelGenerationException {
-		if (initialisation) {
-			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
-		}
-		def guard = new EventBGuard(validate('name',name), parsePredicate(pred), theorem, comment)
-		newEM(event.addTo(Guard.class, guard))
+		guard(name, parsePredicate(pred), theorem, comment)
 	}
 
 	def EventModifier guard(String name, EventB pred, boolean theorem=false, String comment="") throws ModelGenerationException {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
 		}
-		def guard = new EventBGuard(validate('name',name), ensureType(pred, EvalElementType.PREDICATE), theorem, comment)
+		def n = validate('name', name)
+		def guard = new EventBGuard(getUniqueName(n, event.getAllGuards()), ensureType(pred, EvalElementType.PREDICATE), theorem, comment)
 		newEM(event.addTo(Guard.class, guard))
 	}
 
@@ -164,22 +161,20 @@ public class EventModifier extends AbstractModifier {
 	}
 
 	def EventModifier action(String actionString) throws ModelGenerationException {
-		int ctr = actctr + 1
-		action("act$ctr", actionString)
+		action("act0", actionString)
 	}
 
 	def EventModifier action(EventB act) throws ModelGenerationException {
-		int ctr = actctr + 1
-		action("act$ctr", act)
+		action("act0", act)
 	}
 
 	def EventModifier action(String name, String act, String comment="") throws ModelGenerationException {
-		def a = new EventBAction(validate('name',name), parseFormula(act, EvalElementType.ASSIGNMENT), comment)
-		action(a)
+		action(name, parseFormula(act, EvalElementType.ASSIGNMENT), comment)
 	}
 
 	def EventModifier action(String name, EventB act, String comment="") throws ModelGenerationException {
-		def a = new EventBAction(validate('name',name), ensureType(act, EvalElementType.ASSIGNMENT), comment)
+		def n = validate('name', name)
+		def a = new EventBAction(getUniqueName(n, event.getAllActions()), ensureType(act, EvalElementType.ASSIGNMENT), comment)
 		action(a)
 	}
 

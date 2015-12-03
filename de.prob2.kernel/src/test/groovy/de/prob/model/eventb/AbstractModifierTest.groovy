@@ -15,44 +15,6 @@ class AbstractModifierTest extends Specification {
 
 	AbstractModifier am = new AbstractModifier(Collections.emptySet())
 
-	def "find correct counter"() {
-		when:
-		def list = [
-			new CSPElement("inv1"),
-			new CSPElement("inv2"),
-			new CSPElement("inv4")
-		]
-
-		then:
-		am.extractCounter("inv",list) == 4
-	}
-
-	def "find default counter"() {
-		when:
-		def list = [
-			new CSPElement("inv1"),
-			new CSPElement("inv2"),
-			new CSPElement("inv4")
-		]
-
-		then:
-		am.extractCounter("invx",list) == -1
-	}
-
-	def "ignore unmatchable elements"() {
-		when:
-		def list = [
-			new CSPElement("inv1"),
-			new CSPElement("inv2"),
-			new CSPElement("inv4"),
-			new CSPElement("inv056"),
-			new CSPElement("inv92e")
-		]
-
-		then:
-		am.extractCounter("inv",list) == 56
-	}
-
 	def "validate properties type cannot be a list with one element"() {
 		when:
 		def props = am.validateProperties([a: 1], [a: [1]])
@@ -194,5 +156,24 @@ class AbstractModifierTest extends Specification {
 		then:
 		FormulaTypeException ex = thrown()
 		ex.getExpected() == "EXPRESSION"
+	}
+
+	def elements(String... names) {
+		names.collect { new CSPElement(it) }
+	}
+
+	def "get unique name that is already unique"() {
+		expect:
+		am.getUniqueName("unique", elements("inv1","foo","bar","blah","unique2")) == "unique"
+	}
+
+	def "prefix element that is not yet unique"() {
+		expect:
+		am.getUniqueName("a", elements("b","c","a","d")) == "a0"
+	}
+
+	def "if a number postfix already exists, increase it if necessary"() {
+		expect:
+		am.getUniqueName("axm0", elements("axm0","axm4","axm40","axm5")) == "axm41"
 	}
 }

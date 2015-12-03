@@ -10,13 +10,11 @@ import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 
 public class ContextModifier extends AbstractModifier {
-	private final axmctr
 	final Context context
 
 	public ContextModifier(Context context, java.util.Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
 		super(typeEnvironment)
 		this.context = validate('context',context)
-		this.axmctr = extractCounter("axm", context.axioms)
 	}
 
 	private ContextModifier newCM(Context context) {
@@ -123,12 +121,12 @@ public class ContextModifier extends AbstractModifier {
 	}
 
 	def ContextModifier axiom(String pred, boolean theorem=false) throws ModelGenerationException {
-		int ctr = axmctr + 1
-		axiom("axm$ctr", pred, theorem)
+		axiom(theorem ? "thm0" : "axm0", pred, theorem)
 	}
 
 	def ContextModifier axiom(String name, String predicate, boolean theorem=false, String comment="") throws ModelGenerationException {
-		def axiom = new EventBAxiom(name, parsePredicate(predicate), theorem, comment)
+		def n = validate('name', name)
+		def axiom = new EventBAxiom(getUniqueName(n, context.getAllAxioms()), parsePredicate(predicate), theorem, comment)
 		newCM(context.addTo(Axiom.class, axiom))
 	}
 

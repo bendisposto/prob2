@@ -220,8 +220,7 @@ class AlgorithmTranslator {
 			procedure.results,
 			a.returnVals
 		].transpose().each { String r, EventB v ->
-			def n = "act${em.actctr + 1}"
-			em = em.action(n, r +":="+v.getCode(), a.toString())
+			em = em.action("act0", r +":="+v.getCode(), a.toString())
 		}
 		em
 	}

@@ -13,10 +13,15 @@ public class Context extends AbstractElement {
 	private final String name;
 
 	public Context(final String name) {
-		this(name, PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap());
+		this(
+				name,
+				PersistentHashMap
+						.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
 	}
 
-	private Context(final String name, PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
+	private Context(
+			final String name,
+			PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
 		super(children);
 		this.name = name;
 	}
@@ -25,7 +30,8 @@ public class Context extends AbstractElement {
 		return name;
 	}
 
-	public Context set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+	public Context set(Class<? extends AbstractElement> clazz,
+			ModelElementList<? extends AbstractElement> elements) {
 		return new Context(name, assoc(clazz, elements));
 	}
 
@@ -34,14 +40,17 @@ public class Context extends AbstractElement {
 		return new Context(name, assoc(clazz, list.addElement(element)));
 	}
 
-	public <T extends AbstractElement> Context removeFrom(Class<T> clazz, T element) {
+	public <T extends AbstractElement> Context removeFrom(Class<T> clazz,
+			T element) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
 		return new Context(name, assoc(clazz, list.removeElement(element)));
 	}
 
-	public <T extends AbstractElement> Context replaceIn(Class<T> clazz, T oldElement, T newElement) {
+	public <T extends AbstractElement> Context replaceIn(Class<T> clazz,
+			T oldElement, T newElement) {
 		ModelElementList<T> list = getChildrenOfType(clazz);
-		return new Context(name, assoc(clazz, list.replaceElement(oldElement, newElement)));
+		return new Context(name, assoc(clazz,
+				list.replaceElement(oldElement, newElement)));
 	}
 
 	public ModelElementList<Context> getExtends() {
@@ -56,6 +65,15 @@ public class Context extends AbstractElement {
 		return getChildrenAndCast(Axiom.class, EventBAxiom.class);
 	}
 
+	public ModelElementList<EventBAxiom> getAllAxioms() {
+		ModelElementList<EventBAxiom> axms = new ModelElementList<EventBAxiom>();
+		for (Context ctx : getExtends()) {
+			axms = axms.addMultiple(ctx.getAllAxioms());
+		}
+		axms = axms.addMultiple(getAxioms());
+		return axms;
+	}
+
 	public ModelElementList<Set> getSets() {
 		return getChildrenOfType(Set.class);
 	}
@@ -63,6 +81,5 @@ public class Context extends AbstractElement {
 	public ModelElementList<ProofObligation> getProofs() {
 		return getChildrenOfType(ProofObligation.class);
 	}
-
 
 }
