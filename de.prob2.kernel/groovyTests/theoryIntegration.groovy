@@ -22,7 +22,7 @@ m = new ModelModifier().make {
 				theories: ["Seq"]
 	
 	machine(name: "UseSeq") {
-		var_block "s", "s : seq(INT)", "s := emptySeq"
+		var "s", "s : seq(INT)", "s := emptySeq"
 		
 		event(name: "add") {
 			any "p"

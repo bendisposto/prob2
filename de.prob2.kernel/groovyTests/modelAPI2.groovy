@@ -10,7 +10,7 @@ m = s as EventBModel
 
 mm = new ModelModifier(m).make {
 	machine(name: "EmptyMachine") {
-		var_block "x", "x : NAT", "x := 0"
+		var "x", "x : NAT", "x := 0"
 		
 		event(name: "event1") {
 			when g: "x > 0"

@@ -119,7 +119,7 @@ class AlgorithmTranslator {
 		def pcname = procedure ? "ipc" : "pc"
 		machineM = machineM.addComment(new AlgorithmPrettyPrinter(graph.getAlgorithm(), procedures).prettyPrint())
 		if (graph.entryNode) {
-			machineM = machineM.var_block("$pcname", "$pcname : NAT", "$pcname := 0")
+			machineM = machineM.var("$pcname", "$pcname : NAT", "$pcname := 0")
 			machineM = new AssertionTranslator(machineM, procedures, graph, pcCalc.pcInformation, options, pcname).getMachineM()
 			machineM =  addNode([] as Set, graph, machineM, procedure, graph.entryNode, pcCalc.pcInformation)
 		}

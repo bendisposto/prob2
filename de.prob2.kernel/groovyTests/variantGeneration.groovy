@@ -16,7 +16,7 @@ import de.prob.statespace.*
 
 mm = new ModelModifier().make {
 	machine(name: "MyLoop") {
-		var_block "x", "x : NAT", "x := 10"
+		var "x", "x : NAT", "x := 10"
 		algorithm {
 			While("x > 0", invariant: "x >= 0 & x <= 11", variant: "x") {
 				Assign("x := x + 1")

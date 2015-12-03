@@ -14,8 +14,8 @@ m = new ModelModifier().make {
 				theories: ["Seq"]
 	
 	machine(name: "UseSeq") {
-		var_block "s", "s : seq(INT)", "s := emptySeq"
-		var_block "x", "x : NAT", "x := 0"
+		var "s", "s : seq(INT)", "s := emptySeq"
+		var "x", "x : NAT", "x := 0"
 		invariant "seqSize(s) = x"
 		
 		algorithm {

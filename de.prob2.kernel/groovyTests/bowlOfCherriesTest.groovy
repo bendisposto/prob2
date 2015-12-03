@@ -5,7 +5,7 @@ import de.prob.model.eventb.translate.*
 mm = new ModelModifier().make {
 	
 	machine(name: "bowl1") {
-		var_block name: "size",
+		var name: "size",
 		          invariant: "size : NAT",
 		          init: "size := 0"
 		invariant "size <= 50"
@@ -31,7 +31,7 @@ mm = new ModelModifier().make {
 	}
 	
 	machine(name: "bowl2", sees: ["Cherries"], refines: "bowl1") {
-		var_block name: "bowl",
+		var name: "bowl",
 		          invariant: "bowl <: cherries",
 			  init: "bowl := {}"
 		invariant gluing: "size = card(bowl)"

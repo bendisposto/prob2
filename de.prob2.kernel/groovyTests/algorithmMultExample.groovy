@@ -10,8 +10,8 @@ mm = new ModelModifier().make {
 	
 	machine(name: "multiplication") {
 		variables "x", "x0"
-		var_block "y", "y : NAT1", "y :: NAT1"
-		var_block "res0", "res0 : NAT", "res0 := 0"
+		var "y", "y : NAT1", "y :: NAT1"
+		var "res0", "res0 : NAT", "res0 := 0"
 		
 		invariants "x : NAT", "x0 : NAT", "x0 <= x"
 		

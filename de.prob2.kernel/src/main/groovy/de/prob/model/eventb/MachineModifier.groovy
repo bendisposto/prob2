@@ -78,28 +78,9 @@ public class MachineModifier extends AbstractModifier {
 		newMM(machine.addTo(Variable.class, variable))
 	}
 
-	def MachineModifier var_block(LinkedHashMap properties) throws ModelGenerationException {
-		Map validated = validateProperties(validate("properties", properties), [name: String, invariant: Object, init: Object])
-		var_block(validated.name, validated.invariant, validated.init)
-	}
-
-	def MachineModifier var_block(String name, String invariant, String init) throws ModelGenerationException {
-		MachineModifier mm = variable(name)
-		mm = mm.invariant(invariant)
-		mm = mm.initialisation({ action init })
-		mm
-	}
-
-	def MachineModifier var_block(String name, Map inv, Map init) throws ModelGenerationException {
-		MachineModifier mm = variable(name)
-		mm = mm.invariant(inv)
-		mm = mm.initialisation({ action init })
-		mm
-	}
-
 	def MachineModifier var(LinkedHashMap properties) throws ModelGenerationException {
 		Map validated = validateProperties(validate("properties", properties), [name: String, invariant: Object, init: Object])
-		var_block(validated.name, validated.invariant, validated.init)
+		var(validated.name, validated.invariant, validated.init)
 	}
 
 	def MachineModifier var(String name, String invariant, String init) throws ModelGenerationException {

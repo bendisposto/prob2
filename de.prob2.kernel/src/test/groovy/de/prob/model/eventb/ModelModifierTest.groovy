@@ -116,7 +116,7 @@ class ModelModifierTest extends Specification {
 		when:
 		def mm = new ModelModifier().make {
 			machine(name: "Lift") {
-				var_block "level", "level : 0..5", "level := 0"
+				var "level", "level : 0..5", "level := 0"
 				event(name: "up") {
 					when "level < 5"
 					then "level := level + 1"

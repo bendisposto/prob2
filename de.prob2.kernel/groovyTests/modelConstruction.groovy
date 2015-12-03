@@ -15,11 +15,11 @@ mm = mm.make {
 	
 	machine(name: "lift0", sees: ["levels"]) {
 		
-		var_block name: "level", 
+		var name: "level", 
 		          invariant: [inv_level: "level : BOTTOM..TOP"],
 				  init: [act_level: "level := BOTTOM"]
 				  
-		var_block name: "door_open",
+		var name: "door_open",
 				  invariant: "door_open : BOOL",
 				  init: "door_open := FALSE"
 				  

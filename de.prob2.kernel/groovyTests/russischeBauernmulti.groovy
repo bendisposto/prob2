@@ -12,9 +12,9 @@ mm = new ModelModifier().make {
 	
 	machine(name: "multiplication") {
 		variables "x","y"
-		var_block name: "x0", invariant: "x0 : NAT", init: "x0,x :| x0' : NAT1 & x0'=x'"
-		var_block name: "y0", invariant: "y0 : NAT", init: "y0,y :| y0' : NAT1 & y0'=y'"
-		var_block name: "product", invariant: "product : NAT", init: "product := 0"
+		var name: "x0", invariant: "x0 : NAT", init: "x0,x :| x0' : NAT1 & x0'=x'"
+		var name: "y0", invariant: "y0 : NAT", init: "y0,y :| y0' : NAT1 & y0'=y'"
+		var name: "product", invariant: "product : NAT", init: "product := 0"
 		
 		invariants "x : NAT", "y : NAT"
 		theorem "x0 / 2 * 2 = x0 - 1"

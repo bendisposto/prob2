@@ -49,8 +49,8 @@ mm = new ModelModifier().make {
 	}
 	
 	machine(name: "euclid", sees: ["definitions", "limits"]) {
-		var_block name: "u", invariant: "u : 0..k", init: "u := m"
-		var_block name: "v", invariant: "v : 0..k", init: "v := n"
+		var name: "u", invariant: "u : 0..k", init: "u := m"
+		var name: "v", invariant: "v : 0..k", init: "v := n"
 		invariant "GCD[{m|->n}] = GCD[{u|->v}]"
 		
 		algorithm {

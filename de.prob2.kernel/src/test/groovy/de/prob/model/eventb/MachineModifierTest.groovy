@@ -89,7 +89,7 @@ class MachineModifierTest extends Specification {
 
 	def "it is possible to add a variable"() {
 		when:
-		modifier = modifier.var_block("x", "x : NAT", "x := 0")
+		modifier = modifier.var("x", "x : NAT", "x := 0")
 
 		then:
 		modifier.getMachine().variables[0].getName() == "x"
@@ -102,7 +102,7 @@ class MachineModifierTest extends Specification {
 
 	def "it is possible to add a variable with inv and init"() {
 		when:
-		modifier = modifier.var_block name: "x", invariant: "x : NAT", init: "x := 0"
+		modifier = modifier.var name: "x", invariant: "x : NAT", init: "x := 0"
 
 		then:
 		modifier.getMachine().variables[0].getName() == "x"
@@ -115,7 +115,7 @@ class MachineModifierTest extends Specification {
 
 	def "it is possible to add a variable with named inv and init"() {
 		when:
-		modifier = modifier.var_block "x", [inv: "x : NAT"], [act: "x := 0"]
+		modifier = modifier.var "x", [inv: "x : NAT"], [act: "x := 0"]
 
 		then:
 		modifier.getMachine().variables[0].getName() == "x"
@@ -128,7 +128,7 @@ class MachineModifierTest extends Specification {
 
 	def "it is possible to add a variable with named inv and init from map"() {
 		when:
-		modifier = modifier.var_block name: "x",
+		modifier = modifier.var name: "x",
 		invariant: [inv: "x : NAT"],
 		init: [act: "x := 0"]
 
@@ -452,7 +452,7 @@ class MachineModifierTest extends Specification {
 
 	def "it is possible to modify an existing event"() {
 		when:
-		modifier = modifier.var_block("x", "x : NAT", "x := 0")
+		modifier = modifier.var("x", "x : NAT", "x := 0")
 		modifier = modifier.event(name: "INITIALISATION") { action "x := 1" }
 
 		then:
@@ -536,7 +536,7 @@ class MachineModifierTest extends Specification {
 
 	def "initialisation seeks out correct initialisation if it is there"() {
 		when:
-		def refined = new MachineModifier(new EventBMachine("refined"), [] as Set).make { var_block "x", "x : NAT", "x := 0" }.getMachine()
+		def refined = new MachineModifier(new EventBMachine("refined"), [] as Set).make { var "x", "x : NAT", "x := 0" }.getMachine()
 		def refinedinit = refined.events.INITIALISATION
 		modifier = modifier.setRefines(refined)
 		modifier = modifier.variable("y")
@@ -551,12 +551,12 @@ class MachineModifierTest extends Specification {
 	def "when refining events, the correct refined event is selected"() {
 		when:
 		def refined = new MachineModifier(new EventBMachine("refined"), [] as Set).make {
-			var_block "x", "x : NAT", "x := 0"
+			var "x", "x : NAT", "x := 0"
 			event(name: "inc") { then "x := x + 1" }
 		}.getMachine()
 		def inc = refined.events.inc
 		modifier = modifier.setRefines(refined)
-		modifier = modifier.var_block("y", "y : INT", "y := -1")
+		modifier = modifier.var("y", "y : INT", "y := -1")
 		modifier = modifier.refine(name: "inc", extended: "true")
 		def machine = modifier.getMachine()
 
@@ -567,12 +567,12 @@ class MachineModifierTest extends Specification {
 	def "when refining events with closure, the correct refined event is selected"() {
 		when:
 		def refined = new MachineModifier(new EventBMachine("refined"), [] as Set).make {
-			var_block "x", "x : NAT", "x := 0"
+			var "x", "x : NAT", "x := 0"
 			event(name: "inc") { then "x := x + 1" }
 		}.getMachine()
 		def inc = refined.events.inc
 		modifier = modifier.setRefines(refined)
-		modifier = modifier.var_block("y", "y : INT", "y := -1")
+		modifier = modifier.var("y", "y : INT", "y := -1")
 		modifier = modifier.refine(name: "inc", extended: "true") { then "y := y + 1" }
 		def machine = modifier.getMachine()
 
@@ -583,12 +583,12 @@ class MachineModifierTest extends Specification {
 	def "when refining an event, it must exist in the refinement"() {
 		when:
 		def refined = new MachineModifier(new EventBMachine("refined"), [] as Set).make {
-			var_block "x", "x : NAT", "x := 0"
+			var "x", "x : NAT", "x := 0"
 			event(name: "inc") { then "x := x + 1" }
 		}.getMachine()
 		def inc = refined.events.inc
 		modifier = modifier.setRefines(refined)
-		modifier = modifier.var_block("y", "y : INT", "y := -1")
+		modifier = modifier.var("y", "y : INT", "y := -1")
 		modifier.refine(name: "inc2", extended: "true") { then "y := y + 1" }
 
 		then:
@@ -977,33 +977,33 @@ class MachineModifierTest extends Specification {
 		modifier.getMachine().variables.x.getComment() == ""
 	}
 
-	def "var_block cannot be null"() {
+	def "var cannot be null"() {
 		when:
-		modifier = modifier.var_block(null)
+		modifier = modifier.var(null)
 
 		then:
 		thrown IllegalArgumentException
 	}
 
-	def "var_block cannot be null (1)"() {
+	def "var cannot be null (1)"() {
 		when:
-		modifier = modifier.var_block(null, null, null)
+		modifier = modifier.var(null, null, null)
 
 		then:
 		thrown IllegalArgumentException
 	}
 
-	def "var_block cannot be null (2)"() {
+	def "var cannot be null (2)"() {
 		when:
-		modifier = modifier.var_block("x", null, null)
+		modifier = modifier.var("x", null, null)
 
 		then:
 		thrown IllegalArgumentException
 	}
 
-	def "var_block cannot be null (3)"() {
+	def "var cannot be null (3)"() {
 		when:
-		modifier = modifier.var_block("x", "x < 4", null)
+		modifier = modifier.var("x", "x < 4", null)
 
 		then:
 		thrown IllegalArgumentException
