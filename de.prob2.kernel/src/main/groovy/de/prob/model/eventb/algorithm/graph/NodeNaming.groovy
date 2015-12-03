@@ -90,7 +90,7 @@ class NodeNaming extends AlgorithmASTVisitor {
 
 	@Override
 	public Object visit(Skip a) {
-		def name = blockScope ? blockScope : "end"
+		def name = blockScope ? blockScope : "end_algorithm"
 		nodes[name] = a
 		naming[a] = name
 	}

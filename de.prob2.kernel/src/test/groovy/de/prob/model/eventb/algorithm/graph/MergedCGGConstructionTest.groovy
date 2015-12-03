@@ -29,8 +29,7 @@ public class MergedCGGConstructionTest extends Specification {
 		g.outgoingEdges[g.getNode(from)].findAll {
 			it.to == g.getNode(to)
 		}.collect {
-			it.conditions.collect { it.getCode()
-			} } as Set
+			it.conditions.collect { it.getCode() } } as Set
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
@@ -66,8 +65,8 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 2
-		graph.nodes == nodes(graph, "assign0", "end")
-		edge(graph, "assign0", "end") == []
+		graph.nodes == nodes(graph, "assign0", "end_algorithm")
+		edge(graph, "assign0", "end_algorithm") == []
 	}
 
 	def "one assert block has one node and one assertion"() {
@@ -78,8 +77,8 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 1
-		graph.nodes == nodes(graph, "end")
-		assertions(graph, "end") == ["x = 1"] as Set
+		graph.nodes == nodes(graph, "end_algorithm")
+		assertions(graph, "end_algorithm") == ["x = 1"] as Set
 	}
 
 	def "an assert in front of a statement"() {
@@ -94,10 +93,10 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 3
-		graph.nodes == nodes(graph, "assign0", "assign1", "end")
+		graph.nodes == nodes(graph, "assign0", "assign1", "end_algorithm")
 		assertions(graph, "assign1") == ["x = 1"] as Set
 		edge(graph, "assign0", "assign1") == []
-		edge(graph, "assign1", "end") == []
+		edge(graph, "assign1", "end_algorithm") == []
 	}
 
 	def "an assert before and after a while"() {
@@ -114,12 +113,12 @@ public class MergedCGGConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 4
 		assertions(graph, "while0") == ["x = 1"] as Set
-		assertions(graph, "end") == ["x >= 10"] as Set
-		graph.nodes == nodes(graph, "assign0", "assign1", "end", "while0")
+		assertions(graph, "end_algorithm") == ["x >= 10"] as Set
+		graph.nodes == nodes(graph, "assign0", "assign1", "end_algorithm", "while0")
 		edge(graph, "assign0", "while0") == []
 		edge(graph, "while0", "assign1") == ["x < 10"]
 		edge(graph, "assign1", "while0") == []
-		edge(graph, "while0", "end") == ["not(x < 10)"]
+		edge(graph, "while0", "end_algorithm") == ["not(x < 10)"]
 	}
 
 	def "an assert in between whiles"() {
@@ -137,17 +136,17 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 6
-		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "end", "while0", "while1")
+		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "end_algorithm", "while0", "while1")
 		assertions(graph, "while0") == ["x = 1"] as Set
 		assertions(graph, "while1") == ["x >= 10"] as Set
-		assertions(graph, "end") == ["x = 0"] as Set
+		assertions(graph, "end_algorithm") == ["x = 0"] as Set
 		edge(graph, "assign0", "while0") == []
 		edge(graph, "while0", "assign1") == ["x < 10"]
 		edge(graph, "assign1", "while0") == []
 		edge(graph, "while0", "while1") == ["not(x < 10)"]
 		edge(graph, "while1", "assign2") == ["x > 0"]
 		edge(graph, "assign2", "while1") == []
-		edge(graph, "while1", "end") == ["not(x > 0)"]
+		edge(graph, "while1", "end_algorithm") == ["not(x > 0)"]
 	}
 
 	def "an assert between ifs"() {
@@ -171,10 +170,10 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 8
-		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "assign3", "assign4", "end", "if0", "if1")
+		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "assign3", "assign4", "end_algorithm", "if0", "if1")
 		assertions(graph, "if0") == ["x > 0"] as Set
 		assertions(graph, "if1") == ["x < 0"] as Set
-		assertions(graph, "end") == ["x > 0"] as Set
+		assertions(graph, "end_algorithm") == ["x > 0"] as Set
 		edge(graph, "assign0","if0") == []
 		edge(graph, "if0", "assign1") == ["x > 0"]
 		edge(graph, "if0", "assign2") == ["not(x > 0)"]
@@ -182,8 +181,8 @@ public class MergedCGGConstructionTest extends Specification {
 		edge(graph, "assign2", "if1") == []
 		edge(graph, "if1", "assign3") == ["x < 0"]
 		edge(graph, "if1", "assign4") == ["not(x < 0)"]
-		edge(graph, "assign3", "end") == []
-		edge(graph, "assign4", "end") == []
+		edge(graph, "assign3", "end_algorithm") == []
+		edge(graph, "assign4", "end_algorithm") == []
 	}
 
 	def "two decrementers"() {
@@ -199,13 +198,13 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 5
-		graph.nodes == nodes(graph, "assign0", "assign1", "end", "while0", "while1")
+		graph.nodes == nodes(graph, "assign0", "assign1", "end_algorithm", "while0", "while1")
 		edge(graph, "while0", "assign0") == ["x > 0"]
 		edge(graph, "assign0", "while0") == []
 		edge(graph, "while0", "while1") == ["not(x > 0)"]
 		edge(graph, "while1", "assign1") == ["y > 0"]
 		edge(graph, "assign1", "while1") == []
-		edge(graph, "while1", "end") == ["not(y > 0)"]
+		edge(graph, "while1", "end_algorithm") == ["not(y > 0)"]
 	}
 
 	def "an empty if has two nodes"() {
@@ -221,8 +220,8 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 2
-		graph.nodes == nodes(graph, "end", "if0")
-		edges(graph, "if0", "end") == [["x < 4"], ["not(x < 4)"]] as Set
+		graph.nodes == nodes(graph, "end_algorithm", "if0")
+		edges(graph, "if0", "end_algorithm") == [["x < 4"], ["not(x < 4)"]] as Set
 	}
 
 	def "an if with then has 3 nodes"() {
@@ -235,10 +234,10 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 3
-		graph.nodes == nodes(graph, "assign0", "end", "if0")
+		graph.nodes == nodes(graph, "assign0", "end_algorithm", "if0")
 		edge(graph, "if0", "assign0") == ["x < 4"]
-		edge(graph, "assign0", "end") == []
-		edge(graph, "if0", "end") == ["not(x < 4)"]
+		edge(graph, "assign0", "end_algorithm") == []
+		edge(graph, "if0", "end_algorithm") == ["not(x < 4)"]
 	}
 
 	def "an if with else has 3 nodes"() {
@@ -254,9 +253,9 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 3
-		graph.nodes == nodes(graph, "assign0", "end", "if0")
-		edge(graph, "if0", "end") == ["x < 4"]
-		edge(graph, "assign0", "end") == []
+		graph.nodes == nodes(graph, "assign0", "end_algorithm", "if0")
+		edge(graph, "if0", "end_algorithm") == ["x < 4"]
+		edge(graph, "assign0", "end_algorithm") == []
 		edge(graph, "if0", "assign0") == ["not(x < 4)"]
 	}
 
@@ -282,10 +281,10 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 3
-		graph.nodes == nodes(graph, "assign0", "end", "while0")
+		graph.nodes == nodes(graph, "assign0", "end_algorithm", "while0")
 		edge(graph, "while0", "assign0") == ["x < 4"]
 		edge(graph, "assign0", "while0") == []
-		edge(graph, "while0", "end") == ["not(x < 4)"]
+		edge(graph, "while0", "end_algorithm") == ["not(x < 4)"]
 	}
 
 	def "optimized euclid"() {
@@ -303,14 +302,14 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 4
-		graph.nodes == nodes(graph, "assign0", "assign1", "end", "while0")
+		graph.nodes == nodes(graph, "assign0", "assign1", "end_algorithm", "while0")
 		assertions(graph, "assign1") == ["u > v"] as Set
-		assertions(graph, "end") == ["u|->m|->n : IsGCD"] as Set
+		assertions(graph, "end_algorithm") == ["u|->m|->n : IsGCD"] as Set
 		edge(graph, "while0", "assign0") == ["u /= 0", "u < v"]
 		edge(graph, "while0", "assign1") == ["u /= 0", "not(u < v)"]
 		edge(graph, "assign0", "assign1") == []
 		edge(graph, "assign1", "while0") == []
-		edge(graph, "while0", "end") == ["not(u /= 0)"]
+		edge(graph, "while0", "end_algorithm") == ["not(u /= 0)"]
 	}
 
 	def "russische bauernmultiplikation"(){
@@ -327,14 +326,14 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 5
-		graph.nodes == nodes(graph, "assign0", "assign1", "end", "while0", "if0")
-		assertions(graph, "end") == ["product = m * n"] as Set
+		graph.nodes == nodes(graph, "assign0", "assign1", "end_algorithm", "while0", "if0")
+		assertions(graph, "end_algorithm") == ["product = m * n"] as Set
 		edge(graph, "while0", "assign0") == ["l /= 1"]
 		edge(graph, "assign0", "if0") == []
 		edge(graph, "if0", "assign1") == ["l mod 2 /= 0"]
 		edge(graph, "assign1", "while0") == []
 		edge(graph, "if0", "while0") == ["not(l mod 2 /= 0)"]
-		edge(graph, "while0", "end") == ["not(l /= 1)"]
+		edge(graph, "while0", "end_algorithm") == ["not(l /= 1)"]
 	}
 
 	def "complicated while if"() {
@@ -369,7 +368,7 @@ public class MergedCGGConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 11
 		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "assign3", "assign4",
-				"assign5", "assign6", "assign7", "end", "while0", "if3")
+				"assign5", "assign6", "assign7", "end_algorithm", "while0", "if3")
 		edge(graph, "while0","assign0") == ["x : ODD", "x = 2"]
 		edge(graph, "while0", "assign1") == [
 			"x : ODD",
@@ -398,7 +397,7 @@ public class MergedCGGConstructionTest extends Specification {
 		edge(graph, "assign5", "assign6") == []
 		edge(graph, "assign6", "while0") == []
 		edge(graph, "while0", "assign7") == ["not(x : ODD)"]
-		edge(graph, "assign7", "end") == []
+		edge(graph, "assign7", "end_algorithm") == []
 	}
 
 	def "complicated while if 2"() {
@@ -418,8 +417,8 @@ public class MergedCGGConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 8
 		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "assign3",
-				"end", "while0", "while1", "if0")
-		assertions(graph, "end") == ["x + y > 20"] as Set
+				"end_algorithm", "while0", "while1", "if0")
+		assertions(graph, "end_algorithm") == ["x + y > 20"] as Set
 		edge(graph, "assign0", "while0") == []
 		edge(graph, "while0", "assign1") == ["x = 2"]
 		edge(graph, "assign1", "if0") == []
@@ -428,7 +427,7 @@ public class MergedCGGConstructionTest extends Specification {
 		edge(graph, "while0", "while1") == ["not(x = 2)"]
 		edge(graph, "while1", "assign3") == ["x + y < 20"]
 		edge(graph, "assign3", "while1") == []
-		edge(graph, "while1", "end") == ["not(x + y < 20)"]
+		edge(graph, "while1", "end_algorithm") == ["not(x + y < 20)"]
 	}
 
 	def "loop within loop"() {
@@ -449,7 +448,7 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 6
-		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "end",
+		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "end_algorithm",
 				"while0", "while1")
 		edge(graph, "while0", "while1") == ["x < 50", "y > x"]
 		edge(graph, "while1", "assign0") == ["x < y"]
@@ -458,7 +457,7 @@ public class MergedCGGConstructionTest extends Specification {
 		edge(graph, "while0", "assign1") == ["x < 50", "not(y > x)"]
 		edge(graph, "assign1", "while0") == []
 		edge(graph, "while0", "assign2") == ["not(x < 50)"]
-		edge(graph, "assign2", "end") == []
+		edge(graph, "assign2", "end_algorithm") == []
 	}
 
 	def "loopity loop loop loop"() {
@@ -481,7 +480,7 @@ public class MergedCGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 7
-		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "end",
+		graph.nodes == nodes(graph, "assign0", "assign1", "assign2", "end_algorithm",
 				"while0", "while1", "while2")
 		edge(graph, "while0", "while1") == ["x < 50", "y > x"]
 		edge(graph, "while1", "assign0") == ["x < y"]
@@ -493,7 +492,7 @@ public class MergedCGGConstructionTest extends Specification {
 		edge(graph, "assign1", "assign2") == []
 		edge(graph, "while2", "assign2") == ["z < 50", "not(z < 0)"]
 		edge(graph, "assign2", "while2") == []
-		edge(graph, "while2", "end") == ["not(z < 50)"]
+		edge(graph, "while2", "end_algorithm") == ["not(z < 50)"]
 	}
 
 	def "correct return"() {
@@ -514,13 +513,13 @@ public class MergedCGGConstructionTest extends Specification {
 		if (DEBUG) print(graph)
 		graph.size() == 6
 		graph.nodes == nodes(graph, "if0", "return0", "return1",
-				"assign0", "return2", "end")
+				"assign0", "return2", "end_algorithm")
 		edge(graph, "if0", "return0") == ["x = 5"]
 		edge(graph, "if0", "return1") == ["not(x = 5)", "y = 5"]
 		edge(graph, "if0", "assign0") == ["not(x = 5)", "not(y = 5)"]
-		edge(graph, "return0", "end") == []
-		edge(graph, "return1", "end") == []
+		edge(graph, "return0", "end_algorithm") == []
+		edge(graph, "return1", "end_algorithm") == []
 		edge(graph, "assign0", "return2") == []
-		edge(graph, "return2", "end") == []
+		edge(graph, "return2", "end_algorithm") == []
 	}
 }

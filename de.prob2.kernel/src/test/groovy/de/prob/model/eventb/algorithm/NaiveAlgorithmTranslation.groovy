@@ -57,9 +57,9 @@ class NaiveAlgorithmTranslation extends Specification {
 		guards(e.assign0) == ["pc = 1"]
 		actions(e.assign0) == ["x := 0", "pc := 2"]
 
-		e.end != null
-		guards(e.end) == ["pc = 2"]
-		actions(e.end) == []
+		e.end_algorithm != null
+		guards(e.end_algorithm) == ["pc = 2"]
+		actions(e.end_algorithm) == []
 	}
 
 	def "translate an if with an else"() {
@@ -89,9 +89,9 @@ class NaiveAlgorithmTranslation extends Specification {
 		guards(e.assign1) == ["pc = 2"]
 		actions(e.assign1) == ["x := 2", "pc := 3"]
 
-		e.end != null
-		guards(e.end) == ["pc = 3"]
-		actions(e.end) == []
+		e.end_algorithm != null
+		guards(e.end_algorithm) == ["pc = 3"]
+		actions(e.end_algorithm) == []
 	}
 
 	def "translate a while loop"() {
@@ -114,9 +114,9 @@ class NaiveAlgorithmTranslation extends Specification {
 		guards(e.assign0) == ["pc = 1"]
 		actions(e.assign0) == ["x := 0", "pc := 0"]
 
-		e.end != null
-		guards(e.end) == ["pc = 2"]
-		actions(e.end) == []
+		e.end_algorithm != null
+		guards(e.end_algorithm) == ["pc = 2"]
+		actions(e.end_algorithm) == []
 	}
 
 	def "test assertion generation"() {
@@ -185,8 +185,8 @@ class NaiveAlgorithmTranslation extends Specification {
 		guards(e.exit_while0) == ["pc = 0", "not(x < 1)"]
 		actions(e.exit_while0) == ["pc := 6"]
 
-		e.end != null
-		guards(e.end) == ["pc = 6"]
-		actions(e.end) == []
+		e.end_algorithm != null
+		guards(e.end_algorithm) == ["pc = 6"]
+		actions(e.end_algorithm) == []
 	}
 }
