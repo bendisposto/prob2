@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
+import com.google.common.base.Joiner;
 
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.DependencyGraph.ERefType;
@@ -67,7 +68,7 @@ public abstract class AbstractModel extends AbstractElement {
 	/**
 	 * Will check the syntax of a formula to see if it is valid in the scope of
 	 * this model.
-	 * 
+	 *
 	 * @param formula
 	 *            to be checked
 	 * @return whether or not the formula in question has valid syntax in the
@@ -105,7 +106,8 @@ public abstract class AbstractModel extends AbstractElement {
 		if (path.isEmpty()) {
 			return null;
 		}
-		return (AbstractElement) Eval.x(this, "x.${path.join('.')}");
+		String p = "x" + "." + Joiner.on(".").join(path);
+		return (AbstractElement) Eval.x(this, p);
 	}
 
 	public StateSpace load(AbstractElement mainComponent) {
