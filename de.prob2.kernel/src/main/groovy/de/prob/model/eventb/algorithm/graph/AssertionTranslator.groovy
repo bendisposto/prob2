@@ -58,20 +58,20 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 			def name = graph.nodeMapping.getName(w)+"_inv"
 			machineM = writeAssertion(machineM, name, prefix, w.invariant)
 		}
+		machineM = writeAssertions(machineM, w, prefix)
 		if (propagated[w]) {
 			machineM = writePropagated(machineM, propagated[w], prefix)
 		}
-		machineM = writeAssertions(machineM, w, prefix)
 	}
 
 	@Override
 	public visit(If stmt) {
 		if (pcInfo[stmt] != null) {
 			def prefix = "$pcname = ${pcInfo[stmt]}"
+			machineM = writeAssertions(machineM, stmt, prefix)
 			if (propagated[stmt]) {
 				machineM = writePropagated(machineM, propagated[stmt], prefix)
 			}
-			machineM = writeAssertions(machineM, stmt, prefix)
 		} else if (graph.properties[stmt] != null) {
 			// only enter this loop when there are actually assertions to print. performance reasons
 			Set<Edge> allEdges = [] as Set
@@ -110,10 +110,10 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 	public Object visit(Skip a) {
 		if (pcInfo[a] != null) {
 			def prefix = "$pcname = ${pcInfo[a]}"
+			machineM = writeAssertions(machineM, a, prefix)
 			if (propagated[a]) {
 				machineM = writePropagated(machineM, propagated[a], prefix)
 			}
-			machineM = writeAssertions(machineM, a, prefix)
 		}
 
 	}
@@ -122,20 +122,20 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 		if (!optimized || graph.inEdges(s).isEmpty()) {
 			assert pcInfo[s] != null
 			def prefix = "$pcname = ${pcInfo[s]}"
+			machineM = writeAssertions(machineM, s,prefix)
 			if (propagated[s]) {
 				machineM = writePropagated(machineM, propagated[s], prefix)
 			}
-			machineM = writeAssertions(machineM, s,prefix)
 		} else {
 			Set<Edge> inE = graph.inEdges(s)
 			inE.each { Edge e ->
 				if (e.conditions.isEmpty()) {
 					assert pcInfo[s] != null
 					def prefix = "$pcname = ${pcInfo[s]}"
+					machineM = writeAssertions(machineM, s, prefix)
 					if (propagated[s]) {
 						machineM = writePropagated(machineM, propagated[s], prefix)
 					}
-					machineM = writeAssertions(machineM, s, prefix)
 				} else {
 					def pred = "$pcname = ${pcInfo[e.from]}"
 					def rcond = e.conditions.collect { it.getCode() }.iterator().join(" & ")

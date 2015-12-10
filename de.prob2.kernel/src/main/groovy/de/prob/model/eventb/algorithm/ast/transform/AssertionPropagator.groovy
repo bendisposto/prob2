@@ -51,7 +51,7 @@ class AssertionPropagator  {
 	}
 
 	public traverse(Return a, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
-		normalRecur(a, [], rest) // cannot propagate assertions up
+		recurAndCache(a, [], rest) // cannot propagate assertions up
 	}
 
 	public traverse(Call a, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
@@ -106,14 +106,16 @@ class AssertionPropagator  {
 		}
 		def head = stmts.first()
 		def tail = stmts.tail()
+		def newAssertions = []
 		while (head instanceof Assertion) {
+			newAssertions << new Tuple2<List<EventB>,EventB>([], head.assertion)
 			if (tail.isEmpty()) {
-				return addCondition(newCondition, defaultL)
+				return addCondition(newCondition, newAssertions + defaultL)
 			}
 			head = tail.first()
 			tail = tail.tail()
 		}
-		addCondition(newCondition, assertionMap[head])
+		addCondition(newCondition, newAssertions + assertionMap[head])
 	}
 
 	public List<Tuple2<List<EventB>, EventB>> addCondition(EventB condition, List<Tuple2<List<EventB>, EventB>> list) {
