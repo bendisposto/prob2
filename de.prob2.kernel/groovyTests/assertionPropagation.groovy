@@ -173,7 +173,7 @@ m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "GroovyBS", "/tmp")
+//d = mtx.writeToRodin(m, "GroovyBS", "/tmp")
 //d.deleteDir()
 
 "generating a model from an algorithm"
