@@ -18,40 +18,43 @@ mm = new ModelModifier().make {
 		theorem "fac(0) = fac(1)"
 	}
 	
-	context(name: "fac_ctx", extends: "definitions") {
-		constants "n", "factorial"
-		axioms "n : NAT & factorial : NAT",
-		       "n >= 0",
-			   "factorial = fac(n)"
+	procedure(name: "fac", seen: "definitions") {
+		argument "n", "NAT"
+		result "factorial", "NAT"
 		
-	}
-	
-	machine(name: "fac", sees: ["fac_ctx"]) {
-		var "v", "v : NAT", "v := 1"
-		var "r", "r : NAT", "r := 0"
-		var "s", "s : NAT", "s := 0"
-		var "u", "u : NAT", "u := 1"
+		precondition "n >= 0"
+		postcondition "factorial = fac(n)"
 		
-		algorithm {
-			Assert("u = v")
-			Assert("u = (s+1) * v")
-			While("r < n", invariant: "r : dom(fac) & v = fac(r)") {
-				Assert("v = fac(r)")
-				Assert("r < n")
-				While("s < r", invariant: "u = (s + 1) ∗ v") {
-					Assign("u,s := u+v, s+1")
+		implementation {
+			var "v", "v : NAT", "v := 1"
+			var "r", "r : NAT", "r := 0"
+			var "s", "s : NAT", "s := 0"
+			var "u", "u : NAT", "u := 1"
+			
+			algorithm {
+				Assert("u = (s+1) * v")
+				While("r < n", invariant: "v = fac(r)", variant: "n - r") {
+					While("s < r", invariant: "u = (s + 1) ∗ v", variant: "r - s") {
+						Assign("u,s := u+v, s+1")
+						Assert("v = fac(r)")
+						Assert("s <= r")
+						Assert("r + 1 <= n")
+					}
+					Assign("v,r,s := u,r+1,0")
+					Assert("u = v")
+					Assert("s = 0")
+					Assert("r <= n")
+					Assert("u = (s+1) * v")
 				}
-				Assert("r : dom(fac) => u = fac(r + 1)")
-				Assert("r < n")
-				Assign("v,r,s := u,r+1,0")	
+				Assert("r = n")
+				Return("v")
 			}
-			Assert("v = factorial")
 		}
 	}
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.propagateAssertions(true)).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 
 mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "Factorial", "/tmp")

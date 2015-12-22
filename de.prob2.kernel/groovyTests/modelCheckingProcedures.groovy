@@ -11,23 +11,16 @@ mm = new ModelModifier().make {
 	context(name: "c1_ModelElements") {
 		set "STATES"
 		set "INVARIANTS"
-		set "EVENTS"
 		constant "truth"
+		constant "transitions"
+		constant "root"
 		axiom "truth <: STATES ** INVARIANTS"
+		axiom "transitions : STATES <-> STATES"
+		axiom "root : STATES"
+		enumerated_set name: "MCResult", constants: ["mc_ok", "counter_example", "deadlock"]
 	}
 	
-	context(name: "c2_StateSpace", extends: "c1_ModelElements") {
-		constants "transitions", "root"
-		axioms "transitions : STATES <-> STATES",
-				"root : STATES"
-	}
-	
-	context(name: "c3_ModelCheckResults", extends: "c2_StateSpace") {
-		enumerated_set name: "MCResult",
-			constants: ["mc_ok","counter_example", "deadlock"] 
-	}
-	
-	context(name: "c4_AnimationStateSpace", extends: "c3_ModelCheckResults") {
+	context(name: "c4_AnimationStateSpace", extends: "c1_ModelElements") {
 		(0..5).each {
 			constant "s${it}"
 		}
@@ -111,7 +104,7 @@ mm = new ModelModifier().make {
 		}
 	}
 	
-	procedure(name: "successors", seen: "c2_StateSpace") {
+	procedure(name: "successors", seen: "c1_ModelElements") {
 		argument "s", "STATES"
 		result "successors", "POW(STATES)"
 		
