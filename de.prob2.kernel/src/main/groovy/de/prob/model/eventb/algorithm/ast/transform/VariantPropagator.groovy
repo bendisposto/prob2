@@ -117,8 +117,8 @@ class VariantPropagator  {
 			if (tail.isEmpty()) {
 				return defaultL
 			}
-			head = block.statements.first()
-			tail = block.statements.tail()
+			head = tail.first()
+			tail = tail.tail()
 		}
 		assertionMap[head]
 	}
@@ -138,13 +138,17 @@ class VariantPropagator  {
 
 	private recurAndCache(Statement s, List<Tuple2<List<EventB>,EventB>> assertions, List<Statement> rest) {
 		assertionMap[s] = assertions
-		if (rest) {
+		if (rest.isEmpty()) {
+			return rest
+		} else {
 			traverse(rest.first(), assertions, rest.tail())
 		}
 	}
 
 	private List<Statement> normalRecur(Statement s, List<Tuple2<List<EventB>,EventB>> assertions, List<Statement> rest) {
-		if (rest) {
+		if (rest.isEmpty()) {
+			return rest
+		} else {
 			traverse(rest.first(), assertions, rest.tail())
 		}
 	}
