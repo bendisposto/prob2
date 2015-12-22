@@ -107,7 +107,15 @@ class Procedure extends AbstractModifier {
 		}
 		EventB post = parsePredicate(postcondition)
 		FormulaUtil fuu = new FormulaUtil()
-		List<EventB> assignments = fuu.predicateToAssignments(post, arguments as Set, results as Set)
+		def input = contextM.getContext().getConstants().collect { it.getName() }
+		if (contextM.getContext().getExtends()) {
+			contextM.getContext().getExtends().each {
+				input.addAll(it.getSets().collect { it.getName() })
+				input.addAll(it.getConstants().collect { it.getName() })
+			}
+		}
+
+		List<EventB> assignments = fuu.predicateToAssignments(post, input as Set, results as Set)
 		def em = assignments.inject(eventM) { EventModifier evM, EventB a ->
 			evM.action(a)
 		}
