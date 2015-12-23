@@ -186,7 +186,9 @@ class ControlFlowGraph {
 		if (loopsForTermination[to] != null) {
 			loopsForTermination[to].add(edge)
 		}
-		loopToWhile[to].add(edge)
+		if (to instanceof While) {
+			loopToWhile[to].add(edge)
+		}
 	}
 
 	def size() {
