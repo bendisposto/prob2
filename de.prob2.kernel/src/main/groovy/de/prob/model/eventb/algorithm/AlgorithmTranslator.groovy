@@ -64,6 +64,9 @@ class AlgorithmTranslator {
 
 		Block algorithm = extractAlgorithm(oldM)
 		if (algorithm) {
+			//if (options.isTerminationAnalysis()) {
+			//	algorithm = new Block([new Skip()]+ algorithm.statements, algorithm.typeEnvironment)
+			//}
 			ControlFlowGraph graph = new GraphTransformer(options).transform(new ControlFlowGraph(algorithm))
 			EventBMachine newM = translateAlgorithm(oldM, graph)
 			modelM = modelM.replaceMachine(oldM, newM)
@@ -84,9 +87,13 @@ class AlgorithmTranslator {
 		if (!proc) {
 			return modelM
 		}
-		modelM.machine(name: oldM.getName()) {
-			addEvent(proc[0].getEvent())
+
+		Event e = proc[0].getEvent()
+		if (options.isTerminationAnalysis()) {
+			e = e.changeType(EventType.ANTICIPATED)
 		}
+
+		modelM.machine(name: oldM.getName()) { addEvent(e) }
 	}
 
 	def Block extractAlgorithm(EventBMachine machine) {
@@ -108,7 +115,7 @@ class AlgorithmTranslator {
 			machineM = machineM.invariant("ipc /= $endPc => apc = 0")
 			machineM = machineM.invariant("ipc = $endPc => apc = 1")
 			def absMachine = procedure.getAbstractMachine()
-			// CAN THIS BE EXTENDED???
+
 			procedure.results.each { String varName ->
 				def inv = absMachine.invariants["typing_$varName"]
 				def init = absMachine.getEvent("INITIALISATION").actions["init_$varName"]
@@ -124,10 +131,15 @@ class AlgorithmTranslator {
 			machineM =  addNode([] as Set, graph, machineM, procedure, graph.entryNode, pcCalc.pcInformation)
 		}
 		if (options.isTerminationAnalysis()) {
-			graph.loopsForTermination.each { While loop, List<Edge> edges ->
-				edges.each { Edge e ->
-					def inE = graph.inEdges(e.from)
-					machineM = machineM.event(name: graph.getEventName(e), type: EventType.ANTICIPATED)
+			machineM.getMachine().getEvents().each { Event e ->
+				//String eventName = e.getName()
+				//println "$loopEvents : $eventName"
+				//println loopEvents.contains(eventName)
+				//if (loopEvents.contains(eventName)) {
+				//	machineM = machineM.event(name: eventName, type: EventType.ANTICIPATED)
+				//} else
+				if (e.getName() != "INITIALISATION"){
+					machineM = machineM.event(name: e.getName(), type: EventType.ANTICIPATED)
 				}
 			}
 		}
@@ -154,7 +166,15 @@ class AlgorithmTranslator {
 				throw new IllegalArgumentException("Algorithm must deadlock on empty assignment")
 			}
 			final pc = pcInfo[stmt]
-			machineM = machineM.event(name: name) { guard "$pcname = $pc" }
+
+			if (options.isTerminationAnalysis()) {
+				machineM = machineM.event(name: name) {
+					guard "$pcname = $pc"
+					action "$pcname := ${pc + 1}"
+				}
+			} else {
+				machineM = machineM.event(name: name) { guard "$pcname = $pc" }
+			}
 		}
 
 		machineM
@@ -252,6 +272,17 @@ class AlgorithmTranslator {
 			refName = newName
 			modelM = modelM.replaceMachine(oldM, newM)
 		}
+		def name = "${mchName}_term${ctr++}"
+		modelM = modelM.refine(refName, name)
+		def oldM = modelM.getModel().getMachine(name)
+		def mM = new MachineModifier(oldM)
+		mM = mM.variant("${pcCalc.lastPc() + 1} - $pcname")
+		oldM.getEvents().each { Event e ->
+			if (e.getType() == EventType.ANTICIPATED) {
+				mM = mM.replaceEvent(e, e.changeType(EventType.CONVERGENT))
+			}
+		}
+		modelM = modelM.replaceMachine(oldM, mM.getMachine())
 		modelM
 	}
 
@@ -259,7 +290,11 @@ class AlgorithmTranslator {
 		String variantName = graph.nodeMapping.getName(stmt)+"_variant"
 		def mM = machineM.variant(variantName).var(variantName, variantName + " : NAT", variantName + " :: NAT")
 		def final setVariant = variantName+" := ${stmt.variant.getCode()}"
-		mM = mM.event(name: "enter_"+graph.nodeMapping.getName(stmt)) { action setVariant }
+		//Event evt = mM.getMachine().getEvent("enter_algorithm")
+		//mM = mM.event(name: evt.getName(), type: evt.getType()) { action setVariant }
+		Event evt = mM.getMachine().getEvent("enter_"+graph.nodeMapping.getName(stmt))
+		mM = mM.event(name: evt.getName(), type: evt.getType()) { action setVariant }
+
 		graph.loopsForTermination[stmt].each { Edge edge ->
 			mM = mM.event(name: graph.getEventName(edge), type: EventType.CONVERGENT) { action setVariant }
 		}

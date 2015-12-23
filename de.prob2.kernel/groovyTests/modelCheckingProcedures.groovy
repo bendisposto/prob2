@@ -191,7 +191,7 @@ m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().propagateAssertions(true).optimize(true)).run()
 
 mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "ModelChecking", "/tmp")
+d = mtx.writeToRodin(m, "ModelCheckProc", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

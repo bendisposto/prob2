@@ -202,7 +202,7 @@ class ControlFlowGraph {
 		incomingEdges[stmt] ?: []
 	}
 
-	def getEventName(Edge e) {
+	def String getEventName(Edge e) {
 		List<Statement> statements = edgeMapping[e]
 		if (statements.size() == 1 && statements[0] instanceof IAssignment || statements[0] instanceof Skip) {
 			assert e.conditions.isEmpty()
@@ -211,7 +211,7 @@ class ControlFlowGraph {
 		assert e.conditions.size() == statements.size()
 		[statements, e.conditions].transpose().collect { l ->
 			getEventName(l[0], l[1])
-		}.iterator().join("_")
+		}.iterator().join("_").toString()
 	}
 
 	def String getEventName(While s, EventB condition) {

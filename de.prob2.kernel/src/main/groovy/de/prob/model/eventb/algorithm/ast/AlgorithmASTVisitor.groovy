@@ -7,13 +7,13 @@ abstract class AlgorithmASTVisitor {
 		block.statements.each { traverse(it) }
 	}
 
-	public abstract visit(While w);
-	public abstract visit(If i);
-	public abstract visit(Assignment a);
-	public abstract visit(Assertion a);
-	public abstract visit(Call a);
-	public abstract visit(Return a);
-	public abstract visit(Skip a);
+	def  visit(While w) {}
+	def  visit(If i) {}
+	def  visit(Assignment a) {}
+	def  visit(Assertion a) {}
+	def  visit(Call a) {}
+	def  visit(Return a) {}
+	def  visit(Skip a) {}
 
 	public traverse(While s) {
 		visit(s)

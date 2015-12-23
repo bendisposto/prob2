@@ -133,9 +133,8 @@ class VariantAssertionTranslator extends AlgorithmASTVisitor {
 			if (prop.stmt == stmt) {
 				def n = "variant_"+graph.nodeMapping.getName(stmt)
 				def preds = [prefix]+ prop.conditions.collect { it.getCode() }
-				def formula1 = preds.iterator().join(" & ") + " => (${prop.variantCondition.getCode()})"
-				def formula2 = preds.iterator().join(" & ") + " => (${prop.positive.getCode()})"
-				return mm.invariant(getName(n), formula1).invariant(getName(n), formula2)
+				def formula = preds.iterator().join(" & ") + " => (${prop.variantCondition.getCode()})"
+				return mm.invariant(getName(n), formula)
 			} else {
 				return mm
 			}
