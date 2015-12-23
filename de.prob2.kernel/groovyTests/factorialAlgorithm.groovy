@@ -31,20 +31,20 @@ mm = new ModelModifier().make {
 			var "s", "s : NAT", "s := 0"
 			var "u", "u : NAT", "u := 1"
 			
+			variant "(n - r) * (n + 1) + (r - s)"
+			
 			algorithm {
 				Assert("u = (s+1) * v")
-				While("r < n", invariant: "v = fac(r)", variant: "n - r") {
-					While("s < r", invariant: "u = (s + 1) ∗ v", variant: "r - s") {
-						Assign("u,s := u+v, s+1")
+				While("r < n", invariant: "v = fac(r)") {
+					Assert("r < n & s <= r")
+					While("s < r", invariant: "u = (s + 1) ∗ v") {
 						Assert("v = fac(r)")
 						Assert("s <= r")
-						Assert("r + 1 <= n")
+						Assert("r < n")
+						Assign("u,s := u+v, s+1")
 					}
+					Assert("r < n")
 					Assign("v,r,s := u,r+1,0")
-					Assert("u = v")
-					Assert("s = 0")
-					Assert("r <= n")
-					Assert("u = (s+1) * v")
 				}
 				Assert("r = n")
 				Return("v")
@@ -54,10 +54,10 @@ mm = new ModelModifier().make {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().terminationAnalysis(true).DEFAULT).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "FactorialProc", "/tmp")
+//d = mtx.writeToRodin(m, "FactorialProc", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

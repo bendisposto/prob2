@@ -23,6 +23,9 @@ class GraphMerge implements IGraphTransformer {
 			this.graph.loopsForTermination = graph.loopsForTermination.collectEntries { w,l ->
 				[w, []]
 			}
+			this.graph.loopToWhile = graph.loopToWhile.collectEntries { w,l ->
+				[w, []]
+			}
 			//		this.graph.loopsForTermination = graph.loopsForTermination
 			this.graph.entryNode = mergeGraph(graph, graph.entryNode)
 		} else {
@@ -42,6 +45,9 @@ class GraphMerge implements IGraphTransformer {
 			if (g.loopsForTermination[e.to] != null && g.loopsForTermination[e.to].contains(e)) {
 				graph.loopsForTermination[e.to] << nE
 			}
+			if (g.loopToWhile[e.to] != null && g.loopToWhile[e.to].contains(e)) {
+				graph.loopToWhile[e.to] << nE
+			}
 		}
 		return a
 	}
@@ -56,6 +62,9 @@ class GraphMerge implements IGraphTransformer {
 			def nE = graph.addEdge(s, stmt, [])
 			if (g.loopsForTermination[e.to] != null && g.loopsForTermination[e.to].contains(e)) {
 				graph.loopsForTermination[e.to] << nE
+			}
+			if (g.loopToWhile[e.to] != null && g.loopToWhile[e.to].contains(e)) {
+				graph.loopToWhile[e.to] << nE
 			}
 		}
 		return s
@@ -89,8 +98,8 @@ class GraphMerge implements IGraphTransformer {
 		if (nextStmt instanceof If) {
 			Edge ifE = g.outEdges(nextStmt).find { Edge e -> e.conditions == [nextStmt.condition]}
 			Edge elseE = g.outEdges(nextStmt).find { Edge e -> e.conditions == [nextStmt.elseCondition]}
-			mergeIfs(g, startNode, statements.addElement(nextStmt), conditions.addElement(nextStmt.condition), ifE.to)
-			mergeIfs(g, startNode, statements.addElement(nextStmt), conditions.addElement(nextStmt.elseCondition), elseE.to)
+			List<If> merged1 = mergeIfs(g, startNode, statements.addElement(nextStmt), conditions.addElement(nextStmt.condition), ifE.to)
+			List<If> merged2 = mergeIfs(g, startNode, statements.addElement(nextStmt), conditions.addElement(nextStmt.elseCondition), elseE.to)
 		} else {
 			Edge oldEdge = g.outEdges(statements.last()).find { Edge e -> e.to == nextStmt }
 			Statement stmt = mergeGraph(g, nextStmt)
@@ -98,6 +107,9 @@ class GraphMerge implements IGraphTransformer {
 			graph.edgeMapping[e] = statements
 			if (g.loopsForTermination[oldEdge.to] != null && g.loopsForTermination[oldEdge.to].contains(oldEdge)) {
 				graph.loopsForTermination[e.to] << e
+			}
+			if (g.loopToWhile[oldEdge.to] != null && g.loopToWhile[oldEdge.to].contains(oldEdge)) {
+				graph.loopToWhile[e.to] << e
 			}
 		}
 	}

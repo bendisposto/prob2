@@ -106,7 +106,7 @@ class VariantGenerationTest extends Specification {
 		})
 
 		then:
-		var == ["while1", "while0"]
+		var == ["while0", "while1"]
 	}
 
 	def "ll parsing algorithm node loops"() {
@@ -193,32 +193,32 @@ class VariantGenerationTest extends Specification {
 		})
 		def expected = [
 			loop_to_while0:[
-				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant & while0_variant > 0"
+				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant"
 			],
 			loop_to_while1:[
-				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant & while0_variant > 0",
-				"card(worklist) < while1_variant & while1_variant > 0"
+				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant",
+				"card(worklist) < while1_variant"
 			],assign4:[
-				"2*(card(Symbols) - card(nullable))+{TRUE |-> 1,FALSE |-> 0}(TRUE)<while0_variant & while0_variant>0",
-				"card(worklist)<while1_variant & while1_variant>0"
+				"2*(card(Symbols) - card(nullable))+{TRUE |-> 1,FALSE |-> 0}(TRUE)<while0_variant",
+				"card(worklist)<while1_variant"
 			], assign3:[
-				"2*(card(Symbols) - card(nullable\\/{prj1(next)}))+{TRUE |-> 1,FALSE |-> 0}(TRUE)<while0_variant & while0_variant>0",
-				"card(worklist)<while1_variant & while1_variant>0"
+				"2*(card(Symbols) - card(nullable\\/{prj1(next)}))+{TRUE |-> 1,FALSE |-> 0}(TRUE)<while0_variant",
+				"card(worklist)<while1_variant"
 			], if0:[
-				"prj1(next) /: nullable & ran(prj2(next)) <: nullable => (2*(card(Symbols) - card(nullable\\/{prj1(next)}))+{TRUE |-> 1,FALSE |-> 0}(TRUE)<while0_variant & while0_variant>0)",
-				"card(worklist)<while1_variant & while1_variant>0",
-				"not(prj1(next) /: nullable & ran(prj2(next)) <: nullable) => (2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant & while0_variant > 0)"
+				"prj1(next) /: nullable & ran(prj2(next)) <: nullable => (2*(card(Symbols) - card(nullable\\/{prj1(next)}))+{TRUE |-> 1,FALSE |-> 0}(TRUE)<while0_variant)",
+				"card(worklist)<while1_variant",
+				"not(prj1(next) /: nullable & ran(prj2(next)) <: nullable) => (2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant)"
 			], assign2:[
-				"prj1(next) /: nullable & ran(prj2(next)) <: nullable => (2*(card(Symbols) - card(nullable\\/{prj1(next)}))+{TRUE |-> 1,FALSE |-> 0}(TRUE)<while0_variant & while0_variant>0)",
-				"card(worklist \\ {next})<while1_variant & while1_variant>0",
-				"not(prj1(next) /: nullable & ran(prj2(next)) <: nullable) => (2*(card(Symbols) - card(nullable))+{TRUE |-> 1,FALSE |-> 0}(chng)<while0_variant & while0_variant>0)"
+				"prj1(next) /: nullable & ran(prj2(next)) <: nullable => (2*(card(Symbols) - card(nullable\\/{prj1(next)}))+{TRUE |-> 1,FALSE |-> 0}(TRUE)<while0_variant)",
+				"card(worklist \\ {next})<while1_variant",
+				"not(prj1(next) /: nullable & ran(prj2(next)) <: nullable) => (2*(card(Symbols) - card(nullable))+{TRUE |-> 1,FALSE |-> 0}(chng)<while0_variant)"
 			], assign1:[
-				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant & while0_variant > 0",
-				"card(worklist) < while1_variant & while1_variant > 0"
+				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant",
+				"card(worklist) < while1_variant"
 			], while1:[
-				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant & while0_variant > 0"
+				"2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng) < while0_variant"
 			], assign0:[
-				"2*(card(Symbols) - card(nullable))+{TRUE |-> 1,FALSE |-> 0}(FALSE)<while0_variant & while0_variant>0"
+				"2*(card(Symbols) - card(nullable))+{TRUE |-> 1,FALSE |-> 0}(FALSE)<while0_variant"
 			], while0:[]]
 
 		then:
@@ -373,10 +373,10 @@ class VariantGenerationTest extends Specification {
 
 		then:
 		loops == [
+			"while0",
 			"while1",
 			"while2",
-			"while3",
-			"while0"
+			"while3"
 		]
 	}
 }

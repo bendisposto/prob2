@@ -64,14 +64,13 @@ class AlgorithmTranslator {
 
 		Block algorithm = extractAlgorithm(oldM)
 		if (algorithm) {
-			//if (options.isTerminationAnalysis()) {
-			//	algorithm = new Block([new Skip()]+ algorithm.statements, algorithm.typeEnvironment)
-			//}
 			ControlFlowGraph graph = new GraphTransformer(options).transform(new ControlFlowGraph(algorithm))
 			EventBMachine newM = translateAlgorithm(oldM, graph)
 			modelM = modelM.replaceMachine(oldM, newM)
-			if (options.isTerminationAnalysis()) {
-				modelM = runTerminationAnalysis(modelM, name, graph)
+			if (newM.getVariant()) {
+				modelM = runAlgorithmTerminationAnalysis(modelM, name, graph)
+			} else if (options.isTerminationAnalysis()) {
+				modelM = runLoopTerminationAnalysis(modelM, name, graph)
 			}
 		}
 		return modelM
@@ -89,7 +88,8 @@ class AlgorithmTranslator {
 		}
 
 		Event e = proc[0].getEvent()
-		if (options.isTerminationAnalysis()) {
+		if (proc[0].getImplementation().getVariant()) {
+			// if the implementation has a defined variant, the event in the refinement needs to be set to anticipated
 			e = e.changeType(EventType.ANTICIPATED)
 		}
 
@@ -112,8 +112,8 @@ class AlgorithmTranslator {
 		if (procedure) {
 			machineM = machineM.addComment("This machine is the implementation of procedure ${procedure.getName()}")
 			def endPc = pcCalc.lastPc()
-			machineM = machineM.invariant("ipc /= $endPc => apc = 0")
-			machineM = machineM.invariant("ipc = $endPc => apc = 1")
+			machineM = machineM.invariant("ipc < $endPc => apc = 0")
+			machineM = machineM.invariant("ipc >= $endPc => apc = 1")
 			def absMachine = procedure.getAbstractMachine()
 
 			procedure.results.each { String varName ->
@@ -130,16 +130,16 @@ class AlgorithmTranslator {
 			machineM = new AssertionTranslator(machineM, procedures, graph, pcCalc.pcInformation, options, pcname).getMachineM()
 			machineM =  addNode([] as Set, graph, machineM, procedure, graph.entryNode, pcCalc.pcInformation)
 		}
-		if (options.isTerminationAnalysis()) {
+		if (machineM.getMachine().getVariant()) {
 			machineM.getMachine().getEvents().each { Event e ->
-				//String eventName = e.getName()
-				//println "$loopEvents : $eventName"
-				//println loopEvents.contains(eventName)
-				//if (loopEvents.contains(eventName)) {
-				//	machineM = machineM.event(name: eventName, type: EventType.ANTICIPATED)
-				//} else
 				if (e.getName() != "INITIALISATION"){
 					machineM = machineM.event(name: e.getName(), type: EventType.ANTICIPATED)
+				}
+			}
+		} else if (options.isTerminationAnalysis()) {
+			graph.loopsForTermination.each { While stmt, List<Edge> edges ->
+				edges.each { edge ->
+					machineM = machineM.event(name: graph.getEventName(edge), type: EventType.ANTICIPATED)
 				}
 			}
 		}
@@ -167,7 +167,7 @@ class AlgorithmTranslator {
 			}
 			final pc = pcInfo[stmt]
 
-			if (options.isTerminationAnalysis()) {
+			if (machineM.getMachine().getVariant()) {
 				machineM = machineM.event(name: name) {
 					guard "$pcname = $pc"
 					action "$pcname := ${pc + 1}"
@@ -255,7 +255,7 @@ class AlgorithmTranslator {
 		}
 	}
 
-	def ModelModifier runTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {
+	def ModelModifier runLoopTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {
 		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
 		def pcname = getProcedure(modelM.getModel().getMachine(mchName)) ? "ipc" : "pc"
 
@@ -272,17 +272,6 @@ class AlgorithmTranslator {
 			refName = newName
 			modelM = modelM.replaceMachine(oldM, newM)
 		}
-		def name = "${mchName}_term${ctr++}"
-		modelM = modelM.refine(refName, name)
-		def oldM = modelM.getModel().getMachine(name)
-		def mM = new MachineModifier(oldM)
-		mM = mM.variant("${pcCalc.lastPc() + 1} - $pcname")
-		oldM.getEvents().each { Event e ->
-			if (e.getType() == EventType.ANTICIPATED) {
-				mM = mM.replaceEvent(e, e.changeType(EventType.CONVERGENT))
-			}
-		}
-		modelM = modelM.replaceMachine(oldM, mM.getMachine())
 		modelM
 	}
 
@@ -290,8 +279,6 @@ class AlgorithmTranslator {
 		String variantName = graph.nodeMapping.getName(stmt)+"_variant"
 		def mM = machineM.variant(variantName).var(variantName, variantName + " : NAT", variantName + " :: NAT")
 		def final setVariant = variantName+" := ${stmt.variant.getCode()}"
-		//Event evt = mM.getMachine().getEvent("enter_algorithm")
-		//mM = mM.event(name: evt.getName(), type: evt.getType()) { action setVariant }
 		Event evt = mM.getMachine().getEvent("enter_"+graph.nodeMapping.getName(stmt))
 		mM = mM.event(name: evt.getName(), type: evt.getType()) { action setVariant }
 
@@ -301,5 +288,45 @@ class AlgorithmTranslator {
 		mM = mM.initialisation(extended: true)
 		mM = new VariantAssertionTranslator(mM, stmt, procedures, graph, pcCalc.pcInformation, options, pcname).getMachineM()
 		mM.getMachine()
+	}
+
+	def ModelModifier runAlgorithmTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {
+		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
+		def pcname = getProcedure(modelM.getModel().getMachine(mchName)) ? "ipc" : "pc"
+
+		EventBMachine mch = modelM.getModel().getMachine(mchName)
+		MachineModifier mM = new MachineModifier(mch)
+		graph.loopToWhile.each { While stmt, List<Edge> edges ->
+			if (!options.isOptimize()) {
+				edges.each { edge ->
+					mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
+				}
+			} else {
+				edges.each { Edge edge ->
+					List<Statement> statements = graph.edgeMapping[edge]
+					if (statements.size() == 1 && statements[0] instanceof IAssignment || statements[0] instanceof Skip) {
+						graph.incomingEdges[edge.from].each { Edge e ->
+							if (e.conditions) {
+								mM = mM.event(name: graph.getEventName(e), type: EventType.CONVERGENT)
+							} else {
+								mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
+							}
+						}
+					} else {
+						mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
+					}
+				}
+			}
+		}
+		modelM = modelM.replaceMachine(mch, mM.getMachine())
+		def newName = "${mchName}_termination"
+		modelM = modelM.refine(mchName, newName)
+		mch = modelM.getModel().getMachine(newName)
+		mM = new MachineModifier(mch)
+		mM = mM.variant("${pcCalc.lastPc() + 1} - $pcname")
+		mM.getMachine().getEvents().findAll { it.getType() == EventType.ANTICIPATED }.each { Event evt ->
+			mM = mM.replaceEvent(evt, evt.changeType(EventType.CONVERGENT))
+		}
+		modelM = modelM.replaceMachine(mch, mM.getMachine())
 	}
 }
