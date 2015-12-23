@@ -22,9 +22,16 @@ class NodeNaming extends AlgorithmASTVisitor {
 	Map<String, Statement> nodes = [:]
 	Map<Statement, String> naming = [:]
 
+	def Skip start
+	def Skip end
+
 	def blockScope = null
 
 	def NodeNaming(Block algorithm) {
+		if (algorithm.statements) {
+			start = algorithm.statements.first() instanceof Skip ? algorithm.statements.first() : null
+			end = algorithm.statements.last() instanceof Skip ? algorithm.statements.last() : null
+		}
 		visit(algorithm)
 	}
 
@@ -90,7 +97,15 @@ class NodeNaming extends AlgorithmASTVisitor {
 
 	@Override
 	public Object visit(Skip a) {
-		def name = blockScope ? blockScope : "end_algorithm"
+		def name = null
+		if (a == end) {
+			name = "end_algorithm"
+		} else if (a == start) {
+			name = "enter_algorithm"
+		} else {
+			name = blockScope
+		}
+		assert name != null
 		nodes[name] = a
 		naming[a] = name
 	}

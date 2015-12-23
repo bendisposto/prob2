@@ -1,10 +1,12 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
+import groovyjarjarantlr.ASTVisitor;
 import de.be4.classicalb.core.parser.node.ABecomesElementOfSubstitution
 import de.be4.classicalb.core.parser.node.ABecomesSuchSubstitution
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.FormulaUtil
 import de.prob.model.eventb.algorithm.Procedure
+import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor;
 import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Block
@@ -20,10 +22,21 @@ import de.prob.util.Tuple2
 
 class VariantPropagator  {
 
+	class AllVariants extends AlgorithmASTVisitor {
+		def List<VariantAssertion> assertions = []
+		def visit(While w) {
+			if (w.variant) {
+				def name = mapping.getName(w)+"_variant"
+				assertions << new VariantAssertion(name, w, [], new EventB(w.variant.getCode() + "<= $name"))
+			}
+		}
+	}
+
 	def FormulaUtil fuu
 	def Map<Statement, List<VariantAssertion>> assertionMap = [:]
 	def ModelElementList<Procedure> procedures
 	def NodeNaming mapping
+	def AllVariants all
 
 	def VariantPropagator(ModelElementList<Procedure> procedures, NodeNaming mapping) {
 		this.fuu = new FormulaUtil()
@@ -32,7 +45,9 @@ class VariantPropagator  {
 	}
 
 	public traverse(Block algorithm) {
-		traverseBlock(algorithm, [])
+		//all = new AllVariants()
+		//all.visit(algorithm)
+		traverseBlock(algorithm,[])
 	}
 
 	public traverseBlock(Block b, List<VariantAssertion> toPropagate) {
@@ -83,6 +98,12 @@ class VariantPropagator  {
 		traverseBlock(w.block, formulas)
 
 		List<VariantAssertion> l1 = getAssertionsForBlock(w.block, []).findAll { it.stmt != w }
+		//if (w.variant) {
+		//	def varName = mapping.getName(w)+"_variant"
+		//	l1 = l1 + [
+		//		new VariantAssertion(varName, w, [], new EventB(w.variant.getCode() + " <= "+ varName))
+		//	]
+		//}
 		recurAndCache(w, merge(w.condition, l1, w.notCondition, toPropagate), rest)
 	}
 

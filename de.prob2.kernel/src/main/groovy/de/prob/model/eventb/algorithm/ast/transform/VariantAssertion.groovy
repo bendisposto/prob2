@@ -11,7 +11,6 @@ public class VariantAssertion {
 	final FormulaUtil fuu = new FormulaUtil()
 	final List<EventB> conditions
 	final EventB variantCondition
-	final EventB positive
 	final String name
 	final While stmt
 
@@ -24,28 +23,26 @@ public class VariantAssertion {
 		def var = name + "_variant"
 		this.conditions = []
 		this.variantCondition = new EventB(stmt.variant.getCode() +" < "+var, stmt.variant.getTypes())
-		this.positive = new EventB(var + " > 0", stmt.variant.getTypes())
 	}
 
-	def VariantAssertion(String name, While stmt, List<EventB> conditions, EventB variantCondition, EventB positive) {
+	def VariantAssertion(String name, While stmt, List<EventB> conditions, EventB variantCondition) {
 		this.name = name
 		this.stmt = stmt
 		this.conditions = conditions
 		this.variantCondition = variantCondition
-		this.positive = positive
 	}
 
 	private VariantAssertion applyAssignment(EventB assignment) {
 		if (assignment.getAst() instanceof ABecomesSuchSubstitution ||
 		assignment.getAst() instanceof ABecomesElementOfSubstitution) {
 			def v = new VariantAssertion(name, stmt)
-			return new VariantAssertion(name, stmt, conditions, v.variantCondition, v.positive)
+			return new VariantAssertion(name, stmt, conditions, v.variantCondition)
 		}
-		return new VariantAssertion(name, stmt, conditions, fuu.applyAssignment(variantCondition, assignment), fuu.applyAssignment(positive, assignment))
+		return new VariantAssertion(name, stmt, conditions, fuu.applyAssignment(variantCondition, assignment))
 	}
 
 	private VariantAssertion addCondition(EventB condition) {
-		return new VariantAssertion(name, stmt, [condition]+conditions, variantCondition, positive)
+		return new VariantAssertion(name, stmt, [condition]+conditions, variantCondition)
 	}
 
 	@Override
@@ -65,8 +62,7 @@ public class VariantAssertion {
 					return false
 				}
 			}
-			return fuu.getRodinFormula(that.variantCondition) == fuu.getRodinFormula(this.variantCondition) &&
-			fuu.getRodinFormula(that.positive) == fuu.getRodinFormula(this.positive)
+			return fuu.getRodinFormula(that.variantCondition) == fuu.getRodinFormula(this.variantCondition)
 		}
 		return false
 	}
@@ -78,7 +74,7 @@ public class VariantAssertion {
 
 	@Override
 	public String toString() {
-		def f = variantCondition.getCode() + " & " + positive.getCode()
+		def f = variantCondition.getCode()
 		if (!conditions) {
 			return f
 		}

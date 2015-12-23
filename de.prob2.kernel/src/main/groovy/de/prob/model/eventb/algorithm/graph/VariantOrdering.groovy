@@ -16,10 +16,10 @@ class VariantOrdering extends AlgorithmASTVisitor {
 
 	@Override
 	public Object traverse(While s) {
-		visit(s.block)
 		if (s.variant) {
 			ordering = ordering.addElement(s)
 		}
+		visit(s.block)
 	}
 
 	@Override

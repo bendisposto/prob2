@@ -21,6 +21,7 @@ class ControlFlowGraph {
 	LinkedHashMap<Statement, Set<Edge>> incomingEdges = new LinkedHashMap<Statement, Set<Edge>>()
 	Map<Edge, List<Statement>> edgeMapping = [:]
 	Map<While, List<Edge>> loopsForTermination = [:]
+	Map<While, List<Edge>> loopToWhile = [:]
 	NodeNaming nodeMapping
 	Statement entryNode
 
@@ -104,6 +105,7 @@ class ControlFlowGraph {
 			throw new IllegalArgumentException("While loops cannot be null!")
 		}
 		addEdge(w, addNode(block.first(), block.tail()), [w.condition])
+		loopToWhile[w] = []
 		if (w.variant) {
 			loopsForTermination[w] = []
 		}
@@ -184,6 +186,9 @@ class ControlFlowGraph {
 		if (loopsForTermination[to] != null) {
 			loopsForTermination[to].add(edge)
 		}
+		if (to instanceof While) {
+			loopToWhile[to].add(edge)
+		}
 	}
 
 	def size() {
@@ -202,7 +207,7 @@ class ControlFlowGraph {
 		incomingEdges[stmt] ?: []
 	}
 
-	def getEventName(Edge e) {
+	def String getEventName(Edge e) {
 		List<Statement> statements = edgeMapping[e]
 		if (statements.size() == 1 && statements[0] instanceof IAssignment || statements[0] instanceof Skip) {
 			assert e.conditions.isEmpty()
@@ -211,7 +216,7 @@ class ControlFlowGraph {
 		assert e.conditions.size() == statements.size()
 		[statements, e.conditions].transpose().collect { l ->
 			getEventName(l[0], l[1])
-		}.iterator().join("_")
+		}.iterator().join("_").toString()
 	}
 
 	def String getEventName(While s, EventB condition) {
