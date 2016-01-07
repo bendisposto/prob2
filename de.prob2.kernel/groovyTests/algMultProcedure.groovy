@@ -24,6 +24,8 @@ mm = new ModelModifier().make {
 			theorem "x0 mod 2 /= 0 => (x0 / 2) * y0 * 2 = (x0 - 1) * y0"
 			theorem "x mod 2 /= 0 => x / 2 * 2 = x - 1"
 			theorem "x / 2*y*2 = x / 2*2*y"
+			//theorem "!m.m : NAT & m <= 0 & p + m * y0 * 2 = x * y => p = x * y"
+			theorem "x0 <= 0 => x0 = 0"
 			algorithm {
 				While("x0 > 0", invariant: "p + (x0*y0) = x*y") {
 					If("x0 mod 2 /= 0") {
@@ -31,9 +33,8 @@ mm = new ModelModifier().make {
 							Assign("p := p + y0")
 						}
 					}
-					Assign("x0 := x0 / 2")
-					Assign("y0 := y0 * 2")
-					Assert("x0 = 0 => p = x*y")
+					Assign("x0,y0 := x0 / 2, y0 * 2")
+					Assert("TRUE = TRUE")
 				}
 				Assert("p = x*y")
 				Return("p")
@@ -92,7 +93,7 @@ m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
 
 mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "MultWithProcedures", "/tmp")
+d = mtx.writeToRodin(m, "MultWithProc", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

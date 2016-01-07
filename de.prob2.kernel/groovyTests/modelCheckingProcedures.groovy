@@ -76,7 +76,7 @@ mm = new ModelModifier().make {
 		result "res", "BOOL"
 		
 		precondition "TRUE=TRUE"
-		postcondition "res = bool(!i.i : INVARIANTS => s|->i:truth)"
+		postcondition "res = bool(!iv.iv : INVARIANTS => s|->iv:truth)"
 		
 		implementation {
 			var "r", "r : BOOL", "r := FALSE"
@@ -90,7 +90,8 @@ mm = new ModelModifier().make {
 					If ("not(s|->i:truth)") {
 						Then {
 							Assign("r := FALSE")
-							Assert("r = FALSE & not(s|->i:truth)")
+							//Assert("r = FALSE & not(s|->i:truth)")
+							Assert("r = bool(!iv.iv : INVARIANTS => s|->iv:truth)")
 							Return("r")
 						}
 					}
@@ -98,7 +99,8 @@ mm = new ModelModifier().make {
 					Assign("invs := invs \\ {i}")
 				}
 				Assign("r := TRUE")
-				Assert("r = TRUE & checked = INVARIANTS & (!iv.iv : INVARIANTS => s|->iv:truth)")
+				//Assert("r = TRUE & checked = INVARIANTS & (!iv.iv : INVARIANTS => s|->iv:truth)")
+				Assert("r = bool(!iv.iv : INVARIANTS => s|->iv:truth)")
 				Return("r")
 			}
 		}
@@ -128,12 +130,13 @@ mm = new ModelModifier().make {
 						}
 					}
 				}
+				Assert("succs = {t | s|->t : transitions}")
 				Return("succs")
 			}
 		}
 	}
 	
-	procedure(name: "model_check", seen: "c5_CorrectStateSpace") {
+	procedure(name: "model_check", seen: "c1_ModelElements") {
 		result "result", "MCResult"
 		result "state", "STATES"
 		
@@ -141,7 +144,7 @@ mm = new ModelModifier().make {
 		postcondition "(result = mc_ok => state = root) &"+
 					  "(result = counter_example => (#i.i : INVARIANTS & state|->i /: truth)) &"+
 					  "(result = deadlock => {t | state|->t : transitions} = {})"
-		
+					  
 		implementation {
 			var "queue", "queue : POW(STATES)", "queue := {root}"
 			var "known", "known : POW(STATES)", "known := {root}"
@@ -156,7 +159,8 @@ mm = new ModelModifier().make {
 					If ("invok = FALSE") {
 						Then {
 							Assign("res := counter_example")
-							Assert("res = counter_example & (#i.i : INVARIANTS & s|->i /: truth)")
+							//Assert("res = counter_example & (#i.i : INVARIANTS & s|->i /: truth)")
+							Assert("(res = mc_ok => s = root) & (res = counter_example => (#i.i : INVARIANTS & s|->i /: truth)) & (res = deadlock => {t | s|->t : transitions} = {})")
 							Return("res", "s")
 						}
 					}
@@ -164,7 +168,8 @@ mm = new ModelModifier().make {
 					If ("succs = {}") {
 						Then {
 							Assign("res := deadlock")
-							Assert("res = deadlock & {t | s|->t : transitions} = {}")
+							//Assert("res = deadlock & {t | s|->t : transitions} = {}")
+							Assert("(res = mc_ok => s = root) & (res = counter_example => (#i.i : INVARIANTS & s|->i /: truth)) & (res = deadlock => {t | s|->t : transitions} = {})")
 							Return("res", "s")
 						}
 					}
@@ -180,7 +185,8 @@ mm = new ModelModifier().make {
 				}
 				Assign("res := mc_ok")
 				Assign("s := root")
-				Assert("res = mc_ok & s = root")
+				//Assert("res = mc_ok & s = root")
+				Assert("(res = mc_ok => s = root) & (res = counter_example => (#i.i : INVARIANTS & s|->i /: truth)) & (res = deadlock => {t | s|->t : transitions} = {})")
 				Return("res","s")
 			} 
 		}
@@ -191,7 +197,7 @@ m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().propagateAssertions(true).optimize(true)).run()
 
 mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "ModelCheckProc", "/tmp")
+//d = mtx.writeToRodin(m, "ModelCheckP", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();
