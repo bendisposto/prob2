@@ -1,8 +1,15 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
+import java.util.List
+
+import com.github.krukow.clj_lang.PersistentHashMap
+import com.github.krukow.clj_lang.PersistentVector;
+
 import de.prob.model.eventb.algorithm.ast.Assertion
-import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.If
 import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.While
 
 /**
  * Extracts assertions and assumptions from within the AST, adding nodes after
@@ -10,38 +17,34 @@ import de.prob.model.eventb.algorithm.ast.Statement
  * @author joy
  *
  */
-class AssertionExtractor extends AlgorithmASTTransformer {
+class AssertionExtractor {
 
-	Map<Statement, Set<Assertion>> properties = [:]
-
-	def addAssertions(Statement stmt, List<Assertion> stmts) {
-		if (properties[stmt] == null) {
-			properties[stmt] = stmts as LinkedHashSet
-		} else {
-			properties[stmt].addAll(stmts)
+	def PersistentHashMap<Statement, List<Assertion>> extractAssertions(Block algorithm) {
+		if (!algorithm.statements.isEmpty()) {
+			return extractAssertions(PersistentHashMap.emptyMap(), algorithm.statements)
 		}
+		PersistentHashMap.emptyMap()
 	}
 
-	@Override
-	def List<Statement> transform(Assertion a, List<Statement> rest) {
-		extractAssertions(a, rest)
-	}
-
-	def List<Statement> extractAssertions(Assertion t, List<Statement> stmts) {
-		List<Assertion> myproperties = [t]
-		List<Statement> statements = stmts
+	def extractAssertions(PersistentHashMap assertions, List<Statement> statements) {
+		PersistentVector<Assertion> a = PersistentVector.emptyVector()
 		while (!statements.isEmpty() && statements.head() instanceof Assertion) {
-			myproperties << statements.head()
+			a = a.plus(statements.head())
 			statements = statements.tail()
 		}
 		if (statements.isEmpty()) {
-			Statement h = new Skip(t.typeEnvironment)
-			addAssertions(h, myproperties)
-			return myproperties + [h]
+			assert a.isEmpty() // a must be mapped to a statement!
+			return assertions
 		}
-		List<Statement> nextS = transform(statements.head(), statements.tail())
-		assert !nextS.isEmpty() && !(nextS.first() instanceof Assertion)
-		addAssertions(nextS.first(), myproperties)
-		myproperties + nextS
+		def s = statements.head()
+		assertions = assertions.plus(statements.head(), a)
+		if (s instanceof While) {
+			assertions = extractAssertions(assertions, s.block.statements)
+		}
+		if (s instanceof If) {
+			assertions = extractAssertions(assertions, s.Then.statements)
+			assertions = extractAssertions(assertions, s.Else.statements)
+		}
+		extractAssertions(assertions, statements.tail())
 	}
 }

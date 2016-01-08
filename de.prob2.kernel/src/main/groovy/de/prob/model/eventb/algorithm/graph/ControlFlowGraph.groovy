@@ -1,5 +1,10 @@
 package de.prob.model.eventb.algorithm.graph
 
+import com.github.krukow.clj_lang.PersistentHashMap
+import com.github.krukow.clj_lang.PersistentHashSet
+import com.github.krukow.clj_lang.PersistentVector;
+
+import de.be4.ltl.core.parser.node.THistorically;
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Assignment
@@ -12,191 +17,250 @@ import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
 import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
+import de.prob.util.Tuple2;
 
 class ControlFlowGraph {
-	Map<Statement, Set<Assertion>> properties
+	//Map<Statement, Set<Assertion>> properties
 
-	LinkedHashSet<Statement> nodes = new LinkedHashSet<Statement>()
-	LinkedHashMap<Statement, Set<Edge>> outgoingEdges = new LinkedHashMap<Statement, Set<Edge>>()
-	LinkedHashMap<Statement, Set<Edge>> incomingEdges = new LinkedHashMap<Statement, Set<Edge>>()
-	Map<Edge, List<Statement>> edgeMapping = [:]
-	Map<While, List<Edge>> loopsForTermination = [:]
-	Map<While, List<Edge>> loopToWhile = [:]
-	NodeNaming nodeMapping
-	Statement entryNode
-
-	Block algorithm
-	Statement lastNode
+	final PersistentHashSet<Statement> nodes
+	final PersistentHashMap<Statement, Set<Edge>> outgoingEdges
+	final PersistentHashMap<Statement, Set<Edge>> incomingEdges
+	final Block algorithm
+	final Statement entryNode
+	final Statement lastNode
 
 	def ControlFlowGraph(Block b) {
-		if (!b.statements.isEmpty()) {
-			AssertionExtractor e = new AssertionExtractor()
-			this.algorithm = e.transform(b.finish())
-			lastNode = this.algorithm.statements.last()
-			properties = e.properties
-			nodeMapping = new NodeNaming(this.algorithm)
+		def cfg = create(b)
+		nodes = cfg.nodes
+		outgoingEdges = cfg.outgoingEdges
+		incomingEdges = cfg.incomingEdges
+		algorithm = cfg.algorithm
+		entryNode = cfg.entryNode
+		lastNode = cfg.lastNode
+	}
 
-			if (!this.algorithm.statements.isEmpty()) {
-				entryNode = addNode(this.algorithm.statements.first(), this.algorithm.statements.tail())
+	def ControlFlowGraph(algorithm, entryNode, lastNode, nodes, outgoingEdges, incomingEdges) {
+		this.algorithm = algorithm
+		this.entryNode = entryNode
+		this.lastNode = lastNode
+		this.nodes = nodes
+		this.outgoingEdges = outgoingEdges
+		this.incomingEdges = incomingEdges
+	}
+
+	def static ControlFlowGraph create(Block algorithm) {
+		if (!algorithm.statements.isEmpty()) {
+			def cfg = new ControlFlowGraph(algorithm, algorithm.statements.first(), algorithm.statements.last(), PersistentHashSet.emptySet(), PersistentHashMap.emptyMap(), PersistentHashMap.emptyMap())
+			return cfg.addNode(algorithm.statements.first(), algorithm.statements.tail())
+		}
+		new ControlFlowGraph(algorithm, null, null, PersistentHashSet.emptySet(), PersistentHashMap.emptyMap(), PersistentHashMap.emptyMap())
+	}
+
+	def ControlFlowGraph addEdge(Statement from, Statement to, PersistentVector<Tuple2<Statement, EventB>> conditions) {
+		def newNodes = nodes.plus(from).plus(to)
+		Edge e = new Edge(from, to, conditions)
+		def oE = outgoingEdges
+		if (oE[from] == null) {
+			oE = oE.plus(from, PersistentHashSet.emptySet())
+		}
+		def iE = incomingEdges
+		if (iE[to] == null) {
+			iE = iE.plus(to, PersistentHashSet.emptySet())
+		}
+		oE = oE.plus(from, oE[from].plus(e))
+		iE = iE.plus(to, iE[to].plus(e))
+		return new ControlFlowGraph(algorithm, from, lastNode, newNodes, oE, iE)
+	}
+
+	def ControlFlowGraph removeNode(Statement node) {
+		def newNodes = nodes.minus(node)
+		def oE = outgoingEdges.minus(node)
+		oE.each { Statement s, Set<Edge> edges ->
+			edges.each { Edge e ->
+				if (e.to == node) {
+					oE = oE.plus(s, edges.minus(e))
+				}
 			}
 		}
+		def iE = incomingEdges.minus(node)
+		iE.each { Statement s, Set<Edge> edges ->
+			edges.each { Edge e ->
+				if (e.from == node) {
+					iE = iE.plus(s, edges.minus(e))
+				}
+			}
+		}
+		if (entryNode == node && outgoingEdges[node].size() != 1) {
+			throw new IllegalArgumentException("Could not delete entry node, since unambiguous new entry node")
+		}
+		def eN = entryNode == node ? outgoingEdges[node].first() : entryNode
+		return new ControlFlowGraph(algorithm, eN, lastNode, newNodes, oE, iE)
 	}
 
-	def addEdge(Statement from, Statement to, List<EventB> conditions) {
-		nodes.add(from)
-		nodes.add(to)
-		Edge e = new Edge(from, to, conditions)
-		if (!outgoingEdges[from]) {
-			outgoingEdges[from] = new LinkedHashSet<Edge>()
-		}
-		if (!incomingEdges[to]) {
-			incomingEdges[to] = new LinkedHashSet<Edge>()
-		}
-		outgoingEdges[from].add(e)
-		incomingEdges[to].add(e)
-		edgeMapping[e] = [from]
-		e
-	}
-
-	def addNode(Assignment a, List<Statement> stmts) {
+	def ControlFlowGraph addNode(Assignment a, List<Statement> stmts) {
 		if (stmts.isEmpty()) {
-			nodes.add(a)
-			return a
+			return new ControlFlowGraph(algorithm, a, lastNode, nodes.plus(a), outgoingEdges, incomingEdges)
 		}
-		addEdge(a, addNode(stmts.first(), stmts.tail()), [])
-		a
+		ControlFlowGraph cfg = addNode(stmts.first(), stmts.tail())
+		cfg.addEdge(a, cfg.entryNode, PersistentVector.emptyVector())
 	}
 
-	def addNode(Call a, List<Statement> stmts) {
+	def ControlFlowGraph addNode(Call a, List<Statement> stmts) {
 		if (stmts.isEmpty()) {
-			nodes.add(a)
-			return a
+			return new ControlFlowGraph(algorithm, a, lastNode, nodes.plus(a), outgoingEdges, incomingEdges)
 		}
-		addEdge(a, addNode(stmts.first(), stmts.tail()), [])
-		a
+		ControlFlowGraph cfg = addNode(stmts.first(), stmts.tail())
+		cfg.addEdge(a, cfg.entryNode, PersistentVector.emptyVector())
 	}
 
-	def addNode(Return a, List<Statement> stmts) {
+	def ControlFlowGraph addNode(Return a, List<Statement> stmts) {
+		addEdge(a, lastNode, PersistentVector.emptyVector())
+	}
+
+	def ControlFlowGraph addNode(Skip a, List<Statement> stmts) {
 		if (stmts.isEmpty()) {
-			nodes.add(a)
-			return a
+			return new ControlFlowGraph(algorithm, a, lastNode, nodes.plus(a), outgoingEdges, incomingEdges)
 		}
-		addEdge(a, lastNode, [])
-		a
+		ControlFlowGraph cfg = addNode(stmts.first(), stmts.tail())
+		cfg.addEdge(a, cfg.entryNode, lastNode, PersistentVector.emptyVector())
 	}
 
-	def addNode(Skip a, List<Statement> stmts) {
-		if (stmts.isEmpty()) {
-			nodes.add(a)
-			return a
-		}
-		addEdge(a, addNode(stmts.first(), stmts.tail()), [])
-		a
-	}
-
-	def addNode(Assertion a, List<Statement> stmts) {
+	def ControlFlowGraph addNode(Assertion a, List<Statement> stmts) {
 		assert !stmts.isEmpty() // assertions are mapped to the next statement, so an assertion before empty statements is incorrect
 		addNode(stmts.first(), stmts.tail())
 	}
 
-	def addNode(While w, List<Statement> stmts) {
+	def ControlFlowGraph loopToNode(ControlFlowGraph subgraph, Statement dest) {
+		ControlFlowGraph g = this
+		nodes.each { n ->
+			if (!subgraph.outgoingEdges.containsKey(n)) {
+				g = g.addEdge(n, dest, PersistentVector.emptyVector())
+			}
+		}
+		g
+	}
+
+	def ControlFlowGraph addNode(While w, List<Statement> stmts) {
 		List<Statement> block = w.block.statements
 		if (block.isEmpty()) {
 			throw new IllegalArgumentException("While loops cannot be null!")
 		}
-		addEdge(w, addNode(block.first(), block.tail()), [w.condition])
-		loopToWhile[w] = []
-		if (w.variant) {
-			loopsForTermination[w] = []
+		ControlFlowGraph cfg1 = addNode(block.first(), block.tail())
+		cfg1.nodes.each { n ->
+			if (!cfg1.outgoingEdges.containsKey(n)) {
+				if (n instanceof Filler) {
+					Set<Edge> inEdges = cfg1.incomingEdges[n]
+					cfg1 = cfg1.removeNode(n)
+					inEdges.each { Edge e ->
+						cfg1 = cfg1.addEdge(e.from, w, e.conditions)
+					}
+				} else {
+					cfg1 = cfg1.addEdge(n, w, PersistentVector.emptyVector())
+				}
+			}
 		}
-		addSpecialEdge(block.last(), w)
+		cfg1 = cfg1.addEdge(w, block.first(), newCondition(w, w.condition))
 
 		if (!stmts.isEmpty()) {
-			addEdge(w, addNode(stmts.first(), stmts.tail()), [w.notCondition])
+			def cfg2 = cfg1.addNode(stmts.first(), stmts.tail())
+			cfg2 = cfg2.addEdge(w, cfg2.entryNode, newCondition(w, w.notCondition))
+			return cfg2
 		}
-		w
+		return cfg1.addEdge(w, new Filler(), newCondition(w, w.notCondition))
 	}
 
-	def addNode(If i, List<Statement> stmts) {
-		def nextN =	!stmts.isEmpty() ? addNode(stmts.first(), stmts.tail()) : null
-		if (!i.Then.statements.isEmpty()) {
-			addEdge(i, addNode(i.Then.statements.first(), i.Then.statements.tail()), [i.condition])
-			if (nextN) {
-				addSpecialEdge(i.Then.statements.last(), nextN)
+	def PersistentVector<Tuple2<Statement,EventB>> newCondition(Statement s, EventB condition) {
+		PersistentVector.emptyVector().plus(new Tuple2<Statement,EventB>(s,condition))
+	}
+
+	def ControlFlowGraph addNode(If i, List<Statement> stmts) {
+		if (stmts.isEmpty()) {
+			Filler f = new Filler()
+			if (i.Then.statements.isEmpty() && i.Else.statements.isEmpty()) {
+				return addEdge(i, f, newCondition(i, i.condition)).addEdge(i, f, newCondition(i, i.elseCondition))
 			}
-		} else if (nextN) {
-			addEdge(i, nextN, [i.condition])
-		}
-
-		if (!i.Else.statements.isEmpty()) {
-			addEdge(i, addNode(i.Else.statements.first(), i.Else.statements.tail()), [i.elseCondition])
-			if (nextN) {
-				addSpecialEdge(i.Else.statements.last(), nextN)
+			if (i.Then.statements.isEmpty()) {
+				def cfg = addNode(i.Else.statements.first(), i.Else.statements.tail())
+				return cfg.addEdge(i, cfg.entryNode, newCondition(i, i.elseCondition)).addEdge(i, f, newCondition(i, i.condition))
 			}
-		} else if (nextN) {
-			addEdge(i, nextN, [i.elseCondition])
+			if (i.Else.statements.isEmpty()) {
+				def cfg = addNode(i.Then.statements.first(), i.Then.statements.tail())
+				return cfg.addEdge(i, cfg.entryNode, newCondition(i, i.condition)).addEdge(i, f, newCondition(i, i.elseCondition))
+			}
+			def cfgt = addNode(i.Then.statements.first(), i.Then.statements.tail())
+			def cfge = cfgt.addNode(i.Else.statements.first(), i.Else.statements.tail())
+			return cfge.addEdge(i, cfgt.entryNode, newCondition(i, i.condition)).addEdge(i, cfge.entryNode, newCondition(i, i.elseCondition))
 		}
-		i
-	}
 
-	def addSpecialEdge(Assignment from, Statement to) {
-		def e = addEdge(from, to, [])
-		addTerminationLoop(e, to)
-	}
-
-	def addSpecialEdge(Call from, Statement to) {
-		def e = addEdge(from, to, [])
-		addTerminationLoop(e, to)
-	}
-
-	def addSpecialEdge(Skip from, Statement to) {
-		def e = addEdge(from, to, [])
-		addTerminationLoop(e, to)
-	}
-
-	def addSpecialEdge(Return from, Statement to) {
-		addEdge(from, lastNode, [])
-	}
-
-	def addSpecialEdge(Assertion from, Statement to) {
-		throw new IllegalArgumentException("Assertion is not allowed to be alone at the end of a statement!")
-	}
-
-	def addSpecialEdge(While from, Statement to) {
-		def e = addEdge(from, to, [from.notCondition])
-		addTerminationLoop(e, to)
-	}
-
-	def addSpecialEdge(If from, Statement to) {
-		if (from.Then.statements.isEmpty()) {
-			def e = addEdge(from, to, [from.condition])
-			addTerminationLoop(e, to)
-		} else {
-			addSpecialEdge(from.Then.statements.last(), to)
+		if (i.Then.statements.isEmpty() && i.Else.statements.isEmpty()) {
+			def nextG = addNode(stmts.first(), stmts.tail())
+			return nextG.addEdge(i, nextG.entryNode, newCondition(i, i.condition)).addEdge(i, nextG.entryNode, newCondition(i, i.elseCondition))
 		}
-		if (from.Else.statements.isEmpty()) {
-			def e = addEdge(from, to, [from.elseCondition])
-			addTerminationLoop(e, to)
-		} else {
-			addSpecialEdge(from.Else.statements.last(), to)
-		}
-	}
+		if (i.Then.statements.isEmpty()) {
+			def cfg = addNode(i.Else.statements.first(), i.Else.statements.tail())
+			cfg = cfg.addEdge(i, cfg.entryNode, newCondition(i, i.elseCondition))
+			def nextG = cfg.addNode(stmts.first(), stmts.tail())
+			def f = nextG.entryNode
 
-	def addTerminationLoop(Edge edge, Statement to) {
-		if (loopsForTermination[to] != null) {
-			loopsForTermination[to].add(edge)
+			cfg.nodes.each { n ->
+				if (!cfg.outgoingEdges.containsKey(n)) {
+					if (n instanceof Filler) {
+						Set<Edge> inEdges = nextG.incomingEdges[n]
+						nextG = nextG.removeNode(n)
+						inEdges.each { Edge e ->
+							nextG = nextG.addEdge(e.from, f, e.conditions)
+						}
+					} else {
+						nextG = nextG.addEdge(n, f, PersistentVector.emptyVector())
+					}
+				}
+			}
+			return nextG.addEdge(i, f, newCondition(i, i.condition))
 		}
-		if (to instanceof While) {
-			loopToWhile[to].add(edge)
+		if (i.Else.statements.isEmpty()) {
+			def cfg = addNode(i.Then.statements.first(), i.Then.statements.tail())
+			cfg = cfg.addEdge(i, cfg.entryNode, newCondition(i, i.condition))
+			def nextG = cfg.addNode(stmts.first(), stmts.tail())
+			def f = nextG.entryNode
+
+			cfg.nodes.each { n ->
+				if (!cfg.outgoingEdges.containsKey(n)) {
+					if (n instanceof Filler) {
+						Set<Edge> inEdges = nextG.incomingEdges[n]
+						nextG = nextG.removeNode(n)
+						inEdges.each { Edge e ->
+							nextG = nextG.addEdge(e.from, f, e.conditions)
+						}
+					} else {
+						nextG = nextG.addEdge(n, f, PersistentVector.emptyVector())
+					}
+				}
+			}
+			return nextG.addEdge(i, f, newCondition(i, i.elseCondition))
 		}
+		def cfg1 = addNode(i.Then.statements.first(), i.Then.statements.tail())
+		def cfg2 = cfg1.addNode(i.Else.statements.first(), i.Else.statements.tail())
+		def nextG = cfg2.addNode(stmts.first(), stmts.tail())
+		def f = nextG.entryNode
+		cfg2.nodes.each { n ->
+			if (!cfg2.outgoingEdges.containsKey(n)) {
+				if (n instanceof Filler) {
+					Set<Edge> inEdges = nextG.incomingEdges[n]
+					nextG = nextG.removeNode(n)
+					inEdges.each { Edge e ->
+						nextG = nextG.addEdge(e.from, f, e.conditions)
+					}
+				} else {
+					nextG = nextG.addEdge(n, f, PersistentVector.emptyVector())
+				}
+			}
+		}
+
+		nextG.addEdge(i, cfg1.entryNode, newCondition(i, i.condition)).addEdge(i, cfg2.entryNode, newCondition(i, i.elseCondition))
 	}
 
 	def size() {
 		return nodes.size()
-	}
-
-	def getNode(String name) {
-		return nodeMapping[name]
 	}
 
 	def outEdges(Statement stmt) {
@@ -207,37 +271,9 @@ class ControlFlowGraph {
 		incomingEdges[stmt] ?: []
 	}
 
-	def String getEventName(Edge e) {
-		List<Statement> statements = edgeMapping[e]
-		if (statements.size() == 1 && statements[0] instanceof IAssignment || statements[0] instanceof Skip) {
-			assert e.conditions.isEmpty()
-			return "${nodeMapping.getName(statements[0])}"
+	private class Filler extends Statement	{
+		def Filler() {
+			super([] as Set)
 		}
-		assert e.conditions.size() == statements.size()
-		[statements, e.conditions].transpose().collect { l ->
-			getEventName(l[0], l[1])
-		}.iterator().join("_").toString()
-	}
-
-	def String getEventName(While s, EventB condition) {
-		def name = nodeMapping.getName(s)
-		if (condition == s.condition) {
-			return "enter_$name"
-		}
-		if (condition == s.notCondition) {
-			return "exit_$name"
-		}
-		return "unknown_branch_$name"
-	}
-
-	def String getEventName(If s, EventB condition) {
-		def name = nodeMapping.getName(s)
-		if (condition == s.condition) {
-			return "${name}_then"
-		}
-		if (condition == s.elseCondition) {
-			return "${name}_else"
-		}
-		return "unknown_branch_$name"
 	}
 }
