@@ -119,14 +119,14 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 	}
 
 	def forSingleSimpleStatement(Statement s) {
-		if (!optimized || graph.inEdges(s).isEmpty()) {
-			assert pcInfo[s] != null
+		if (pcInfo[s] != null) {
 			def prefix = "$pcname = ${pcInfo[s]}"
 			machineM = writeAssertions(machineM, s,prefix)
 			if (propagated[s]) {
 				machineM = writePropagated(machineM, propagated[s], prefix)
 			}
-		} else {
+		} else { //!optimized || graph.inEdges(s).isEmpty()
+			assert optimized
 			Set<Edge> inE = graph.inEdges(s)
 			inE.each { Edge e ->
 				if (e.conditions.isEmpty()) {

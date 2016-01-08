@@ -20,6 +20,7 @@ import de.prob.model.eventb.algorithm.ast.Return
 import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
+import de.prob.model.eventb.algorithm.ast.transform.AddLoopEvents
 import de.prob.model.eventb.algorithm.ast.transform.AddSkipForVariant
 import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
 import de.prob.model.eventb.algorithm.ast.transform.IAlgorithmASTTransformer
@@ -182,30 +183,30 @@ class AlgorithmTranslator {
 
 	def MachineModifier addEdge(Set<Statement> generated, ControlFlowGraph graph, Map<Statement, Integer> pcInfo, MachineModifier machineM, Procedure procedure, Edge e, Statement stmt, boolean merge) {
 		final pcname = procedure ? "ipc" : "pc"
+		final pcs = pcInfo
 
 		String name = graph.getEventName(e)
-		def node = null
-		if (merge && e.to instanceof IAssignment) {
-			generated << e.to
-			if (!graph.outEdges(e.to).isEmpty()) {
-				node = graph.outEdges(e.to).first().to
-			}
-		}
-		final nextN = node ?: e.to
-
-		final pcs = pcInfo
 		EventModifier em = new EventModifier(new Event(name, EventType.ORDINARY, false))
 				.addComment(stmt.toString())
 				.guard("$pcname = ${pcs[stmt]}")
 		e.conditions.each { em = em.guard(it) }
-		if (stmt instanceof IAssignment) {
-			em = addAssignment(em, stmt, procedure)
-		} else if (merge && e.to instanceof IAssignment) {
-			em = addAssignment(em, e.to, procedure)
+
+		if (pcs[e.to] != null) {
+			if (stmt instanceof IAssignment) {
+				em = addAssignment(em, stmt, procedure)
+			}
+			em = em.action("$pcname := ${pcs[e.to]}")
+			def mm = machineM.addEvent(em.getEvent())
+			return addNode(generated, graph, mm, procedure, e.to, pcInfo)
 		}
-		if (pcs[nextN] != null) {
-			em = em.action("$pcname := ${pcs[nextN]}")
-		}
+
+		assert merge && e.to instanceof IAssignment
+		assert !graph.outEdges(e.to).isEmpty()
+
+		generated << e.to
+		final nextN = graph.outEdges(e.to).first().to
+		em = addAssignment(em, e.to, procedure)
+		em = em.action("$pcname := ${pcs[nextN]}")
 		def mm = machineM.addEvent(em.getEvent())
 		return addNode(generated, graph, mm, procedure, nextN, pcInfo)
 	}
@@ -246,7 +247,9 @@ class AlgorithmTranslator {
 	}
 
 	def Block runASTTransformations(Block block) {
-		def transformers = [new DeadCodeRemover()]
+		def transformers = [
+			new DeadCodeRemover() //,new AddLoopEvents()
+		]
 		if (options.isTerminationAnalysis()) {
 			transformers << new AddSkipForVariant()
 		}
@@ -279,8 +282,10 @@ class AlgorithmTranslator {
 		String variantName = graph.nodeMapping.getName(stmt)+"_variant"
 		def mM = machineM.variant(variantName).var(variantName, variantName + " : NAT", variantName + " :: NAT")
 		def final setVariant = variantName+" := ${stmt.variant.getCode()}"
-		Event evt = mM.getMachine().getEvent("enter_"+graph.nodeMapping.getName(stmt))
-		mM = mM.event(name: evt.getName(), type: evt.getType()) { action setVariant }
+		def prefix = "enter_"+graph.nodeMapping.getName(stmt)
+		mM.getMachine().getEvents().findAll { it.getName().startsWith(prefix) }.each { Event evt ->
+			mM = mM.event(name: evt.getName(), type: evt.getType()) { action setVariant }
+		}
 
 		graph.loopsForTermination[stmt].each { Edge edge ->
 			mM = mM.event(name: graph.getEventName(edge), type: EventType.CONVERGENT) { action setVariant }
@@ -304,7 +309,9 @@ class AlgorithmTranslator {
 			} else {
 				edges.each { Edge edge ->
 					List<Statement> statements = graph.edgeMapping[edge]
-					if (statements.size() == 1 && statements[0] instanceof IAssignment || statements[0] instanceof Skip) {
+					if (pcCalc.pcInformation[edge.to] != null) {
+						mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
+					} else if (statements.size() == 1 && statements[0] instanceof IAssignment || statements[0] instanceof Skip) {
 						graph.incomingEdges[edge.from].each { Edge e ->
 							if (e.conditions) {
 								mM = mM.event(name: graph.getEventName(e), type: EventType.CONVERGENT)
