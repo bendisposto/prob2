@@ -141,15 +141,13 @@ class VariantPropagator  {
 			head = tail.first()
 			tail = tail.tail()
 		}
-		assertionMap[head]
+		assertionMap[head] ?: []
 	}
 
 	private List<VariantAssertion> applyAssignment(List<VariantAssertion> preds, EventB assignment) {
 		if (assignment.getAst() instanceof ABecomesSuchSubstitution ||
 		assignment.getAst() instanceof ABecomesElementOfSubstitution) {
-			return ((preds.collect { it.stmt } as LinkedHashSet) as List).collect { While w ->
-				new VariantAssertion(mapping.getName(w), w)
-			}
+			return []
 		}
 
 		preds.collect { VariantAssertion v ->
