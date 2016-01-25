@@ -9,7 +9,7 @@ public class MergedCGGConstructionTest extends Specification {
 
 	def ControlFlowGraph graph(Closure cls) {
 		Block b = new Block().make(cls)
-		return new GraphMerge().transform((new ControlFlowGraph(b)))
+		return new GraphMerge().transform(new ControlFlowGraph(b))
 	}
 
 	def nodes(ControlFlowGraph g, String... names) {

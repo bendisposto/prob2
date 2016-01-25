@@ -20,8 +20,6 @@ import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
 import de.prob.util.Tuple2;
 
 class ControlFlowGraph {
-	//Map<Statement, Set<Assertion>> properties
-
 	final PersistentHashSet<Statement> nodes
 	final PersistentHashMap<Statement, Set<Edge>> outgoingEdges
 	final PersistentHashMap<Statement, Set<Edge>> incomingEdges
