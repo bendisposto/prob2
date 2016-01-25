@@ -60,6 +60,9 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 		}
 		machineM = writeAssertions(machineM, w, prefix)
 		if (propagated[w]) {
+			// If you want to eliminate possible duplicate assertions:
+			//def toTranslate = propagated[w].findAll { !optimized || it.getFirst() != [w.notCondition]}
+			//machineM = writePropagated(machineM, toTranslate, prefix)
 			machineM = writePropagated(machineM, propagated[w], prefix)
 		}
 	}
