@@ -38,7 +38,7 @@ public class VariantAssertion {
 			def v = new VariantAssertion(name, stmt)
 			return new VariantAssertion(name, stmt, conditions, v.variantCondition)
 		}
-		return new VariantAssertion(name, stmt, conditions, fuu.applyAssignment(variantCondition, assignment))
+		return new VariantAssertion(name, stmt, conditions.collect { fuu.applyAssignment(it, assignment)}, fuu.applyAssignment(variantCondition, assignment))
 	}
 
 	private VariantAssertion addCondition(EventB condition) {
