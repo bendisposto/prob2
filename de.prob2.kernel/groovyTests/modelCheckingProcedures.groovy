@@ -17,6 +17,7 @@ mm = new ModelModifier().make {
 		axiom "truth <: STATES ** INVARIANTS"
 		axiom "transitions : STATES <-> STATES"
 		axiom "root : STATES"
+		axiom "finite(INVARIANTS)"
 		enumerated_set name: "MCResult", constants: ["mc_ok", "counter_example", "deadlock"]
 	}
 	
@@ -83,9 +84,12 @@ mm = new ModelModifier().make {
 			var "invs", "invs <: INVARIANTS", "invs := INVARIANTS"
 			var "i", "i : INVARIANTS", "i :: INVARIANTS"
 			var "checked", "checked <: INVARIANTS", "checked := {}"
+			theorem "finite(invs)"
 			
 			algorithm {
-				While("invs /= {}", invariant: "(invs \\/ checked) = INVARIANTS & (!iv.iv : checked => s|->iv:truth)") {
+				While("invs /= {}", invariant: "(invs \\/ checked) = INVARIANTS & (!iv.iv : checked => s|->iv:truth)", variant: "card(invs)") {
+					Assert("(invs \\/ checked) = INVARIANTS & (!iv.iv : checked => s|->iv:truth)")
+					Assert("invs /= {}")
 					Assign("i :: invs")
 					If ("not(s|->i:truth)") {
 						Then {
@@ -120,6 +124,7 @@ mm = new ModelModifier().make {
 			var "to", "to : STATES", "to :: STATES"
 			algorithm {
 				While("unchecked /= {}", invariant: "succs <: {t | s|->t : transitions} & notsuccs <: {t | s|->t /: transitions} & succs \\/ notsuccs \\/ unchecked = ran(transitions)") {
+					Assert("succs <: {t | s|->t : transitions} & notsuccs <: {t | s|->t /: transitions} & succs \\/ notsuccs \\/ unchecked = ran(transitions)")
 					Call("dequeue",["unchecked"],["unchecked","to"])
 					If ("s |-> to : transitions") {
 						Then {
@@ -194,10 +199,10 @@ mm = new ModelModifier().make {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().propagateAssertions(true).optimize(true)).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 
 mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "ModelCheckP", "/tmp")
+//d = mtx.writeToRodin(m, "ModelCheck", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

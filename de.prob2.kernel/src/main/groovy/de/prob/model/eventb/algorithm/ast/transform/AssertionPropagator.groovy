@@ -71,7 +71,11 @@ class AssertionPropagator  {
 	}
 
 	public traverse(While w, List<Tuple2<List<EventB>,EventB>> toPropagate, List<Statement> rest) {
-		traverseBlock(w.block, copyAndAdd([], w.invariant))
+		def li = []
+		if (w.invariant) {
+			li = copyAndAdd(li, w.invariant)
+		}
+		traverseBlock(w.block, li)
 
 		List<Tuple2<List<EventB>,EventB>> prop = getAssertionsForHead(w.block.statements, w.condition, [])
 		prop = toPropagate.inject(prop) { acc, Tuple2<List<EventB>,EventB> f ->

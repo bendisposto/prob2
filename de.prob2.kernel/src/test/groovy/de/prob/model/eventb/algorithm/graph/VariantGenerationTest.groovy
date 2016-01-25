@@ -3,10 +3,11 @@ package de.prob.model.eventb.algorithm.graph
 import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.FormulaUtil
+import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.Procedure
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Statement
-import de.prob.model.eventb.algorithm.ast.transform.AddSkipForVariant
+import de.prob.model.eventb.algorithm.ast.transform.AddLoopEvents
 import de.prob.model.eventb.algorithm.ast.transform.VariantAssertion
 import de.prob.model.eventb.algorithm.ast.transform.VariantPropagator
 import de.prob.model.representation.ModelElementList
@@ -37,7 +38,7 @@ class VariantGenerationTest extends Specification {
 	}
 
 	def mergeLoops(Closure cls) {
-		Block b = new AddSkipForVariant().transform(new Block().make(cls))
+		Block b = new AddLoopEvents(new AlgorithmGenerationOptions().loopEvent(true)).transform(new Block().make(cls))
 		ControlFlowGraph g = new GraphMerge().transform(new ControlFlowGraph(b))
 		g.loopsForTermination.collectEntries { w, o ->
 			[
@@ -48,7 +49,7 @@ class VariantGenerationTest extends Specification {
 	}
 
 	def propagate(Closure cls) {
-		Block b = new AddSkipForVariant().transform(new Block().make(cls))
+		Block b = new AddLoopEvents(new AlgorithmGenerationOptions().loopEvent(true)).transform(new Block().make(cls))
 		NodeNaming n = new NodeNaming(b)
 		VariantPropagator ap = new VariantPropagator(new ModelElementList<Procedure>(), n)
 		ap.traverse(b)
