@@ -21,7 +21,6 @@ import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
 import de.prob.model.eventb.algorithm.ast.transform.AddLoopEvents
-import de.prob.model.eventb.algorithm.ast.transform.AddSkipForVariant
 import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
 import de.prob.model.eventb.algorithm.ast.transform.IAlgorithmASTTransformer
 import de.prob.model.eventb.algorithm.graph.AssertionTranslator
@@ -248,11 +247,9 @@ class AlgorithmTranslator {
 
 	def Block runASTTransformations(Block block) {
 		def transformers = [
-			new DeadCodeRemover() //,new AddLoopEvents()
+			new DeadCodeRemover() ,
+			new AddLoopEvents(options)
 		]
-		if (options.isTerminationAnalysis()) {
-			transformers << new AddSkipForVariant()
-		}
 		transformers.inject(block) { Block b, IAlgorithmASTTransformer t ->
 			t.transform(b)
 		}
