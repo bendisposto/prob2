@@ -58,7 +58,8 @@ mm = new ModelModifier().make {
 			var "low", "low : 0..aSize", "low := 0"
 			var "high", "high : -1..aSize-1", "high := aSize - 1"
 			var "mid", "mid : NATURAL", "mid := 0"
-			
+			var "midVar", "midVar : INTEGER", "midVar :: INTEGER"
+
 			theorem  "low > high => 0..low-1 \\/ high+1..aSize-1 = 0..aSize-1"
 			
 			invariants "!x.x : 0..low-1 => x|->key /: a",
@@ -71,30 +72,38 @@ mm = new ModelModifier().make {
 						Return("high")
 					}
 				}
-				Assert("mid : 0..aSize-1")
-				While("low <= high") {
+				While("low <= high", variant: "high - low + 1") {
+					Assert("low <= high")
 					Assert("high - low : NATURAL")
 					Assert("(high - low) / 2 : NATURAL")
 					Assert("low + (high - low) / 2 : NATURAL")
+					//Assert("mid : dom(a)")
 					Assign("mid := low + (high - low) / 2")
 					Assert("mid : dom(a)")
-					If("a(mid) < key") {
+					Assign("midVar := a(mid)")
+					//Assert("mid : dom(a)")
+					If("a[{mid}]={midVar} & midVar < key") {
 						Then {
+							Assert("a[{mid}]={midVar} & midVar < key")
 							Assign("low := mid + 1")
 						} 
-						Else {
-							If("a(mid) > key") {
+						Else {		
+							If("a[{mid}]={midVar} & midVar > key") {
 								Then {
+									Assert("a[{mid}]={midVar} & midVar > key")
 									Assign("high := mid - 1")
 								} 
 								Else {
-									Assert("a[{mid}] = {key}")
+									Assert("a[{mid}]={midVar} & midVar = key")
 									Return("mid")							
 								}
 							}		
 						}
 					}
+					//Assert("a[{mid}]={midVar}")
+					Assert("high - low + 1 >= 0")
 				}
+				Assert("low > high")
 				Assign("high := -1")
 				Assert("high = -1")
 				Assert("low > high") 
@@ -103,7 +112,7 @@ mm = new ModelModifier().make {
 		}
 	}
 	
-	context(name: "csts_fail", extends: "limits") {
+	/*context(name: "csts_fail", extends: "limits") {
 		constants "a", "aSize"
 		
 		axioms "aSize : NATURAL",
@@ -150,14 +159,14 @@ mm = new ModelModifier().make {
 				Return("high")
 			}
 		}
-	}
+	}*/
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "GroovyBS", "/tmp")
+//d = mtx.writeToRodin(m, "BinarySearch", "/tmp")
 //d.deleteDir()
 
-"generating a model from an algorithm"
+"generating a model of a binary search algorithm"

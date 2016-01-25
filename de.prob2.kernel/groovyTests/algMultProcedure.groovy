@@ -26,7 +26,7 @@ mm = new ModelModifier().make {
 			theorem "x / 2*y*2 = x / 2*2*y"
 			theorem "x0 <= 0 => x0 = 0"
 			
-			variant "x0"
+			//variant "x0"
 			
 			algorithm {
 				While("x0 > 0", invariant: "p + (x0*y0) = x*y", variant: "x0") {
@@ -45,10 +45,10 @@ mm = new ModelModifier().make {
 }
 
 m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
+m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "MultWithProc", "/tmp")
+//d = mtx.writeToRodin(m, "Multiplication", "/tmp")
 //d.deleteDir()
 
 //s.animator.cli.shutdown();

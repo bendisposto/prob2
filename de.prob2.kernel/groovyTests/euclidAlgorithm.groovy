@@ -5,30 +5,6 @@ import de.prob.model.eventb.algorithm.AlgorithmTranslator
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
-/*
-context Context
-
-constants Divides IsGCD
-
-axioms
-  @axm Divides = {i↦j ∣ ∃k·k∈0‥j ∧ j = i∗k}
-  @axm2 IsGCD = {i↦j↦k ∣ i↦j ∈ Divides ∧ i↦k ∈ Divides ∧
-        (∀r· r ∈ (0‥j ∪ 0‥k)
-        ⇒  (r↦j ∈ Divides ∧ r↦k ∈ Divides ⇒ r↦i ∈ Divides)
-        )
-        }
-  @axm3 (3↦9↦6) ∈ IsGCD
-  @axm4 (5↦15↦25) ∈ IsGCD
-end
-
-Further axioms:
-			   "!x,y.x|->x|->y : GCD => x = y",
-			   "!v.GCD[{v|->v}] = {v}",
-			   "!x,y.y-x>0 => GCD[{x|->y}] = GCD[{x|->y-x}]",
-			   "!x,y.GCD[{x|->y}] = GCD[{y|->x}]"
- * 
- */
-
 mm = new ModelModifier().make {
 	
 	context(name: "definitions") {
@@ -36,57 +12,58 @@ mm = new ModelModifier().make {
 		
 		axioms "Divides = {i|->j | #k.k:0..j & j = i*k}",
 		       "GCD = {x|->y|->res | res|->x : Divides & res|->y : Divides & (!r. r : (0..x \\/ 0..y) => (r|->x : Divides & r|->y : Divides => r|->res : Divides) ) }",
+			   "GCD : (NAT ** NAT) +-> NAT",
 			   "∀x,y·x↦x↦y ∈ GCD ⇒ x = y",
 			   "∀v·GCD[{0↦v}] = {v}",
 			   "∀v·GCD[{v↦v}] = {v}",
 			   "∀x,y·y−x>0 ⇒ GCD[{x↦y}] = GCD[{x↦y−x}]",
 			   "∀x,y·GCD[{x↦y}] = GCD[{y↦x}]"
+		theorem "4|->2|->2 : GCD"
 	    theorem "!x,y.x <= y => GCD[{y|->x}]=GCD[{y-x|->x}]"
 		theorem "!x,y.x <= y => GCD[{x|->y}]=GCD[{y-x|->x}]"
-
 	}
 	
-	context(name: "limits") {
-		constants "m", "n", "k"
-		axioms "m : 0..k",
-		       "n : 0..k",
-			   "k : NAT"
-			  // "k = 100",
-			  // "m = 50",
-			  // "n = 20"
-	}
-	
-	machine(name: "euclid", sees: ["definitions", "limits"]) {
-		var name: "u", invariant: "u : 0..k", init: "u := m"
-		var name: "v", invariant: "v : 0..k", init: "v := n"
+	procedure(name: "euclid", seen: "definitions") {
+		argument "m", "NAT"
+		argument "n", "NAT"
+		result "res", "ran(GCD)"
+		precondition "m|->n : dom(GCD)"
+		postcondition "res = GCD(m|->n) "
 		
-		algorithm {
-			While("u /= 0", invariant: "GCD[{m|->n}] = GCD[{u|->v}]") {
-				If("u < v") {
-					Then("u,v := v,u")
+		implementation {
+			var "u", "u : NAT", "u := m"
+			var "v", "v : NAT", "v := n"
+			algorithm {
+				Assert("u = m & v = n")
+				If("v = 0") {
+					Then {
+						Assert("GCD(m|->n)=u")
+						Return("u")
+					}
 				}
-				Assert("u >= v")
-				Assign("u := u - v")
+				While("u /= 0", invariant: "GCD[{m|->n}] = GCD[{u|->v}]", variant: "u + v") {
+					If("u < v") {
+						Then("u,v := v,u")
+					}
+					Assert("u >= v")
+					Assign("u := u - v")
+					Assert("v > 0")
+			    }
+			    Assert("GCD(m|->n) = v")
+				Return("v")
 			}
-			Assert("m|->n|->v : GCD")
 		}
 	}
 }
 
-def guards(evt) {
-	evt.guards.collect { it.getPredicate().getCode() }
-}
-
-def actions(evt) {
-	evt.actions.collect { it.getCode().getCode() }
-}
-
-m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
-
+m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
 
 mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "Euclid", "/tmp")
-//d.deleteDir()
+d = mtx.writeToRodin(m, "GCDNaiveTerm", "/tmp")
 
-"generate and animate a model"
+m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
+
+mtx = new ModelToXML()
+//d = mtx.writeToRodin(m, "GCDMergeTerm", "/tmp")
+
+"generate a model of a multiplication algorithm"
