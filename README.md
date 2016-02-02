@@ -23,7 +23,7 @@ ProB 2.0 works with Java 7 on Mac OS, Windows and most Linux distributions.
 
 We assume, you have a fresh copy of Eclipse and an empty workspace at hand. We use Luna SR2. Furthermore, we assume that you have a recent version of gradle (http://www.gradle.org/) installed on your computer. Gradle 1.1 or newer will be sufficient.
 
-1. In Eclipse: Install the Groovy/Grails Tool Suite from the Eclipse Market Place. You can leave out the Grails IDE, Spring Dashboard and all features starting with Pivotal.
+1. In Eclipse: Install the Groovy/Grails Tool Suite from the Eclipse Market Place. You can leave out the Grails IDE, Spring Dashboard and all features starting with Pivotal. For Eclipse Mars, see https://tedvinke.wordpress.com/2015/10/17/eclipse-mars-grails-3-1-with-gradle-groovy-and-gsp-support/ for installation instructions.
 2. Clone the prob2 repository to some location (e.g. gitrepo/prob2). 
    We assume that gitrepo is a directory outside your Eclipse workspace. 
 3. cd into gitrepo/prob2/de.prob2.kernel, switch to the development branch (git checkout develop) and run `gradle eclipse` 
