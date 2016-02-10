@@ -20,7 +20,8 @@ class NodeNaming extends AlgorithmASTVisitor {
 	int callctr = 0
 	int returnctr = 0
 	Map<String, Statement> nodes = [:]
-	Map<Statement, String> naming = [:]
+	Map<Statement, String> naming = [(ControlFlowGraph.FILLER): "filler",
+		(ControlFlowGraph.END): "end"]
 
 	def Skip start
 	def Skip end

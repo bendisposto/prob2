@@ -20,9 +20,14 @@ public class Edge {
 		this.from = from
 		this.to = to
 		this.conditions = conditions
-		if (to instanceof IAssignment) {
-			this.assignment = assignment
-		}
+		this.assignment = null
+	}
+
+	def Edge(Statement from, Statement to, PersistentVector<Tuple2<Statement, EventB>> conditions, IAssignment assignment) {
+		this.from = from
+		this.to = to
+		this.conditions = conditions
+		this.assignment = assignment
 	}
 
 	@Override
@@ -33,6 +38,23 @@ public class Edge {
 					conditions.equals(that.getConditions())
 		}
 		return false
+	}
+
+	public Edge mergeConditions(Edge that) {
+		def conditions = this.conditions
+		that.conditions.each { Tuple2<Statement, EventB> cond ->
+			conditions = conditions.plus(cond)
+		}
+		return new Edge(from, that.to, conditions, assignment)
+	}
+
+	public Edge mergeAssignment(Edge that) {
+		assert this.assignment == null && that.from instanceof IAssignment
+		def conditions = this.conditions
+		that.conditions.each { Tuple2<Statement, EventB> cond ->
+			conditions = conditions.add(cond)
+		}
+		return new Edge(from, that.to, conditions, that.from)
 	}
 
 	@Override
@@ -47,8 +69,8 @@ public class Edge {
 
 	public String getName(NodeNaming n) {
 		def names = conditions.collect { getEventName(n, it.getFirst(), it.getSecond()) }
-		if (assignment) {
-			names << n.getName(assignment)
+		if (from instanceof IAssignment) {
+			names << n.getName(from)
 		}
 		names.iterator().join("_")
 	}

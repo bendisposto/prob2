@@ -2,59 +2,70 @@ package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.Assertion
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
 
 public class MergedCGGConstructionTest extends Specification {
 
 	def ControlFlowGraph graph(Closure cls) {
-		Block b = new Block().make(cls)
-		return new GraphMerge().transform(new ControlFlowGraph(b))
+		Block b = new Block().make(cls).finish()
+		return new MergeConditionals().transform(new ControlFlowGraph(b))
 	}
 
 	def nodes(ControlFlowGraph g, String... names) {
-		names.collect { g.getNode(it) } as Set
+		NodeNaming n = new NodeNaming(g.algorithm)
+		g.nodes.findAll { names.contains(n.getName(it)) } as Set
 	}
 
 	def edge(ControlFlowGraph g, String from, String to) {
-		assert g.getNode(from)
-		Edge e = g.outgoingEdges[g.getNode(from)].find {
-			it.to == g.getNode(to)
+		NodeNaming n = new NodeNaming(g.algorithm)
+		def f = n.getNode(from)
+		assert g.nodes.contains(f)
+		Edge e = g.edges.find {
+			it.from == n.getNode(from) && it.to == n.getNode(to)
 		}
-		e ? e.conditions.collect { it.getCode() } : null
+		e ? e.conditions.collect { it.getSecond().getCode() } : null
 	}
 
 	def edges(ControlFlowGraph g, String from, String to) {
-		assert g.getNode(from)
-		g.outgoingEdges[g.getNode(from)].findAll {
-			it.to == g.getNode(to)
+		NodeNaming n = new NodeNaming(g.algorithm)
+		def f = n.getNode(from)
+		assert g.nodes.contains(f)
+		g.edges.findAll {
+			it.from == n.getNode(from) && it.to == n.getNode(to)
 		}.collect {
-			it.conditions.collect { it.getCode() } } as Set
+			it.conditions.collect {
+				it.getSecond().getCode()
+			}
+		} as Set
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
-		g.properties[g.getNode(at)].collect {
+		Map<Statement, List<Assertion>> properties = new AssertionExtractor().extractAssertions(g.algorithm)
+		NodeNaming n = new NodeNaming(g.algorithm)
+		assert g.nodes.contains(n.getNode(at))
+		assert properties.containsKey(n.getNode(at))
+		properties[n.getNode(at)].collect {
 			it.getAssertion().getCode()
 		} as Set
 	}
 
 	def print(graph) {
-		println "nodes: ${graph.nodes}"
-		println "naming: ${graph.nodeMapping.nodes}"
-		println "incoming: ${graph.incomingEdges}"
-		println "outgoing: ${graph.outgoingEdges}"
-		println "assertions: ${graph.properties}\n"
+		println graph.represenation()
 	}
 
-	def "empty is empty"() {
+	def "empty has an end node"() {
 		when:
 		def DEBUG = false
 		def graph = graph({})
 
 		then:
 		if (DEBUG) print(graph)
-		graph.nodes.isEmpty()
-		graph.size() == 0
+		graph.nodes.first() instanceof Skip
+		graph.size() == 1
 	}
 
 	def "one assignment block has two nodes"() {
