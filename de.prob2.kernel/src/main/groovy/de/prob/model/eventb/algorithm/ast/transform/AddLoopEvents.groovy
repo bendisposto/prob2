@@ -10,25 +10,24 @@ import de.prob.model.eventb.algorithm.ast.While
 class AddLoopEvents extends AlgorithmASTTransformer {
 
 	def boolean addLoopByDefault
-	
+
 	def AddLoopEvents(AlgorithmGenerationOptions options) {
 		addLoopByDefault = options.isLoopEvent()
 	}
-	
+
 	@Override
 	public List<Statement> transform(While w, List<Statement> rest) {
-		Block b = w.block 
+		Block b = w.block
 		if (addSkip(w)) {
-			w.block.newBlock(w.block.statements.addElement(new Skip()))
+			b = w.block.newBlock(w.block.statements.addElement(new Skip()))
 		}
 		recurIfNecessary(w.updateBlock(transform(b)), rest);
 	}
-	
+
 	def boolean addSkip(While w) {
 		if (addLoopByDefault) {
 			return true
 		}
 		return w.block.statements && w.block.statements instanceof Assertion
 	}
-	
 }

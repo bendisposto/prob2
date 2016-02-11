@@ -19,9 +19,20 @@ import de.prob.model.eventb.algorithm.ast.While
 import de.prob.util.Tuple2
 
 class ControlFlowGraph {
+
+	/**
+	 * Used in a subgraph to denote ambiguous exit nodes
+	 */
 	public final static Skip FILLER = new Skip()
+
+	/**
+	 * Used in a subgraph to denote the end of the algorithm
+	 */
 	public final static Skip END = new Skip()
-	public final static ControlFlowGraph EMPTY = new ControlFlowGraph(new Block().finish(), FILLER, FILLER, PersistentHashSet.emptySet(),  PersistentHashSet.emptySet())
+	/**
+	 * An empty control flow graph
+	 */
+	public final static ControlFlowGraph EMPTY = new ControlFlowGraph(new Block(), FILLER, FILLER, PersistentHashSet.emptySet(),  PersistentHashSet.emptySet())
 
 	final PersistentHashSet<Statement> nodes
 	final PersistentHashSet<Edge> edges
@@ -46,20 +57,56 @@ class ControlFlowGraph {
 		this.edges = edges
 	}
 
-	def static ControlFlowGraph create(Block algorithm) {
+	/**
+	 * Calls {@link Block#ensureFinished()} to add end node if necessary.
+	 * Calls {@link #addNode(Object,Object)} to recursively build graph
+	 * @param algorithm for which a control flow graph is created
+	 * @return control flow graph for algorithm
+	 */
+	def static ControlFlowGraph create(Block block) {
+		Block algorithm = block.ensureFinished()
+		assert !algorithm.statements.isEmpty()
+
+		def lastStmt = algorithm.statements.last()
+		def cfg = new ControlFlowGraph(algorithm, algorithm.statements.first(), algorithm.statements.last(), PersistentHashSet.emptySet(), PersistentHashSet.emptySet())
+		cfg = cfg.addNode(algorithm.statements.first(), algorithm.statements.tail())
+		return cfg.replaceNode(END, lastStmt)
+	}
+
+	/**
+	 * If algorithm is empty, {@link ControlFlowGraph#EMPTY} will be returned.
+	 * If the returned subgraph has an ambiguous exit node (i.e. multiple exit nodes from an if statement),
+	 * these will be denoted with the {@link ControlFlowGraph#FILLER} node.
+	 * The end of the algorithm will be denoted by the {@link ControlFlowGraph#END} node.
+	 * All return statements will have this node as their exit node.
+	 * @param algorithm representing the subgraph
+	 * @return control flow graph created from algorithm
+	 */
+	def static ControlFlowGraph createSubgraph(Block algorithm) {
 		if (!algorithm.statements.isEmpty()) {
 			def lastStmt = algorithm.statements.last()
-			def cfg = new ControlFlowGraph(algorithm, algorithm.statements.first(), algorithm.statements.last(), PersistentHashSet.emptySet(), PersistentHashSet.emptySet())
+			lastStmt = lastStmt instanceof Return ? END : lastStmt
+			def cfg = new ControlFlowGraph(algorithm, algorithm.statements.first(), lastStmt, PersistentHashSet.emptySet(), PersistentHashSet.emptySet())
 			cfg = cfg.addNode(algorithm.statements.first(), algorithm.statements.tail())
-			return cfg.replaceNode(END, lastStmt)
+			return cfg
 		}
 		EMPTY
 	}
 
+	def ControlFlowGraph setEntryNode(Statement node) {
+		return new ControlFlowGraph(algorithm, node, lastNode, nodes, edges)
+	}
+
+	def ControlFlowGraph setExitNode(Statement node) {
+		return new ControlFlowGraph(algorithm, entryNode, node, nodes, edges)
+	}
+
+	def ControlFlowGraph setAlgorithm(Block algorithm) {
+		return new ControlFlowGraph(algorithm, entryNode, lastNode, nodes, edges)
+	}
+
 	def ControlFlowGraph addEdge(Statement from, Statement to, PersistentVector<Tuple2<Statement, EventB>> conditions) {
-		def newNodes = nodes.plus(from).plus(to)
-		Edge e = new Edge(from, to, conditions)
-		return new ControlFlowGraph(algorithm, from, lastNode, newNodes, edges.plus(e))
+		addEdge(new Edge(from, to, conditions))
 	}
 
 	def ControlFlowGraph addEdge(Edge e) {
@@ -93,7 +140,7 @@ class ControlFlowGraph {
 			return new ControlFlowGraph(algorithm, a, lastNode, nodes.plus(a), edges)
 		}
 		ControlFlowGraph cfg = addNode(stmts.first(), stmts.tail())
-		cfg.addEdge(a, cfg.entryNode, PersistentVector.emptyVector())
+		cfg.addEdge(a, cfg.entryNode, PersistentVector.emptyVector()).setEntryNode(a)
 	}
 
 	def ControlFlowGraph addNode(Call a, List<Statement> stmts) {
@@ -101,11 +148,11 @@ class ControlFlowGraph {
 			return new ControlFlowGraph(algorithm, a, lastNode, nodes.plus(a), edges)
 		}
 		ControlFlowGraph cfg = addNode(stmts.first(), stmts.tail())
-		cfg.addEdge(a, cfg.entryNode, PersistentVector.emptyVector())
+		cfg.addEdge(a, cfg.entryNode, PersistentVector.emptyVector()).setEntryNode(a)
 	}
 
 	def ControlFlowGraph addNode(Return a, List<Statement> stmts) {
-		addEdge(a, END, PersistentVector.emptyVector())
+		addEdge(a, END, PersistentVector.emptyVector()).setEntryNode(a)
 	}
 
 	def ControlFlowGraph addNode(Skip a, List<Statement> stmts) {
@@ -113,7 +160,7 @@ class ControlFlowGraph {
 			return new ControlFlowGraph(algorithm, a, lastNode, nodes.plus(a), edges)
 		}
 		ControlFlowGraph cfg = addNode(stmts.first(), stmts.tail())
-		cfg.addEdge(a, cfg.entryNode, lastNode, PersistentVector.emptyVector())
+		cfg.addEdge(a, cfg.entryNode, lastNode, PersistentVector.emptyVector()).setEntryNode(a)
 	}
 
 	def ControlFlowGraph addNode(Assertion a, List<Statement> stmts) {
@@ -125,56 +172,54 @@ class ControlFlowGraph {
 		PersistentVector.emptyVector().plus(new Tuple2<Statement,EventB>(s,condition))
 	}
 
-	private ControlFlowGraph createSubgraph(Block algorithm) {
-		if (!algorithm.statements.isEmpty()) {
-			def lastStmt = algorithm.statements.last()
-			lastStmt = lastStmt instanceof Return ? END : lastStmt
-			def cfg = new ControlFlowGraph(algorithm, algorithm.statements.first(), lastStmt, PersistentHashSet.emptySet(), PersistentHashSet.emptySet())
-			cfg = cfg.addNode(algorithm.statements.first(), algorithm.statements.tail())
-			return cfg
-		}
-		EMPTY
-	}
-
 	def addNode(While w, List<Statement> stmts) {
 		if (w.block.statements.isEmpty()) {
 			throw new IllegalArgumentException("While loops cannot be empty!")
 		}
 		ControlFlowGraph bodyG = createSubgraph(w.block)
-		ControlFlowGraph nextG = stmts.isEmpty() ? EMPTY : addNode(stmts.first(), stmts.tail())
+		ControlFlowGraph g = bodyG.addEdge(w, bodyG.entryNode, newCondition(w, w.condition))
+				.connect([bodyG.lastNode], w)
 
-		ControlFlowGraph g = bodyG.merge(nextG, algorithm, w, nextG.lastNode)
-				.addEdge(w, bodyG.entryNode, newCondition(w, w.condition))
-		g = g.replaceNode(FILLER, w)
-		if (bodyG.lastNode != FILLER && bodyG.lastNode != END) {
-			g = g.addEdge(new Edge(bodyG.lastNode, w, PersistentVector.emptyVector()))
-		}
-		g = g.addEdge(w, nextG.entryNode, newCondition(w, w.notCondition))
+		ControlFlowGraph nextG = stmts.isEmpty() ? EMPTY : addNode(stmts.first(), stmts.tail())
+		g = g.merge(nextG).addEdge(w, nextG.entryNode, newCondition(w, w.notCondition))
+				.setEntryNode(w).setExitNode(nextG.lastNode).setAlgorithm(algorithm)
 		g
 	}
 
 	def ControlFlowGraph addNode(If i, List<Statement> stmts) {
 		ControlFlowGraph thenG = createSubgraph(i.Then)
 		ControlFlowGraph elseG = createSubgraph(i.Else)
-		ControlFlowGraph g = thenG.merge(elseG, algorithm, i, thenG.lastNode)
+		ControlFlowGraph g = thenG.merge(elseG)
 				.addEdge(i, thenG.entryNode, newCondition(i, i.condition))
 				.addEdge(i, elseG.entryNode, newCondition(i, i.elseCondition))
+				.setEntryNode(i)
+				.setAlgorithm(algorithm)
 
-		Set<Statement> toConnect = [
-			thenG.lastNode,
-			elseG.lastNode
-		].findAll { it != FILLER && it != END }
 
 		ControlFlowGraph nextG = stmts.isEmpty() ? EMPTY : addNode(stmts.first(), stmts.tail())
-		g = g.connect(nextG, toConnect)
+		g = g.merge(nextG).connect([
+			thenG.lastNode,
+			elseG.lastNode
+		], nextG.entryNode).setExitNode(nextG.lastNode)
+		g
+	}
+
+	def ControlFlowGraph connect(List<Statement> stmts, Statement to) {
+		ControlFlowGraph g = this
+		g = g.replaceNode(FILLER, to)
+		stmts.each { Statement from ->
+			if (from != FILLER && from != END) {
+				g = g.addEdge(from, to, PersistentVector.emptyVector())
+			}
+		}
 		g
 	}
 
 	def ControlFlowGraph connect(ControlFlowGraph nextG, Set<Statement> toConnect) {
-		ControlFlowGraph g = merge(nextG, algorithm, entryNode, nextG.lastNode)
+		ControlFlowGraph g = merge(nextG)
 		g = g.replaceNode(FILLER, nextG.entryNode)
 		toConnect.each { Statement stmt ->
-			g = g.addEdge(new Edge(stmt, nextG.entryNode, PersistentVector.emptyVector()))
+			g = g.addEdge(stmt, nextG.entryNode, PersistentVector.emptyVector())
 		}
 		g
 	}
@@ -199,7 +244,7 @@ class ControlFlowGraph {
 		new ControlFlowGraph(algorithm, entry, lastNode, newNodes, newEdges)
 	}
 
-	def ControlFlowGraph merge(ControlFlowGraph graph, Block algorithm, Statement entryNode, Statement lastNode) {
+	def ControlFlowGraph merge(ControlFlowGraph graph) {
 		def newNodes = nodes
 		graph.nodes.each { Statement stmt ->
 			newNodes = newNodes.plus(stmt)
@@ -220,11 +265,11 @@ class ControlFlowGraph {
 	}
 
 	def Set<Edge> outEdges(Statement stmt) {
-		edges.findAll {  it.from == stmt }
+		edges.findAll {  it.from == stmt } as Set
 	}
 
 	def Set<Edge> inEdges(Statement stmt) {
-		edges.findAll { it.to == stmt }
+		edges.findAll {  it.to == stmt  } as Set
 	}
 
 	private Tuple2<Set<String>, Map<String, String>> representation() {
@@ -235,5 +280,21 @@ class ControlFlowGraph {
 			edge[e.getName(n)] = n.getName(e.to)
 		}
 		return new Tuple2<List<String>, Map<String, String>>(node, edge)
+	}
+
+	private Map<While, Set<Edge>> loopsToWhile() {
+		PCCalculator pcCalc = new PCCalculator(this)
+		def loops = [:]
+		def whiles = nodes.findAll { it instanceof While }
+		whiles.each { w ->
+			def pcW = pcCalc.pcInformation[w]
+			def inEdges = inEdges(w)
+			def edges = inEdges.findAll { e ->
+				def pcE = pcCalc.pcInformation[e.from]
+				pcE >= pcW
+			}
+			loops[w] = edges
+		}
+		loops
 	}
 }

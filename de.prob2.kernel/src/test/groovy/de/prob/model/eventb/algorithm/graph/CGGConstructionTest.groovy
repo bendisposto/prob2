@@ -13,7 +13,7 @@ import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
 public class CGGConstructionTest extends Specification {
 
 	def ControlFlowGraph graph(Closure cls) {
-		Block b = new Block().make(cls).finish()
+		Block b = new Block().make(cls)
 		return new ControlFlowGraph(b)
 	}
 
@@ -503,7 +503,7 @@ public class CGGConstructionTest extends Specification {
 
 	def "correct return"() {
 		when:
-		def DEBUG = true
+		def DEBUG = false
 		def graph = graph({
 			If ("x = 5") {
 				Then { Return("x") }

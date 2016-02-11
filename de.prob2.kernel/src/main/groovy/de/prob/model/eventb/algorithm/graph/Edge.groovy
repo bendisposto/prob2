@@ -1,13 +1,14 @@
 package de.prob.model.eventb.algorithm.graph;
 
-import com.github.krukow.clj_lang.PersistentVector;
+import com.github.krukow.clj_lang.PersistentVector
 
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.ast.IAssignment
-import de.prob.model.eventb.algorithm.ast.If;
-import de.prob.model.eventb.algorithm.ast.Statement;
-import de.prob.model.eventb.algorithm.ast.While;
-import de.prob.util.Tuple2;
+import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.While
+import de.prob.util.Tuple2
 
 
 public class Edge {
@@ -41,11 +42,12 @@ public class Edge {
 	}
 
 	public Edge mergeConditions(Edge that) {
+		assert this.assignment == null
 		def conditions = this.conditions
 		that.conditions.each { Tuple2<Statement, EventB> cond ->
 			conditions = conditions.plus(cond)
 		}
-		return new Edge(from, that.to, conditions, assignment)
+		return new Edge(from, that.to, conditions, that.assignment)
 	}
 
 	public Edge mergeAssignment(Edge that) {
@@ -64,12 +66,13 @@ public class Edge {
 
 	@Override
 	public String toString() {
-		return conditions ? "--${conditions.collect { it.getSecond() }}-->" : "-->"
+		def assign = assignment == null ? "" : " + "+assignment.toString()
+		return conditions ? "--${conditions.collect { it.getSecond() }}$assign-->" : "-->"
 	}
 
 	public String getName(NodeNaming n) {
 		def names = conditions.collect { getEventName(n, it.getFirst(), it.getSecond()) }
-		if (from instanceof IAssignment) {
+		if (from instanceof IAssignment || from instanceof Skip) {
 			names << n.getName(from)
 		}
 		names.iterator().join("_")

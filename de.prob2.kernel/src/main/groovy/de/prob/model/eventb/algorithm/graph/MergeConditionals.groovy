@@ -38,7 +38,7 @@ class MergeConditionals implements IGraphTransformer {
 			done = true
 			Set<Edge> outE = g.outEdges(s)
 			outE.each { Edge e ->
-				if (e.to instanceof If) {
+				if (e.to instanceof If && e.assignment == null) {
 					Set<Edge> ifEdges = graph.outEdges(e.to)
 					g = g.removeNode(e.to)
 					ifEdges.each { Edge e2 ->

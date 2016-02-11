@@ -2,10 +2,42 @@ package de.prob.model.eventb.algorithm.graph
 
 import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.FILLER
 import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.create
+import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.createSubgraph
 import spock.lang.Specification
 import de.prob.model.eventb.algorithm.ast.Block
 
 class CGFWhileTest extends Specification {
+
+	def "two while loops after each other"() {
+		when:
+		def graph = create(new Block().make {
+			While("x < 10",variant: "x") { Assign("x := x - 1") }
+			While("y < 10",variant: "y") { Assign("y := y - 1") }
+		})
+
+		then:
+		graph.representation().getFirst() == [
+			"while0",
+			"while1",
+			"assign0",
+			"assign1",
+			"end_algorithm"
+		] as Set
+		graph.representation().getSecond() == [enter_while0: "assign0", assign0: "while0", exit_while0: "while1",
+			enter_while1: "assign1", assign1: "while1", exit_while1: "end_algorithm"]
+	}
+
+	def "two while loops after each other in Edges"() {
+		when:
+		def graph = create(new Block().make {
+			While("x < 10",variant: "x") { Assign("x := x - 1") }
+			While("y < 10",variant: "y") { Assign("y := y - 1") }
+		})
+
+		then:
+		graph.inEdges(graph.algorithm.statements[0]).size() == 1
+		graph.inEdges(graph.algorithm.statements[1]).size() == 2
+	}
 
 	def "loop within loop"() {
 		when:
@@ -19,7 +51,7 @@ class CGFWhileTest extends Specification {
 				Assign("y,x := y / 2, x / 2")
 			}
 			Assign("z := y + x")
-		}.finish())
+		})
 
 		then:
 		g.representation().getFirst()  ==[
@@ -39,7 +71,7 @@ class CGFWhileTest extends Specification {
 
 	def "simple while"() {
 		when:
-		def g = create(new Block().While("x < 10", { Assign("x := x + 1")}))
+		def g = createSubgraph(new Block().While("x < 10", { Assign("x := x + 1")}))
 
 		then:
 		g.representation() == [
@@ -53,7 +85,7 @@ class CGFWhileTest extends Specification {
 
 	def "while with an if"() {
 		when:
-		def g = create(new Block().While("x < 10", {
+		def g = createSubgraph(new Block().While("x < 10", {
 			If("a > 1") {
 				Then {
 					If("b > 1") { Then("z := z + 1") }

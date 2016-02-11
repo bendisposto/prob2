@@ -17,7 +17,7 @@ class CGFReturnTest extends Specification {
 			}
 			Assign("z := 5")
 			Return("z")
-		}.finish())
+		})
 
 		then:
 		graph.size() == 7

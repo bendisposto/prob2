@@ -8,16 +8,14 @@ import de.prob.model.eventb.algorithm.ast.Block;
 public class PCCalculationTest extends Specification {
 
 	def PCCalculator graph(Closure cls) {
-		Block b = new Block().make(cls)
-		return new PCCalculator(new ControlFlowGraph(b), false)
+		Block b = new Block().make(cls).finish()
+		return new PCCalculator(new ControlFlowGraph(b))
 	}
 
 	def pcInfo(PCCalculator calc) {
+		NodeNaming n = new NodeNaming(calc.graph.algorithm)
 		calc.pcInformation.collectEntries { k,v ->
-			[
-				calc.graph.nodeMapping.getName(k),
-				v
-			]
+			[n.getName(k), v]
 		}
 	}
 

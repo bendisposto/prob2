@@ -1,7 +1,7 @@
 package de.prob.model.eventb.algorithm.graph
 
 import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.FILLER
-import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.create
+import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.createSubgraph
 import spock.lang.Specification
 import de.prob.model.eventb.algorithm.ast.Block
 
@@ -9,7 +9,7 @@ class CFGIfTest extends Specification {
 
 	def "empty if"() {
 		when:
-		def g = create(new Block().If("x > 1", {}))
+		def g = createSubgraph(new Block().If("x > 1", {}))
 
 		then:
 		g.representation() == [
@@ -20,7 +20,7 @@ class CFGIfTest extends Specification {
 
 	def "if then"() {
 		when:
-		def g = create(new Block().If("x > 1", { Then("x := 1") }))
+		def g = createSubgraph(new Block().If("x > 1", { Then("x := 1") }))
 
 		then:
 		g.representation() == [
@@ -31,7 +31,7 @@ class CFGIfTest extends Specification {
 
 	def "if else"() {
 		when:
-		def g = create(new Block().If("x > 1", { Else("x := 1") }))
+		def g = createSubgraph(new Block().If("x > 1", { Else("x := 1") }))
 
 		then:
 		g.representation() == [
@@ -42,7 +42,7 @@ class CFGIfTest extends Specification {
 
 	def "if then with following assignment"() {
 		when:
-		def g = create(new Block().If("x > 1", { Then("x := 1") }).Assign("x := x + 1"))
+		def g = createSubgraph(new Block().If("x > 1", { Then("x := 1") }).Assign("x := x + 1"))
 
 		then:
 		g.representation() == [
@@ -56,7 +56,7 @@ class CFGIfTest extends Specification {
 
 	def "if else with following assignment"() {
 		when:
-		def g = create(new Block().If("x > 1", { Else("x := 1") }).Assign("x := x + 1"))
+		def g = createSubgraph(new Block().If("x > 1", { Else("x := 1") }).Assign("x := x + 1"))
 
 		then:
 		g.representation() == [
@@ -70,7 +70,7 @@ class CFGIfTest extends Specification {
 
 	def "if then else with following assignment"() {
 		when:
-		def g = create(new Block().If("x > 1", {
+		def g = createSubgraph(new Block().If("x > 1", {
 			Then("x := 2")
 			Else("x := 1")
 		}).Assign("x := x + 1"))
@@ -88,7 +88,7 @@ class CFGIfTest extends Specification {
 
 	def "nested ifs"() {
 		when:
-		def g = create(new Block().If("a > 1", {
+		def g = createSubgraph(new Block().If("a > 1", {
 			Then {
 				If("b > 1") { Then("z := z + 1") }
 			}
