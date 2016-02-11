@@ -137,9 +137,10 @@ class AlgorithmTranslator {
 				}
 			}
 		} else if (options.isTerminationAnalysis()) {
-			graph.loopsForTermination.each { While stmt, List<Edge> edges ->
+			NodeNaming n = new NodeNaming(graph.algorithm)
+			graph.loopsToWhile().findAll { stmt, edges -> stmt.variant != null}.each { While stmt, Set<Edge> edges ->
 				edges.each { edge ->
-					machineM = machineM.event(name: graph.getEventName(edge), type: EventType.ANTICIPATED)
+					machineM = machineM.event(name: edge.getName(n), type: EventType.ANTICIPATED)
 				}
 			}
 		}
@@ -238,15 +239,16 @@ class AlgorithmTranslator {
 	}
 
 	def ModelModifier runLoopTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {
-		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
+		PCCalculator pcCalc = new PCCalculator(graph)
 		def pcname = getProcedure(modelM.getModel().getMachine(mchName)) ? "ipc" : "pc"
 
 		def ordering = new VariantOrdering()
 		ordering.visit(graph.algorithm)
 		def refName = mchName
 		def ctr = 0
+		NodeNaming n = new NodeNaming(graph.algorithm)
 		ordering.ordering.each { While stmt ->
-			def newName = "${mchName}_term${ctr++}_"+graph.nodeMapping.getName(stmt)
+			def newName = "${mchName}_term${ctr++}_"+n.getName(stmt)
 			modelM = modelM.refine(refName, newName)
 			def oldM = modelM.getModel().getMachine(newName)
 			def mM = new MachineModifier(oldM)
@@ -258,16 +260,17 @@ class AlgorithmTranslator {
 	}
 
 	def EventBMachine createLoopTermination(MachineModifier machineM, While stmt, ControlFlowGraph graph, PCCalculator pcCalc, String pcname) {
-		String variantName = graph.nodeMapping.getName(stmt)+"_variant"
+		NodeNaming n = new NodeNaming(graph.algorithm)
+		String variantName = n.getName(stmt)+"_variant"
 		def mM = machineM.variant(variantName).var(variantName, variantName + " : NAT", variantName + " :: NAT")
 		def final setVariant = variantName+" := ${stmt.variant.getCode()}"
-		def prefix = "enter_"+graph.nodeMapping.getName(stmt)
+		def prefix = "enter_"+n.getName(stmt)
 		mM.getMachine().getEvents().findAll { it.getName().startsWith(prefix) }.each { Event evt ->
 			mM = mM.event(name: evt.getName(), type: evt.getType()) { action setVariant }
 		}
 
-		graph.loopsForTermination[stmt].each { Edge edge ->
-			mM = mM.event(name: graph.getEventName(edge), type: EventType.CONVERGENT) { action setVariant }
+		graph.loopsToWhile()[stmt].each { Edge edge ->
+			mM = mM.event(name: edge.getName(n), type: EventType.CONVERGENT) { action setVariant }
 		}
 		mM = mM.initialisation(extended: true)
 		mM = new VariantAssertionTranslator(mM, stmt, procedures, graph, pcCalc.pcInformation, options, pcname).getMachineM()
@@ -275,33 +278,15 @@ class AlgorithmTranslator {
 	}
 
 	def ModelModifier runAlgorithmTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {
-		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
+		PCCalculator pcCalc = new PCCalculator(graph)
 		def pcname = getProcedure(modelM.getModel().getMachine(mchName)) ? "ipc" : "pc"
 
 		EventBMachine mch = modelM.getModel().getMachine(mchName)
 		MachineModifier mM = new MachineModifier(mch)
-		graph.loopToWhile.each { While stmt, List<Edge> edges ->
-			if (!options.isOptimize()) {
-				edges.each { edge ->
-					mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
-				}
-			} else {
-				edges.each { Edge edge ->
-					List<Statement> statements = graph.edgeMapping[edge]
-					if (pcCalc.pcInformation[edge.to] != null) {
-						mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
-					} else if (statements.size() == 1 && statements[0] instanceof IAssignment || statements[0] instanceof Skip) {
-						graph.incomingEdges[edge.from].each { Edge e ->
-							if (e.conditions) {
-								mM = mM.event(name: graph.getEventName(e), type: EventType.CONVERGENT)
-							} else {
-								mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
-							}
-						}
-					} else {
-						mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
-					}
-				}
+		NodeNaming n = new NodeNaming(graph.algorithm)
+		graph.loopsToWhile().each { While stmt, Set<Edge> edges ->
+			edges.each { edge ->
+				mM = mM.event(name:  edge.getName(n), type: EventType.CONVERGENT)
 			}
 		}
 		modelM = modelM.replaceMachine(mch, mM.getMachine())
