@@ -156,7 +156,9 @@ class AlgorithmTranslator {
 		NodeNaming n = new NodeNaming(graph.algorithm)
 		final pcname = procedure ? "ipc" : "pc"
 		final pcs = pcInfo
-		graph.outEdges(stmt).each { final Edge e ->
+
+		List<Edge> oEdges = graph.outEdges(stmt).sort { Edge a, Edge b -> pcs[a.to] <=> pcs[b.to] }
+		oEdges.each { final Edge e ->
 			String eventName = e.getName(n)
 			EventModifier em = new EventModifier(new Event(eventName, EventType.ORDINARY, false))
 					.addComment(e.rep())
