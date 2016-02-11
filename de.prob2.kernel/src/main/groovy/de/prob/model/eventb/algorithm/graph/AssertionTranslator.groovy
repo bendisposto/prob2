@@ -9,12 +9,13 @@ import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor
 import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Call
-import de.prob.model.eventb.algorithm.ast.IProperty
+import de.prob.model.eventb.algorithm.ast.IAssignment
 import de.prob.model.eventb.algorithm.ast.If
 import de.prob.model.eventb.algorithm.ast.Return
 import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
+import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
 import de.prob.model.eventb.algorithm.ast.transform.AssertionPropagator
 import de.prob.util.Tuple2
 
@@ -29,16 +30,18 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 	def ControlFlowGraph graph
 	def Map<Statement, Integer> pcInfo
 	Map<String, Integer> assertCtr = [:]
+	Map<Statement, List<Assertion>> properties
 	Map<Statement, List<Tuple2<List<EventB>,EventB>>> propagated
-	boolean optimized
+	def NodeNaming names
 	String pcname
 
 	def AssertionTranslator(MachineModifier machineM, List<Procedure> procedures, ControlFlowGraph graph, Map<Statement, Integer> pcInfo, AlgorithmGenerationOptions options, String pcname) {
 		this.graph = graph
 		this.machineM = machineM
 		this.pcInfo = pcInfo
-		this.optimized = options.isOptimize()
 		this.pcname = pcname
+		this.properties = new AssertionExtractor().extractAssertions(graph.algorithm)
+		this.names = new NodeNaming(graph.algorithm)
 		if (options.isPropagateAssertions()) {
 			def p = new AssertionPropagator(procedures)
 			p.traverse(graph.algorithm)
@@ -55,7 +58,7 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 		assert pcInfo[w] != null
 		def prefix = "$pcname = ${pcInfo[w]}"
 		if (w.invariant) {
-			def name = graph.nodeMapping.getName(w)+"_inv"
+			def name = names.getName(w)+"_inv"
 			machineM = writeAssertion(machineM, name, prefix, w.invariant)
 		}
 		machineM = writeAssertions(machineM, w, prefix)
@@ -75,14 +78,13 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 			if (propagated[stmt]) {
 				machineM = writePropagated(machineM, propagated[stmt], prefix)
 			}
-		} else if (graph.properties[stmt] != null) {
+		} else if (properties[stmt] != null) {
 			// only enter this loop when there are actually assertions to print. performance reasons
-			Set<Edge> allEdges = [] as Set
-			graph.outgoingEdges.inject(allEdges) { Set<Edge> all, entry -> all.addAll(entry.value); all }
+			Set<Edge> allEdges = graph.edges
 			Set<List<EventB>> conds = [] as Set
-			allEdges.findAll { Edge e -> e.conditions.contains(stmt.condition) }.each { Edge e ->
-				def i = e.conditions.indexOf(stmt.condition)
-				def cond = e.conditions[0..i-1]
+			allEdges.findAll { Edge e -> e.conditions.contains([stmt, stmt.condition]) }.each { Edge e ->
+				def i = e.conditions.indexOf([stmt, stmt.condition])
+				def cond = e.conditions[0..i-1].collect { it.getSecond() }
 				if (!conds.contains(cond)) {
 					conds << cond
 					def pred = "$pcname = ${pcInfo[e.from]}"
@@ -118,31 +120,27 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 				machineM = writePropagated(machineM, propagated[a], prefix)
 			}
 		}
-
 	}
 
-	def forSingleSimpleStatement(Statement s) {
+	def forSingleSimpleStatement(IAssignment s) {
 		if (pcInfo[s] != null) {
 			def prefix = "$pcname = ${pcInfo[s]}"
 			machineM = writeAssertions(machineM, s,prefix)
 			if (propagated[s]) {
 				machineM = writePropagated(machineM, propagated[s], prefix)
 			}
-		} else { //!optimized || graph.inEdges(s).isEmpty()
-			assert optimized
-			Set<Edge> inE = graph.inEdges(s)
-			inE.each { Edge e ->
-				if (e.conditions.isEmpty()) {
-					assert pcInfo[s] != null
-					def prefix = "$pcname = ${pcInfo[s]}"
-					machineM = writeAssertions(machineM, s, prefix)
-					if (propagated[s]) {
-						machineM = writePropagated(machineM, propagated[s], prefix)
-					}
-				} else {
+		} else if (properties[s] != null) {
+			// only enter this loop when there are actually assertions to print. performance reasons
+			Set<Edge> allEdges = graph.edges
+			Set<List<EventB>> conds = [] as Set
+			allEdges.findAll { Edge e -> e.assignment == s }.each { Edge e ->
+				def cond = e.conditions.collect { it.getSecond() }
+				if (!conds.contains(cond)) {
+					conds << cond
 					def pred = "$pcname = ${pcInfo[e.from]}"
-					def rcond = e.conditions.collect { it.getCode() }.iterator().join(" & ")
-					machineM = writeAssertions(machineM, s, "$pred & $rcond")
+					def rcond = cond.collect { it.getCode() }.iterator().join(" & ")
+					pred = rcond = "" ? pred : "$pred & $rcond"
+					machineM = writeAssertions(machineM, s, pred)
 				}
 			}
 		}
@@ -154,7 +152,7 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 	}
 
 	def MachineModifier writeAssertions(MachineModifier machineM, Statement stmt, String pred) {
-		graph.properties[stmt].each { Assertion a ->
+		properties[stmt].each { Assertion a ->
 			machineM = writeProperty(machineM, a, pred)
 		}
 		machineM
@@ -170,7 +168,7 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 	}
 
 	def MachineModifier writeProperty(MachineModifier machineM, Assertion property, String pred) {
-		def name = graph.nodeMapping.getName(property)
+		def name = names.getName(property)
 		writeAssertion(machineM, name, pred, property.assertion)
 	}
 

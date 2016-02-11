@@ -13,10 +13,8 @@ import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor;
 public class AssertionExtractorTest extends Specification {
 
 	def run(Closure cls) {
-		Block b = new Block().make(cls)
-		def a = new AssertionExtractor()
-		def b2 = a.transform(b)
-		[assertions: a.properties, algorithm: b2]
+		Block b = new AddLoopEvents().transform(new Block().make(cls).finish())
+		[assertions: new AssertionExtractor().extractAssertions(b), algorithm: b]
 	}
 
 	def print(e) {
@@ -47,7 +45,9 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		obj.assertions.isEmpty()
+		obj.assertions.each { k,v ->
+			v.isEmpty()
+		}
 	}
 
 	def "one assignment block has two nodes"() {
@@ -57,7 +57,9 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		obj.assertions.isEmpty()
+		obj.assertions.each { k,v ->
+			v.isEmpty()
+		}
 	}
 
 	def "one assert block has two nodes and one assertion"() {
@@ -176,7 +178,9 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		obj.assertions.isEmpty()
+		obj.assertions.each { k,v ->
+			v.isEmpty()
+		}
 	}
 
 	def "an if with then has 2 nodes"() {
@@ -191,7 +195,9 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		obj.assertions.isEmpty()
+		obj.assertions.each { k,v ->
+			v.isEmpty()
+		}
 	}
 
 	def "an if with else has 3 nodes"() {
@@ -206,7 +212,9 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		obj.assertions.isEmpty()
+		obj.assertions.each { k,v ->
+			v.isEmpty()
+		}
 	}
 
 	def "an empty while has 2 nodes"() {
@@ -219,7 +227,9 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		obj.assertions.isEmpty()
+		obj.assertions.each { k,v ->
+			v.isEmpty()
+		}
 	}
 
 	def "a while with one stmt"() {
@@ -231,7 +241,9 @@ public class AssertionExtractorTest extends Specification {
 
 		then:
 		if (DEBUG) print(obj)
-		obj.assertions.isEmpty()
+		obj.assertions.each { k,v ->
+			v.isEmpty()
+		}
 	}
 
 	def "optimized euclid"() {

@@ -15,7 +15,6 @@ import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Call
 import de.prob.model.eventb.algorithm.ast.IAssignment
-import de.prob.model.eventb.algorithm.ast.If
 import de.prob.model.eventb.algorithm.ast.Return
 import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
@@ -27,6 +26,7 @@ import de.prob.model.eventb.algorithm.graph.AssertionTranslator
 import de.prob.model.eventb.algorithm.graph.ControlFlowGraph
 import de.prob.model.eventb.algorithm.graph.Edge
 import de.prob.model.eventb.algorithm.graph.GraphTransformer
+import de.prob.model.eventb.algorithm.graph.NodeNaming
 import de.prob.model.eventb.algorithm.graph.PCCalculator
 import de.prob.model.eventb.algorithm.graph.VariantAssertionTranslator
 import de.prob.model.eventb.algorithm.graph.VariantOrdering
@@ -106,7 +106,7 @@ class AlgorithmTranslator {
 
 	def EventBMachine translateAlgorithm(EventBMachine oldM, ControlFlowGraph graph) {
 		MachineModifier machineM = new MachineModifier(oldM, modelM.typeEnvironment)
-		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
+		PCCalculator pcCalc = new PCCalculator(graph)
 		Procedure procedure = getProcedure(oldM)
 
 		if (procedure) {
@@ -153,15 +153,25 @@ class AlgorithmTranslator {
 		}
 		generated << stmt
 
-		def merge = (stmt instanceof While || stmt instanceof If) && options.isOptimize()
+		NodeNaming n = new NodeNaming(graph.algorithm)
 		final pcname = procedure ? "ipc" : "pc"
-
-		graph.outEdges(stmt).each {
-			machineM = addEdge(generated, graph, pcInfo, machineM, procedure, it, stmt, merge)
+		final pcs = pcInfo
+		graph.outEdges(stmt).each { final Edge e ->
+			String eventName = e.getName(n)
+			EventModifier em = new EventModifier(new Event(eventName, EventType.ORDINARY, false))
+					.addComment(e.rep())
+					.guard("$pcname = ${pcs[stmt]}")
+			e.conditions.each { em = em.guard(it.getSecond()) }
+			if (e.assignment) {
+				em = addAssignment(em, e.assignment, procedure)
+			}
+			em = em.action("$pcname := ${pcs[e.to]}")
+			machineM = machineM.addEvent(em.getEvent())
+			machineM = addNode(generated, graph, machineM, procedure, e.to, pcInfo)
 		}
 
-		if (graph.outEdges(stmt) == []) {
-			def name = graph.nodeMapping.getName(stmt)
+		if (graph.outEdges(stmt) == [] as Set) {
+			def name = n.getName(stmt)
 			if (!(stmt instanceof Skip)) {
 				throw new IllegalArgumentException("Algorithm must deadlock on empty assignment")
 			}
@@ -178,36 +188,6 @@ class AlgorithmTranslator {
 		}
 
 		machineM
-	}
-
-	def MachineModifier addEdge(Set<Statement> generated, ControlFlowGraph graph, Map<Statement, Integer> pcInfo, MachineModifier machineM, Procedure procedure, Edge e, Statement stmt, boolean merge) {
-		final pcname = procedure ? "ipc" : "pc"
-		final pcs = pcInfo
-
-		String name = graph.getEventName(e)
-		EventModifier em = new EventModifier(new Event(name, EventType.ORDINARY, false))
-				.addComment(stmt.toString())
-				.guard("$pcname = ${pcs[stmt]}")
-		e.conditions.each { em = em.guard(it) }
-
-		if (pcs[e.to] != null) {
-			if (stmt instanceof IAssignment) {
-				em = addAssignment(em, stmt, procedure)
-			}
-			em = em.action("$pcname := ${pcs[e.to]}")
-			def mm = machineM.addEvent(em.getEvent())
-			return addNode(generated, graph, mm, procedure, e.to, pcInfo)
-		}
-
-		assert merge && e.to instanceof IAssignment
-		assert !graph.outEdges(e.to).isEmpty()
-
-		generated << e.to
-		final nextN = graph.outEdges(e.to).first().to
-		em = addAssignment(em, e.to, procedure)
-		em = em.action("$pcname := ${pcs[nextN]}")
-		def mm = machineM.addEvent(em.getEvent())
-		return addNode(generated, graph, mm, procedure, nextN, pcInfo)
 	}
 
 	def EventModifier addAssignment(EventModifier em, Assignment a, Procedure procedure) {

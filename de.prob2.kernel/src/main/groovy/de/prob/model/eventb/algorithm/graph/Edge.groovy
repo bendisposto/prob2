@@ -12,16 +12,16 @@ import de.prob.util.Tuple2
 
 
 public class Edge {
-	def Statement from
-	def Statement to
-	def PersistentVector<Tuple2<Statement, EventB>> conditions
-	def IAssignment assignment
+	def final Statement from
+	def final Statement to
+	def final PersistentVector<Tuple2<Statement, EventB>> conditions
+	def final IAssignment assignment
 
 	def Edge(Statement from, Statement to, PersistentVector<Tuple2<Statement, EventB>> conditions) {
 		this.from = from
 		this.to = to
 		this.conditions = conditions
-		this.assignment = null
+		this.assignment = from instanceof IAssignment ? from : null
 	}
 
 	def Edge(Statement from, Statement to, PersistentVector<Tuple2<Statement, EventB>> conditions, IAssignment assignment) {
@@ -51,12 +51,12 @@ public class Edge {
 	}
 
 	public Edge mergeAssignment(Edge that) {
-		assert this.assignment == null && that.from instanceof IAssignment
+		assert this.assignment == null && that.assignment != null
 		def conditions = this.conditions
 		that.conditions.each { Tuple2<Statement, EventB> cond ->
 			conditions = conditions.add(cond)
 		}
-		return new Edge(from, that.to, conditions, that.from)
+		return new Edge(from, that.to, conditions, that.assignment)
 	}
 
 	@Override
@@ -98,5 +98,17 @@ public class Edge {
 			return "${name}_else"
 		}
 		return "unknown_branch_$name"
+	}
+
+	private String rep() {
+		StringBuilder sb = new StringBuilder()
+		conditions.each { Tuple2<Statement, EventB>  t ->
+			sb.append(t.getFirst().toString())
+			sb.append(" ")
+		}
+		if (assignment) {
+			sb.append(assignment.toString())
+		}
+		sb.toString()
 	}
 }

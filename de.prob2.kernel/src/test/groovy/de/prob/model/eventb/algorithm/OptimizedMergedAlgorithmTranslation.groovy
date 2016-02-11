@@ -19,7 +19,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 	def translate(MachineModifier mm) {
 		ModelModifier modelM = new ModelModifier().addMachine(mm.getMachine())
 		String name = mm.getMachine().getName()
-		modelM = new AlgorithmTranslator(modelM.getModel(), new AlgorithmGenerationOptions().DEFAULT).runTranslation(modelM, name)
+		modelM = new AlgorithmTranslator(modelM.getModel(), new AlgorithmGenerationOptions().optimize(true).mergeBranches(true)).runTranslation(modelM, name)
 		modelM.getModel().getMachine(name)
 	}
 
@@ -239,7 +239,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 			"z < 50",
 			"not(z < 0)"
 		]
-		actions(e.enter_while2_if1_else) == ["z := z + 1", "pc := 2"]
+		actions(e.enter_while2_if1_else) == ["pc := 3"]
 
 		e.exit_while2 != null
 		guards(e.exit_while2) == ["pc = 2", "not(z < 50)"]
@@ -276,7 +276,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 			"u /= 0",
 			"not(u < v)"
 		]
-		actions(e.enter_while0_if0_else) == ["u := u - v", "pc := 0"]
+		actions(e.enter_while0_if0_else) == ["pc := 1"]
 
 		e.assign1 != null
 		guards(e.assign1) == ["pc = 1"]
@@ -350,13 +350,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 		inv(i.assert1) == "pc = 0 & x < 1 => (2 = 2)"
 		inv(i.assert2) == "pc = 0 & x < 1 & x + y > 10 => (3 = 3)"
 		inv(i.assert3) == "pc = 1 => (4 = 4)"
-		([
-			inv(i.assert4),
-			inv(i.assert4_0)
-		] as Set).equals([
-			"pc = 2 => (5 = 5)",
-			"pc = 0 & x < 1 & not(x + y > 10) => (5 = 5)"
-		] as Set)
+		inv(i.assert4) == "pc = 2 => (5 = 5)"
 		inv(i.assert5) == "pc = 3 => (6 = 6)"
 		inv(i.assert6) == "pc = 4 => (7 = 7)"
 
@@ -383,7 +377,7 @@ class OptimizedMergedAlgorithmTranslation extends Specification {
 			"x < 1",
 			"not(x + y > 10)"
 		]
-		actions(e.enter_while0_if0_else) == ["x := z - 90", "pc := 3"]
+		actions(e.enter_while0_if0_else) == ["pc := 2"]
 
 		e.assign1 != null
 		guards(e.assign1) == ["pc = 2"]
