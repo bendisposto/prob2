@@ -61,6 +61,7 @@ dependencies {
 	compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
 	compile group: "de.hhu.stups", name: "theorymapping", version: parser_version, changing: true
 	compile group: "de.hhu.stups", name: "translator", version: parser_version, changing: true
+	compile group: "de.hhu.stups", name: "eventbalg", version: parser_version, changing: true
 
 	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.0.7', changing: true
 
