@@ -29,32 +29,6 @@ public class IdentifierExtractor extends DepthFirstAdapter {
 		this.identifiers.add(node.getIdentifier().getFirst().getText());
 	}
 
-	// @Override
-	// public void inAAssignSubstitution(final AAssignSubstitution node) {
-	// addAll(node.getLhsExpression());
-	// }
-
-	// @Override
-	// public void inABecomesSuchSubstitution(final ABecomesSuchSubstitution
-	// node) {
-	// addAll(node.getIdentifiers());
-	// }
-	//
-	// @Override
-	// public void inABecomesElementOfSubstitution(
-	// final ABecomesElementOfSubstitution node) {
-	// addAll(node.getIdentifiers());
-	// }
-	//
-	// public void addAll(final LinkedList<PExpression> identifiers) {
-	// for (PExpression pExpression : identifiers) {
-	// if (pExpression instanceof AIdentifierExpression) {
-	// this.identifiers.add(((AIdentifierExpression) pExpression)
-	// .getIdentifier().getFirst().getText());
-	// }
-	// }
-	// }
-
 	public static Set<String> union(final Node... assignments) {
 		Set<String> union = new HashSet<String>();
 		for (Node assignment : assignments) {
