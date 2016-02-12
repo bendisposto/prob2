@@ -9,7 +9,7 @@ class MergeAssignment implements IGraphTransformer {
 
 	@Override
 	public ControlFlowGraph transform(ControlFlowGraph graph) {
-		if (graph.entryNode == null) {
+		if (graph.entryNode == ControlFlowGraph.FILLER) {
 			return graph
 		}
 		merge(graph, graph.entryNode)
