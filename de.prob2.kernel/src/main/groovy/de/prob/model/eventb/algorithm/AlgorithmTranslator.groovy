@@ -15,18 +15,18 @@ import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Call
 import de.prob.model.eventb.algorithm.ast.IAssignment
-import de.prob.model.eventb.algorithm.ast.If
 import de.prob.model.eventb.algorithm.ast.Return
 import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
-import de.prob.model.eventb.algorithm.ast.transform.AddSkipForVariant
+import de.prob.model.eventb.algorithm.ast.transform.AddLoopEvents
 import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
 import de.prob.model.eventb.algorithm.ast.transform.IAlgorithmASTTransformer
 import de.prob.model.eventb.algorithm.graph.AssertionTranslator
 import de.prob.model.eventb.algorithm.graph.ControlFlowGraph
 import de.prob.model.eventb.algorithm.graph.Edge
 import de.prob.model.eventb.algorithm.graph.GraphTransformer
+import de.prob.model.eventb.algorithm.graph.NodeNaming
 import de.prob.model.eventb.algorithm.graph.PCCalculator
 import de.prob.model.eventb.algorithm.graph.VariantAssertionTranslator
 import de.prob.model.eventb.algorithm.graph.VariantOrdering
@@ -106,7 +106,7 @@ class AlgorithmTranslator {
 
 	def EventBMachine translateAlgorithm(EventBMachine oldM, ControlFlowGraph graph) {
 		MachineModifier machineM = new MachineModifier(oldM, modelM.typeEnvironment)
-		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
+		PCCalculator pcCalc = new PCCalculator(graph)
 		Procedure procedure = getProcedure(oldM)
 
 		if (procedure) {
@@ -137,9 +137,10 @@ class AlgorithmTranslator {
 				}
 			}
 		} else if (options.isTerminationAnalysis()) {
-			graph.loopsForTermination.each { While stmt, List<Edge> edges ->
+			NodeNaming n = new NodeNaming(graph.algorithm)
+			graph.loopsToWhile().findAll { stmt, edges -> stmt.variant != null}.each { While stmt, Set<Edge> edges ->
 				edges.each { edge ->
-					machineM = machineM.event(name: graph.getEventName(edge), type: EventType.ANTICIPATED)
+					machineM = machineM.event(name: edge.getName(n), type: EventType.ANTICIPATED)
 				}
 			}
 		}
@@ -153,15 +154,27 @@ class AlgorithmTranslator {
 		}
 		generated << stmt
 
-		def merge = (stmt instanceof While || stmt instanceof If) && options.isOptimize()
+		NodeNaming n = new NodeNaming(graph.algorithm)
 		final pcname = procedure ? "ipc" : "pc"
+		final pcs = pcInfo
 
-		graph.outEdges(stmt).each {
-			machineM = addEdge(generated, graph, pcInfo, machineM, procedure, it, stmt, merge)
+		List<Edge> oEdges = graph.outEdges(stmt).sort { Edge a, Edge b -> pcs[a.to] <=> pcs[b.to] }
+		oEdges.each { final Edge e ->
+			String eventName = e.getName(n)
+			EventModifier em = new EventModifier(new Event(eventName, EventType.ORDINARY, false))
+					.addComment(e.rep())
+					.guard("$pcname = ${pcs[stmt]}")
+			e.conditions.each { em = em.guard(it.getSecond()) }
+			if (e.assignment) {
+				em = addAssignment(em, e.assignment, procedure)
+			}
+			em = em.action("$pcname := ${pcs[e.to]}")
+			machineM = machineM.addEvent(em.getEvent())
+			machineM = addNode(generated, graph, machineM, procedure, e.to, pcInfo)
 		}
 
-		if (graph.outEdges(stmt) == []) {
-			def name = graph.nodeMapping.getName(stmt)
+		if (graph.outEdges(stmt) == [] as Set) {
+			def name = n.getName(stmt)
 			if (!(stmt instanceof Skip)) {
 				throw new IllegalArgumentException("Algorithm must deadlock on empty assignment")
 			}
@@ -178,36 +191,6 @@ class AlgorithmTranslator {
 		}
 
 		machineM
-	}
-
-	def MachineModifier addEdge(Set<Statement> generated, ControlFlowGraph graph, Map<Statement, Integer> pcInfo, MachineModifier machineM, Procedure procedure, Edge e, Statement stmt, boolean merge) {
-		final pcname = procedure ? "ipc" : "pc"
-
-		String name = graph.getEventName(e)
-		def node = null
-		if (merge && e.to instanceof IAssignment) {
-			generated << e.to
-			if (!graph.outEdges(e.to).isEmpty()) {
-				node = graph.outEdges(e.to).first().to
-			}
-		}
-		final nextN = node ?: e.to
-
-		final pcs = pcInfo
-		EventModifier em = new EventModifier(new Event(name, EventType.ORDINARY, false))
-				.addComment(stmt.toString())
-				.guard("$pcname = ${pcs[stmt]}")
-		e.conditions.each { em = em.guard(it) }
-		if (stmt instanceof IAssignment) {
-			em = addAssignment(em, stmt, procedure)
-		} else if (merge && e.to instanceof IAssignment) {
-			em = addAssignment(em, e.to, procedure)
-		}
-		if (pcs[nextN] != null) {
-			em = em.action("$pcname := ${pcs[nextN]}")
-		}
-		def mm = machineM.addEvent(em.getEvent())
-		return addNode(generated, graph, mm, procedure, nextN, pcInfo)
 	}
 
 	def EventModifier addAssignment(EventModifier em, Assignment a, Procedure procedure) {
@@ -246,25 +229,26 @@ class AlgorithmTranslator {
 	}
 
 	def Block runASTTransformations(Block block) {
-		def transformers = [new DeadCodeRemover()]
-		if (options.isTerminationAnalysis()) {
-			transformers << new AddSkipForVariant()
-		}
+		def transformers = [
+			new DeadCodeRemover() ,
+			new AddLoopEvents(options)
+		]
 		transformers.inject(block) { Block b, IAlgorithmASTTransformer t ->
 			t.transform(b)
 		}
 	}
 
 	def ModelModifier runLoopTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {
-		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
+		PCCalculator pcCalc = new PCCalculator(graph)
 		def pcname = getProcedure(modelM.getModel().getMachine(mchName)) ? "ipc" : "pc"
 
 		def ordering = new VariantOrdering()
 		ordering.visit(graph.algorithm)
 		def refName = mchName
 		def ctr = 0
+		NodeNaming n = new NodeNaming(graph.algorithm)
 		ordering.ordering.each { While stmt ->
-			def newName = "${mchName}_term${ctr++}_"+graph.nodeMapping.getName(stmt)
+			def newName = "${mchName}_term${ctr++}_"+n.getName(stmt)
 			modelM = modelM.refine(refName, newName)
 			def oldM = modelM.getModel().getMachine(newName)
 			def mM = new MachineModifier(oldM)
@@ -276,14 +260,17 @@ class AlgorithmTranslator {
 	}
 
 	def EventBMachine createLoopTermination(MachineModifier machineM, While stmt, ControlFlowGraph graph, PCCalculator pcCalc, String pcname) {
-		String variantName = graph.nodeMapping.getName(stmt)+"_variant"
+		NodeNaming n = new NodeNaming(graph.algorithm)
+		String variantName = n.getName(stmt)+"_variant"
 		def mM = machineM.variant(variantName).var(variantName, variantName + " : NAT", variantName + " :: NAT")
 		def final setVariant = variantName+" := ${stmt.variant.getCode()}"
-		Event evt = mM.getMachine().getEvent("enter_"+graph.nodeMapping.getName(stmt))
-		mM = mM.event(name: evt.getName(), type: evt.getType()) { action setVariant }
+		def prefix = "enter_"+n.getName(stmt)
+		mM.getMachine().getEvents().findAll { it.getName().startsWith(prefix) }.each { Event evt ->
+			mM = mM.event(name: evt.getName(), type: evt.getType()) { action setVariant }
+		}
 
-		graph.loopsForTermination[stmt].each { Edge edge ->
-			mM = mM.event(name: graph.getEventName(edge), type: EventType.CONVERGENT) { action setVariant }
+		graph.loopsToWhile()[stmt].each { Edge edge ->
+			mM = mM.event(name: edge.getName(n), type: EventType.CONVERGENT) { action setVariant }
 		}
 		mM = mM.initialisation(extended: true)
 		mM = new VariantAssertionTranslator(mM, stmt, procedures, graph, pcCalc.pcInformation, options, pcname).getMachineM()
@@ -291,31 +278,15 @@ class AlgorithmTranslator {
 	}
 
 	def ModelModifier runAlgorithmTerminationAnalysis(ModelModifier modelM, String mchName, ControlFlowGraph graph) {
-		PCCalculator pcCalc = new PCCalculator(graph, options.isOptimize())
+		PCCalculator pcCalc = new PCCalculator(graph)
 		def pcname = getProcedure(modelM.getModel().getMachine(mchName)) ? "ipc" : "pc"
 
 		EventBMachine mch = modelM.getModel().getMachine(mchName)
 		MachineModifier mM = new MachineModifier(mch)
-		graph.loopToWhile.each { While stmt, List<Edge> edges ->
-			if (!options.isOptimize()) {
-				edges.each { edge ->
-					mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
-				}
-			} else {
-				edges.each { Edge edge ->
-					List<Statement> statements = graph.edgeMapping[edge]
-					if (statements.size() == 1 && statements[0] instanceof IAssignment || statements[0] instanceof Skip) {
-						graph.incomingEdges[edge.from].each { Edge e ->
-							if (e.conditions) {
-								mM = mM.event(name: graph.getEventName(e), type: EventType.CONVERGENT)
-							} else {
-								mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
-							}
-						}
-					} else {
-						mM = mM.event(name:  graph.getEventName(edge), type: EventType.CONVERGENT)
-					}
-				}
+		NodeNaming n = new NodeNaming(graph.algorithm)
+		graph.loopsToWhile().each { While stmt, Set<Edge> edges ->
+			edges.each { edge ->
+				mM = mM.event(name:  edge.getName(n), type: EventType.CONVERGENT)
 			}
 		}
 		modelM = modelM.replaceMachine(mch, mM.getMachine())

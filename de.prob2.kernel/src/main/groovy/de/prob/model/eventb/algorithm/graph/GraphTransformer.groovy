@@ -8,10 +8,12 @@ public class GraphTransformer implements IGraphTransformer {
 	List<IGraphTransformer> transformers
 
 	def GraphTransformer(AlgorithmGenerationOptions options) {
-		if (options.getOptions().contains(Options.mergeBranches)) {
-			transformers = [new GraphMerge()]
-		} else {
-			transformers = []
+		transformers = []
+		if (options.isMergeBranches()) {
+			transformers << new MergeConditionals()
+		}
+		if (options.isOptimize()) {
+			transformers << new MergeAssignment()
 		}
 	}
 

@@ -31,6 +31,7 @@ class VariantAssertionTranslator extends AlgorithmASTVisitor {
 	def Map<Statement, Integer> pcInfo
 	Map<String, Integer> assertCtr = [:]
 	Map<Statement, List<VariantAssertion>> propagated
+	def NodeNaming names
 	boolean optimized
 	String pcname
 	While stmt
@@ -42,7 +43,8 @@ class VariantAssertionTranslator extends AlgorithmASTVisitor {
 		this.optimized = options.isOptimize()
 		this.pcname = pcname
 		this.stmt = stmt
-		def p = new VariantPropagator(procedures, graph.nodeMapping)
+		this.names = new NodeNaming(graph.algorithm)
+		def p = new VariantPropagator(procedures, names)
 		p.traverse(graph.algorithm)
 		this.propagated = p.assertionMap
 
@@ -94,24 +96,24 @@ class VariantAssertionTranslator extends AlgorithmASTVisitor {
 	}
 
 	def forSingleSimpleStatement(Statement s) {
-		if (!optimized || graph.inEdges(s).isEmpty()) {
-			assert pcInfo[s] != null
+		if (pcInfo[s] != null) {
 			def prefix = "$pcname = ${pcInfo[s]}"
 			if (propagated[s]) {
 				machineM = writePropagated(machineM, propagated[s], prefix)
 			}
-		} else {
-			Set<Edge> inE = graph.inEdges(s)
-			inE.each { Edge e ->
-				if (e.conditions.isEmpty()) {
-					assert pcInfo[s] != null
-					def prefix = "$pcname = ${pcInfo[s]}"
-					if (propagated[s]) {
-						machineM = writePropagated(machineM, propagated[s], prefix)
-					}
-				}
-			}
 		}
+		//		else {
+		//			Set<Edge> inE = graph.inEdges(s)
+		//			inE.each { Edge e ->
+		//				if (e.conditions.isEmpty()) {
+		//					assert pcInfo[s] != null
+		//					def prefix = "$pcname = ${pcInfo[s]}"
+		//					if (propagated[s]) {
+		//						machineM = writePropagated(machineM, propagated[s], prefix)
+		//					}
+		//				}
+		//			}
+		//		}
 	}
 
 	@Override
@@ -131,7 +133,7 @@ class VariantAssertionTranslator extends AlgorithmASTVisitor {
 	def MachineModifier writePropagated(MachineModifier machineM, List<VariantAssertion> properties, String prefix) {
 		properties.inject(machineM) { MachineModifier mm, VariantAssertion prop ->
 			if (prop.stmt == stmt) {
-				def n = "variant_"+graph.nodeMapping.getName(stmt)
+				def n = "variant_"+names.getName(stmt)
 				def preds = [prefix]+ prop.conditions.collect { it.getCode() }
 				def formula = preds.iterator().join(" & ") + " => (${prop.variantCondition.getCode()})"
 				return mm.invariant(getName(n), formula)

@@ -2,8 +2,13 @@ package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
 import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
+import de.prob.model.eventb.algorithm.ast.Assertion
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.transform.AddLoopEvents
+import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
 
 public class CGGConstructionTest extends Specification {
 
@@ -13,48 +18,56 @@ public class CGGConstructionTest extends Specification {
 	}
 
 	def nodes(ControlFlowGraph g, String... names) {
-		names.collect { g.getNode(it) } as Set
+		NodeNaming n = new NodeNaming(g.algorithm)
+		g.nodes.findAll { names.contains(n.getName(it)) } as Set
 	}
 
 	def edge(ControlFlowGraph g, String from, String to) {
-		assert g.getNode(from)
-		Edge e = g.outgoingEdges[g.getNode(from)].find {
-			it.to == g.getNode(to)
+		NodeNaming n = new NodeNaming(g.algorithm)
+		def f = n.getNode(from)
+		assert g.nodes.contains(f)
+		Edge e = g.edges.find {
+			it.from == n.getNode(from) && it.to == n.getNode(to)
 		}
-		e ? e.conditions.collect { it.getCode() } : null
+		e ? e.conditions.collect { it.getSecond().getCode() } : null
 	}
 
 	def edges(ControlFlowGraph g, String from, String to) {
-		assert g.getNode(from)
-		g.outgoingEdges[g.getNode(from)].findAll {
-			it.to == g.getNode(to)
+		NodeNaming n = new NodeNaming(g.algorithm)
+		def f = n.getNode(from)
+		assert g.nodes.contains(f)
+		g.edges.findAll {
+			it.from == n.getNode(from) && it.to == n.getNode(to)
 		}.collect {
-			it.conditions.collect { it.getCode() } } as Set
+			it.conditions.collect {
+				it.getSecond().getCode()
+			}
+		} as Set
 	}
 
 	def assertions(ControlFlowGraph g, String at) {
-		g.properties[g.getNode(at)].collect {
+		Map<Statement, List<Assertion>> properties = new AssertionExtractor().extractAssertions(g.algorithm)
+		NodeNaming n = new NodeNaming(g.algorithm)
+		assert g.nodes.contains(n.getNode(at))
+		assert properties.containsKey(n.getNode(at))
+		properties[n.getNode(at)].collect {
 			it.getAssertion().getCode()
 		} as Set
 	}
 
 	def print(graph) {
-		println "nodes: ${graph.nodes}"
-		println "naming: ${graph.nodeMapping.nodes}"
-		println "incoming: ${graph.incomingEdges}"
-		println "outgoing: ${graph.outgoingEdges}"
-		println "properties: ${graph.properties}\n"
+		println graph.representation()
 	}
 
-	def "empty is empty"() {
+	def "empty is has end node"() {
 		when:
 		def DEBUG = false
 		def graph = graph({})
 
 		then:
 		if (DEBUG) print(graph)
-		graph.nodes.isEmpty()
-		graph.size() == 0
+		graph.nodes.first() instanceof Skip
+		graph.size() == 1
 	}
 
 	def "one assignment block has two nodes"() {
@@ -161,7 +174,7 @@ public class CGGConstructionTest extends Specification {
 			}
 			Assert("x < 0")
 			If("x < 0") {
-				Then("x := 0 - x")
+				Then("x := 1 - x")
 				Else("x := x + 1")
 			}
 			Assert("x > 0")
@@ -177,7 +190,7 @@ public class CGGConstructionTest extends Specification {
 		edge(graph, "assign0","if0") == []
 		edge(graph, "if0", "assign1") == ["x > 0"]
 		edge(graph, "if0", "assign2") == ["not(x > 0)"]
-		edge(graph, "assign1", "if1") == []
+		assert edge(graph, "assign1", "if1") == []
 		edge(graph, "assign2", "if1") == []
 		edge(graph, "if1", "assign3") == ["x < 0"]
 		edge(graph, "if1", "assign4") == ["not(x < 0)"]
@@ -496,7 +509,7 @@ public class CGGConstructionTest extends Specification {
 				Then { Return("x") }
 			}
 			If ("y = 5") {
-				Then { Return("x") }
+				Then { Return("y") }
 			}
 			Assign("z := 5")
 			Return("z")
@@ -505,6 +518,7 @@ public class CGGConstructionTest extends Specification {
 		then:
 		if (DEBUG) print(graph)
 		graph.size() == 7
+		graph.edges.size() == 8
 		graph.nodes == nodes(graph, "if0", "return0", "if1", "return1",
 				"assign0", "return2", "end_algorithm")
 		edge(graph, "if0", "return0") == ["x = 5"]

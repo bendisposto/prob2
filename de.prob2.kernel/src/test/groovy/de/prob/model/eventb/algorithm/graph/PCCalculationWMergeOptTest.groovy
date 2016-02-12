@@ -1,6 +1,7 @@
 package de.prob.model.eventb.algorithm.graph
 
 import static org.junit.Assert.*
+import groovy.lang.Closure;
 import spock.lang.Specification
 import de.prob.model.eventb.algorithm.ast.Assignment;
 import de.prob.model.eventb.algorithm.ast.Block;
@@ -8,19 +9,18 @@ import de.prob.model.eventb.algorithm.ast.Block;
 public class PCCalculationWMergeOptTest extends Specification {
 
 	def PCCalculator graph(Closure cls) {
-		Block b = new Block().make(cls)
-		return new PCCalculator(new GraphMerge().transform(new ControlFlowGraph(b)), true)
+		Block b = new Block().make(cls).finish()
+		ControlFlowGraph g = new MergeConditionals().transform(new MergeAssignment().transform(new ControlFlowGraph(b)))
+		//ControlFlowGraph g = new MergeAssignment().transform(new MergeConditionals().transform(new ControlFlowGraph(b)))
+		return new PCCalculator(g)
 	}
 
 	def pcInfo(PCCalculator calc) {
+		NodeNaming n = new NodeNaming(calc.graph.algorithm)
 		calc.pcInformation.collectEntries { k,v ->
-			[
-				calc.graph.nodeMapping.getName(k),
-				v
-			]
+			[n.getName(k), v]
 		}
 	}
-
 	def print(graph) {
 		println pcInfo(graph)
 	}

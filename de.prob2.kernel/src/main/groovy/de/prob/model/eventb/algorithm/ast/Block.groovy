@@ -61,9 +61,26 @@ class Block extends AbstractModifier {
 		newBlock(statements.addElement(new Call(name, arguments, results, typeEnvironment)))
 	}
 
-	// Add ending Skip statement to algorithm
+
+	/**
+	 * Adds a {@link Skip} element to the end of the algorithm which can
+	 * then be translated as the end_algorithm event
+	 * @return finished algorithm
+	 */
 	def Block finish() {
 		newBlock(statements.addElement(new Skip()))
+	}
+
+	/**
+	 * Checks if algorithm is finished (i.e. has {@link Skip} element as last statement)
+	 * If not, calls {@link #finish()}
+	 * @return finished algorithm
+	 */
+	def Block ensureFinished() {
+		if (!statements.isEmpty() && statements.last() instanceof Skip) {
+			return this
+		}
+		finish()
 	}
 
 	def Block make(Closure definition) throws ModelGenerationException {

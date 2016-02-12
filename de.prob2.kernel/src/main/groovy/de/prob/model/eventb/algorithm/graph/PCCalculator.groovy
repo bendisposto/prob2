@@ -15,11 +15,9 @@ class PCCalculator extends AlgorithmASTVisitor {
 	ControlFlowGraph graph
 	Map<Statement, Integer> pcInformation
 	int pc = 0
-	boolean optimized
 
-	def PCCalculator(ControlFlowGraph graph, boolean optimized) {
+	def PCCalculator(ControlFlowGraph graph) {
 		this.graph = graph
-		this.optimized = optimized
 		pcInformation = [:]
 		visit(graph.algorithm)
 	}
@@ -37,31 +35,27 @@ class PCCalculator extends AlgorithmASTVisitor {
 	}
 
 	def visit(Assignment s) {
-		forSingleSimpleStatement(s)
+		if (graph.nodes.contains(s)) {
+			pcInformation[s] = pc++
+		}
 	}
 
 	def visit(Call s) {
-		forSingleSimpleStatement(s)
+		if (graph.nodes.contains(s)) {
+			pcInformation[s] = pc++
+		}
 	}
 
 	public visit(Return s) {
-		forSingleSimpleStatement(s)
+		if (graph.nodes.contains(s)) {
+			pcInformation[s] = pc++
+		}
 	}
 
 	@Override
 	public Object visit(Skip a) {
 		if (graph.nodes.contains(a)) {
 			pcInformation[a] = pc++
-		}
-	}
-
-	def forSingleSimpleStatement(Statement s) {
-		if (!optimized && graph.nodes.contains(s)) {
-			pcInformation[s] = pc++
-		} else if(optimized && graph.entryNode == s) {
-			pcInformation[s] = pc++
-		} else if(optimized && !graph.inEdges(s).findAll { Edge e -> e.conditions.isEmpty() }.isEmpty()) {
-			pcInformation[s] = pc++
 		}
 	}
 
