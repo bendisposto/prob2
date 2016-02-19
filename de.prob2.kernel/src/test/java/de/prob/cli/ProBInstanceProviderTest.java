@@ -9,14 +9,15 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import de.prob.Main;
 import test.AbstractUnitTest;
 
 public class ProBInstanceProviderTest extends AbstractUnitTest {
 
 	@Test
 	public void testExtractCliInformation() throws Exception {
-		PrologProcessProvider ppp = mock(PrologProcessProvider.class);
-		ProBInstanceProvider factory = new ProBInstanceProvider(ppp, "", null);
+		ProBInstanceProvider factory = Main.getInjector().getInstance(
+				ProBInstanceProvider.class);
 
 		String text = "No file to process\nStarting Socket Server\n"
 				+ "Application Path: /Users/bendisposto/.prob\nPort: 61013\n"

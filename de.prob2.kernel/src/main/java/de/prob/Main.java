@@ -19,8 +19,8 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 
 import de.prob.cli.ProBInstanceProvider;
-import de.prob.scripting.Downloader;
 import de.prob.scripting.FileHandler;
+import de.prob.scripting.Installer;
 
 /**
  * The Main class initializes ProB 2.0. This class should NOT be instantiated
@@ -76,8 +76,6 @@ public class Main {
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
 			.getProperty("PROB_LOG_CONFIG");
 
-	private final Downloader downloader;
-
 	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
 	 * should NOT be instantiated by hand.
@@ -89,11 +87,10 @@ public class Main {
 	 */
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell, final Downloader downloader) {
+			final Shell shell) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
-		this.downloader = downloader;
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
@@ -101,19 +98,6 @@ public class Main {
 
 		try {
 			CommandLine line = parser.parse(options, args);
-			if (line.hasOption("upgrade") || line.hasOption("cli")) {
-				String version = line.hasOption("upgrade") ? line
-						.getOptionValue("upgrade") : line.getOptionValue("cli");
-				if (version == null) {
-					version = "latest";
-				}
-				if (version.equals("cspm")) {
-					System.out.println(downloader.installCSPM());
-				} else {
-					System.out.println(downloader.downloadCli(version));
-				}
-			}
-
 			if (line.hasOption("maxCacheSize")) {
 				logger.debug("setting maximum cache size requested");
 				String value = line.getOptionValue("maxCacheSize");
@@ -148,8 +132,7 @@ public class Main {
 		if (homedir != null) {
 			return homedir + separator;
 		}
-		return System.getProperty("user.home") + separator + ".prob"
-				+ separator;
+		return Installer.DEFAULT_HOME;
 	}
 
 	public static Map<String, String> getGlobalPreferences(

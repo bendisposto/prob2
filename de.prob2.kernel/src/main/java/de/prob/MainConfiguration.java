@@ -39,7 +39,7 @@ public class MainConfiguration extends AbstractModule {
 		bind(String.class).annotatedWith(Version.class).toInstance(
 				buildConstants.getProperty("version", "0.0.0"));
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
-		.toInstance(Main.class.getClassLoader());
+				.toInstance(Main.class.getClassLoader());
 
 		// TODO: Should this property be set here? Should it be set at all?
 		System.setProperty("PROB_LOGFILE", getProBLogfile());
@@ -86,28 +86,14 @@ public class MainConfiguration extends AbstractModule {
 				.hasArg()
 				.withDescription(
 						"set the cache size for the states in the StateSpace")
-				.create("maxCacheSize");
+						.create("maxCacheSize");
 
 		Option script = OptionBuilder
 				.withArgName("script/dir")
 				.hasArg()
 				.withDescription(
 						"run a Groovy script or all .groovy files from a directory")
-				.create("script");
-
-		Option upgrade = OptionBuilder
-				.hasOptionalArg()
-				.withArgName("version")
-				.withDescription(
-						"upgrade the ProB binaries. Optionally specify the desired version.")
-				.create("upgrade");
-
-		Option upgrade2 = OptionBuilder
-				.hasOptionalArg()
-				.withArgName("version")
-				.withDescription(
-						"upgrade the ProB binaries before running a script. Optionally specify the desired version.")
-				.create("cli");
+						.create("script");
 
 		// TODO: add modelchecking option
 		// Option modelcheck = new Option("mc", "modelcheck", false,
@@ -116,9 +102,7 @@ public class MainConfiguration extends AbstractModule {
 		mode.setRequired(true);
 		// mode.addOption(modelcheck);
 		mode.addOption(script);
-		mode.addOption(upgrade);
 		options.addOptionGroup(mode);
-		options.addOption(upgrade2);
 		options.addOption(maxCacheSize);
 		return options;
 	}

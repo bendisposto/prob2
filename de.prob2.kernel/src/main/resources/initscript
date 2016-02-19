@@ -56,10 +56,6 @@ Script.getMetaClass().appendToTrace= { t,c ->
   c()
 }
 
-
-Script.getMetaClass().upgrade = { downloader.downloadCli(it) }
-Script.getMetaClass().installCSPM = { downloader.installCSPM() }
-
 /* Redirect print and println to our own buffered console*/
 inConsole = true
 Script.getMetaClass().print = { s -> __console.append(s.toString()); if (!inConsole) System.out.print(s) }

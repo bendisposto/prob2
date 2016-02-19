@@ -106,7 +106,7 @@ class FileHandler {
 		setFileText(fileName, writer.toJson(content))
 	}
 
-	def void extractZip(String pathToZip, String targetDirPath) {
+	def static defineUnzip() {
 		File.metaClass.unzip = { String dest ->
 			//in metaclass added methods, 'delegate' is the object on which
 			//the method is called. Here it's the file to unzip
@@ -135,10 +135,15 @@ class FileHandler {
 					}
 				}
 			}
-
 		}
+	}
 
-		File zip = new File(pathToZip)
+	def void extractZip(File zip, String targetDirPath) {
+		defineUnzip()
 		zip.unzip(targetDirPath)
+	}
+
+	def void extractZip(String pathToZip, String targetDirPath) {
+		extractZip(new File(pathToZip), targetDirPath)
 	}
 }

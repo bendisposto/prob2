@@ -23,6 +23,7 @@ import com.google.inject.Singleton;
 
 import de.prob.annotations.Home;
 import de.prob.exception.CliError;
+import de.prob.scripting.Installer;
 
 @Singleton
 public final class ProBInstanceProvider implements Provider<ProBInstance> {
@@ -42,6 +43,8 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		this.processProvider = processProvider;
 		this.home = home;
 		this.osInfo = osInfo;
+		new Installer(osInfo).ensureCLIsInstalled();
+
 		processCounter = new AtomicInteger();
 	}
 
@@ -140,7 +143,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	private void applyPatterns(
 			final Collection<? extends AbstractCliPattern<?>> patterns,
-					final String line) {
+			final String line) {
 		for (Iterator<? extends AbstractCliPattern<?>> it = patterns.iterator(); it
 				.hasNext();) {
 			final AbstractCliPattern<?> p = it.next();

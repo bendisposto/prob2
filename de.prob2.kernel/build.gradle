@@ -81,6 +81,41 @@ dependencies {
 
 }
 
+def download(address,target) {
+	def file = new FileOutputStream(target)
+	def out = new BufferedOutputStream(file)
+	out << new URL(address).openStream()
+	out.close()
+}
+
+task downloadCLIs << {
+		def dir = 'src/main/resources/cli/'
+		delete file(dir)
+	  new File(dir).mkdirs()
+
+		['leopard64','linux32','linux64','win32','win64'].each { n ->
+
+			def targetdir = dir+n
+			def targetzip = dir+"probcli_${n}.zip"
+			def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_${n}.zip"
+			download(url,targetzip)
+
+			def cspmfname = n
+			if (n.startsWith("win")) {
+				n = "windows.exe"
+			}
+			cspmfname = "cspmf-"+n
+			def target = dir+cspmfname
+			download("http://www3.hhu.de/stups/downloads/cspmf/"+cspmfname,target)
+			new File(target).setExecutable(true)
+		}
+
+		['32','64'].each { winV ->
+			def targetzip = dir+"windowslib${winV}.zip"
+			download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib${winV}.zip",targetzip)
+		}
+}
+
 task createBuildConstants  {
 	doFirst {
 		def buildconstants_class = """
@@ -89,9 +124,8 @@ version=${project.version}"""
 		f.delete()
 		f <<  buildconstants_class
 	}
+	dependsOn downloadCLIs
 }
-
-
 
 compileGroovy { dependsOn= [createBuildConstants]}
 
@@ -104,60 +138,8 @@ groovydoc {
 
 task wrapper(type: Wrapper) { gradleVersion = gradle_version }
 
-def download(address,target) {
-	def file = new FileOutputStream(target)
-	def out = new BufferedOutputStream(file)
-	out << new URL(address).openStream()
-	out.close()
-}
-
-public  String getProBDirectory() {
-	String homedir = System.getProperty("prob.home");
-	if (homedir != null)
-		return homedir + java.io.File.separator;
-	return System.getProperty("user.home") + java.io.File.separator + ".prob"
-	+ java.io.File.separator;
-}
-
-
-task downloadCli << {
-	def dir = getProBDirectory();
-	delete file(dir)
-	new File(dir).mkdirs()
-	def targetdir = dir
-	def targetzip = dir+os_extension()+".zip"
-	def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/" +os_extension()+ ".zip"
-	download(url,targetzip)
-	FileTree zip = zipTree(targetzip)
-	copy {
-		from zip
-		into targetdir
-	}
-	delete file(targetzip)
-
-	def targetName = "cspmf-"
-	def os = os_extension()
-	if(os == "probcli_linux32") {
-		targetName += "linux32"
-	} else if(os == "probcli_linux64") {
-		targetName += "linux64"
-	} else if(os == "probcli_leopard64") {
-		targetName += "leopard64"
-	} else if(os == "probcli_win32") {
-		targetName += "windows"
-	}
-	def target = dir+File.separator+"lib"+File.separator+"cspmf"
-	if(targetName == "cspmf-windows") {
-		target += ".exe"
-	}
-
-	download("http://www3.hhu.de/stups/downloads/cspmf/"+targetName,target)
-	new File(target).setExecutable(true)
-}
-
 test {
   ignoreFailures=true
-  dependsOn << downloadCli
 }
 
 def os_extension() {
@@ -173,7 +155,7 @@ def os_extension() {
 }
 
 // run integration tests after downloading fresh CLI from Nightly Build
-task integrationtests(dependsOn: ['downloadCli','tests']);
+task integrationtests(dependsOn: ['downloadCLIs','tests']);
 
 // run integration tests WITHOUT downloading fresh CLI from Nightly Build
 task tests(dependsOn: ['classes'], type:JavaExec){

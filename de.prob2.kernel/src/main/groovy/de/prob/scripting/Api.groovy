@@ -24,7 +24,6 @@ public class Api {
 	Logger logger = LoggerFactory.getLogger(Api.class);
 
 	private final FactoryProvider modelFactoryProvider;
-	private final Downloader downloader;
 	private final Provider<IAnimator> animatorProvider;
 
 	/**
@@ -49,11 +48,9 @@ public class Api {
 	 * @param downloader
 	 */
 	@Inject
-	public Api(final FactoryProvider modelFactoryProvider,
-	final Downloader downloader, final Provider<IAnimator> animatorProvider) {
+	public Api(final FactoryProvider modelFactoryProvider,final Provider<IAnimator> animatorProvider) {
 		this.animatorProvider =  animatorProvider;
 		this.modelFactoryProvider = modelFactoryProvider;
-		this.downloader = downloader;
 	}
 
 	public Closure getSubscribeClosure(closure) {
@@ -119,16 +116,16 @@ public class Api {
 		loadClosure(s)
 		return s
 	}
-			
+
 	public StateSpace b_load(final Start ast,
 			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 		Closure loadClosure=getSubscribeClosure(LoadClosures.B)
-				def extracted = bFactory.create(ast)
-				StateSpace s = extracted.load(prefs)
-				loadClosure(s)
-				return s
+		def extracted = bFactory.create(ast)
+		StateSpace s = extracted.load(prefs)
+		loadClosure(s)
+		return s
 	}
 
 	public StateSpace tla_load(final String file,
@@ -164,25 +161,6 @@ public class Api {
 		return s;
 	}
 
-	/**
-	 * Upgrades the ProB Cli to the given target version
-	 *
-	 * @param targetVersion
-	 * @return String with the version of the upgrade
-	 */
-	public String upgrade(final String targetVersion) {
-		return downloader.downloadCli(targetVersion);
-	}
-
-	/**
-	 * Lists the versions of ProB Cli that are available for download
-	 *
-	 * @return String with list of possible versions
-	 */
-	public String listVersions() {
-		return downloader.listVersions();
-	}
-
 	public CliVersionNumber getVersion() {
 		try {
 			IAnimator animator = animatorProvider.get();
@@ -203,8 +181,6 @@ public class Api {
 	public String help() {
 		return "Api Commands: \n\n ClassicalBModel b_load(String PathToFile): load .mch files \n"
 		+ " CSPModel csp_load(String PathToFile): load .csp files \n"
-		+ " upgrade(String version): upgrade ProB cli to specified version\n"
-		+ " listVersions(): list currently available ProB cli versions\n"
 		+ " toFile(StateSpace s): save StateSpace\n"
 		+ " readFile(): reload saved StateSpace\n"
 		+ " shutdown(ProBInstance x): shutdown ProBInstance\n"
