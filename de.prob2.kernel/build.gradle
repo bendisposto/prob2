@@ -82,7 +82,7 @@ dependencies {
 }
 
 def download(address,target) {
-	def file = new FileOutputStream(target)
+	def file = new FileOutputStream(file(target).path)
 	def out = new BufferedOutputStream(file)
 	out << new URL(address).openStream()
 	out.close()
@@ -91,7 +91,8 @@ def download(address,target) {
 task downloadCLIs << {
 		def dir = 'src/main/resources/cli/'
 		delete file(dir)
-	  new File(dir).mkdirs()
+		def f = file(dir)
+	  f.mkdirs()
 
 		['leopard64','linux32','linux64','win32','win64'].each { n ->
 
@@ -107,13 +108,14 @@ task downloadCLIs << {
 			cspmfname = "cspmf-"+n
 			def target = dir+cspmfname
 			download("http://www3.hhu.de/stups/downloads/cspmf/"+cspmfname,target)
-			new File(target).setExecutable(true)
+			file(target).setExecutable(true)
 		}
 
 		['32','64'].each { winV ->
 			def targetzip = dir+"windowslib${winV}.zip"
 			download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib${winV}.zip",targetzip)
 		}
+		println "done"
 }
 
 task createBuildConstants  {
