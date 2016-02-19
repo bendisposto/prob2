@@ -115,7 +115,6 @@ task downloadCLIs << {
 			def targetzip = dir+"windowslib${winV}.zip"
 			download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib${winV}.zip",targetzip)
 		}
-		println "done"
 }
 
 task createBuildConstants  {
