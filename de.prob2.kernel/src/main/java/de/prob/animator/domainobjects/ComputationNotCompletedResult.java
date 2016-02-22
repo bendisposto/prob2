@@ -21,7 +21,7 @@ public class ComputationNotCompletedResult extends AbstractEvalResult {
 
 	@Override
 	public String toString() {
-		return reason;
+		return "Computation of " + code + " not completed because of " + reason;
 	}
 
 }
