@@ -16,7 +16,7 @@ public class Context extends AbstractElement {
 		this(
 				name,
 				PersistentHashMap
-						.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
+				.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
 	}
 
 	private Context(
@@ -80,6 +80,11 @@ public class Context extends AbstractElement {
 
 	public ModelElementList<ProofObligation> getProofs() {
 		return getChildrenOfType(ProofObligation.class);
+	}
+
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 }
