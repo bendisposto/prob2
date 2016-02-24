@@ -92,14 +92,17 @@ def download(address,target) {
 	out.close()
 }
 
+ext{
+	cli_version = '1.5.1-beta4'
+}
 
-def cli_version = '1.5.1-beta4'
 
 def downloadUrlPath() {
   if (project.version.endsWith("-SNAPSHOT")) {
 		return "https://www3.hhu.de/stups/downloads/prob/cli/nightly/"
 	}
 	else {
+
 		return "https://www3.hhu.de/stups/downloads/prob/cli/releases/" + cli_version + "/"
 	}
 }
