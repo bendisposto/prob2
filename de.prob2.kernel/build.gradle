@@ -100,7 +100,7 @@ def downloadUrlPath() {
 		return "https://www3.hhu.de/stups/downloads/prob/cli/nightly/"
 	}
 	else {
-		return "https://www3.hhu.de/stups/downloads/prob/cli/releases/${cli_version}/"
+		return "https://www3.hhu.de/stups/downloads/prob/cli/releases/" + cli_version + "/"
 	}
 }
 
