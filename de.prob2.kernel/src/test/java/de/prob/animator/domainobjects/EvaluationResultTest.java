@@ -22,7 +22,7 @@ public class EvaluationResultTest {
 				|| b.toString().equals("yay (y = {1,2,3} \u2227 x = 5)"));
 		ComputationNotCompletedResult c = new ComputationNotCompletedResult(
 				"c3", "does not work");
-		assertEquals("does not work", c.toString());
+		assertEquals("does not work", c.getReason());
 	}
 
 }
