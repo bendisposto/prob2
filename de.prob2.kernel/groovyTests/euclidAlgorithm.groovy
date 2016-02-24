@@ -16,7 +16,7 @@ mm = new ModelModifier().make {
 			   "!x,y.x|->x|->y : GCD => x = y",
 			   "!v.GCD[{0|->v}] = {v}",
 			   "!v.GCD[{v|->v}] = {v}",
-			   "!x,y.y-x>0 => GCD[{x|->y}] = GCD[{x|->y−x}]",
+			   "!x,y.y-x>0 => GCD[{x|->y}] = GCD[{x|->y-x}]",
 			   "!x,y.GCD[{x|->y}] = GCD[{y|->x}]"
 		theorem "4|->2|->2 : GCD"
 	    theorem "!x,y.x <= y => GCD[{y|->x}]=GCD[{y-x|->x}]"
@@ -59,7 +59,7 @@ mm = new ModelModifier().make {
 m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
 
 mtx = new ModelToXML()
-d = mtx.writeToRodin(m, "GCDNaiveTerm", "/tmp")
+//d = mtx.writeToRodin(m, "GCDNaiveTerm", "/tmp")
 
 m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 

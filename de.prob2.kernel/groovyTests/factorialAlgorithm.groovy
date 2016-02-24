@@ -38,7 +38,7 @@ mm = new ModelModifier().make {
 				While("r < n", invariant: "r : dom(fac) & v = fac(r)", variant: "n - r") {
 					Assert("s <= r")
 					Assert("r < n")
-					While("s < r", invariant: "u = (s + 1) ∗ v", variant: "r - s") {
+					While("s < r", invariant: "u = (s + 1) * v", variant: "r - s") {
 						Assign("u,s := u+v, s+1")
 						Assert("r : dom(fac) & v = fac(r)")
 						Assert("r < n")
