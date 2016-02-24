@@ -40,7 +40,7 @@ public class Installer {
 			def os = osInfo.dirName
 			def zipName = "probcli_${os}.zip"
 			def zipPath = dir + zipName
-			File zip = getResource("cli"+File.separator+zipName, zipPath)
+			File zip = getResource("cli/"+zipName, zipPath)
 			zip.unzip(dir)
 			new File(zipPath).delete()
 
@@ -49,13 +49,13 @@ public class Installer {
 			if(os.startsWith('win')) {
 				def zipFile = os == "win32" ? "windowslib32.zip" : "windowslib64.zip"
 				zipPath = dir + zipFile
-				zip = getResource("cli"+File.separator+zipFile, zipPath)
+				zip = getResource("cli/"+zipFile, zipPath)
 				zip.unzip(dir)
 				cspmf = "windows.exe"
 				outcspmf = outcspmf+".exe"
 			}
 			cspmf = "cspmf-"+cspmf
-			def f = getResource("cli"+File.separator+cspmf,outcspmf)
+			def f = getResource("cli/"+cspmf,outcspmf)
 			f.setExecutable(true)
 			logger.info("CLI binaries successfully installed")
 		} catch(IOException e) {
