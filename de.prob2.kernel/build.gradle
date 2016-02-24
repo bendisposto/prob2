@@ -88,6 +88,19 @@ def download(address,target) {
 	out.close()
 }
 
+
+def cli_version = '1.5.1-beta4'
+
+def downloadUrlPath() {
+  if (project.version.endsWith("-SNAPSHOT")) {
+		return "https://www3.hhu.de/stups/downloads/prob/cli/nightly/"
+	}
+	else {
+		return "https://www3.hhu.de/stups/downloads/prob/cli/releases/${cli_version}/"
+	}
+}
+
+
 task downloadCLIs << {
 		def dir = 'src/main/resources/cli/'
 		delete file(dir)
@@ -98,7 +111,7 @@ task downloadCLIs << {
 
 			def targetdir = dir+n
 			def targetzip = dir+"probcli_${n}.zip"
-			def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_${n}.zip"
+			def url = downloadUrlPath()+"probcli_${n}.zip"
 			download(url,targetzip)
 
 			def cspmfname = n
@@ -113,7 +126,7 @@ task downloadCLIs << {
 
 		['32','64'].each { winV ->
 			def targetzip = dir+"windowslib${winV}.zip"
-			download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib${winV}.zip",targetzip)
+			download(downloadUrlPath()+"windowslib${winV}.zip",targetzip)
 		}
 }
 
