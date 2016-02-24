@@ -3,11 +3,12 @@ import de.prob.statespace.*
 
 x = 1
 f = "1 + 2" as ClassicalB
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+m = s as ClassicalBModel
 s.subscribe(m, f)
 t = new Trace(s)
 t.getCurrentState().explore()
+
 
 h = t.add 0
 
@@ -23,7 +24,6 @@ h2 = new Trace(s)
 h2 = h2.add 0
 h2 = h2.add 3
 h2 = h2.add 9
-
 
 varsAt6 = s[6].explore().getValues()
 assert varsAt6[m.scheduler.variables.waiting.getFormula()].value == "{}"
@@ -47,5 +47,4 @@ assert t.canExecuteEvent("new",["pp = PID1"])
 t = t.new("pp = PID1")
 assert !t.canExecuteEvent("blah",[])
 
-s.animator.cli.shutdown();
 "Some attributes of the scheduler model were tested"

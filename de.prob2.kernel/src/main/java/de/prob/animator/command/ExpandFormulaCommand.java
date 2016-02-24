@@ -11,6 +11,7 @@ import de.prob.statespace.State;
 
 public class ExpandFormulaCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "expand_formula";
 	private final State stateId;
 	private final String TREE = "TREE";
 	private final FormulaId id;
@@ -23,7 +24,7 @@ public class ExpandFormulaCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("expand_formula");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtomOrNumber(id.getId());
 		pto.printAtomOrNumber(stateId.getId());
 		pto.printVariable(TREE);

@@ -1,83 +1,76 @@
 package de.prob.model.classicalb;
 
+import com.github.krukow.clj_lang.PersistentHashMap
+
+import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.BEvent
-import de.prob.model.representation.Set
 import de.prob.model.representation.Constant
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
+import de.prob.model.representation.Set
 import de.prob.model.representation.Variable
 
 public class ClassicalBMachine extends Machine {
 
-	def ModelElementList<Parameter> parameters = new ModelElementList<Parameter>()
-	def ModelElementList<Set> sets = new ModelElementList<Set>()
-	def ModelElementList<Constraint> constraints = new ModelElementList<Constraint>()
-	def ModelElementList<ClassicalBConstant> constants = new ModelElementList<Constant>()
-	def ModelElementList<Property> properties = new ModelElementList<Property>()
-	def ModelElementList<ClassicalBVariable> variables = new ModelElementList<ClassicalBVariable>()
-	def ModelElementList<ClassicalBInvariant> invariants = new ModelElementList<ClassicalBInvariant>()
-	def ModelElementList<Operation> operations = new ModelElementList<Operation>()
-	def ModelElementList<Assertion> assertions = new ModelElementList<Assertion>()
-
 	public ClassicalBMachine(final String name) {
-		super(name);
+		super(name, PersistentHashMap.emptyMap())
 	}
 
-	public void addParameters(final ModelElementList<Parameter> parameters) {
-		put(Parameter.class, parameters)
-		this.parameters = parameters
+	public ClassicalBMachine(final String name, children) {
+		super(name, children)
 	}
 
-	public void addSets(final ModelElementList<Set> sets) {
-		put(Set.class, sets)
-		this.sets = sets
+	def <T extends AbstractElement> ClassicalBMachine addTo(T element) {
+		def kids = children.get(T)
+		new ClassicalBMachine(name, children.assoc(T, kids.addElement(element)))
 	}
 
-	public void addConstraints(final ModelElementList<Constraint> constraints) {
-		put(Constraint.class, constraints)
-		this.constraints = constraints
+	def ClassicalBMachine set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+		new ClassicalBMachine(name, children.assoc(clazz, elements))
 	}
 
-	public void addConstants(final ModelElementList<ClassicalBConstant> constants) {
-		put(Constant.class, constants)
-		this.constants = constants
+	def ModelElementList<Parameter> getParameters() {
+		getChildrenOfType(Parameter)
 	}
 
-	public void addProperties(final ModelElementList<Property> properties) {
-		put(Property.class, properties)
-		this.properties = properties
+	def ModelElementList<Set> getSets() {
+		getChildrenOfType(Set.class)
 	}
 
-	public void addVariables(final ModelElementList<ClassicalBVariable> variables) {
-		put(Variable.class, variables)
-		this.variables = variables
+	def ModelElementList<Constraint> getConstraints() {
+		getChildrenOfType(Constraint.class)
 	}
 
-	public void addInvariants(final ModelElementList<ClassicalBInvariant> invariants) {
-		put(Invariant.class, invariants)
-		this.invariants = invariants
+	def ModelElementList<ClassicalBConstant> getConstants() {
+		getChildrenOfType(Constant.class)
 	}
 
-	public void addAssertions(final ModelElementList<Assertion> assertions) {
-		put(Assertion.class, assertions)
-		this.assertions = assertions
+	def ModelElementList<Property> getProperties() {
+		getChildrenOfType(Property.class)
 	}
 
-	public void addOperations(final ModelElementList<Operation> operations) {
-		put(BEvent.class, operations)
-		this.operations = operations
+	def ModelElementList<ClassicalBVariable> getVariables() {
+		getChildrenOfType(Variable.class)
 	}
 
-	public ModelElementList<Operation> getEvents() {
-		return operations
+	def ModelElementList<ClassicalBInvariant> getInvariants() {
+		getChildrenOfType(Invariant.class)
+	}
+
+	def ModelElementList<Assertion> getAssertions() {
+		getChildrenOfType(Assertion.class)
+	}
+
+	def ModelElementList<Operation> getOperations() {
+		getChildrenOfType(BEvent.class)
+	}
+
+	def ModelElementList<Operation> getEvents() {
+		getChildrenOfType(BEvent.class)
 	}
 
 	public Operation getOperation(String name) {
-		return operations[name]
-	}
-
-	public Operation getEvent(String name) {
-		return operations[name]
+		getOperations().getElement(name)
 	}
 }

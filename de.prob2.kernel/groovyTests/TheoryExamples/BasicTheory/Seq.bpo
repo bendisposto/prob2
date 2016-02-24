@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="A" org.eventb.core.type="ℙ(A)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="seqSize/Op-WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Operator Well-Definedness Preservation" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A)·s∈ℙ(ℤ × A)⇒(s∈seq(A)⇒finite(s))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#)"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scNewOperatorDefinition#C"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#)"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqSize\/Op-WD|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqHead/Op-WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Operator Well-Definedness Preservation" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A)·s∈ℙ(ℤ × A)⇒(s∈seq(A)∧s≠(emptySeq ⦂ ℙ(ℤ×A))⇒1∈dom(s)∧s∈ℤ ⇸ A)" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#+"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scNewOperatorDefinition#E"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#+"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqHead\/Op-WD|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqTail/Op-WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Operator Well-Definedness Preservation" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A)·s∈ℙ(ℤ × A)⇒(s∈seq(A)∧s≠(emptySeq ⦂ ℙ(ℤ×A))⇒(∀i⦂ℤ·finite(s)∧(i∈1 ‥ card(s) − 1⇒i+1∈dom(s)∧s∈ℤ ⇸ A)))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#,"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scNewOperatorDefinition#F"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#,"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqTail\/Op-WD|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqPrepend/Op-WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Operator Well-Definedness Preservation" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),e⦂A·s∈ℙ(ℤ × A)∧e∈A⇒(s∈seq(A)⇒(∀i⦂ℤ·s∈seq(A)∧(i∈2 ‥ seqSize(s)+1⇒i − 1∈dom(s)∧s∈ℤ ⇸ A)))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#-"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scNewOperatorDefinition#G"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#-"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqPrepend\/Op-WD|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqAppend/Op-WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Operator Well-Definedness Preservation" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),e⦂A·s∈ℙ(ℤ × A)∧e∈A⇒(s∈seq(A)⇒finite(s))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#."/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scNewOperatorDefinition#H"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.newOperatorDefinition#."/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqAppend\/Op-WD|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqsIsFinite/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A)·a⊆A∧s∈seq(a)⇒finite(s)" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#\/"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBlocl"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#\/"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqsIsFinite\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqsMonotone/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A),b⦂ℙ(A)·a⊆A∧s∈seq(a)∧a⊆b⇒s∈seq(b)" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#0"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBlocm"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#0"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqsMonotone\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqDomain/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A)·a⊆A∧s∈seq(a)⇒dom(s)=1 ‥ card(s)" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#6"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBlocn"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#6"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqDomain\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqDomain/WD-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-Definedness of Theorem" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A)·a⊆A∧s∈seq(a)⇒finite(s)" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#6"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBlocn"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#6"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqDomain\/WD-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="tailSeqIsSeq/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A)·a⊆A∧s∈seq(a)∧s≠(emptySeq ⦂ ℙ(ℤ×A))⇒seqTail(s)∈seq(a)" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#1"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBloco"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#1"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#tailSeqIsSeq\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="tailSeqIsSeq/WD-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-Definedness of Theorem" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A)·a⊆A∧s∈seq(a)∧s≠(emptySeq ⦂ ℙ(ℤ×A))⇒s∈seq(A)" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#1"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBloco"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#1"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#tailSeqIsSeq\/WD-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqPrependIsSeq/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A),e⦂A·a⊆A∧s∈seq(a)⇒seqPrepend(s,e)∈seq(a∪{e})" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#2"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBlocp"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#2"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqPrependIsSeq\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqPrependIsSeq/WD-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-Definedness of Theorem" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A)·a⊆A∧s∈seq(a)⇒s∈seq(A)" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#2"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBlocp"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#2"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqPrependIsSeq\/WD-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqAppendIsSeq/S-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Therorem Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A),e⦂A·a⊆A∧s∈seq(a)⇒seqAppend(s,e)∈seq(a∪{e})" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#3"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBlocq"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#3"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqAppendIsSeq\/S-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqAppendIsSeq/WD-THM" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-Definedness of Theorem" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀s⦂ℙ(ℤ×A),a⦂ℙ(A)·a⊆A∧s∈seq(a)⇒s∈seq(A)" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#3"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scTheorem#generatedBlocq"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.theorem#3"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqAppendIsSeq\/WD-THM|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="seqIsFiniteInf/S-INF" org.eventb.core.accurate="true" org.eventb.core.poDesc="Inference Rule Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀a⦂ℙ(A),s⦂ℙ(ℤ×A)·⊤⇒(s∈seq(a)⇒finite(s))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#("/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scProofRulesBlock#generatedBlocr|org.eventb.theory.core.scInferenceRule#y"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#("/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#seqIsFiniteInf\/S-INF|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="tailSeqIsSeqInf/S-INF" org.eventb.core.accurate="true" org.eventb.core.poDesc="Inference Rule Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀a⦂ℙ(A),s⦂ℙ(ℤ×A)·⊤⇒(s∈seq(a)∧s≠(emptySeq ⦂ ℙ(ℤ×A))⇒seqTail(s)∈seq(a))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#*"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scProofRulesBlock#generatedBlocr|org.eventb.theory.core.scInferenceRule#z"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#*"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#tailSeqIsSeqInf\/S-INF|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="inf3/S-INF" org.eventb.core.accurate="true" org.eventb.core.poDesc="Inference Rule Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀a⦂ℙ(A),s⦂ℙ(ℤ×A),x⦂A·⊤⇒(a⊆A∧s∈seq(a)∧x∈a⇒seqAppend(s,x)∈seq(a))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#+"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scProofRulesBlock#generatedBlocr|org.eventb.theory.core.scInferenceRule#{"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#+"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#inf3\/S-INF|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="inf4/S-INF" org.eventb.core.accurate="true" org.eventb.core.poDesc="Inference Rule Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀a⦂ℙ(A)·⊤⇒(a⊆A⇒(emptySeq ⦂ ℙ(ℤ×A))∈seq(a))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#-"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scProofRulesBlock#generatedBlocr|org.eventb.theory.core.scInferenceRule#\|"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#-"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#inf4\/S-INF|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="inf5/S-INF" org.eventb.core.accurate="true" org.eventb.core.poDesc="Inference Rule Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀a⦂ℙ(A),b⦂ℙ(A),s⦂ℙ(ℤ×A)·⊤⇒(s∈seq(a)∧a⊆b⇒s∈seq(b))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#."/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scProofRulesBlock#generatedBlocr|org.eventb.theory.core.scInferenceRule#}"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#."/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#inf5\/S-INF|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="inf6/S-INF" org.eventb.core.accurate="true" org.eventb.core.poDesc="Inference Rule Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀a⦂ℙ(A),s⦂ℙ(ℤ×A),x⦂A·⊤⇒(s∈seq(a)∧x∉ran(s)⇒s∈seq(a ∖ {x}))" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#0"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tcf|org.eventb.theory.core.scTheoryRoot#Seq|org.eventb.theory.core.scProofRulesBlock#generatedBlocr|org.eventb.theory.core.scInferenceRule#~"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/Seq.tuf|org.eventb.theory.core.theoryRoot#Seq|org.eventb.theory.core.proofRulesBlock#4|org.eventb.theory.core.inferenceRule#0"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/Seq.bpo|org.eventb.core.poFile#Seq|org.eventb.core.poSequent#inf6\/S-INF|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+</org.eventb.core.poFile>

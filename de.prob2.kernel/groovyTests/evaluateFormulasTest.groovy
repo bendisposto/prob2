@@ -1,6 +1,6 @@
 import de.prob.statespace.*
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch") as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 formula = "waiting \\/ ready" as ClassicalB
 assert !s.formulaRegistry.containsKey(formula)
@@ -33,6 +33,4 @@ after = b.getValues()
 assert after.containsKey(f2)
 assert after.get(f2).getValue() == "0"
 
-
-s.animator.cli.shutdown();
 "A registered formula is automatically evaluated in every state and can be found in the cache later"

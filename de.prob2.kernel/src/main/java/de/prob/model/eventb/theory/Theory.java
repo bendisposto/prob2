@@ -1,7 +1,12 @@
 package de.prob.model.eventb.theory;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
+import org.eventb.core.ast.extension.IFormulaExtension;
+
+import com.github.krukow.clj_lang.PersistentHashMap;
 import com.google.common.base.Objects;
 
 import de.prob.model.eventb.EventBAxiom;
@@ -12,85 +17,66 @@ import de.prob.tmparser.OperatorMapping;
 public class Theory extends AbstractElement {
 
 	private final String name;
-	private ModelElementList<DataType> dataTypes = new ModelElementList<DataType>();
-	private ModelElementList<Theory> imported = new ModelElementList<Theory>();
-	private ModelElementList<Operator> operators = new ModelElementList<Operator>();
-	private ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
-	private ModelElementList<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
-	private ModelElementList<Type> typeParameters = new ModelElementList<Type>();
 	private final String parentDirectory;
-	private ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionBlocks;
 	private final Collection<OperatorMapping> proBMappings;
+	private Set<IFormulaExtension> typeEnvironment;
 
 	public Theory(final String name, final String parentDirectory,
 			final Collection<OperatorMapping> mappings) {
+		this(
+				name,
+				parentDirectory,
+				mappings,
+				Collections.<IFormulaExtension> emptySet(),
+				PersistentHashMap
+						.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
+	}
+
+	private Theory(
+			final String name,
+			final String parentDirectory,
+			final Collection<OperatorMapping> proBMappings,
+			Set<IFormulaExtension> typeEnvironment,
+			PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children) {
+		super(children);
 		this.name = name;
 		this.parentDirectory = parentDirectory;
-		proBMappings = mappings;
+		this.proBMappings = proBMappings;
+		this.typeEnvironment = typeEnvironment;
 	}
 
-	public void addOperators(final ModelElementList<Operator> operators) {
-		put(Operator.class, operators);
-		this.operators = operators;
-	}
-
-	public void addAxiomaticDefintionsBlocks(
-			final ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionBlocks) {
-		put(AxiomaticDefinitionBlock.class, axiomaticDefinitionBlocks);
-		this.axiomaticDefinitionBlocks = axiomaticDefinitionBlocks;
-	}
-
-	public void addDataTypes(final ModelElementList<DataType> dataTypes) {
-		put(DataType.class, dataTypes);
-		this.dataTypes = dataTypes;
-	}
-
-	public void addTheorems(final ModelElementList<EventBAxiom> theorems) {
-		put(EventBAxiom.class, theorems);
-		this.theorems = theorems;
-	}
-
-	public void addProofRules(final ModelElementList<ProofRulesBlock> proofRules) {
-		put(ProofRulesBlock.class, proofRules);
-		this.proofRules = proofRules;
-	}
-
-	public void addTypeParameters(final ModelElementList<Type> parameters) {
-		put(Type.class, parameters);
-		typeParameters = parameters;
-	}
-
-	public void addImported(final ModelElementList<Theory> theories) {
-		put(Theory.class, theories);
-		imported = theories;
+	public Theory set(Class<? extends AbstractElement> clazz,
+			ModelElementList<? extends AbstractElement> elements) {
+		return new Theory(name, parentDirectory, proBMappings, typeEnvironment,
+				assoc(clazz, elements));
 	}
 
 	public ModelElementList<DataType> getDataTypes() {
-		return dataTypes;
+		return getChildrenOfType(DataType.class);
 	}
 
 	public ModelElementList<Theory> getImported() {
-		return imported;
+		return getChildrenOfType(Theory.class);
 	}
 
 	public ModelElementList<Operator> getOperators() {
-		return operators;
+		return getChildrenOfType(Operator.class);
 	}
 
 	public ModelElementList<AxiomaticDefinitionBlock> getAxiomaticDefinitionBlocks() {
-		return axiomaticDefinitionBlocks;
+		return getChildrenOfType(AxiomaticDefinitionBlock.class);
 	}
 
 	public ModelElementList<ProofRulesBlock> getProofRules() {
-		return proofRules;
+		return getChildrenOfType(ProofRulesBlock.class);
 	}
 
 	public ModelElementList<EventBAxiom> getTheorems() {
-		return theorems;
+		return getChildrenOfType(EventBAxiom.class);
 	}
 
 	public ModelElementList<Type> getTypeParameters() {
-		return typeParameters;
+		return getChildrenOfType(Type.class);
 	}
 
 	public String getName() {
@@ -129,5 +115,14 @@ public class Theory extends AbstractElement {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(parentDirectory, name);
+	}
+
+	public Theory setTypeEnvironment(Set<IFormulaExtension> typeEnvironment) {
+		return new Theory(name, parentDirectory, proBMappings, typeEnvironment,
+				children);
+	}
+
+	public Set<IFormulaExtension> getTypeEnvironment() {
+		return typeEnvironment;
 	}
 }

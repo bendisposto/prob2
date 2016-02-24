@@ -5,7 +5,7 @@ import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
 mm = new ModelModifier()
-mm.make {
+mm = mm.make {
 	context(name: "levels") {
 		theorem always_true: "1 < 5"
 		constants "TOP", "BOTTOM"
@@ -15,11 +15,11 @@ mm.make {
 	
 	machine(name: "lift0", sees: ["levels"]) {
 		
-		var_block name: "level", 
+		var name: "level", 
 		          invariant: [inv_level: "level : BOTTOM..TOP"],
 				  init: [act_level: "level := BOTTOM"]
 				  
-		var_block name: "door_open",
+		var name: "door_open",
 				  invariant: "door_open : BOOL",
 				  init: "door_open := FALSE"
 				  
@@ -55,12 +55,12 @@ mm.make {
 		axiom this_is_true: "1 = 1"
 	}
 	
-	context(name: "door", extends: ["IDoNothing"]) {
+	context(name: "door", extends: "IDoNothing") {
 		enumerated_set name: "door_state",
 		               constants: ["open", "closed"]
 	}
 	
-	machine(name: "lift1", refines: ["lift0"], sees: ["door","levels"]) {
+	machine(name: "lift1", refines: "lift0", sees: ["door","levels"]) {
 		variables "door", "level"
 		invariants "door : door_state",
 				   "level : BOTTOM..TOP"
@@ -96,32 +96,32 @@ mm.make {
 	}
 }
 
-assert mm.temp.levels.axioms.always_true.isTheorem()
+model = mm.getModel()
+assert model.levels.axioms.always_true.isTheorem()
 
-lift0 = mm.temp.lift0
+lift0 = model.lift0
 assert lift0 != null
 assert lift0.variables.level != null
-assert lift0.invariants.collect { it.getName() } == ["inv_level","i0","always_true","also_always_true","i1"]
+assert lift0.invariants.collect { it.getName() } == ["inv_level","typing_door_open","always_true","also_always_true","inv0"]
 assert lift0.invariants.inv_level.getPredicate().getCode() == "level : BOTTOM..TOP"
-assert lift0.invariants.i1.getPredicate().getCode() == "level > 0"
+assert lift0.invariants.inv0.getPredicate().getCode() == "level > 0"
+assert lift0.invariants.typing_door_open.getPredicate().getCode() == "door_open : BOOL"
 assert lift0.invariants.always_true.isTheorem()
 assert lift0.invariants.also_always_true.isTheorem()
 init = lift0.events.INITIALISATION
-assert init.actions.collect { it.getName() } == ["act_level", "ac0"]
+assert init.actions.collect { it.getName() } == ["act_level", "init_door_open"]
 init.actions.act_level.getCode().getCode() == "level := 1"
-init.actions.ac0.getCode().getCode() == "door_open := FALSE"
+init.actions.init_door_open.getCode().getCode() == "door_open := FALSE"
 assert lift0.events.down.guards.always_true.isTheorem()
 
-assert mm.temp.door.Extends[0].getName() == "IDoNothing"
-
-m = mm.getModifiedModel("lift1")
+assert model.door.getExtends()[0].getName() == "IDoNothing"
 
 //mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "MyLift", dir)
 //d.deleteDir()
 
-s = m as StateSpace
-t = m as Trace
+s = model.load(model.lift1)
+t = s as Trace
 
 t = t.$setup_constants()
 t = t.$initialise_machine()
@@ -136,8 +136,5 @@ t = t.open_door()
 assert !t.canExecuteEvent("down",[])
 assert !t.canExecuteEvent("up",[])
 assert t.evalCurrent("door").value == "open"
-
-s.animator.cli.shutdown();
-
 
 "it is possible to construct a model"

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.theory.core.theoryRoot org.eventb.core.comment="A  theory of inductive natural numbers.&#10;&#10;@author Michael Butler&#10;@June 2014" org.eventb.core.configuration="org.eventb.theory.core.thy">
+<org.eventb.theory.core.datatypeDefinition name="'" org.eventb.core.identifier="PEANO">
+<org.eventb.theory.core.datatypeConstructor name="'" org.eventb.core.identifier="zero"/>
+<org.eventb.theory.core.datatypeConstructor name="(" org.eventb.core.identifier="next">
+<org.eventb.theory.core.constructorArgument name="'" org.eventb.core.identifier="prev" org.eventb.theory.core.type="PEANO"/>
+</org.eventb.theory.core.datatypeConstructor>
+</org.eventb.theory.core.datatypeDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="(" org.eventb.core.label="even" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="PEANO" org.eventb.core.identifier="n"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="zero" org.eventb.theory.core.formula="⊤"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.theory.core.formula="¬ even(m)"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name=")" org.eventb.core.label="odd" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="PEANO" org.eventb.core.identifier="n"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="zero" org.eventb.theory.core.formula="⊥"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.theory.core.formula="¬ odd(m)"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.theorem name="*" org.eventb.core.label="thm1" org.eventb.core.predicate="∀p·p∈PEANO ⇒ (odd(p) ⇔ ¬even(p))"/>
+<org.eventb.theory.core.theorem name="." org.eventb.core.label="thm3" org.eventb.core.predicate="∀p·p∈PEANO ⇒ mk_nat(p)∈ℕ"/>
+<org.eventb.theory.core.theorem name="-" org.eventb.core.label="thm2" org.eventb.core.predicate="∀p·p∈PEANO ⇒ mk_PEANO(mk_nat(p)) = p"/>
+<org.eventb.theory.core.axiomaticDefinitionsBlock name="+" org.eventb.core.label="xdb1">
+<org.eventb.theory.core.axiomaticOperatorDefinition name="'" org.eventb.core.label="mk_PEANO" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="PEANO">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="ℤ" org.eventb.core.identifier="i"/>
+<org.eventb.theory.core.operatorWDcondition name="(" org.eventb.core.predicate="i∈ℕ"/>
+</org.eventb.theory.core.axiomaticOperatorDefinition>
+<org.eventb.theory.core.axiomaticDefinitionAxiom name="(" org.eventb.core.label="axm1" org.eventb.core.predicate="mk_PEANO(0)=zero"/>
+<org.eventb.theory.core.axiomaticDefinitionAxiom name=")" org.eventb.core.label="axm2" org.eventb.core.predicate="∀n·n∈ℕ ⇒ mk_PEANO(1+n) = next(mk_PEANO(n))"/>
+<org.eventb.theory.core.axiomaticDefinitionAxiom name="*" org.eventb.core.label="axm3" org.eventb.core.predicate="∀n·n∈ℕ ⇒ mk_nat(mk_PEANO(n)) = n"/>
+</org.eventb.theory.core.axiomaticDefinitionsBlock>
+<org.eventb.theory.core.newOperatorDefinition name="," org.eventb.core.label="mk_nat" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="PEANO" org.eventb.core.identifier="n"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="zero" org.eventb.theory.core.formula="0"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.theory.core.formula="1+mk_nat(m)"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+</org.eventb.theory.core.newOperatorDefinition>
+</org.eventb.theory.core.theoryRoot>

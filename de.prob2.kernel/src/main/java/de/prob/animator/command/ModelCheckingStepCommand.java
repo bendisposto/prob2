@@ -23,6 +23,8 @@ import de.prob.prolog.term.PrologTerm;
 
 public class ModelCheckingStepCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "do_modelchecking";
+
 	/**
 	 * <p>
 	 * The prolog core returns a compound term containing the current stats
@@ -150,7 +152,7 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("do_modelchecking").printNumber(time).openList();
+		pto.openTerm(PROLOG_COMMAND_NAME).printNumber(time).openList();
 		for (ModelCheckingOptions.Options o : options.getPrologOptions()) {
 			pto.printAtom(o.name());
 		}

@@ -18,7 +18,7 @@ class BasicStateSpaceTest extends Specification {
 	def setupSpec() {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
-		s = factory.load(path) as StateSpace
+		s = factory.extract(path).load([:])
 	}
 
 	def "it is possible to cast a StateSpace to an AbstractModel"() {

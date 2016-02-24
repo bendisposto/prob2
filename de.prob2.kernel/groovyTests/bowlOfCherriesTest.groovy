@@ -2,13 +2,12 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 import de.prob.model.eventb.translate.*
 
-mm = new ModelModifier()
-mm.make {
+mm = new ModelModifier().make {
 	
 	machine(name: "bowl1") {
-		var_block name: "size",
+		var name: "size",
 		          invariant: "size : NAT",
-				  init: "size := 0"
+		          init: "size := 0"
 		invariant "size <= 50"
 		
 		event(name: "put") {
@@ -31,17 +30,17 @@ mm.make {
 		               constants: (1..50).collect { it < 10 ? "c0$it" : "c$it" }
 	}
 	
-	machine(name: "bowl2", sees: ["Cherries"], refines: ["bowl1"]) {
-		var_block name: "bowl",
+	machine(name: "bowl2", sees: ["Cherries"], refines: "bowl1") {
+		var name: "bowl",
 		          invariant: "bowl <: cherries",
-				  init: "bowl := {}"
+			  init: "bowl := {}"
 		invariant gluing: "size = card(bowl)"
 
 		refine(name: "put") {
 			parameter "handfull"
 			guards    "handfull <: cherries",
 			          "card(handfull) : 1..5",
-					 "handfull /\\ bowl = {}"
+				  "handfull /\\ bowl = {}"
 			witness   for: "x", with: "card(handfull) = x"
 			action    "bowl := bowl \\/ handfull"
 		}
@@ -49,16 +48,16 @@ mm.make {
 		refine(name: "take") {
 			parameter "handfull"
 			guards    "handfull <: bowl",
-					  "card(handfull) : 1..5"
+				  "card(handfull) : 1..5"
 			witness   "x", "card(handfull) = x"
 			action    "bowl := bowl \\ handfull"
 		}
 	}
 }
 
-m = mm.getModifiedModel("bowl2")
-s = m as StateSpace
-t = m as Trace
+m = mm.getModel()
+s = m.load(m.bowl2)
+t = s as Trace
 
 t = t.randomAnimation(10)
 
@@ -66,5 +65,4 @@ t = t.randomAnimation(10)
 //d = mtx.writeToRodin(m, "BowlOfCherries", dir)
 //d.deleteDir()
 
-s.animator.cli.shutdown();
 "generate and animate a model"

@@ -3,11 +3,10 @@ package de.prob.model.eventb.translate;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.parboiled.common.Tuple2;
-
 import de.be4.classicalb.core.parser.analysis.prolog.PositionPrinter;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.util.Tuple2;
 
 public class RodinPosPrinter implements PositionPrinter {
 
@@ -30,8 +29,8 @@ public class RodinPosPrinter implements PositionPrinter {
 			pout.printAtom("none");
 		} else {
 			pout.openTerm("rodinpos");
-			pout.printAtom(tuple.a);
-			pout.printAtom(tuple.b);
+			pout.printAtom(tuple.getFirst());
+			pout.printAtom(tuple.getSecond());
 			pout.emptyList();
 			pout.closeTerm();
 		}

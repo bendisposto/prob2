@@ -30,6 +30,8 @@ import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.command.FindTraceBetweenNodesCommand;
 import de.prob.animator.command.FindValidStateCommand;
+import de.prob.animator.command.FormulaTypecheckCommand;
+import de.prob.animator.command.GetCurrentPreferencesCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;
@@ -40,31 +42,33 @@ import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.TypeCheckResult;
 import de.prob.annotations.MaxCacheSize;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.CSPModel;
 
 /**
- * 
+ *
  * The StateSpace is where the animation of a given model is carried out. The
  * methods in the StateSpace allow the user to:
- * 
+ *
  * 1) Find new states and operations
- * 
+ *
  * 2) Inspect different states within the StateSpace
- * 
+ *
  * 3) Evaluate custom predicates and expressions
- * 
+ *
  * 4) Register listeners that are notified of new states and operations
- * 
+ *
  * The implementation of the StateSpace is as a {@link StateSpace} with
  * {@link State}s as vertices and {@link Transition}s as edges. Therefore, some
  * basic graph functionalities are provided.
- * 
+ *
  * @author joy
- * 
+ *
  */
 public class StateSpace implements IAnimator {
 
@@ -79,15 +83,15 @@ public class StateSpace implements IAnimator {
 	/**
 	 * An implementation of a {@link CacheLoader} that tries to load a state
 	 * with the specified id into the {@link StateSpace#states} cache.
-	 * 
+	 *
 	 * ProB prolog is queried to see if the specified state exists in the state
 	 * space on the prolog side, and if so, the state is loaded into the states
 	 * cache.
-	 * 
+	 *
 	 * Otherwise, an {@link IllegalArgumentException} is thrown.
-	 * 
+	 *
 	 * @author joy
-	 * 
+	 *
 	 */
 	private class StateCacheLoader extends CacheLoader<String, State> {
 
@@ -111,6 +115,7 @@ public class StateSpace implements IAnimator {
 	}
 
 	private AbstractModel model;
+	private AbstractElement mainComponent;
 
 	@Inject
 	public StateSpace(final Provider<IAnimator> panimator,
@@ -122,7 +127,7 @@ public class StateSpace implements IAnimator {
 
 	/**
 	 * Retrieve the root state from the state space.
-	 * 
+	 *
 	 * @return the root state from the state space (it will be added to the
 	 *         states cache if it doesn't yet exist)
 	 */
@@ -132,7 +137,7 @@ public class StateSpace implements IAnimator {
 
 	/**
 	 * Retrieve a state from the state space that has the specified state id.
-	 * 
+	 *
 	 * @param id
 	 *            of the state to be retrieved
 	 * @return the state object associated with the given id. This is added to
@@ -151,7 +156,7 @@ public class StateSpace implements IAnimator {
 	/**
 	 * Adds a state with the specified id to the StateSpace (if it isn't already
 	 * in the state space), and returns the state to the user.
-	 * 
+	 *
 	 * @param id
 	 *            of the state to be retrieved
 	 * @return a state object associated with the given id.
@@ -173,7 +178,7 @@ public class StateSpace implements IAnimator {
 	 * allow the user to access a given state via integer id instead of string
 	 * id. The integer value -1 maps to the root state (the only state id that
 	 * is not a number)
-	 * 
+	 *
 	 * @param id
 	 *            integer value of the state id to be retrieved
 	 * @return a state associated with the id if one exists.
@@ -191,7 +196,7 @@ public class StateSpace implements IAnimator {
 	 * that in the console users can type variableOfTypeStateSpace[stateId] and
 	 * receive the corresponding StateId back. An IllegalArgumentException is
 	 * thrown if the specified id is unknown.
-	 * 
+	 *
 	 * @throws IllegalArgumentException
 	 * @param stateId
 	 *            of the state thate is to be found.
@@ -205,7 +210,7 @@ public class StateSpace implements IAnimator {
 	 * Whenever a {@link StateSpace} instance is created, it is assigned a
 	 * unique identifier to help external parties differentiate between two
 	 * instances. This getter method returns this id.
-	 * 
+	 *
 	 * @return the unique {@link String} id associated with this
 	 *         {@link StateSpace} instance
 	 */
@@ -218,7 +223,7 @@ public class StateSpace implements IAnimator {
 	 * <p>
 	 * Find states for which a given predicate is true.
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * <b>NOTE:</b> The returned list of states will also include states which
 	 * are not initialised. The semantics of the method could therefore be
@@ -227,8 +232,8 @@ public class StateSpace implements IAnimator {
 	 * <p>
 	 * <code>{states matching predicate} &cup; {noninitialised states}</code>
 	 * </p>
-	 * 
-	 * 
+	 *
+	 *
 	 * @param predicate
 	 *            for which states will be found
 	 * @return a {@link List} of any states found
@@ -248,7 +253,7 @@ public class StateSpace implements IAnimator {
 	 * Takes the name of an operation and a predicate and finds Operations that
 	 * satisfy the name and predicate at the given stateId. New Operations are
 	 * added to the graph. This is only valid for ClassicalB predicates.
-	 * 
+	 *
 	 * @param stateId
 	 *            {@link State} from which the operation should be found
 	 * @param name
@@ -264,7 +269,7 @@ public class StateSpace implements IAnimator {
 	 */
 	public List<Transition> transitionFromPredicate(final State stateId,
 			final String name, final String predicate, final int nrOfSolutions)
-			throws IllegalArgumentException {
+					throws IllegalArgumentException {
 		final IEvalElement pred = model.parseFormula(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				this, stateId.getId(), name, pred, nrOfSolutions);
@@ -280,7 +285,7 @@ public class StateSpace implements IAnimator {
 	/**
 	 * Tests to see if a combination of an operation name and a predicate is
 	 * valid from a given state.
-	 * 
+	 *
 	 * @param stateId
 	 *            {@link State} id for state to test
 	 * @param name
@@ -300,9 +305,24 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
+	 * Attempts to type check a specified formula in the scope of the model
+	 * loaded in this state space.
+	 *
+	 * @param formula
+	 *            to be type checked
+	 * @return a {@link TypeCheckResult} representing the result of the parser
+	 *         (containing the type of the formula and any errors that occurred)
+	 */
+	public TypeCheckResult typeCheck(final IEvalElement formula) {
+		FormulaTypecheckCommand cmd = new FormulaTypecheckCommand(formula);
+		execute(cmd);
+		return cmd.getResult();
+	}
+
+	/**
 	 * Evaluates a list of formulas in a given state. Uses the implementation in
 	 * {@link State#eval(List)}
-	 * 
+	 *
 	 * @param state
 	 *            for which the list of formulas should be evaluated
 	 * @param formulas
@@ -318,7 +338,7 @@ public class StateSpace implements IAnimator {
 	 * Calculates the registered formulas at the given state and returns the
 	 * cached values. Calls the {@link State#explore()} method, and uses the
 	 * {@link State#getValues()} method.
-	 * 
+	 *
 	 * @param state
 	 *            for which the values are to be retrieved
 	 * @return map from {@link IEvalElement} object to
@@ -332,7 +352,7 @@ public class StateSpace implements IAnimator {
 	/**
 	 * This checks if the {@link State#isInitialised()} property is set. If so,
 	 * it is safe to evaluate formulas for the given state.
-	 * 
+	 *
 	 * @param state
 	 *            which is to be tested
 	 * @return whether or not formulas should be evaluated in this state
@@ -346,7 +366,7 @@ public class StateSpace implements IAnimator {
 	 * specified formulas. ProB will then evaluate the formulas for every state
 	 * (after which the values can be retrieved from the
 	 * {@link State#getValues()} method).
-	 * 
+	 *
 	 * @param subscriber
 	 *            who is interested in the given formulas
 	 * @param formulas
@@ -392,7 +412,7 @@ public class StateSpace implements IAnimator {
 	 * B-Type formulas ({@code EventB} or {@code ClassicalB}). {@code CSP}
 	 * formulas will not be subscribed, because CSP evaluation is not state
 	 * based.
-	 * 
+	 *
 	 * @param subscriber
 	 *            who is interested in the formula
 	 * @param formulaOfInterest
@@ -437,7 +457,7 @@ public class StateSpace implements IAnimator {
 	/**
 	 * If a subscribed class is no longer interested in the value of a
 	 * particular formula, then they can unsubscribe to that formula
-	 * 
+	 *
 	 * @param subscriber
 	 *            who is no longer interested in the formula
 	 * @param formula
@@ -473,6 +493,15 @@ public class StateSpace implements IAnimator {
 		}
 		subscribedFormulas.removeAll(toRemove);
 		return subscribedFormulas;
+	}
+
+	/**
+	 * @return a {@link Map} of the preferences in the current animation
+	 */
+	public Map<String, String> getCurrentPreferences() {
+		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand();
+		execute(cmd);
+		return cmd.getPreferences();
 	}
 
 	// ANIMATOR
@@ -566,7 +595,7 @@ public class StateSpace implements IAnimator {
 	 * contacts the ProB kernel via the {@link GetShortestTraceCommand} and then
 	 * uses the generated of operations to generate a Trace via the
 	 * {@link StateSpace#getTrace(ITraceDescription)} method.
-	 * 
+	 *
 	 * @param stateId
 	 *            state id for which the trace through the state space should be
 	 *            found.
@@ -581,7 +610,7 @@ public class StateSpace implements IAnimator {
 
 	/**
 	 * Calculates a trace between the specified states.
-	 * 
+	 *
 	 * @param sourceId
 	 *            of source node
 	 * @param destId
@@ -604,7 +633,7 @@ public class StateSpace implements IAnimator {
 	 * {@link IllegalArgumentException} if executing the operations in the
 	 * specified order is not possible. It assumes that the Trace begins from
 	 * the root state.
-	 * 
+	 *
 	 * @param transitionIds
 	 *            List of transition ids in the order that they should be
 	 *            executed.
@@ -622,7 +651,7 @@ public class StateSpace implements IAnimator {
 	 * This allows developers to programmatically descripe a Trace that should
 	 * be created. {@link ITraceDescription#getTrace(StateSpace)} will then be
 	 * called in order to generate the correct Trace.
-	 * 
+	 *
 	 * @param description
 	 *            of the trace to be created
 	 * @return Trace that is generated from the Trace Description
@@ -635,7 +664,7 @@ public class StateSpace implements IAnimator {
 	 * Takes an {@link IEvalElement} containing a predicate and returns a
 	 * {@link Trace} containing only a magic operation that leads to valid state
 	 * where the predicate holds.
-	 * 
+	 *
 	 * @param predicate
 	 *            predicate that should hold in the valid state
 	 * @return {@link Trace} containing a magic operation leading to the state.
@@ -651,21 +680,27 @@ public class StateSpace implements IAnimator {
 	 * beginning of an animation. The currently supported model types are
 	 * {@link ClassicalBModel}, {@link EventBModel}, or {@link CSPModel}. A
 	 * StateSpace object always corresponds with exactly one model.
-	 * 
+	 *
 	 * @param model
 	 */
-	public void setModel(final AbstractModel model) {
+	public void setModel(final AbstractModel model,
+			final AbstractElement mainComponent) {
 		this.model = model;
+		this.mainComponent = mainComponent;
 	}
 
 	/**
 	 * Returns the specified model for the given StateSpace
-	 * 
+	 *
 	 * @return the {@link AbstractModel} that represents the model for the given
 	 *         StateSpace instance
 	 */
 	public AbstractModel getModel() {
 		return model;
+	}
+
+	public AbstractElement getMainComponent() {
+		return mainComponent;
 	}
 
 	/**
@@ -674,7 +709,7 @@ public class StateSpace implements IAnimator {
 	 * StateSpace to an {@link AbstractModel}, {@link EventBModel},
 	 * {@link ClassicalBModel}, or {@link CSPModel}. If they specify the class
 	 * {@link Trace}, a new Trace object will be created and returned.
-	 * 
+	 *
 	 * @param clazz
 	 * @return the Model or Trace corresponding to the StateSpace instance
 	 */
@@ -697,7 +732,7 @@ public class StateSpace implements IAnimator {
 	 * needs to be retrieved (i.e. parameters, return values, etc.) if the
 	 * transitions have not yet been evaluated ({@link Transition#isEvaluated()}
 	 * ).
-	 * 
+	 *
 	 * @param transitions
 	 *            to be evaluated
 	 * @return a set containing all of the evaluated transitions
@@ -715,7 +750,7 @@ public class StateSpace implements IAnimator {
 	 * evaluated). Internally calls {@link #canBeEvaluated(State)}. If the
 	 * formulas are of interest to a class (i.e. the an object has subscribed to
 	 * the formula) the formula is cached.
-	 * 
+	 *
 	 * @param states
 	 *            for which the formula is to be evaluated
 	 * @param formulas

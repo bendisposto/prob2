@@ -1,8 +1,7 @@
 import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 t = new Trace(s)
 
 cmd = new GetShortestTraceCommand(s, "7")
@@ -39,5 +38,4 @@ ops = t.getTransitionList(true)
 assert opList.size() == 1
 assert opList[0].getName() == "find_valid_state"
 
-s.animator.cli.shutdown();
 "Finding trace through current state space works"

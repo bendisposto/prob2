@@ -2,9 +2,8 @@ import de.prob.animator.domainobjects.*
 import de.prob.exception.ProBError;
 import de.prob.statespace.*
 
-m = api.b_load(dir+File.separator+"machines"+File.separator+"Simple.mch")
-s = m as StateSpace
-t = m as Trace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"Simple.mch")
+t = s as Trace
 t = t.$initialise_machine()
 t = t.read("xx = 1")
 cond = new LTL("F Y [end]")
@@ -30,13 +29,11 @@ assert !cmd.isSuccess()
 assert cmd.hasTypeError()
 s.animator.cli.shutdown()
 
-m = api.b_load(dir+File.separator+"machines"+File.separator+"SimpleDeadlock.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"SimpleDeadlock.mch")
 cond = new LTL("{TRUE = FALSE}")
 cmd = new ExecuteUntilCommand(s, s.getRoot(), cond)
 s.execute(cmd)
 assert !cmd.isSuccess()
 assert cmd.isDeadlocked()
 
-s.animator.cli.shutdown()
 "for simple scheduler, it is possible to randomly animate until a condition is met. The result trace is as expected."

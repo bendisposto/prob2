@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="T" org.eventb.core.type="ℙ(T)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="rew1/S/rhs1" org.eventb.core.accurate="true" org.eventb.core.poDesc="Rule Soundness" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/BasicTheory/BinaryTree.bpo|org.eventb.core.poFile#BinaryTree|org.eventb.core.poPredicateSet#ABSHYP"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="∀t⦂Tree(T)·mirror(mirror(t))=t" org.eventb.core.source="/BasicTheory/BinaryTree.tuf|org.eventb.theory.core.theoryRoot#BinaryTree|org.eventb.theory.core.proofRulesBlock#,|org.eventb.theory.core.rewriteRule#("/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/BinaryTree.tcf|org.eventb.theory.core.scTheoryRoot#BinaryTree|org.eventb.theory.core.scProofRulesBlock#generatedBlocl|org.eventb.theory.core.scRewriteRule#u"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/BasicTheory/BinaryTree.tuf|org.eventb.theory.core.theoryRoot#BinaryTree|org.eventb.theory.core.proofRulesBlock#,|org.eventb.theory.core.rewriteRule#("/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/BasicTheory/BinaryTree.bpo|org.eventb.core.poFile#BinaryTree|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/BasicTheory/BinaryTree.bpo|org.eventb.core.poFile#BinaryTree|org.eventb.core.poSequent#rew1\/S\/rhs1|org.eventb.core.poPredicateSet#SEQHYP"/>
+</org.eventb.core.poSequent>
+</org.eventb.core.poFile>

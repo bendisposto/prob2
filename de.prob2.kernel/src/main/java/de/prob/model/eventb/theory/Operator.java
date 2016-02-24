@@ -33,7 +33,6 @@ import de.prob.unicode.UnicodeTranslator;
 
 public class Operator extends AbstractElement {
 
-	private final EventB syntax;
 	private final boolean associative;
 	private final IOperatorProperties.FormulaType formulaType;
 	private final IOperatorProperties.Notation notation;
@@ -41,35 +40,60 @@ public class Operator extends AbstractElement {
 	private IOperatorDefinition definition;
 	private final String theoryName;
 	private IFormulaExtension extension;
-	private ModelElementList<OperatorArgument> operatorArguments;
+	private final ModelElementList<OperatorArgument> operatorArguments;
 	private final String groupId;
 	private final EventB wd;
 	private final EventB type;
 	private final EventB predicate;
+	private EventB syntax;
 
 	public Operator(final String theoryName, final String operator,
 			final boolean associative, final boolean commutative,
 			final boolean formulaType, final String notationType,
 			final String groupId, final String type, final String wd,
 			final String predicate, final Set<IFormulaExtension> typeEnv) {
-		this.theoryName = theoryName;
-		this.groupId = groupId;
-		syntax = new EventB(operator, typeEnv);
-		this.associative = associative;
-		this.commutative = commutative;
-		this.formulaType = formulaType ? IOperatorProperties.FormulaType.EXPRESSION
-				: IOperatorProperties.FormulaType.PREDICATE;
-		notation = notationType.equals("PREFIX") ? IOperatorProperties.Notation.PREFIX
-				: (notationType.equals("INFIX") ? IOperatorProperties.Notation.INFIX
-						: IOperatorProperties.Notation.POSTFIX);
-		this.type = type == null ? null : new EventB(type, typeEnv);
-		this.wd = new EventB(wd, typeEnv);
-		this.predicate = new EventB(predicate, typeEnv);
+		this(
+				theoryName,
+				new EventB(operator, typeEnv),
+				associative,
+				commutative,
+				formulaType ? IOperatorProperties.FormulaType.EXPRESSION
+						: IOperatorProperties.FormulaType.PREDICATE,
+				notationType.equals("PREFIX") ? IOperatorProperties.Notation.PREFIX
+						: (notationType.equals("INFIX") ? IOperatorProperties.Notation.INFIX
+								: IOperatorProperties.Notation.POSTFIX),
+				groupId, type == null ? null : new EventB(type, typeEnv),
+				new EventB(wd, typeEnv), new EventB(predicate, typeEnv), null,
+				null);
 	}
 
-	public void addArguments(final ModelElementList<OperatorArgument> arguments) {
-		put(OperatorArgument.class, arguments);
-		operatorArguments = arguments;
+	public Operator(final String theoryName, final EventB syntax,
+			final boolean associative, final boolean commutative,
+			final IOperatorProperties.FormulaType formulaType,
+			final IOperatorProperties.Notation notationType,
+			final String groupId, final EventB type, final EventB wd,
+			final EventB predicate,
+			ModelElementList<OperatorArgument> operatorArguments,
+			IOperatorDefinition definition) {
+		this.theoryName = theoryName;
+		this.groupId = groupId;
+		this.syntax = syntax;
+		this.associative = associative;
+		this.commutative = commutative;
+		this.formulaType = formulaType;
+		this.notation = notationType;
+		this.type = type;
+		this.wd = wd;
+		this.predicate = predicate;
+		this.definition = definition;
+		this.operatorArguments = operatorArguments;
+	}
+
+	public Operator addArguments(
+			final ModelElementList<OperatorArgument> arguments) {
+		return new Operator(theoryName, syntax, associative, commutative,
+				formulaType, notation, groupId, type, wd, predicate, arguments,
+				definition);
 	}
 
 	public EventB getSyntax() {
@@ -101,8 +125,10 @@ public class Operator extends AbstractElement {
 	 *            of type {@link IOperatorDefinition}. For
 	 *            AxiomaticOperatorDefinitions this will never be set.
 	 */
-	public void setDefinition(final IOperatorDefinition definition) {
-		this.definition = definition;
+	public Operator setDefinition(final IOperatorDefinition definition) {
+		return new Operator(theoryName, syntax, associative, commutative,
+				formulaType, notation, groupId, type, wd, predicate,
+				operatorArguments, definition);
 	}
 
 	public List<OperatorArgument> getArguments() {
@@ -282,7 +308,7 @@ public class Operator extends AbstractElement {
 				final Expression[] childExprs, final Predicate[] childPreds) {
 			// This extension is intended to adapt the parser but not the
 			// typechecker
-			return false;
+			return true;
 		}
 
 		@Override

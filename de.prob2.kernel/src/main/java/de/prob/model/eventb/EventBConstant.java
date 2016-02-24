@@ -8,13 +8,20 @@ public class EventBConstant extends Constant {
 	private final String name;
 	private final boolean isAbstract;
 	private final String unit;
+	private final String comment;
 
 	public EventBConstant(final String name, final boolean isAbstract,
 			final String unit) {
+		this(name, isAbstract, unit, "");
+	}
+
+	public EventBConstant(String name, final boolean isAbstract,
+			final String unit, String comment) {
 		super(new EventB(name));
 		this.name = name;
 		this.isAbstract = isAbstract;
 		this.unit = unit;
+		this.comment = comment == null ? "" : comment;
 	}
 
 	public String getName() {
@@ -31,5 +38,9 @@ public class EventBConstant extends Constant {
 
 	public String getUnit() {
 		return unit;
+	}
+
+	public String getComment() {
+		return comment;
 	}
 }

@@ -2,8 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // Test for b models
-m = api.b_load(dir+File.separator +"machines"+File.separator+"MultipleExample.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator +"machines"+File.separator+"MultipleExample.mch")
 t = new Trace(s)
 t = t.anyEvent()
 
@@ -48,26 +47,22 @@ assert op.returnValues.size() == 3
 assert op.returnValues == ["3","{(7|->{4,7,9})}","8"]
 assert op.getRep() == "3,{(7|->{4,7,9})},8 <-- Crazy2(7,{4,7,9})" 
 
-s.animator.cli.shutdown();
-
 // For csp:
-m = api.csp_load(dir+"/machines/csp/Deterministic1.csp")
-t = m as Trace
-s = t as StateSpace
+s = api.csp_load(dir+"/machines/csp/Deterministic1.csp")
 
+t = s as Trace
 t = t.anyEvent("NonDeterm3")
-op = t.getCurrentTransition()
-assert op != null
-assert op.getRep() == "NonDeterm3"
-assert op.getParams() == []
-assert op.getReturnValues() == []
+op2 = t.getCurrentTransition()
+assert op2 != null
+assert op2.getRep() == "NonDeterm3"
+assert op2.getParams() == []
+assert op2.getReturnValues() == []
 
 t = t.addTransitionWith("a",["1"])
-op = t.getCurrentTransition()
-assert op != null
-assert op.getRep() == "a.1"
-assert op.getParams() == ["1"]
-assert op.getReturnValues() == []
+op3 = t.getCurrentTransition()
+assert op3 != null
+assert op3.getRep() == "a.1"
+assert op3.getParams() == ["1"]
+assert op3.getReturnValues() == []
 
-s.animator.cli.shutdown();
 "the ops are expanded as expected"

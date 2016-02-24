@@ -6,14 +6,23 @@ import de.prob.unicode.UnicodeTranslator;
 public class Set extends AbstractFormulaElement {
 
 	private final IEvalElement formula;
+	private final String comment;
 
 	public Set(final IEvalElement formula) {
-		this.formula = formula;
+		this(formula, "");
+	}
 
+	public Set(final IEvalElement formula, String comment) {
+		this.formula = formula;
+		this.comment = comment == null ? "" : comment;
 	}
 
 	public String getName() {
 		return formula.getCode();
+	}
+
+	public String getComment() {
+		return comment;
 	}
 
 	@Override

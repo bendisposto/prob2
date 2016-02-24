@@ -10,13 +10,23 @@ import de.prob.model.representation.AbstractFormulaElement;
 
 public class Variant extends AbstractFormulaElement {
 	private final IEvalElement expression;
+	private final String comment;
 
 	public Variant(final String code, final Set<IFormulaExtension> typeEnv) {
-		expression = new EventB(code, typeEnv);
+		this(new EventB(code, typeEnv), "");
+	}
+
+	public Variant(EventB expression, String comment) {
+		this.comment = comment == null ? "" : comment;
+		this.expression = expression;
 	}
 
 	public IEvalElement getExpression() {
 		return expression;
+	}
+
+	public String getComment() {
+		return comment;
 	}
 
 	@Override

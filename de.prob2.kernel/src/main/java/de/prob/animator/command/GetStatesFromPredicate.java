@@ -15,6 +15,7 @@ import de.prob.statespace.Transition;
 
 public class GetStatesFromPredicate extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "get_states_for_predicate";
 	private final IEvalElement formula;
 	private final String STATES = "States";
 	private final String ERRORS = "Errors";
@@ -30,7 +31,7 @@ public class GetStatesFromPredicate extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_states_for_predicate");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		formula.printProlog(pto);
 		pto.printVariable(STATES);
 		pto.printVariable(ERRORS);

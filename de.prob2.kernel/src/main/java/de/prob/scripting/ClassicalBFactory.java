@@ -1,13 +1,7 @@
 package de.prob.scripting;
 
-import groovy.lang.Closure;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,107 +10,75 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.CachingDefinitionFileProvider;
+import de.be4.classicalb.core.parser.IDefinitionFileProvider;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.animator.command.AbstractCommand;
-import de.prob.animator.command.ComposedCommand;
-import de.prob.animator.command.LoadBProjectCommand;
-import de.prob.animator.command.SetPreferenceCommand;
-import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
 
 /**
  * Creates new {@link ClassicalBModel} objects.
- * 
+ *
  * @author joy
- * 
+ *
  */
-public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
+public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 
 	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
+	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
-	public ClassicalBFactory(final Provider<ClassicalBModel> modelCreator,
-			final FileHandler fileHandler) {
-		super(modelCreator, fileHandler, LoadClosures.getB());
+	public ClassicalBFactory(final Provider<ClassicalBModel> modelCreator) {
+		this.modelCreator = modelCreator;
 	}
 
 	@Override
-	public ClassicalBModel load(final String modelPath,
-			final Map<String, String> prefs, final Closure<Object> subscriber)
+	public ExtractedModel<ClassicalBModel> extract(final String modelPath)
 			throws IOException, ModelTranslationError {
 		ClassicalBModel classicalBModel = modelCreator.get();
 
 		File f = new File(modelPath);
 		BParser bparser = new BParser();
 
-		try {
-			Start ast = parseFile(f, bparser);
-			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
-
-			classicalBModel.initialize(ast, rml, f, bparser);
-			startAnimation(classicalBModel, rml,
-					getPreferences(classicalBModel, prefs), f);
-			subscriber.call(classicalBModel);
-		} catch (BException e) {
-			throw new ModelTranslationError(e.getMessage(), e);
-		}
-		return classicalBModel;
+		Start ast = parseFile(f, bparser);
+		RecursiveMachineLoader rml = parseAllMachines(ast, f.getParent(), f,
+				bparser.getContentProvider(), bparser);
+		classicalBModel = classicalBModel.create(ast, rml, f, bparser);
+		return new ExtractedModel<ClassicalBModel>(classicalBModel,
+				classicalBModel.getMainMachine());
 	}
 
-	/**
-	 * This method is deprecated. Use
-	 * {@link ClassicalBFactory#load(String, Map, Closure)} instead.
-	 * 
-	 * @param f
-	 *            {@link File} containing machine to be loaded.
-	 * @param prefs
-	 *            map of ProB preferences
-	 * @param loader
-	 *            actions to take place after the loading process
-	 * @return {@link ClassicalBModel} from the specified file.
-	 * @throws IOException
-	 * @throws ModelTranslationError
-	 */
-	@Deprecated
-	public ClassicalBModel load(final File f, final Map<String, String> prefs,
-			final Closure<Object> subscriber) throws IOException,
-			ModelTranslationError {
-		return load(f.getAbsolutePath(), prefs, subscriber);
+	public ExtractedModel<ClassicalBModel> create(final String model)
+			throws ModelTranslationError {
+		ClassicalBModel classicalBModel = modelCreator.get();
+		BParser bparser = new BParser();
+
+		Start ast = parseString(model, bparser);
+		final RecursiveMachineLoader rml = parseAllMachines(ast, ".", new File(
+				""), bparser.getContentProvider(), bparser);
+		classicalBModel = classicalBModel.create(ast, rml, new File("from_string"), bparser);
+		return new ExtractedModel<ClassicalBModel>(classicalBModel,
+				classicalBModel.getMainMachine());
 	}
 
-	/**
-	 * Starts animation in the Prolog kernel with the given
-	 * {@link ClassicalBModel} classicalBModel and
-	 * {@link RecursiveMachineLoader} rml
-	 * 
-	 * @param classicalBModel
-	 *            {@link ClassicalBModel} representing the loaded model
-	 * @param rml
-	 *            {@link RecursiveMachineLoader} containing all of the parsed
-	 *            machines
-	 * @param prefs
-	 * @param f
-	 */
-	private void startAnimation(final ClassicalBModel classicalBModel,
-			final RecursiveMachineLoader rml, final Map<String, String> prefs,
-			final File f) {
-		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
+	public ExtractedModel<ClassicalBModel> create(final Start model)
+			throws ModelTranslationError {
+		ClassicalBModel classicalBModel = modelCreator.get();
+		BParser bparser = new BParser();
 
-		for (Entry<String, String> pref : prefs.entrySet()) {
-			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
-		}
-
-		cmds.add(new LoadBProjectCommand(rml, f));
-		cmds.add(new StartAnimationCommand());
-		classicalBModel.getStateSpace().execute(new ComposedCommand(cmds));
+		final RecursiveMachineLoader rml = parseAllMachines(model, ".",
+				new File(""), new CachingDefinitionFileProvider(), bparser);
+		classicalBModel = classicalBModel
+				.create(model, rml, new File("from_string"), bparser);
+		return new ExtractedModel<ClassicalBModel>(classicalBModel,
+				classicalBModel.getMainMachine());
 	}
 
 	/**
 	 * Given an {@link Start} ast, {@link File} f, and {@link BParser} bparser,
 	 * all machines are loaded.
-	 * 
+	 *
 	 * @param ast
 	 *            {@link Start} representing the abstract syntax tree for the
 	 *            machine
@@ -128,15 +90,19 @@ public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
 	 * @throws BException
 	 */
 	public RecursiveMachineLoader parseAllMachines(final Start ast,
-			final File f, final BParser bparser) throws BException {
-		final RecursiveMachineLoader rml = new RecursiveMachineLoader(
-				f.getParent(), bparser.getContentProvider());
+			final String directory, final File f,
+			final IDefinitionFileProvider contentProvider, final BParser bparser)
+					throws ModelTranslationError {
+		try {
+			final RecursiveMachineLoader rml = new RecursiveMachineLoader(
+					directory, contentProvider);
 
-		rml.loadAllMachines(f, ast, null, bparser.getDefinitions(),
-				bparser.getPragmas());
-
-		logger.trace("Done parsing '{}'", f.getAbsolutePath());
-		return rml;
+			rml.loadAllMachines(f, ast, null, bparser.getDefinitions());
+			logger.trace("Done parsing '{}'", f.getAbsolutePath());
+			return rml;
+		} catch (BException e) {
+			throw new ModelTranslationError(e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -150,11 +116,27 @@ public class ClassicalBFactory extends ModelFactory<ClassicalBModel> {
 	 * @throws BException
 	 */
 	public Start parseFile(final File model, final BParser bparser)
-			throws IOException, BException {
-		logger.trace("Parsing main file '{}'", model.getAbsolutePath());
-		Start ast = null;
-		ast = bparser.parseFile(model, false);
-		return ast;
+			throws IOException, ModelTranslationError {
+		try {
+			logger.trace("Parsing main file '{}'", model.getAbsolutePath());
+			Start ast = null;
+			ast = bparser.parseFile(model, false);
+			return ast;
+		} catch (BException e) {
+			throw new ModelTranslationError(e.getMessage(), e);
+		}
+	}
+
+	private Start parseString(final String model, final BParser bparser)
+			throws ModelTranslationError {
+		try {
+			logger.trace("Parsing file");
+			Start ast = null;
+			ast = bparser.parse(model, false);
+			return ast;
+		} catch (BException e) {
+			throw new ModelTranslationError(e.getMessage(), e);
+		}
 	}
 
 }

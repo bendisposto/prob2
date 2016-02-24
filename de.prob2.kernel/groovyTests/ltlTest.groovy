@@ -5,8 +5,7 @@ import de.prob.statespace.*
 
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 ltl_check = { formula ->
 	checker = new ModelChecker(new LTLChecker(s, formula))
@@ -24,5 +23,4 @@ assert t.getTransitionList().size() == 8
 res = ltl_check(new LTL("G({ active < 7 })"))
 assert res instanceof LTLError
 
-s.animator.cli.shutdown();
 "ltl formulas can be checked"

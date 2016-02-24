@@ -2,8 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 import de.prob.check.*
 
-m = api.eventb_load(dir + File.separator + "machines" + File.separator + "InvalidModel" + File.separator +"createErrors.bcm")
-s = m as StateSpace
+s = api.eventb_load(dir + File.separator + "machines" + File.separator + "InvalidModel" + File.separator +"createErrors.bcm")
 
 model_check = { job ->
 	checker = new ModelChecker(job)
@@ -34,10 +33,7 @@ res = model_check(new CBCInvariantChecker(s,["deadlock"]))
 assert res instanceof ModelCheckOk
 assert res.message == "No Invariant violation was found"
 
-s.animator.cli.shutdown();
-
-m = api.eventb_load(dir + File.separator + "Time" + File.separator +"clock.bcm")
-s = m as StateSpace
+s = api.eventb_load(dir + File.separator + "Time" + File.separator +"clock.bcm")
 
 res = model_check(new CBCInvariantChecker(s))
 assert res instanceof CBCInvariantViolationFound
@@ -48,5 +44,4 @@ assert ops[0].getName() == "invariant_check_tock"
 assert ops[1].getName() == "tock"
 assert ops[1].getParams()[0].toInteger() >= 0
 
-s.animator.cli.shutdown();
 "constraint based deadlock and invariant checking works correctly"

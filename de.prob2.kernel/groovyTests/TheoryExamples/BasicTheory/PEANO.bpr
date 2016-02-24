@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.prFile version="1">
+<org.eventb.core.prProof name="axm1/WD-AXM" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.lang name="L">
+<org.eventb.theory.core.scDatatypeDefinition name="PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'" org.eventb.theory.core.hasError="false">
+<org.eventb.theory.core.scDatatypeConstructor name="zero" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#'"/>
+<org.eventb.theory.core.scDatatypeConstructor name="next" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(">
+<org.eventb.theory.core.scConstructorArgument name="prev" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(|org.eventb.theory.core.constructorArgument#'" org.eventb.core.type="PEANO"/>
+</org.eventb.theory.core.scDatatypeConstructor>
+</org.eventb.theory.core.scDatatypeDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANP" org.eventb.core.label="even" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊤"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬even(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANQ" org.eventb.core.label="odd" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊥"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬odd(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANR" org.eventb.core.label="mk_nat" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#," org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="ℤ" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="0"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="1+mk_nat(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scAxiomaticOperatorDefinition name="'" org.eventb.core.label="mk_PEANO" org.eventb.core.predicate="i∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="PEANO" org.eventb.theory.core.wd="i∈ℕ">
+<org.eventb.theory.core.scOperatorArgument name="i" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="ℤ"/>
+</org.eventb.theory.core.scAxiomaticOperatorDefinition>
+</org.eventb.core.lang>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p1" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="0∈ℕ"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL4:0"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="axm2/WD-AXM" org.eventb.core.confidence="0" org.eventb.core.prFresh="n" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.lang name="L">
+<org.eventb.theory.core.scDatatypeDefinition name="PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'" org.eventb.theory.core.hasError="false">
+<org.eventb.theory.core.scDatatypeConstructor name="zero" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#'"/>
+<org.eventb.theory.core.scDatatypeConstructor name="next" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(">
+<org.eventb.theory.core.scConstructorArgument name="prev" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(|org.eventb.theory.core.constructorArgument#'" org.eventb.core.type="PEANO"/>
+</org.eventb.theory.core.scDatatypeConstructor>
+</org.eventb.theory.core.scDatatypeDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANP" org.eventb.core.label="even" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊤"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬even(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANQ" org.eventb.core.label="odd" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊥"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬odd(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANR" org.eventb.core.label="mk_nat" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#," org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="ℤ" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="0"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="1+mk_nat(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scAxiomaticOperatorDefinition name="'" org.eventb.core.label="mk_PEANO" org.eventb.core.predicate="i∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="PEANO" org.eventb.theory.core.wd="i∈ℕ">
+<org.eventb.theory.core.scOperatorArgument name="i" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="ℤ"/>
+</org.eventb.theory.core.scAxiomaticOperatorDefinition>
+</org.eventb.core.lang>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="∀ goal (frees n)" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prIdent name="n" org.eventb.core.type="ℤ"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⇒ goal" org.eventb.core.prGoal="p1" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p3" org.eventb.core.prHyps="p2"/>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="n∈ℕ">
+<org.eventb.core.prIdent name="n" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="1+n∈ℕ">
+<org.eventb.core.prIdent name="n" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="n∈ℕ⇒1+n∈ℕ">
+<org.eventb.core.prIdent name="n" org.eventb.core.type="ℤ"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="∀n⦂ℤ·n∈ℕ⇒1+n∈ℕ"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.allI"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.impI"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="thm1/S-THM" org.eventb.core.confidence="0" org.eventb.core.prFresh="p" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.lang name="L">
+<org.eventb.theory.core.scDatatypeDefinition name="PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'" org.eventb.theory.core.hasError="false">
+<org.eventb.theory.core.scDatatypeConstructor name="zero" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#'"/>
+<org.eventb.theory.core.scDatatypeConstructor name="next" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(">
+<org.eventb.theory.core.scConstructorArgument name="prev" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(|org.eventb.theory.core.constructorArgument#'" org.eventb.core.type="PEANO"/>
+</org.eventb.theory.core.scDatatypeConstructor>
+</org.eventb.theory.core.scDatatypeDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANP" org.eventb.core.label="even" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊤"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬even(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANQ" org.eventb.core.label="odd" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊥"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬odd(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANR" org.eventb.core.label="mk_nat" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#," org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="ℤ" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="0"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="1+mk_nat(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scAxiomaticOperatorDefinition name="'" org.eventb.core.label="mk_PEANO" org.eventb.core.predicate="i∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="PEANO" org.eventb.theory.core.wd="i∈ℕ">
+<org.eventb.theory.core.scOperatorArgument name="i" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="ℤ"/>
+</org.eventb.theory.core.scAxiomaticOperatorDefinition>
+</org.eventb.core.lang>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p1" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p2">
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="∀ goal (frees p)" org.eventb.core.prGoal="p2" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p3">
+<org.eventb.core.prIdent name="p" org.eventb.core.type="PEANO"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="∀p⦂PEANO·⊤⇒(odd(p)⇔¬even(p))"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="∀p⦂PEANO·p∈(PEANO ⦂ ℙ(PEANO))⇒(odd(p)⇔¬even(p))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="∀p⦂PEANO·odd(p)⇔¬even(p)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="odd(p)⇔¬even(p)">
+<org.eventb.core.prIdent name="p" org.eventb.core.type="PEANO"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL4:0"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.allI"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="thm3/S-THM" org.eventb.core.confidence="0" org.eventb.core.prFresh="p" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.lang name="L">
+<org.eventb.theory.core.scDatatypeDefinition name="PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'" org.eventb.theory.core.hasError="false">
+<org.eventb.theory.core.scDatatypeConstructor name="zero" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#'"/>
+<org.eventb.theory.core.scDatatypeConstructor name="next" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(">
+<org.eventb.theory.core.scConstructorArgument name="prev" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(|org.eventb.theory.core.constructorArgument#'" org.eventb.core.type="PEANO"/>
+</org.eventb.theory.core.scDatatypeConstructor>
+</org.eventb.theory.core.scDatatypeDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANP" org.eventb.core.label="even" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊤"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬even(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANQ" org.eventb.core.label="odd" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊥"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬odd(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANR" org.eventb.core.label="mk_nat" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#," org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="ℤ" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="0"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="1+mk_nat(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scAxiomaticOperatorDefinition name="'" org.eventb.core.label="mk_PEANO" org.eventb.core.predicate="i∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="PEANO" org.eventb.theory.core.wd="i∈ℕ">
+<org.eventb.theory.core.scOperatorArgument name="i" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="ℤ"/>
+</org.eventb.theory.core.scAxiomaticOperatorDefinition>
+</org.eventb.core.lang>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p1" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p2">
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="∀ goal (frees p)" org.eventb.core.prGoal="p2" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p3">
+<org.eventb.core.prIdent name="p" org.eventb.core.type="PEANO"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="∀p⦂PEANO·mk_nat(p)∈ℕ"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="∀p⦂PEANO·p∈(PEANO ⦂ ℙ(PEANO))⇒mk_nat(p)∈ℕ"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="∀p⦂PEANO·⊤⇒mk_nat(p)∈ℕ"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="mk_nat(p)∈ℕ">
+<org.eventb.core.prIdent name="p" org.eventb.core.type="PEANO"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL4:0"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.allI"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="thm2/S-THM" org.eventb.core.confidence="0" org.eventb.core.prFresh="p" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.lang name="L">
+<org.eventb.theory.core.scDatatypeDefinition name="PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'" org.eventb.theory.core.hasError="false">
+<org.eventb.theory.core.scDatatypeConstructor name="zero" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#'"/>
+<org.eventb.theory.core.scDatatypeConstructor name="next" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(">
+<org.eventb.theory.core.scConstructorArgument name="prev" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(|org.eventb.theory.core.constructorArgument#'" org.eventb.core.type="PEANO"/>
+</org.eventb.theory.core.scDatatypeConstructor>
+</org.eventb.theory.core.scDatatypeDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANP" org.eventb.core.label="even" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊤"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬even(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANQ" org.eventb.core.label="odd" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊥"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬odd(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANR" org.eventb.core.label="mk_nat" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#," org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="ℤ" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="0"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="1+mk_nat(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scAxiomaticOperatorDefinition name="'" org.eventb.core.label="mk_PEANO" org.eventb.core.predicate="i∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="PEANO" org.eventb.theory.core.wd="i∈ℕ">
+<org.eventb.theory.core.scOperatorArgument name="i" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="ℤ"/>
+</org.eventb.theory.core.scAxiomaticOperatorDefinition>
+</org.eventb.core.lang>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p1" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p2">
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="∀ goal (frees p)" org.eventb.core.prGoal="p2" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p3">
+<org.eventb.core.prIdent name="p" org.eventb.core.type="PEANO"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="∀p⦂PEANO·p∈(PEANO ⦂ ℙ(PEANO))⇒mk_PEANO(mk_nat(p))=p"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="mk_PEANO(mk_nat(p))=p">
+<org.eventb.core.prIdent name="p" org.eventb.core.type="PEANO"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="∀p⦂PEANO·⊤⇒mk_PEANO(mk_nat(p))=p"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="∀p⦂PEANO·mk_PEANO(mk_nat(p))=p"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL4:0"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.allI"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="thm2/WD-THM" org.eventb.core.confidence="0" org.eventb.core.prFresh="p" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.lang name="L">
+<org.eventb.theory.core.scDatatypeDefinition name="PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'" org.eventb.theory.core.hasError="false">
+<org.eventb.theory.core.scDatatypeConstructor name="zero" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#'"/>
+<org.eventb.theory.core.scDatatypeConstructor name="next" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(">
+<org.eventb.theory.core.scConstructorArgument name="prev" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.datatypeDefinition#'|org.eventb.theory.core.datatypeConstructor#(|org.eventb.theory.core.constructorArgument#'" org.eventb.core.type="PEANO"/>
+</org.eventb.theory.core.scDatatypeConstructor>
+</org.eventb.theory.core.scDatatypeDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANP" org.eventb.core.label="even" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊤"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#(|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬even(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANQ" org.eventb.core.label="odd" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="false" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="⊥"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#)|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="¬odd(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scNewOperatorDefinition name="PEANR" org.eventb.core.label="mk_nat" org.eventb.core.predicate="⊤" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#," org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="ℤ" org.eventb.theory.core.wd="⊤">
+<org.eventb.theory.core.scOperatorArgument name="n" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="PEANO"/>
+<org.eventb.theory.core.scRecursiveOperatorDefinition name="(" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(" org.eventb.theory.core.inductiveArgument="n">
+<org.eventb.theory.core.scRecursiveDefinitionCase name="'" org.eventb.core.expression="zero ⦂ PEANO" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#'" org.eventb.theory.core.formula="0"/>
+<org.eventb.theory.core.scRecursiveDefinitionCase name="(" org.eventb.core.expression="next(m)" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.newOperatorDefinition#,|org.eventb.theory.core.recursiveOperatorDefinition#(|org.eventb.theory.core.recursiveDefinitionCase#(" org.eventb.theory.core.formula="1+mk_nat(m)"/>
+</org.eventb.theory.core.scRecursiveOperatorDefinition>
+</org.eventb.theory.core.scNewOperatorDefinition>
+<org.eventb.theory.core.scAxiomaticOperatorDefinition name="'" org.eventb.core.label="mk_PEANO" org.eventb.core.predicate="i∈ℕ" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.groupID="org.eventb.core.ast.closed" org.eventb.theory.core.hasError="false" org.eventb.theory.core.notationType="PREFIX" org.eventb.theory.core.type="PEANO" org.eventb.theory.core.wd="i∈ℕ">
+<org.eventb.theory.core.scOperatorArgument name="i" org.eventb.core.source="/BasicTheory/PEANO.tuf|org.eventb.theory.core.theoryRoot#PEANO|org.eventb.theory.core.axiomaticDefinitionsBlock#+|org.eventb.theory.core.axiomaticOperatorDefinition#'|org.eventb.theory.core.operatorArgument#'" org.eventb.core.type="ℤ"/>
+</org.eventb.theory.core.scAxiomaticOperatorDefinition>
+</org.eventb.core.lang>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p1" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p2">
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="∀ goal (frees p)" org.eventb.core.prGoal="p2" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p3">
+<org.eventb.core.prIdent name="p" org.eventb.core.type="PEANO"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="∀p⦂PEANO·mk_nat(p)∈ℕ"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="∀p⦂PEANO·p∈(PEANO ⦂ ℙ(PEANO))⇒mk_nat(p)∈ℕ"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="∀p⦂PEANO·⊤⇒mk_nat(p)∈ℕ"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="mk_nat(p)∈ℕ">
+<org.eventb.core.prIdent name="p" org.eventb.core.type="PEANO"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL4:0"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.allI"/>
+</org.eventb.core.prProof>
+</org.eventb.core.prFile>

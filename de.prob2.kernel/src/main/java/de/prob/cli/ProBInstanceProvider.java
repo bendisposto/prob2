@@ -3,12 +3,16 @@ package de.prob.cli;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +23,7 @@ import com.google.inject.Singleton;
 
 import de.prob.annotations.Home;
 import de.prob.exception.CliError;
+import de.prob.scripting.Installer;
 
 @Singleton
 public final class ProBInstanceProvider implements Provider<ProBInstance> {
@@ -29,11 +34,8 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 	private final PrologProcessProvider processProvider;
 	private final String home;
 	private final OsSpecificInfo osInfo;
-
-	@Override
-	public ProBInstance get() {
-		return create();
-	}
+	private final AtomicInteger processCounter;
+	private final Set<WeakReference<ProBInstance>> processes = new HashSet<WeakReference<ProBInstance>>();
 
 	@Inject
 	public ProBInstanceProvider(final PrologProcessProvider processProvider,
@@ -41,10 +43,30 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		this.processProvider = processProvider;
 		this.home = home;
 		this.osInfo = osInfo;
+		new Installer(osInfo).ensureCLIsInstalled();
+
+		processCounter = new AtomicInteger();
+	}
+
+	@Override
+	public ProBInstance get() {
+		return create();
 	}
 
 	public ProBInstance create() {
 		return startProlog();
+	}
+
+	public int numberOfCLIs() {
+		return processCounter.get();
+	}
+
+	public void shutdownAll() {
+		for (WeakReference<ProBInstance> wr : processes) {
+			if (wr.get() != null) {
+				wr.get().shutdown();
+			}
+		}
 	}
 
 	private ProBInstance startProlog() {
@@ -64,11 +86,15 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		ProBConnection connection = new ProBConnection(key, port);
 
 		try {
+			processCounter.incrementAndGet();
 			connection.connect();
 			ProBInstance cli = new ProBInstance(process, stream,
-					userInterruptReference, connection, home, osInfo);
+					userInterruptReference, connection, home, osInfo,
+					processCounter);
+			processes.add(new WeakReference<ProBInstance>(cli));
 			return cli;
 		} catch (IOException e) {
+			processCounter.decrementAndGet();
 			logger.error("Error connecting to Prolog binary.", e);
 			return null;
 		}
@@ -126,6 +152,4 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 			}
 		}
 	}
-
-
 }

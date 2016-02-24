@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.theory.core.theoryLanguageRoot org.eventb.core.configuration="org.eventb.theory.core.tul">
+<org.eventb.theory.core.availableTheoryProject name="'" org.eventb.theory.core.availableTheoryProject="/BasicTheory">
+<org.eventb.theory.core.availableTheory name="'" org.eventb.theory.core.availableTheory="/BasicTheory/Seq.dtf|org.eventb.theory.core.deployedTheoryRoot#Seq"/>
+</org.eventb.theory.core.availableTheoryProject>
+</org.eventb.theory.core.theoryLanguageRoot>

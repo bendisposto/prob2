@@ -8,8 +8,7 @@ import de.prob.animator.command.IStateSpaceModifier
 import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 t = new Trace(s)
 t.getCurrentState().explore()
 
@@ -18,10 +17,5 @@ s.execute(cmd)
 
 assert !cmd.getNodes().isEmpty()
 assert !cmd.getEdges().isEmpty()
-
-s.animator.cli.shutdown();
-
-//println "Nodes: "  + cmd.getNodes()
-//println "Edges: " + cmd.getEdges()
 
 "All tests passed!"

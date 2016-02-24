@@ -17,6 +17,7 @@ import de.prob.statespace.State;
 
 public class FilterStatesForPredicateCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "filter_states_for_predicate";
 	private final Collection<State> ids;
 	private final IEvalElement predicate;
 	private final String FILTERED = "Filtered";
@@ -35,7 +36,7 @@ public class FilterStatesForPredicateCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("filter_states_for_predicate");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		predicate.printProlog(pto);
 		pto.openList();
 		for (State id : ids) {

@@ -1,13 +1,14 @@
 package de.prob.model.representation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.github.krukow.clj_lang.IPersistentMap;
+import com.github.krukow.clj_lang.PersistentHashMap;
+import com.github.krukow.clj_lang.PersistentHashSet;
 import com.google.common.base.Objects;
 
 /**
@@ -16,19 +17,19 @@ import com.google.common.base.Objects;
  * string element name of the component and the edges are the type of
  * relationship as defined by {@link ERefType}. It is a multigraph, which means
  * that there can be multiple edges between two nodes.
- * 
+ *
  * @author joy
- * 
+ *
  */
 public class DependencyGraph {
 	/**
 	 * RefType is used for both ClassicalBModels and EventBModels
-	 * 
+	 *
 	 * ClassicalB: SEES, USES, REFINES, INCLUDES, IMPORTS EventB: SEES, REFINES,
 	 * EXTENDS
-	 * 
+	 *
 	 * @author joy
-	 * 
+	 *
 	 */
 	public enum ERefType {
 		SEES, USES, REFINES, INCLUDES, IMPORTS, EXTENDS
@@ -36,17 +37,22 @@ public class DependencyGraph {
 
 	public class Node {
 		final String elementName;
-		List<Edge> outEdges = new ArrayList<Edge>();
+		final PersistentHashSet<Edge> outEdges;
 
 		public Node(final String elementName) {
+			this(elementName, PersistentHashSet.<Edge>emptySet());
+		}
+
+		private Node(final String elementName, PersistentHashSet<Edge> edges) {
 			this.elementName = elementName;
+			outEdges = edges;
 		}
 
 		public String getElementName() {
 			return elementName;
 		}
 
-		public List<Edge> getOutEdges() {
+		public Set<Edge> getOutEdges() {
 			return outEdges;
 		}
 
@@ -54,8 +60,12 @@ public class DependencyGraph {
 		 * @param edge
 		 *            to be added.
 		 */
-		public void addEdge(final Edge edge) {
-			outEdges.add(edge);
+		public Node addEdge(final Edge edge) {
+			return new Node(elementName, outEdges.cons(edge));
+		}
+
+		public Node removeEdge(final Edge edge) {
+			return new Node(elementName, outEdges.disjoin(edge));
 		}
 
 		@Override
@@ -118,17 +128,26 @@ public class DependencyGraph {
 		}
 	}
 
-	Map<String, Node> graph = new HashMap<String, DependencyGraph.Node>();
+	IPersistentMap<String, Node> graph;
+
+	public DependencyGraph() {
+		this(PersistentHashMap.<String, Node>emptyMap());
+	}
+
+	private DependencyGraph(IPersistentMap<String, Node> graph) {
+		this.graph = graph;
+	}
 
 	/**
 	 * @param element
 	 *            element to be added to the graph it is has not already been
 	 *            added;
 	 */
-	public void addVertex(final String element) {
+	public DependencyGraph addVertex(final String element) {
 		if (!graph.containsKey(element)) {
-			graph.put(element, new Node(element));
+			return new DependencyGraph(graph.assoc(element, new Node(element)));
 		}
+		return this;
 	}
 
 	/**
@@ -141,19 +160,38 @@ public class DependencyGraph {
 	}
 
 	public Set<String> getVertices() {
-		return new HashSet<String>(graph.keySet());
+		Set<String> vertices = new HashSet<String>();
+		for (Entry<String, Node> entry : graph) {
+			vertices.add(entry.getKey());
+		}
+		return vertices;
 	}
 
 	public Set<Edge> getEdges() {
 		HashSet<Edge> set = new HashSet<Edge>();
-		for (Node node : graph.values()) {
-			set.addAll(node.getOutEdges());
+		for (Entry<String, Node> entry : graph) {
+			set.addAll(entry.getValue().getOutEdges());
+		}
+		return set;
+	}
+
+	public Set<Edge> getOutEdges(String name) {
+		Node node = graph.valAt(name);
+		return node.getOutEdges();
+	}
+
+	public Set<Edge> getIncomingEdges(String name) {
+		HashSet<Edge> set = new HashSet<Edge>();
+		for (Edge edge : getEdges()) {
+			if (edge.getTo().getElementName().equals(name)) {
+				set.add(edge);
+			}
 		}
 		return set;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param from
 	 *            source element
 	 * @param to
@@ -161,18 +199,29 @@ public class DependencyGraph {
 	 * @param relationship
 	 *            relationship between the two elements
 	 */
-	public void addEdge(final String from, final String to,
+	public DependencyGraph addEdge(final String from, final String to,
 			final ERefType relationship) {
-		if (!graph.containsKey(from)) {
-			addVertex(from);
+		IPersistentMap<String, Node> newgraph = graph;
+		if (!newgraph.containsKey(from)) {
+			newgraph = newgraph.assoc(from, new Node(from));
 		}
-		if (!graph.containsKey(to)) {
-			addVertex(to);
+		if (!newgraph.containsKey(to)) {
+			newgraph = newgraph.assoc(to, new Node(to));
 		}
-		Node f = graph.get(from);
-		Node t = graph.get(to);
+		Node f = newgraph.valAt(from);
+		Node t = newgraph.valAt(to);
 		Edge e = new Edge(f, t, relationship);
-		f.addEdge(e);
+		return new DependencyGraph(newgraph.assoc(from, f.addEdge(e)));
+	}
+
+	public DependencyGraph removeEdge(String from, String to,
+			ERefType relationship) {
+		Node f = graph.valAt(from);
+		Node t = graph.valAt(to);
+		if (f == null || t == null) {
+			throw new IllegalArgumentException("Nodes must be specified in order to be deleted.");
+		}
+		return new DependencyGraph(graph.assoc(from, f.removeEdge(new Edge(f, t, relationship))));
 	}
 
 	/**
@@ -191,10 +240,10 @@ public class DependencyGraph {
 			throw new IllegalArgumentException("Element " + to
 					+ " is not in graph.");
 		}
-		Node f = graph.get(from);
-		Node t = graph.get(to);
+		Node f = graph.valAt(from);
+		Node t = graph.valAt(to);
 
-		List<Edge> edgeSet = f.getOutEdges();
+		Set<Edge> edgeSet = f.getOutEdges();
 		List<ERefType> relationships = new ArrayList<DependencyGraph.ERefType>();
 		for (Edge edge : edgeSet) {
 			if (edge.getFrom().equals(f) && edge.getTo().equals(t)) {
@@ -208,22 +257,21 @@ public class DependencyGraph {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("(");
-		sb.append(graph.keySet().toString());
-		sb.append(", ");
-
-		List<String> s = new ArrayList<String>();
-		for (Entry<String, Node> entry : graph.entrySet()) {
-			List<Edge> outEdges = entry.getValue().getOutEdges();
+		for (Entry<String, Node> entry : graph) {
+			List<String> s = new ArrayList<String>();
+			Set<Edge> outEdges = entry.getValue().getOutEdges();
+			sb.append(entry.getKey());
+			sb.append(" : ");
 			for (Edge edge : outEdges) {
-				s.add(edge.getRelationship().toString() + "=("
-						+ edge.getTo().getElementName() + ","
-						+ edge.getFrom().getElementName() + ")");
+				s.add(edge.getRelationship().toString() + " -> "
+						+ edge.getTo().getElementName());
 			}
+			sb.append(s.toString());
+			sb.append("\n");
 		}
-		sb.append(s.toString());
-		sb.append(")");
 		return sb.toString();
 	}
+
+
 
 }

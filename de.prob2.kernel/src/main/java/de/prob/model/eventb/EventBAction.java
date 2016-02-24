@@ -10,17 +10,17 @@ import de.prob.model.representation.Action;
 public class EventBAction extends Action {
 
 	private final String name;
-	private final Event parentEvent;
+	private final String comment;
 
-	public EventBAction(final Event parentEvent, final String name,
-			final String code, final Set<IFormulaExtension> typeEnv) {
-		super(new EventB(code, typeEnv));
-		this.parentEvent = parentEvent;
-		this.name = name;
+	public EventBAction(final String name, final String code,
+			final Set<IFormulaExtension> typeEnv) {
+		this(name, new EventB(code, typeEnv), "");
 	}
 
-	public Event getParentEvent() {
-		return parentEvent;
+	public EventBAction(final String name, EventB code, String comment) {
+		super(code);
+		this.name = name;
+		this.comment = comment == null ? "" : comment;
 	}
 
 	public String getName() {
@@ -30,6 +30,10 @@ public class EventBAction extends Action {
 	@Override
 	public String toString() {
 		return name + ": " + getCode();
+	}
+
+	public String getComment() {
+		return comment;
 	}
 
 	@Override

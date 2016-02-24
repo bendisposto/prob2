@@ -1,7 +1,6 @@
 import de.prob.statespace.*
 
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m.getStateSpace()
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 h = new Trace(s)
 h1 = h.anyOperation(".*i.*")
 assert h1 != h
@@ -15,5 +14,4 @@ assert h.current.getTransition().getName() == "new" || h.current.getTransition()
 h = h.anyEvent("nr_ready")
 assert h.current.getTransition().getName() == "nr_ready"
 
-s.animator.cli.shutdown();
 "anyOperation and anyEvent on Trace work correctly"

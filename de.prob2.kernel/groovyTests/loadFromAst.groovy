@@ -1,7 +1,7 @@
 import de.be4.classicalb.core.parser.BParser;
 import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
-
+import de.prob.Main
 
 modelString = """MACHINE blah
 SETS
@@ -15,21 +15,14 @@ OPERATIONS
 END"""
 
 
-modelProvider = api.modelFactoryProvider.classical_b_factory.modelCreator
-assert modelProvider != null 
-
-m = modelProvider.get()
-s = m as StateSpace
+modelFactory = api.modelFactoryProvider.classical_b_factory
+assert modelFactory != null 
 p = new BParser()
 ast = p.parse(modelString, false)
 
-cmd = new LoadBProjectFromAst(ast)
-s.execute(cmd)
-rml = cmd.getLoader(ast)
-
-m.initialize(ast, rml, new File(""), p)
-
-s.execute(new StartAnimationCommand())
+em = modelFactory.create(ast)
+m = em.model
+s = em.load()
 
 // Test that animation works correctly
 t = new Trace(s)
@@ -42,5 +35,4 @@ assert m.blah.variables != null
 assert m.blah.variables.collect { it.name } == ["x"]
 assert m.blah.operations.collect { it.name } == ["ChangeX"]
 
-s.animator.cli.shutdown();
 "it is possible to load a b model from an ast"

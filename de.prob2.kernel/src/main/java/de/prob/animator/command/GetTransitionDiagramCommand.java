@@ -9,7 +9,8 @@ import de.prob.prolog.term.PrologTerm;
 
 public class GetTransitionDiagramCommand extends AbstractDotDiagramCmd {
 
-    private final IEvalElement expression;
+    private static final String PROLOG_COMMAND_NAME = "get_transition_diagram";
+	private final IEvalElement expression;
     
     public GetTransitionDiagramCommand(final IEvalElement e) {
         expression = e;
@@ -17,7 +18,7 @@ public class GetTransitionDiagramCommand extends AbstractDotDiagramCmd {
 
     @Override
     public void writeCommand(final IPrologTermOutput pto) {
-        pto.openTerm("get_transition_diagram");
+        pto.openTerm(PROLOG_COMMAND_NAME);
         expression.printProlog(pto);
         pto.printVariable(SPACE);
         pto.closeTerm();

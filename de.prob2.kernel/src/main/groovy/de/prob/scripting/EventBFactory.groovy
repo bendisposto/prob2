@@ -1,41 +1,35 @@
 package de.prob.scripting;
 
-import java.util.Map.Entry
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import java.util.zip.ZipInputStream
 
 import com.google.inject.Inject
 import com.google.inject.Provider
 
-import de.prob.animator.command.AbstractCommand
-import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.LoadEventBFileCommand
-import de.prob.animator.command.LoadEventBProjectCommand
-import de.prob.animator.command.SetPreferenceCommand
-import de.prob.animator.command.StartAnimationCommand
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.translate.EventBDatabaseTranslator
-import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractElement
 import de.prob.statespace.StateSpace
 
-public class EventBFactory extends ModelFactory<EventBModel> {
+public class EventBFactory implements ModelFactory<EventBModel> {
+
+	private final StateSpaceProvider ssProvider
+	private final Provider<EventBModel> modelCreator
 
 	@Inject
-	public EventBFactory(final Provider<EventBModel> modelCreator,
-	final FileHandler fileHandler) {
-		super(modelCreator, fileHandler, LoadClosures.getEVENTB());
+	public EventBFactory(final Provider<EventBModel> modelCreator, StateSpaceProvider ssProvider) {
+		this.ssProvider = ssProvider
+		this.modelCreator = modelCreator
 	}
 
 	@Override
-	public EventBModel load(final String modelPath, final Map<String, String> prefs,
-			final Closure<Object> loader) throws IOException, ModelTranslationError {
+	public ExtractedModel<EventBModel> extract(String modelPath) throws IOException,
+	ModelTranslationError {
 		EventBModel model = modelCreator.get();
-
-		new EventBDatabaseTranslator(model, getValidFileName(modelPath));
-
-		return loadModel(model, getPreferences(model, prefs), loader);
+		def validFileName = getValidFileName(modelPath)
+		EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, validFileName);
+		new ExtractedModel<EventBModel>(translator.getModel(),translator.getMainComponent())
 	}
 
 	private String getValidFileName(String fileName) {
@@ -52,34 +46,8 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 	}
 
 
-	/**
-	 * Loads the specified EventBModel, sets the specified ProB Preferences, and then
-	 * executes the user specified loader to
-	 * @param model to load
-	 * @param prefs ProB preferences
-	 * @param loader actions to take place after loading
-	 * @return the same model after the loading process
-	 */
-	public static EventBModel loadModel(final EventBModel model,
-			final Map<String, String> prefs, final Closure<Object> loader) throws IOException, ModelTranslationError {
-		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
-
-		for (Entry<String, String> pref : prefs.entrySet()) {
-			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
-		}
-
-		cmds.add(new LoadEventBProjectCommand(
-				new EventBModelTranslator(model)));
-		cmds.add(new StartAnimationCommand());
-		StateSpace s = model.getStateSpace();
-		s.execute(new ComposedCommand(cmds));
-
-		loader(model)
-		return model;
-	}
-
-	public EventBModel loadModelFromEventBFile(final String fileName,
-			final Map<String, String> prefs, final Closure loadClosure) throws IOException {
+	public StateSpace loadModelFromEventBFile(final String fileName,
+			final Map<String, String> prefs) throws IOException {
 		EventBModel model = modelCreator.get();
 		Pattern pattern = Pattern.compile("^package\\((.*?)\\)\\.");
 		File file = new File(fileName);
@@ -96,25 +64,7 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 		}
 
 		String componentName = file.getName().replaceAll("\\.eventb\$", "")
-
-		model.setMainComponent(new DummyElement(componentName))
-		model.setModelFile(file);
-		model.isFinished();
-
-		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
-
-		for (Entry<String, String> pref : prefs.entrySet()) {
-			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
-		}
-
-		StateSpace s = model.getStateSpace();
-		s.execute(new ComposedCommand(cmds));
-
-		s.execute(new LoadEventBFileCommand(loadcmd));
-		s.execute(new StartAnimationCommand());
-
-		loadClosure(model)
-		return model;
+		return ssProvider.loadFromCommand(model, new DummyElement(componentName), prefs, new LoadEventBFileCommand(loadcmd))
 	}
 
 	public final List<String> readFile(final File machine) throws IOException {
@@ -123,64 +73,40 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 		lines
 	}
 
-	public EventBModel loadModelFromZip(final String zipfile, String componentName,
-			final Map<String, String> prefs, Closure loader) throws IOException {
-		File.metaClass.unzip = { String dest ->
-			//in metaclass added methods, 'delegate' is the object on which
-			//the method is called. Here it's the file to unzip
-			def result = new ZipInputStream(new FileInputStream(delegate))
-			def destFile = new File(dest)
-			if(!destFile.exists()){
-				destFile.mkdir();
-			}
-			result.withStream{
-				def entry
-				while(entry = result.nextEntry){
-					if (!entry.isDirectory()){
-						new File(dest + File.separator + entry.name).parentFile?.mkdirs()
-						def output = new FileOutputStream(dest + File.separator
-								+ entry.name)
-						output.withStream{
-							int len = 0;
-							byte[] buffer = new byte[4096]
-							while ((len = result.read(buffer)) > 0){
-								output.write(buffer, 0, len);
-							}
-						}
-					}
-					else {
-						new File(dest + File.separator + entry.name).mkdir()
-					}
-				}
-			}
+	public EventBModel extractModelFromZip(final String zipfile) throws IOException {
+		final File tempdir = createTempDir()
+		new FileHandler().extractZip(zipfile,tempdir.getAbsolutePath())
 
+		def pattern = Pattern.compile(".*.bcc\$|.*.bcm\$")
+		def modelFiles = []
+		tempdir.traverse(nameFilter: pattern) { f -> modelFiles << f }
+		if (modelFiles.size() == 0) {
+			tempdir.deleteDir()
+			throw new IllegalArgumentException("No static checked Event-B files were found in that zip archive!")
 		}
+		EventBModel model = modelCreator.get();
+		modelFiles.each { File f ->
+			String modelPath = f.getAbsolutePath()
+			String name = modelPath.substring(modelPath.lastIndexOf(File.separatorChar.toString()) + 1, modelPath.lastIndexOf("."))
+			if (!model.getComponent(name)) {
+				EventBDatabaseTranslator translator = new EventBDatabaseTranslator(model, modelPath);
+				model = translator.getModel()
+			}
+		}
+		return model
+	}
 
-		def pattern = Pattern.compile(".*${componentName}.bcc|.*${componentName}.bcm")
-
-		File zip = new File(zipfile)
+	private File createTempDir() {
 		final File tempdir = File.createTempDir("eventb-model","")
 
-		zip.unzip(tempdir.getAbsolutePath())
-
 		// the temporary directory will be deleted on shutdown of the JVM
-		Runtime.getRuntime().addShutdownHook(new Thread()
-				{
+		Runtime.getRuntime().addShutdownHook(new Thread() {
 					public void run()
 					{
 						tempdir.deleteDir()
 					}
 				});
-
-
-		def modelFiles = []
-		tempdir.traverse(nameFilter: pattern) { f -> modelFiles << f }
-		if (modelFiles.size() != 1) {
-			tempdir.deleteDir()
-			throw new IllegalArgumentException("The component name should reference exactly one component in the model.")
-		}
-
-		return load(modelFiles[0].getAbsolutePath(), prefs, loader);
+		tempdir
 	}
 
 	private class DummyElement extends AbstractElement {

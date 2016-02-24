@@ -6,6 +6,8 @@ import de.prob.prolog.term.PrologTerm
 
 class GetDottyForTransitionDiagramCmd extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "write_dotty_transition_diagram"
+
 	String expression
 	File tempFile
 	String content
@@ -17,7 +19,7 @@ class GetDottyForTransitionDiagramCmd extends AbstractCommand {
 
 	@Override
 	def void writeCommand(IPrologTermOutput pto) {
-		pto.openTerm("write_dotty_transition_diagram")
+		pto.openTerm(PROLOG_COMMAND_NAME)
 		pto.printAtom(expression)
 		pto.printAtom(tempFile.getAbsolutePath())
 		pto.closeTerm()

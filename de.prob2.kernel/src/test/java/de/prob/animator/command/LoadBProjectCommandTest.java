@@ -14,30 +14,28 @@ import org.junit.Test;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.scripting.ClassicalBFactory;
-import de.prob.scripting.FileHandler;
+import de.prob.scripting.ModelTranslationError;
 
 public class LoadBProjectCommandTest {
 
 	@Test
-	public void testWriteCommand() throws IOException, BException {
+	public void testWriteCommand() throws IOException, ModelTranslationError {
 		ClassLoader classLoader = getClass().getClassLoader();
 		URL resource = classLoader.getResource("examples/scheduler.mch");
 		File f = null;
 		try {
 			f = new File(resource.toURI());
 			StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
-			ClassicalBFactory factory = new ClassicalBFactory(null,
-					new FileHandler());
+			ClassicalBFactory factory = new ClassicalBFactory(null);
 			BParser bparser = new BParser();
 			Start ast = factory.parseFile(f, bparser);
-			RecursiveMachineLoader rml = factory.parseAllMachines(ast, f,
-					bparser);
+			RecursiveMachineLoader rml = factory.parseAllMachines(ast,
+					f.getParent(), f, bparser.getContentProvider(), bparser);
 
 			LoadBProjectCommand command = new LoadBProjectCommand(rml, f);
 			command.writeCommand(prologTermOutput);

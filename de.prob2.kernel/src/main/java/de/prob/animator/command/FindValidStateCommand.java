@@ -21,7 +21,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 		STATE_FOUND, NO_STATE_FOUND, INTERRUPTED, ERROR
 	};
 
-	private static final String COMMAND_NAME = "find_state_for_predicate";
+	private static final String PROLOG_COMMAND_NAME = "find_state_for_predicate";
 	private static final String RESULT_VARIABLE = "R";
 
 	private final IEvalElement predicate;
@@ -57,7 +57,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm(COMMAND_NAME);
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		if (predicate != null) {
 			predicate.printProlog(pto);
 		}

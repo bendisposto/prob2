@@ -1,7 +1,18 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
 import de.prob.model.eventb.Event.EventType
+import de.prob.model.eventb.algorithm.Procedure;
+import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.representation.BEvent
+import de.prob.model.representation.ElementComment
+import de.prob.model.representation.Invariant
+import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
+import de.prob.model.representation.Variable
+
+
 
 /**
  * The {@link MachineModifier} provides an API to programmatically modify or
@@ -28,152 +39,150 @@ import de.prob.model.representation.ModelElementList
  * </code>
  * @author Joy Clark
  */
-class MachineModifier extends AbstractModifier {
-	private invctr = 0
+public class MachineModifier extends AbstractModifier {
 	EventBMachine machine
 	EventBModel model
-	private eventModifiers = [:]
 
-	def MachineModifier(EventBMachine machine, List<Context> seenContexts=[], List<EventBMachine> refined=[]) {
-		this.machine = machine
-		this.machine.addSees(new ModelElementList<Context>(seenContexts))
-		this.machine.addRefines(new ModelElementList<EventBMachine>(refined))
+	public MachineModifier(EventBMachine machine, Set<IFormulaExtension> typeEnvironment = Collections.emptySet()) {
+		super(typeEnvironment)
+		this.machine = validate('machine',machine)
 	}
 
-	private String genInvLabel() {
-		return "i" + invctr++
+	private newMM(EventBMachine machine) {
+		new MachineModifier(machine, typeEnvironment)
 	}
 
-	def MachineModifier variables(String... variables) {
-		variables.each { variable it }
-		this
+	def MachineModifier setSees(ModelElementList<Context> seenContexts) {
+		newMM(machine.set(Context.class, validate("seenContexts", seenContexts)))
 	}
 
-	/** adds a variable */
-	def MachineModifier variable(String varName) {
-		machine.variables << new EventBVariable(varName, null)
-		this
+	def MachineModifier setRefines(EventBMachine refined) {
+		validate("refined", refined)
+		newMM(machine.set(Machine.class, new ModelElementList<EventBMachine>([refined])))
 	}
 
-	def MachineModifier var_block(LinkedHashMap properties) {
-		Map validated = validateProperties(properties, [name: String, invariant: Object, init: Object])
-		var_block(validated.name, validated.invariant, validated.init)
-	}
-
-	def MachineModifier var_block(String name, String invariant, String init) {
-		addVariable(name, invariant, init)
-		this
-	}
-
-	def MachineModifier var_block(String name, Map inv, Map init) {
-		variable(name)
-		invariant(inv)
-		initialisation({ action init })
-		this
-	}
-
-	/**
-	 * Adds a variable to the given machine.
-	 * @param variable to be added
-	 * @param typingInvariant to specify the type of the variable
-	 * @param initialisationAction to specify how the variable should be initialized
-	 * @return the new {@link VariableBlock} that has been created containing the new elements
-	 */
-	def VariableBlock addVariable(String variable, String typingInvariant, String initialisationAction) {
-		// proof obligations are invalidated by addInvariant
-		// if we could check whether typingInvariant is in fact only typing,
-		// we could remove just selected proof information
-		def var = new EventBVariable(variable, null)
-		machine.variables << var
-		def inv = addInvariant(typingInvariant)
-		def refinedEvent = machine.refines.isEmpty() ? null : machine.refines[0].events.INITIALISATION
-		def act = getInitialisation().addAction(initialisationAction)
-		def x = new VariableBlock(var, inv, act)
-	}
-
-	/**
-	 * Removes a variable and its typing/initialisation information from the machine
-	 * @param block containing the added variable, typing invariant, and initialisation
-	 * @return if the removal of all elements from the machine was successful.
-	 */
-	def boolean removeVariableBlock(VariableBlock block) {
-		// proof obligations are invalidated by removeInvariant
-		// if we could check whether typingInvariant is in fact only typing,
-		// we could remove just selected proof information
-		def a = machine.variables.remove(block.getVariable())
-		def b = removeInvariant(block.getTypingInvariant())
-		def c = machine.events.INITIALISATION.actions.remove(block.getInitialisationAction())
-		return a & b & c
-	}
-
-	def MachineModifier invariants(Map invariants) {
-		invariants.each { k,v ->
-			invariant(k,v)
+	def MachineModifier variables(String... variables) throws ModelGenerationException {
+		MachineModifier mm = this
+		validate("variables", variables).each {
+			mm = mm.variable(it)
 		}
-		this
+		mm
 	}
 
-	def MachineModifier invariants(String... invariants) {
-		invariants.each { invariant(it) }
-		this
+	def MachineModifier variable(String varName, String comment="") throws ModelGenerationException {
+		parseIdentifier(varName)
+		variable(new EventBVariable(varName, null, comment))
 	}
 
-	def MachineModifier theorems(Map invariants) {
-		invariants.each { k,v ->
-			theorem(k,v)
+	def MachineModifier variable(EventBVariable variable) throws ModelGenerationException {
+		newMM(machine.addTo(Variable.class, variable))
+	}
+
+	def MachineModifier var(LinkedHashMap properties) throws ModelGenerationException {
+		Map validated = validateProperties(validate("properties", properties), [name: String, invariant: Object, init: Object])
+		var(validated.name, validated.invariant, validated.init)
+	}
+
+	def MachineModifier var(final String name, String invariant, String init) throws ModelGenerationException {
+		MachineModifier mm = variable(name)
+		mm = mm.invariant("typing_$name", invariant)
+		mm = mm.initialisation({ action "init_$name", init })
+		mm
+	}
+
+	def MachineModifier var(String name, Map inv, Map init) throws ModelGenerationException {
+		MachineModifier mm = variable(name)
+		mm = mm.invariant(inv)
+		mm = mm.initialisation({ action init })
+		mm
+	}
+
+	def MachineModifier removeVariable(String name) {
+		def var = machine.variables.getElement(name)
+		var ? removeVariable(var) : this
+	}
+
+	def MachineModifier removeVariable(EventBVariable variable) {
+		newMM(machine.removeFrom(Variable.class, variable))
+	}
+
+	def MachineModifier invariants(Map invariants) throws ModelGenerationException {
+		MachineModifier mm = this
+		validate("invariants", invariants).each { k,v ->
+			mm = mm.invariant(k,v)
 		}
-		this
+		mm
 	}
 
-	def MachineModifier theorems(String... invariants) {
-		invariants.each { theorem(it) }
-		this
+	def MachineModifier invariants(String... invariants) throws ModelGenerationException {
+		MachineModifier mm = this
+		invariants.each {
+			mm = mm.invariant(it)
+		}
+		mm
 	}
 
-	def MachineModifier theorem(LinkedHashMap properties) {
+	def MachineModifier theorems(Map invariants) throws ModelGenerationException {
+		MachineModifier mm = this
+		invariants.each { k,v ->
+			mm = mm.theorem(k,v)
+		}
+		mm
+	}
+
+	def MachineModifier theorems(String... invariants) throws ModelGenerationException {
+		MachineModifier mm = this
+		invariants.each {
+			mm = mm.theorem(it)
+		}
+		mm
+	}
+
+	def MachineModifier theorem(LinkedHashMap properties) throws ModelGenerationException {
 		invariant(properties, true)
 	}
 
-	def MachineModifier theorem(String thm) {
-		invariant(thm, true)
+	def MachineModifier theorem(String thm) throws ModelGenerationException {
+		invariant(validate("thm", thm), true)
 	}
 
-	def MachineModifier invariant(LinkedHashMap properties, boolean theorem=false) {
+	def MachineModifier theorem(String name, String pred) throws ModelGenerationException {
+		invariant(validate("name", name), validate("pred", pred), true)
+	}
+
+	def MachineModifier invariant(LinkedHashMap properties, boolean theorem=false) throws ModelGenerationException {
 		Definition prop = getDefinition(properties)
 		return invariant(prop.label, prop.formula, theorem)
 	}
 
-	def MachineModifier invariant(String pred, boolean theorem=false) {
-		invariant(genInvLabel(), pred, theorem)
+	def MachineModifier invariant(String pred, boolean theorem=false) throws ModelGenerationException {
+		invariant(theorem ? "thm0" : "inv0", validate("pred", pred), theorem)
 	}
 
-	def MachineModifier invariant(String name, String pred, boolean theorem=false) {
-		addInvariant(name, pred, theorem)
-		this
+	def MachineModifier invariant(String name, String predicate, boolean theorem=false, String comment="") throws ModelGenerationException {
+		validateAll(name, predicate)
+		invariant(new EventBInvariant(name, parsePredicate(predicate), theorem, comment))
 	}
 
-	def EventBInvariant addInvariant(String predicate, boolean theorem=false) {
-		addInvariant(genInvLabel(), predicate, theorem)
-	}
-
-	/**
-	 * Adds an invariant to a given machine
-	 * @param predicate to be added as an invariant
-	 * @return the {@link EventBInvariant} object that has been added to the machine
-	 */
-	def EventBInvariant addInvariant(String name, String predicate, boolean theorem=false) {
-		// all proof information regarding invariant preservation might now be wrong - remove
-		def iterator = machine.proofs.iterator()
-		while(iterator.hasNext()) {
-			if(iterator.next().name.endsWith("/INV")) {
-				iterator.remove()
-			}
+	def MachineModifier invariant(EventBInvariant invariant) {
+		def newproofs = machine.getProofs().findAll { ProofObligation po ->
+			!po.getName().endsWith("/INV")
 		}
 
-		def invariant = new EventBInvariant(name, predicate, theorem, Collections.emptySet())
-		machine.invariants << invariant
-		machine.allInvariants << invariant
-		invariant
+		def inv = invariant
+		def uniqueName = getUniqueName(invariant.getName(), machine.getAllInvariants())
+		if (uniqueName != invariant.getName()) {
+			inv = new EventBInvariant(uniqueName, invariant.getPredicate(), invariant.isTheorem(), invariant.getComment())
+		}
+
+		machine = machine.addTo(Invariant.class, inv)
+		machine = machine.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs))
+		newMM(machine)
+	}
+
+	def MachineModifier removeInvariant(String name) {
+		def inv = machine.invariants.getElement(name)
+		inv ? removeInvariant(inv) : this
 	}
 
 	/**
@@ -181,120 +190,99 @@ class MachineModifier extends AbstractModifier {
 	 * @param invariant to be removed
 	 * @return whether or not the removal was successful
 	 */
-	def boolean removeInvariant(EventBInvariant invariant) {
+	def MachineModifier removeInvariant(EventBInvariant invariant) {
 		// only variant well-definedness may not use existing invariants in a prove
 		// thus, these seem to be the only proof obligations we can keep
-		def iterator = machine.proofs.iterator()
-		while(iterator.hasNext()) {
-			if(!iterator.next().name.endsWith("/VWD")) {
-				iterator.remove()
-			}
+		def newproofs = machine.getProofs().findAll { po ->
+			po.getName().equals("VWD")
 		}
 
-		def a = machine.allInvariants.remove(invariant)
-		def b = machine.invariants.remove(invariant)
-		return a && b
+		newMM(machine.removeFrom(Invariant.class, invariant)
+				.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs)))
 	}
 
-	def MachineModifier variant(String expression) {
-		setVariant(expression)
-		return this
+	def MachineModifier variant(String expression, String comment="") throws ModelGenerationException {
+		variant(new Variant(parseExpression(expression), comment))
 	}
 
-	def Variant setVariant(String expression) {
-		def variant = new Variant(expression, Collections.emptySet())
-		machine.addVariant(new ModelElementList([variant]))
-		return variant
+	def MachineModifier variant(Variant variant) {
+		def mm = removePOsForVariant()
+		newMM(mm.getMachine().set(Variant.class, new ModelElementList([variant])))
 	}
 
-	def boolean removeVariant(Variant variant) {
-		machine.variant = null
-		return machine.getChildrenOfType(Variant.class).remove(variant)
+	def MachineModifier removePOsForVariant() {
+		def newproofs = machine.getProofs().findAll { po ->
+			!(po.getName().equals("VWD") ||
+					po.getName().equals("FIN") ||
+					po.getName().endsWith("/VAR") ||
+					po.getName().endsWith("/NAT"))
+		}
+
+		newMM(machine.set(ProofObligation.class, new ModelElementList<ProofObligation>(newproofs)))
 	}
 
-	def MachineModifier initialisation(LinkedHashMap properties) {
+	def MachineModifier removeVariant(Variant variant) {
+		if (!machine.getChildrenOfType(Variant.class).contains(variant)) {
+			return this
+		}
+		def mm = removePOsForVariant()
+		newMM(mm.getMachine().removeFrom(Variant.class, variant))
+	}
+
+	def MachineModifier initialisation(LinkedHashMap properties, Closure cls={}) throws ModelGenerationException {
 		if (properties["extended"] == true) {
-			getInitialisation(true)
+			return initialisation(cls,true)
 		}
 		this
 	}
 
-	def MachineModifier initialisation(Closure cls) {
-		getInitialisation().make(cls)
-		this
+	def MachineModifier initialisation(Closure cls, boolean extended=false) throws ModelGenerationException {
+		def refines = machine.getRefines().isEmpty() ? null : "INITIALISATION"
+		event("INITIALISATION", refines, EventType.ORDINARY, extended, null, validate("cls",cls))
 	}
 
-	def MachineModifier refine(LinkedHashMap properties, Closure cls={}) {
+	def MachineModifier refine(LinkedHashMap properties, Closure cls={}) throws ModelGenerationException {
+		validate("properties", properties)
 		properties["refines"] = properties["name"]
-		event(properties, cls)
+		event(properties, validate("cls", cls))
 	}
 
-	def MachineModifier event(LinkedHashMap properties, Closure cls={}) {
-		validateProperties(properties, [name: String])
-		def refinedEvent = properties["refines"]
-		def event
-		if (refinedEvent != null) {
-			machine.refines.each {
-				def e = it.events.find { it.getName() == refinedEvent}
-				if (e != null ) {
-					event = e
-				}
-			}
-		}
-		def type = properties["type"] ?: EventType.ORDINARY
+	def MachineModifier event(LinkedHashMap properties, Closure cls={}) throws ModelGenerationException {
+		def props = validateProperties(properties, [name: String, refines: [String, null],
+			extended: [Boolean, false], comment: [String, null], type: [
+				EventType,
+				EventType.ORDINARY
+			]])
 
-		if (refinedEvent != null && event == null) {
-			throw new IllegalArgumentException("Tried to refine event $refinedEvent with $eventName, but could not find event in the refined machine ")
-		}
-
-		getEvent(properties["name"], properties["extended"] == true, event).make(cls).setType(type)
-		this
+		event(props["name"], props["refines"], props["type"],props["extended"],props["comment"], validate("cls",cls))
 	}
 
-	def EventModifier getInitialisation(boolean extended=false) {
-		def refinedEvent = machine.refines.isEmpty() ? null : machine.refines[0].events.INITIALISATION
-		getEvent("INITIALISATION", extended, refinedEvent)
+	def MachineModifier event(String name, String refinedEvent, EventType type, boolean extended, String comment=null,Closure cls={} ) throws ModelGenerationException {
+		validateAll(name, type, cls)
+		if (refinedEvent && machine.refines.size() != 1) {
+			throw new IllegalArgumentException("Machine refinement hierarchy is incorrect. Could not find Event $refinedEvent to refine")
+		}
+		if (refinedEvent && !machine.refines[0].getEvent(refinedEvent)) {
+			throw new IllegalArgumentException("The event $refinedEvent does not exist in the refined machine and therefore cannot be refined in the existing context.")
+		}
+		def event = machine.getEvent(name) ?: new Event(name, type, extended)
+		def em = new EventModifier(event, "INITIALISATION" == name, typeEnvironment).setType(type)
+		em = refinedEvent ? em.refines(machine.refines[0].getEvent(refinedEvent), extended) : em
+		em = em.addComment(comment).make(cls)
+
+		addEvent(em.getEvent())
 	}
 
-	/**
-	 * This method searches for the {@link Event} with the specified name in the
-	 * {@link EventBMachine}. If found, an {@link EventModifier} is created to allow the
-	 * modification of the specified event. Otherwise, an {@link Event} is added to the
-	 * machine via {@link #addEvent(String)}
-	 * @param name of event to be added
-	 * @return an {@link EventModifier} to modify the specified {@link Event}
-	 */
-	def EventModifier getEvent(String name, boolean extended= false, Event refinedEvent= null) {
-		if (eventModifiers[name]) {
-			return eventModifiers[name]
+	def MachineModifier addEvent(Event event) {
+		if (machine.getEvent(event.getName())) {
+			return replaceEvent(machine.getEvent(event.getName()), event)
 		}
-		if (machine.events.hasProperty(name)) {
-			def x = new EventModifier(machine.events.getProperty(name), name == "INITIALISATION")
-			eventModifiers[name] = x
-			return x
-		}
-		eventModifiers[name] = addEvent(name, extended, refinedEvent)
-		eventModifiers[name]
+		newMM(removePOsForEvent(event.getName()).getMachine().addTo(BEvent.class, event))
 	}
 
-	/**
-	 * Creates a new {@link Event} object and adds it to the machine.
-	 * An {@link EventModifier} object is then created and returned to allow
-	 * the modification of the specified {@link Event}.
-	 * @param name of event to be added
-	 * @return an {@link EventModifier} to modify the specified {@link Event}
-	 */
-	def EventModifier addEvent(String name, boolean extended=false, Event refinedEvent=null) {
-		removePOsForEvent(name)
-		Event event = new Event(machine, name, EventType.ORDINARY, false)
-		event.addActions(new ModelElementList<EventBAction>())
-		event.addGuards(new ModelElementList<EventBGuard>())
-		event.addParameters(new ModelElementList<EventParameter>())
-		def refines = refinedEvent ? [refinedEvent]: []
-		event.addRefines(new ModelElementList<Event>(refines))
-		event.addWitness(new ModelElementList<Witness>())
-		machine.events << event
-		new EventModifier(event, name == "INITIALISATION")
+	def MachineModifier replaceEvent(Event oldEvent, Event newEvent) {
+		def mm = removePOsForEvent(oldEvent.name)
+		newMM(mm.getMachine().replaceIn(BEvent.class, oldEvent, newEvent))
 	}
 
 	/**
@@ -302,18 +290,21 @@ class MachineModifier extends AbstractModifier {
 	 * the specified event for copying. The new {@link Event} object will
 	 * have the specified name. If an existing {@link Event} in the machine
 	 * has the same name, this will be overwritten.
-	 * @param event to be duplicated
+	 * @param name of the event to be duplicated
 	 * @param newName of the cloned event
-	 * @return {@link EventModifier} object of the duplicated event to allow
-	 * for further modification
 	 */
-	def EventModifier duplicateEvent(Event event, String newName) {
-		removePOsForEvent(newName)
-		Event event2 = ModelModifier.cloneEvent(machine, event, newName)
-		machine.events << event2
-		def modifier = new EventModifier(event2)
-		eventModifiers[newName] = modifier
-		return modifier
+	def MachineModifier duplicateEvent(String eventName, String newName) {
+		validateAll(eventName, newName)
+		Event event = machine.getEvent(eventName)
+		if (!event) {
+			throw new IllegalArgumentException("Can only duplicate an event that exists! Event with name $eventName was not found.")
+		}
+		addEvent(new Event(newName, event.type, event.extended, event.children))
+	}
+
+	def MachineModifier removeEvent(String name) {
+		def evt = machine.events.getElement(name)
+		evt ? removeEvent(evt) : this
 	}
 
 	/**
@@ -321,28 +312,37 @@ class MachineModifier extends AbstractModifier {
 	 * @param event to be removed
 	 * @return whether or not the removal was successful
 	 */
-	def boolean removeEvent(Event event) {
-		removePOsForEvent(event.name)
-		return machine.events.remove(event)
+	def MachineModifier removeEvent(Event event) {
+		MachineModifier mm = removePOsForEvent(event.name)
+		newMM(mm.getMachine().removeFrom(BEvent.class, event))
 	}
 
-	def removePOsForEvent(String name) {
-		def iterator = machine.proofs.iterator()
-		while(iterator.hasNext()) {
-			if(iterator.next().name.startsWith(name)) {
-				iterator.remove()
+	def MachineModifier removePOsForEvent(String name) {
+		def proofs = machine.getProofs()
+		proofs.each {
+			if (it.name.startsWith(validate('name', name) + "/")) {
+				proofs = proofs.removeElement(it)
 			}
 		}
+		newMM(machine.set(ProofObligation.class, proofs))
 	}
 
-	def List<EventModifier> getEvents() {
-		return machine.events.collect { new EventModifier(it) }
+	def MachineModifier addComment(String comment) {
+		comment ? newMM(machine.addTo(ElementComment.class, new ElementComment(comment))) : this
 	}
 
-	def MachineModifier make(Closure definition) {
+	def MachineModifier algorithm(Closure definition) throws ModelGenerationException {
+		newMM(machine.addTo(Block.class, new Block([],typeEnvironment).make(definition)))
+	}
+
+	def MachineModifier algorithm(Block algorithm) {
+		newMM(machine.addTo(Block.class, algorithm))
+	}
+
+	def MachineModifier make(Closure definition) throws ModelGenerationException {
 		runClosure definition
-		this
 	}
+
 
 
 }

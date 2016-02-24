@@ -3,6 +3,8 @@ package de.prob.scripting
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
+import java.util.zip.ZipInputStream
+
 
 
 /**
@@ -102,5 +104,46 @@ class FileHandler {
 	 */
 	def void setContent(String fileName, content) {
 		setFileText(fileName, writer.toJson(content))
+	}
+
+	def static defineUnzip() {
+		File.metaClass.unzip = { String dest ->
+			//in metaclass added methods, 'delegate' is the object on which
+			//the method is called. Here it's the file to unzip
+			def result = new ZipInputStream(new FileInputStream(delegate))
+			def destFile = new File(dest)
+			if(!destFile.exists()){
+				destFile.mkdir();
+			}
+			result.withStream{
+				def entry
+				while(entry = result.nextEntry){
+					if (!entry.isDirectory()){
+						new File(dest + File.separator + entry.name).parentFile?.mkdirs()
+						def output = new FileOutputStream(dest + File.separator
+								+ entry.name)
+						output.withStream{
+							int len = 0;
+							byte[] buffer = new byte[4096]
+							while ((len = result.read(buffer)) > 0){
+								output.write(buffer, 0, len);
+							}
+						}
+					}
+					else {
+						new File(dest + File.separator + entry.name).mkdir()
+					}
+				}
+			}
+		}
+	}
+
+	def void extractZip(File zip, String targetDirPath) {
+		defineUnzip()
+		zip.unzip(targetDirPath)
+	}
+
+	def void extractZip(String pathToZip, String targetDirPath) {
+		extractZip(new File(pathToZip), targetDirPath)
 	}
 }

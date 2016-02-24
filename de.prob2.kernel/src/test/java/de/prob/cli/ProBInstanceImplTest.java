@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.io.BufferedReader;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class ProBInstanceImplTest extends AbstractUnitTest {
 		Long userInterruptRef = 1234L;
 		try {
 			cli = new ProBInstance(process, reader, userInterruptRef,
-					connection, "", osinfo);
+					connection, "", osinfo, new AtomicInteger());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

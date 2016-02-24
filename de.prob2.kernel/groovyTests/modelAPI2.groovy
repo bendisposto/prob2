@@ -4,42 +4,52 @@ import de.prob.model.eventb.ModelModifier
 import de.prob.statespace.*
 
 
-m = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
-assert m.getMainComponent() != null
-s = m as StateSpace
+s = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
+assert s.getMainComponent() != null
+m = s as EventBModel
 
-modelModifier = new ModelModifier(m)
-m.getStateSpace().animator.cli.shutdown()
-machineModifier = modelModifier.getMachine("EmptyMachine")
+mm = new ModelModifier(m).make {
+	machine(name: "EmptyMachine") {
+		var "x", "x : NAT", "x := 0"
+		
+		event(name: "event1") {
+			when g: "x > 0"
+			then "x := x + 2"
+		}
+		
+		event(name: "event2") {
+			when g: "x > 0"
+			then "x := x + 1"
+		}
+	}
+}
 
-machineModifier.addVariable("x", "x : NAT", "x := 0")
-eventM = machineModifier.addEvent("event1")
-guard = eventM.addGuard("x > 0")
-act = eventM.addAction("x := x + 2")
-eventM2 = machineModifier.addEvent("event2")
-guard2 = eventM2.addGuard("x > 0")
-assert guard == guard2
-act2 = eventM2.addAction("x := x + 1")
-m = modelModifier.getModifiedModel()
-t = m as Trace
+m = mm.getModel()
+s = m.load(m.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 assert !t.canExecuteEvent("event1", [])
 assert !t.canExecuteEvent("event2", [])
 
-modelModifier = new ModelModifier(m)
-m.getStateSpace().animator.cli.shutdown()
-machineModifier = modelModifier.getMachine("EmptyMachine")
+mm = mm.make {
+	machine(name: "EmptyMachine") {
+		event(name: "event1") {
+			removeGuard "g"
+		}
+		
+		event(name: "event2") {
+			removeGuard "g"
+		}
+	}
+}
 
-events = machineModifier.getMachine().events.findAll { it.getName() != "INITIALISATION" }
-assert events.size() == 2
-events.each { assert machineModifier.getEvent(it.getName()).removeGuard(guard) }
-m = modelModifier.getModifiedModel()
-t = m as Trace
+m = mm.getModel()
+s = m.load(m.EmptyMachine)
+t = s as Trace
 t = t.$initialise_machine()
 assert t.canExecuteEvent("event1", [])
 assert t.canExecuteEvent("event2", [])
 t = t.event1().event1().event2()
 assert t.evalCurrent("x").value == "5"
 
-m.getStateSpace().animator.cli.shutdown()
 "the model API works correctly"

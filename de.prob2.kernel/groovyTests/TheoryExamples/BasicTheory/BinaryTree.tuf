@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.theory.core.theoryRoot org.eventb.core.comment="A simple theory of binary trees.&#10;&#10;@author Issam Maamria, Michael Butler&#10;@June 2014" org.eventb.core.configuration="org.eventb.theory.core.thy">
+<org.eventb.theory.core.typeParameter name="'" org.eventb.core.identifier="T"/>
+<org.eventb.theory.core.datatypeDefinition name="(" org.eventb.core.identifier="Tree">
+<org.eventb.theory.core.typeArgument name="'" org.eventb.theory.core.givenType="T"/>
+<org.eventb.theory.core.datatypeConstructor name="(" org.eventb.core.identifier="empty"/>
+<org.eventb.theory.core.datatypeConstructor name=")" org.eventb.core.identifier="tree">
+<org.eventb.theory.core.constructorArgument name="'" org.eventb.core.identifier="left" org.eventb.theory.core.type="Tree(T)"/>
+<org.eventb.theory.core.constructorArgument name="(" org.eventb.core.identifier="val" org.eventb.theory.core.type="T"/>
+<org.eventb.theory.core.constructorArgument name=")" org.eventb.core.identifier="right" org.eventb.theory.core.type="Tree(T)"/>
+</org.eventb.theory.core.datatypeConstructor>
+</org.eventb.theory.core.datatypeDefinition>
+<org.eventb.theory.core.newOperatorDefinition name=")" org.eventb.core.comment="tree depth operator" org.eventb.core.label="treeDepth" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="Tree(T)" org.eventb.core.identifier="t"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.theory.core.inductiveArgument="t">
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="empty" org.eventb.theory.core.formula="0"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="tree(l,v,r)" org.eventb.theory.core.formula="1+max({treeDepth(l), treeDepth(r)})"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="*" org.eventb.core.label="mirror" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.recursiveOperatorDefinition name="'" org.eventb.theory.core.inductiveArgument="t">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="empty" org.eventb.theory.core.formula="empty ⦂ Tree(T)"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="tree(l,v,r)" org.eventb.theory.core.formula="tree(mirror(r),v,mirror(l))"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+<org.eventb.theory.core.operatorArgument name="(" org.eventb.core.expression="Tree(T)" org.eventb.core.identifier="t"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.proofRulesBlock name="," org.eventb.core.label="rulesBlock1">
+<org.eventb.theory.core.metaVariable name="'" org.eventb.core.identifier="t" org.eventb.theory.core.type="Tree(T)"/>
+<org.eventb.theory.core.rewriteRule name="(" org.eventb.core.label="rew1" org.eventb.theory.core.applicability="both" org.eventb.theory.core.complete="true" org.eventb.theory.core.desc="mirror mirror" org.eventb.theory.core.formula="mirror(mirror(t))">
+<org.eventb.theory.core.rewriteRuleRHS name="'" org.eventb.core.label="rhs1" org.eventb.core.predicate="⊤" org.eventb.theory.core.formula="t"/>
+</org.eventb.theory.core.rewriteRule>
+</org.eventb.theory.core.proofRulesBlock>
+</org.eventb.theory.core.theoryRoot>

@@ -7,6 +7,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public class RegisterFormulaCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "register_prob2_formula";
 	private final IEvalElement formula;
 
 	public RegisterFormulaCommand(final IEvalElement formula) {
@@ -15,7 +16,7 @@ public class RegisterFormulaCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("register_prob2_formula");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		formula.getFormulaId().printUUID(pto);
 		pto.openTerm("eval");
 		formula.printProlog(pto);

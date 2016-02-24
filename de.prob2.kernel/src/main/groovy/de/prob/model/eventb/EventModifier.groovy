@@ -1,97 +1,125 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
+import de.prob.animator.domainobjects.EvalElementType
+import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event.EventType
+import de.prob.model.representation.Action
+import de.prob.model.representation.ElementComment
+import de.prob.model.representation.Guard
+import de.prob.model.representation.ModelElementList
 
-
-
-
-class EventModifier extends AbstractModifier {
-	private actctr = 0
-	private grdctr = 0
+public class EventModifier extends AbstractModifier {
 	def Event event
 	boolean initialisation
 
-	def EventModifier(Event event, initialisation=false) {
-		this.event = event
+	public EventModifier(Event event, boolean initialisation=false, Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+		super(typeEnvironment)
 		this.initialisation = initialisation
-	}
-	
-	private String genActLabel() {
-		return "ac" + actctr++
-	}
-	
-	private String genGrdLabel() {
-		return "g" + grdctr++
-	}
-	
-	def EventModifier when(Map g) {
-		guards(g)
-	}
-	
-	def EventModifier when(String... g) {
-		guards(g)
-	}
-	
-	def EventModifier where(Map g) { 
-		guards(g)
-	}
-	
-	def EventModifier where(String... g) {
-		guards(g)
-	}
-	
-	def EventModifier guards(Map guards) {
-		guards.each { k,v ->
-			guard(k,v)
-		}
-		this
-	}
-	
-	def EventModifier guards(String... grds) {
-		grds.each {
-			guard(it)
-		}
-		this
-	}
-	
-	def EventModifier theorem(LinkedHashMap properties) {
-		guard(properties, true)
-	}
-	
-	def EventModifier theorem(String pred) {
-		guard(genGrdLabel(), pred, true)		
+		this.event = event
 	}
 
-	def EventModifier guard(LinkedHashMap properties, boolean theorem=false) {
+	private EventModifier newEM(Event event) {
+		return new EventModifier(event, initialisation, typeEnvironment)
+	}
+
+	def EventModifier refines(Event refinedEvent, boolean extended) {
+		validate('refinedEvent', refinedEvent)
+		Event e = event.toggleExtended(extended)
+		e = e.set(Event.class, new ModelElementList<Event>([refinedEvent]))
+		if (extended) {
+			def actions = refinedEvent.getAllActions()
+			if (e.actions) {
+				def acts = e.actions.inject([]) { List<EventBAction> added, EventBAction a ->
+					def newName = getUniqueName(a.getName(), actions + added)
+					def newA = newName == a.getName() ? a : new EventBAction(newName, a.getCode(), a.getComment())
+					added << newA
+				}
+				e = e.set(Action.class, new ModelElementList<EventBAction>(acts))
+			}
+			def guards = refinedEvent.getAllGuards()
+			if (e.guards) {
+				def grds = e.guards.inject([]) { List<EventBGuard> added, EventBGuard g ->
+					def newName = getUniqueName(g.getName(), guards + added)
+					def newG = newName == g.getName() ? g : new EventBGuard(newName, g.getPredicate(), g.isTheorem(), g.getComment())
+					added << newG
+				}
+				e = e.set(Guard.class, new ModelElementList<EventBGuard>(grds))
+			}
+		}
+		newEM(e)
+	}
+
+	def EventModifier when(LinkedHashMap g) throws ModelGenerationException {
+		guards(g)
+	}
+
+	def EventModifier when(String... conditions) throws ModelGenerationException {
+		guards(validate('conditions',conditions))
+	}
+
+	def EventModifier where(LinkedHashMap g) throws ModelGenerationException {
+		guards(g)
+	}
+
+	def EventModifier where(String... conditions) throws ModelGenerationException {
+		guards(validate('conditions',conditions))
+	}
+
+	def EventModifier guards(LinkedHashMap guards) throws ModelGenerationException {
+		EventModifier em = this
+		guards.each { k,v ->
+			em = em.guard(k,v)
+		}
+		em
+	}
+
+	def EventModifier guards(String... guards) throws ModelGenerationException {
+		EventModifier em = this
+		validate('guards', guards).each {
+			em = em.guard(it)
+		}
+		em
+	}
+
+	def EventModifier theorem(LinkedHashMap theorem) throws ModelGenerationException {
+		guard(theorem, true)
+	}
+
+	def EventModifier theorem(String theorem) throws ModelGenerationException {
+		guard(validate('theorem',theorem), true)
+	}
+
+	def EventModifier guard(String pred, boolean theorem=false) throws ModelGenerationException {
+		guard(theorem ? "thm0" : "grd0", pred, theorem)
+	}
+
+	def EventModifier guard(EventB predicate, boolean theorem=false) throws ModelGenerationException {
+		guard(theorem ? "thm0" : "grd0", predicate, theorem)
+	}
+
+	def EventModifier guard(LinkedHashMap properties, boolean theorem=false) throws ModelGenerationException {
 		Definition prop = getDefinition(properties)
 		return guard(prop.label, prop.formula, theorem)
 	}
-	
-	def EventModifier guard(String pred, boolean theorem=false) {
-		guard(genGrdLabel(), pred, theorem)
+
+	def EventModifier guard(String name, String pred, boolean theorem=false, String comment="") throws ModelGenerationException {
+		guard(name, parsePredicate(pred), theorem, comment)
 	}
 
-	def EventModifier guard(String name, String pred, boolean theorem=false) {
-		addGuard(name, pred, theorem)
-		this
-	}
-
-	/**
-	 * Add a guard to an event
-	 * @param predicate to be added as guard
-	 * @return {@link EventBGuard} that has been added to the event
-	 */
-	def EventBGuard addGuard(String predicate, boolean theorem=false) {
-		addGuard(genGrdLabel(), predicate, theorem)
-	}
-	
-	def EventBGuard addGuard(String name, String pred, boolean theorem=false) {
+	def EventModifier guard(String name, EventB pred, boolean theorem=false, String comment="") throws ModelGenerationException {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot at a guard to INITIALISATION")
 		}
-		def guard = new EventBGuard(event, name, pred, theorem, Collections.emptySet())
-		event.guards << guard
-		guard
+		def n = validate('name', name)
+		def guard = new EventBGuard(getUniqueName(n, event.getAllGuards()), ensureType(pred, EvalElementType.PREDICATE), theorem, comment)
+		newEM(event.addTo(Guard.class, guard))
+	}
+
+	def EventModifier removeGuard(String name) {
+		def grd = event.guards.getElement(name)
+		grd ? removeGuard(grd) : this
 	}
 
 	/**
@@ -99,62 +127,64 @@ class EventModifier extends AbstractModifier {
 	 * @param guard to be removed
 	 * @return whether or not the removal was successful
 	 */
-	def boolean removeGuard(EventBGuard guard) {
-		return event.guards.remove(guard)
-	}
-	
-	def EventModifier then(Map acts) {
-		actions(acts)
-	}
-	
-	def EventModifier then(String... acts) {
-		actions(acts)
-	}
-	
-	def EventModifier actions(Map actions) {
-		actions.each { k,v ->
-			action(k,v)
-		}
-		this
-	}
-	
-	def EventModifier actions(String... actions) {
-		actions.each {
-			action(it)
-		}
-		this
+	def EventModifier removeGuard(EventBGuard guard) {
+		newEM(event.removeFrom(Guard.class, guard))
 	}
 
-	def EventModifier action(LinkedHashMap properties) {
+	def EventModifier then(LinkedHashMap assignments) throws ModelGenerationException {
+		actions(assignments)
+	}
+
+	def EventModifier then(String... assignments) throws ModelGenerationException {
+		actions(validate('assignments',assignments))
+	}
+
+	def EventModifier actions(LinkedHashMap actions) throws ModelGenerationException {
+		EventModifier em = this
+		actions.each { k,v ->
+			em = em.action(k,v)
+		}
+		em
+	}
+
+	def EventModifier actions(String... actions) throws ModelGenerationException {
+		EventModifier em = this
+		validate('actions',actions).each {
+			em = em.action(it)
+		}
+		em
+	}
+
+	def EventModifier action(LinkedHashMap properties) throws ModelGenerationException {
 		Definition prop = getDefinition(properties)
 		return action(prop.label, prop.formula)
 	}
 
-	def EventModifier action(String actionString) {
-		action(genActLabel(), actionString)
-		this
+	def EventModifier action(String actionString) throws ModelGenerationException {
+		action("act0", actionString)
 	}
-	
-	def EventModifier action(String name, String action) {
-		addAction(name, action)
-		this
-	}
-	
 
-
-	/**
-	 * Add an action to an event
-	 * @param action to be added to the event
-	 * @return the {@link EventBAction} that has been added to the {@link Event}
-	 */
-	def EventBAction addAction(String action) {
-		addAction(genActLabel(), action)
+	def EventModifier action(EventB act) throws ModelGenerationException {
+		action("act0", act)
 	}
-	
-	def EventBAction addAction(String name, String action) {
-		def a = new EventBAction(event, name, action, Collections.emptySet())
-		event.actions << a
-		a
+
+	def EventModifier action(String name, String act, String comment="") throws ModelGenerationException {
+		action(name, parseFormula(act, EvalElementType.ASSIGNMENT), comment)
+	}
+
+	def EventModifier action(String name, EventB act, String comment="") throws ModelGenerationException {
+		def n = validate('name', name)
+		def a = new EventBAction(getUniqueName(n, event.getAllActions()), ensureType(act, EvalElementType.ASSIGNMENT), comment)
+		action(a)
+	}
+
+	def EventModifier action(EventBAction act) {
+		newEM(event.addTo(Action.class, act))
+	}
+
+	def EventModifier removeAction(String name) {
+		def act = event.actions.getElement(name)
+		act ? removeAction(act) : this
 	}
 
 	/**
@@ -162,70 +192,73 @@ class EventModifier extends AbstractModifier {
 	 * @param action to be removed
 	 * @return whether or not the removal was successful
 	 */
-	def boolean removeAction(EventBAction action) {
-		return event.actions.remove(action)
-	}
-	
-	def EventModifier parameters(String... parameters) {
-		parameters.each {
-			parameter(it)
-		}
-		this
+	def EventModifier removeAction(EventBAction action) {
+		newEM(event.removeFrom(Action.class, action))
 	}
 
-	def EventModifier parameter(String parameter) {
+	def EventModifier any(String... params) throws ModelGenerationException {
+		parameters(validate('params', params))
+	}
+
+	def EventModifier parameters(String... parameters) throws ModelGenerationException {
+		EventModifier em = this
+		validate('parameters', parameters).each {
+			em = em.parameter(it)
+		}
+		em
+	}
+
+	def EventModifier parameter(String parameter, String comment="") throws ModelGenerationException {
 		if (initialisation) {
 			throw new IllegalArgumentException("Cannot add parameter to initialisation.")
 		}
-		def param = new EventParameter(event, parameter)
-		event.parameters << param
-		this
+		parseIdentifier(parameter)
+		def param = new EventParameter(parameter, comment)
+		newEM(event.addTo(EventParameter.class, param))
 	}
 
-	/**
-	 * Add a parameter to an event
-	 * @param parameter to be added to the event
-	 * @return the {@link ParameterBlock} containing the elements added to the event
-	 */
-	def ParameterBlock addParameter(String parameter, String typingGuard) {
-		if (initialisation) {
-			throw new IllegalArgumentException("Cannot add parameter to initialisation.")
-		}
-		def param = new EventParameter(event, parameter)
-		event.parameters << param
-		def guard = addGuard(typingGuard)
-		new ParameterBlock(param, guard)
+	def EventModifier removeParameter(String name) {
+		def param = event.parameters.getElement(name)
+		param ? removeParameter(param) : this
 	}
 
-	/**
-	 * Remove a parameter and its typing guard (contained in the {@link ParameterBlock})
-	 * from the event
-	 * @param block containing the elements to be removed
-	 * @return whether or not the removal was successful
-	 */
-	def boolean removeParameter(ParameterBlock block) {
-		def a = event.parameters.remove(block.parameter)
-		def b = event.guards.remove(block.typingGuard)
-		return a & b
+	def EventModifier removeParameter(EventParameter parameter) {
+		newEM(event.removeFrom(EventParameter.class, parameter))
 	}
-	
-	def EventModifier witness(Map properties) {
+
+	def EventModifier with(String name, String predicate) throws ModelGenerationException {
+		witness(validate('name',name), validate('predicate',predicate))
+	}
+
+	def EventModifier witness(LinkedHashMap properties, String comment="") throws ModelGenerationException {
 		Map validated = validateProperties(properties, [for: String, with: String])
-		witness(validated.for, validated.with)
-	}
-	
-	def EventModifier witness(String name, String code) {
-		event.witnesses << new Witness(event, name, code, Collections.emptySet())
-		this
-	}
-	
-	def EventModifier setType(EventType type) {
-		event.type = type
-		this
+		witness(validated.for, validated.with,comment)
 	}
 
-	def EventModifier make(Closure definition) {
+		def EventModifier witness(String name, String predicate, String comment="") throws ModelGenerationException {
+		parseIdentifier(name) // the label for a witness must be an abstract variable
+		def w = new Witness(name, parsePredicate(predicate), comment)
+		newEM(event.addTo(Witness.class, w))
+	}
+
+	def EventModifier removeWitness(String name) {
+		def wit = event.witnesses.getElement(name)
+		wit ? removeWitness(wit) : this
+	}
+
+	def EventModifier removeWitness(Witness w) {
+		newEM(event.removeFrom(Witness.class, w))
+	}
+
+	def EventModifier setType(EventType type) {
+		newEM(event.changeType(validate('type', type)))
+	}
+
+	def EventModifier addComment(String comment) {
+		comment ? newEM(event.addTo(ElementComment.class, new ElementComment(comment))) : this
+	}
+
+	def EventModifier make(Closure definition) throws ModelGenerationException {
 		runClosure definition
-		this
 	}
 }

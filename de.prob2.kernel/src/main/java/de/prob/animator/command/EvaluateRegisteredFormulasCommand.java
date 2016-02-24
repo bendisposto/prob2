@@ -16,6 +16,7 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
+	private static final String PROLOG_COMMAND_NAME = "evaluate_registered_formulas";
 	private final String RESULTS = "Results";
 	private final String stateId;
 	private final Map<IEvalElement, AbstractEvalResult> results = new HashMap<IEvalElement, AbstractEvalResult>();
@@ -29,7 +30,7 @@ public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("evaluate_registered_formulas");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtomOrNumber(stateId);
 		pto.openList();
 		for (IEvalElement formula : formulas) {

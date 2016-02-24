@@ -4,32 +4,30 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 model_check = { job ->
 	checker = new ModelChecker(job)
 	checker.start()
-	checker.getResult()
+	checker
 }
 
-res = model_check(new ConsistencyChecker(s))
+checker = model_check(new ConsistencyChecker(s))
+res = checker.getResult()
 assert res instanceof ModelCheckOk
+coverage = checker.getCoverage()
+assert coverage != null
 
-s.animator.cli.shutdown();
+s = api.eventb_load(dir+File.separator+"machines"+File.separator+"InvalidModel"+File.separator+"createErrors.bcm")
 
-m = api.eventb_load(dir+File.separator+"machines"+File.separator+"InvalidModel"+File.separator+"createErrors.bcm")
-s = m as StateSpace
-
-res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkInvariantViolations(true)))
+res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkInvariantViolations(true))).getResult()
 assert res instanceof ModelCheckErrorUncovered
 assert res.getMessage() == "Invariant violation found."
 assert res.getTrace(s) != null
 
-res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkDeadlocks(true)))
+res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkDeadlocks(true))).getResult()
 assert res instanceof ModelCheckErrorUncovered
 assert res.getMessage() == "Deadlock found."
 assert res.getTrace(s) != null
 
-s.animator.cli.shutdown();
 "model checking works correctly"

@@ -17,6 +17,7 @@ tmp/
 PROB_LOGFILE_IS_UNDEFINED
 .settings/org.eclipse.jdt.ui.prefs
 src/main/resources/build.properties
+src/main/resources/cli/**
 config.groovy
 .cache
 .groovy/

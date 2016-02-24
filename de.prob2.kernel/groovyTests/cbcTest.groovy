@@ -2,8 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 cbc_solve = { String str ->
 	cmd = new CbcSolveCommand(str as ClassicalB)
@@ -51,5 +50,4 @@ assert ["0","1","2","3"].contains(res.y)
  This is a ComputationNotCompletedResult with reason "no solution found (but there might be one)"
  However, it was not obvious which predicate could produce this result, which is why it is not tested here */ 
 
-s.animator.cli.shutdown();
 "CBC solving works correctly"

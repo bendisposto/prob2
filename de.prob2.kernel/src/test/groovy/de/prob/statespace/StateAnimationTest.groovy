@@ -19,7 +19,7 @@ class StateAnimationTest extends Specification {
 	def setupSpec() {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
-		s = factory.load(path) as StateSpace
+		s = factory.extract(path).load([:])
 		root = s.getRoot()
 		firstState = root.$initialise_machine()
 		secondState = firstState.new("pp=PID1")
@@ -33,7 +33,7 @@ class StateAnimationTest extends Specification {
 	def "it is possible to treat events on the state as methods on the class"() {
 		expect:
 		root.$initialise_machine() == firstState
-		firstState.new("pp=PID1").eval("waiting" as ClassicalB).getValue() == "{PID1}"
+		firstState.new("pp=PID1").eval(new ClassicalB("waiting")).getValue() == "{PID1}"
 		firstState.new("pp=PID1") == secondState
 	}
 

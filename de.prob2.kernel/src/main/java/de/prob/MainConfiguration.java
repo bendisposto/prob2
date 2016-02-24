@@ -12,7 +12,6 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.pegdown.PegDownProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,6 @@ public class MainConfiguration extends AbstractModule {
 				buildConstants.getProperty("version", "0.0.0"));
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
 				.toInstance(Main.class.getClassLoader());
-		bind(PegDownProcessor.class);
 
 		// TODO: Should this property be set here? Should it be set at all?
 		System.setProperty("PROB_LOGFILE", getProBLogfile());
@@ -51,7 +49,7 @@ public class MainConfiguration extends AbstractModule {
 	 * Calls {@link Main#getProBDirectory()} to find the absolute path
 	 * associated with the ProB directory. Binds this path to the {@link Home}
 	 * annotation in order to be able to inject it.
-	 * 
+	 *
 	 * @return the absolute path to ProB directory.
 	 */
 	@Provides
@@ -65,7 +63,7 @@ public class MainConfiguration extends AbstractModule {
 	 * currently {@link Main#getProBDirectory()}logs/ProB.txt, but this is
 	 * subject to change. Binds this path to the {@link Logfile} annotation in
 	 * order to be able to inject it.
-	 * 
+	 *
 	 * @return the path to the fog file for ProB 2.0
 	 */
 	@Provides
@@ -82,46 +80,20 @@ public class MainConfiguration extends AbstractModule {
 	@Provides
 	public final Options getCommandlineOptions() {
 		Options options = new Options();
-		Option shell = new Option("s", "shell", false,
-				"start ProB's Groovy shell");
-
-		Option restricted = new Option("local",
-				"Free access to Groovy shell. Interface will be bound to 127.0.0.1");
-
-		Option standalone = new Option("standalone", "Run in standalone mode");
-
-		Option animation = new Option(
-				"multianimation",
-				"UI components will have the capability to show multiple animations"
-						+ " at once (NOTE: the development of this option is in the"
-						+ " experimental phase)");
 
 		Option maxCacheSize = OptionBuilder
 				.withArgName("maxSize")
 				.hasArg()
 				.withDescription(
 						"set the cache size for the states in the StateSpace")
-				.create("maxCacheSize");
+						.create("maxCacheSize");
 
-		Option browser = OptionBuilder.withArgName("url").hasArg()
-				.withDescription("Open URL in browser").create("browser");
-
-		Option port = OptionBuilder.withArgName("port").hasArg()
-				.withDescription("Set specific port for UI").create("port");
-
-		Option test = OptionBuilder
+		Option script = OptionBuilder
 				.withArgName("script/dir")
 				.hasArg()
 				.withDescription(
-						"run a Groovy test script or all .groovy files from a directory")
-				.create("test");
-
-		Option upgrade = OptionBuilder
-				.hasOptionalArg()
-				.withArgName("version")
-				.withDescription(
-						"upgrade the ProB binaries. Optionally specify the desired version.")
-				.create("upgrade");
+						"run a Groovy script or all .groovy files from a directory")
+						.create("script");
 
 		// TODO: add modelchecking option
 		// Option modelcheck = new Option("mc", "modelcheck", false,
@@ -129,15 +101,8 @@ public class MainConfiguration extends AbstractModule {
 		OptionGroup mode = new OptionGroup();
 		mode.setRequired(true);
 		// mode.addOption(modelcheck);
-		mode.addOption(shell);
-		mode.addOption(test);
+		mode.addOption(script);
 		options.addOptionGroup(mode);
-		options.addOption(browser);
-		options.addOption(port);
-		options.addOption(restricted);
-		options.addOption(standalone);
-		options.addOption(upgrade);
-		options.addOption(animation);
 		options.addOption(maxCacheSize);
 		return options;
 	}

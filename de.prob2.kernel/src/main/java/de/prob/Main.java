@@ -3,6 +3,7 @@ package de.prob;
 import static java.io.File.separator;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -17,24 +18,21 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 
-import de.prob.scripting.Downloader;
-import de.prob.webconsole.WebConsole;
+import de.prob.cli.ProBInstanceProvider;
+import de.prob.scripting.FileHandler;
+import de.prob.scripting.Installer;
 
 /**
  * The Main class initializes ProB 2.0. This class should NOT be instantiated
  * but should rather be started from a .jar file, accessed through Guice via
  * {@link ServletContextListener#getInjector()#getInstance()} with Main.class as
  * parameter, or started in a jetty server via {@link WebConsole#run()}.
- * 
+ *
  * @author joy
- * 
+ *
  */
 public class Main {
 
-	public static boolean restricted = true;
-	public static boolean standalone = false;
-	public static boolean local = false;
-	public static boolean multianimation = false;
 	public static int maxCacheSize = 100;
 	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
@@ -44,13 +42,19 @@ public class Main {
 	private static Injector INJECTOR = Guice.createInjector(Stage.PRODUCTION,
 			new MainModule());
 
+	/**
+	 * Name of file in which the preferences are saved. Currently
+	 * "prob2preferences"
+	 */
+	public static final String PREFERENCE_FILE_NAME = "prob2preferences";
+
 	public static Injector getInjector() {
 		return INJECTOR;
 	}
 
 	/**
 	 * Allows to customize the Injector. Handle with care!
-	 * 
+	 *
 	 * @param i
 	 */
 	public static void setInjector(final Injector i) {
@@ -72,12 +76,10 @@ public class Main {
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
 			.getProperty("PROB_LOG_CONFIG");
 
-	private final Downloader downloader;
-
 	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
 	 * should NOT be instantiated by hand.
-	 * 
+	 *
 	 * @param parser
 	 * @param options
 	 * @param shell
@@ -85,50 +87,17 @@ public class Main {
 	 */
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell, final Downloader downloader) {
+			final Shell shell) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
-		this.downloader = downloader;
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
 	private void run(final String[] args) throws Throwable {
-		String url = "";
-		int port = -1;
-		String iface = "0.0.0.0";
+
 		try {
 			CommandLine line = parser.parse(options, args);
-			if (line.hasOption("upgrade")) {
-				String version = line.getOptionValue("upgrade");
-				if (version == null) {
-					version = "latest";
-				}
-				if (version.equals("cspm")) {
-					System.out.println(downloader.installCSPM());
-				} else {
-					System.out.println(downloader.downloadCli(version));
-				}
-			}
-			if (line.hasOption("browser")) {
-				logger.debug("Browser");
-				url = line.getOptionValue("browser");
-				logger.debug("Browser started");
-			}
-			if (line.hasOption("port")) {
-				port = Integer.parseInt(line.getOptionValue("port"));
-			}
-			if (line.hasOption("local")) {
-				Main.local = true;
-				Main.restricted = false;
-				iface = "127.0.0.1";
-			}
-			if (line.hasOption("standalone")) {
-				Main.standalone = true;
-			}
-			if (line.hasOption("multianimation")) {
-				Main.multianimation = true;
-			}
 			if (line.hasOption("maxCacheSize")) {
 				logger.debug("setting maximum cache size requested");
 				String value = line.getOptionValue("maxCacheSize");
@@ -137,43 +106,22 @@ public class Main {
 				logger.debug("Max size set successfully to {}", value);
 			}
 
-			runServer(url, iface, port);
-			if (line.hasOption("shell")) {
-				while (true) {
-					Thread.sleep(10);
-				}
-			}
-			if (line.hasOption("test")) {
+			if (line.hasOption("script")) {
 				logger.debug("Run Script");
-				String value = line.getOptionValue("test");
+				String value = line.getOptionValue("script");
 				shell.runScript(new File(value), false);
 			}
 		} catch (ParseException exp) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("java -jar probcli.jar", options);
+			System.exit(-1);
 		}
-	}
-
-	private void runServer(final String url, final String iface, final int port) {
-		logger.debug("Shell");
-		Thread thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					WebConsole.run(url, iface, port);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		thread.start();
 	}
 
 	/**
 	 * Returns the directory in which the binary files and libraries for ProB
 	 * are stored.
-	 * 
+	 *
 	 * @return if System Property "prob.home" is defined, the path to this
 	 *         directory is returned. Otherwise, the directory specified by
 	 *         System Property "user.home" is chosen, and the directory ".prob"
@@ -184,14 +132,26 @@ public class Main {
 		if (homedir != null) {
 			return homedir + separator;
 		}
-		return System.getProperty("user.home") + separator + ".prob"
-				+ separator;
+		return Installer.DEFAULT_HOME;
+	}
+
+	public static Map<String, String> getGlobalPreferences(
+			final Map<String, String> localPrefs) {
+		String preferenceFileName = Main.getProBDirectory()
+				+ PREFERENCE_FILE_NAME;
+		FileHandler handler = new FileHandler();
+		Map<String, String> prefs = handler.getMapOfStrings(preferenceFileName);
+		if (prefs == null) {
+			return localPrefs;
+		}
+		prefs.putAll(localPrefs);
+		return prefs;
 	}
 
 	/**
 	 * Start the ProB 2.0 shell with argument -s. Run integration tests with
 	 * -test /path/to/testDir
-	 * 
+	 *
 	 * @param args
 	 * @throws Throwable
 	 */
@@ -203,11 +163,11 @@ public class Main {
 
 			main.run(args);
 		} catch (Throwable e) {
+			getInjector().getInstance(ProBInstanceProvider.class).shutdownAll();
 			e.printStackTrace();
 			System.exit(-1);
 		}
 		System.exit(0);
 	}
 
-	
 }

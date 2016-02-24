@@ -128,7 +128,7 @@ class State {
 	 * @return a list of solutions found, or an empty list if no solutions were found
 	 */
 	def List<Transition> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
-		String predicate = predicates == []? "TRUE = TRUE" : predicates.join(" & ")
+		String predicate = predicates == []? "TRUE = TRUE" : "(" + predicates.join(") & (") + ")"
 		try {
 			def newOps = stateSpace.transitionFromPredicate(this, name, predicate, nrOfSolutions)
 			transitions.addAll(newOps)

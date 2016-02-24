@@ -8,8 +8,9 @@ import de.prob.model.representation.DependencyGraph.ERefType;
  * Tests loading of EventB to make sure that all components are there. 
  */
 
-m = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
-assert m != null
+s = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
+assert s != null
+m = s as EventBModel
 
 assert ERefType.SEES == m.getRelationship("lift0", "levels")
 
@@ -65,6 +66,4 @@ assert variant == null
 
 assert lift0.sees.contains(levels)
 
-s = m as StateSpace
-s.animator.cli.shutdown();
 "When an EventB file is loaded (Lift example), the model elements are accessible."

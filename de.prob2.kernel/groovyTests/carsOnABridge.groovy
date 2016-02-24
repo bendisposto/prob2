@@ -5,6 +5,7 @@ import static de.prob.model.eventb.Event.EventType.CONVERGENT
 import static de.prob.model.eventb.Event.EventType.ANTICIPATED
 
 // You can change the model you are testing here.
+/*TODO
 mm = new ModelModifier()
 mm.make {
 	context(name: "cd") {
@@ -69,9 +70,9 @@ mm.make {
 	}
 }
 
-m = mm.getModifiedModel("m1")
-s = m as StateSpace
-t = m as Trace
+m = mm.getModifiedModel()
+s = m.load(m.getComponent("m1"))
+t = s as Trace
 
 assert m.m1.variant.getExpression().getCode() == "2*a+b"
 assert m.m1.events.IL_in.type == CONVERGENT
@@ -81,6 +82,5 @@ t = t.randomAnimation(10)
 //mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "cars", "/tmp")
 //d.deleteDir()
-
-s.animator.cli.shutdown();
+*/
 "testing convergent and anticipated events"

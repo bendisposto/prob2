@@ -17,7 +17,6 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import de.prob.statespace.AnimationSelector;
-import de.prob.testing.TestRunner;
 
 @Singleton
 public class ScriptEngineProvider implements Provider<ScriptEngine> {
@@ -25,30 +24,25 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 	private final Api api;
 	private final AnimationSelector animations;
 	private final ScriptEngineManager manager;
-	private final Downloader downloader;
 
 	private static final String[] IMPORTS = new String[] {
-			"import de.prob.statespace.*;",
-			"import de.prob.model.representation.*;",
-			"import de.prob.model.classicalb.*;",
-			"import de.prob.model.eventb.*;",
-			"import de.prob.animator.domainobjects.*;",
-			"import de.prob.animator.command.*;",
-			"import de.prob.visualization.*", "import de.prob.bmotion.*" };
-	private final TestRunner tests;
+		"import de.prob.statespace.*;",
+		"import de.prob.model.representation.*;",
+		"import de.prob.model.classicalb.*;",
+		"import de.prob.model.eventb.*;",
+		"import de.prob.animator.domainobjects.*;",
+		"import de.prob.animator.command.*;",
+		"import de.prob.visualization.*", "import de.prob.bmotion.*" };
 	private UiFunctionRegistry functionRegistry;
 
 	@Inject
 	public ScriptEngineProvider(final Api api,
-			final AnimationSelector animations, final Downloader downloader,
-			final TestRunner tests, UiFunctionRegistry functionRegistry) {
+			final AnimationSelector animations,
+			UiFunctionRegistry functionRegistry) {
 		this.api = api;
 		this.animations = animations;
-		this.downloader = downloader;
-		this.tests = tests;
 		this.functionRegistry = functionRegistry;
 		manager = new ScriptEngineManager(this.getClass().getClassLoader());
-		tests.setExecutor(get());
 	}
 
 	@Override
@@ -57,9 +51,7 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 		Bindings bindings = engine.getBindings(ScriptContext.GLOBAL_SCOPE);
 		bindings.put("api", api);
 		bindings.put("animations", animations);
-		bindings.put("downloader", downloader);
 		bindings.put("ui_functions", functionRegistry);
-		bindings.put("tests", tests);
 		bindings.put("engine", engine);
 		URL url = Resources.getResource("initscript");
 		String script;

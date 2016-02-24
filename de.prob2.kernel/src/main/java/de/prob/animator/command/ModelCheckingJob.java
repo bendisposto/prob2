@@ -1,6 +1,7 @@
 package de.prob.animator.command;
 
 import de.prob.check.CheckInterrupted;
+import de.prob.check.IModelCheckListener;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.ModelCheckingOptions;
 import de.prob.check.NotYetFinished;
@@ -8,7 +9,6 @@ import de.prob.check.StateSpaceStats;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.web.views.ModelCheckingUI;
 
 public class ModelCheckingJob extends AbstractCommand {
 
@@ -18,12 +18,12 @@ public class ModelCheckingJob extends AbstractCommand {
 	private ModelCheckingStepCommand cmd;
 	private IModelCheckingResult res;
 	private StateSpaceStats stats;
-	private final ModelCheckingUI ui;
+	private final IModelCheckListener ui;
 
 	private long time = -1;
 
 	public ModelCheckingJob(final ModelCheckingOptions options,
-			final String jobId, final ModelCheckingUI ui) {
+			final String jobId, final IModelCheckListener ui) {
 		this.options = options;
 		this.jobId = jobId;
 		this.ui = ui;

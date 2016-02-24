@@ -16,6 +16,7 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class GetOperationsWithTimeout extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "op_timeout_occurred";
 	private static final String TIMEOUT_VARIABLE = "TO";
 	private final String state;
 	private List<String> timeouts;
@@ -34,7 +35,7 @@ public class GetOperationsWithTimeout extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("op_timeout_occurred").printAtomOrNumber(state)
+		pto.openTerm(PROLOG_COMMAND_NAME).printAtomOrNumber(state)
 				.printVariable(TIMEOUT_VARIABLE).closeTerm();
 	}
 

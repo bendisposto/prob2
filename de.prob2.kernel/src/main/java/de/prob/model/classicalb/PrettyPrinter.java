@@ -79,6 +79,246 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		return sb.toString();
 	}
 
+	@Override
+	public void caseAAssignSubstitution(AAssignSubstitution node) {
+		LinkedList<PExpression> lhs = node.getLhsExpression();
+		commaSeparatedExpressionList(lhs);
+		sb.append(":=");
+		LinkedList<PExpression> rhs = node.getRhsExpressions();
+		commaSeparatedExpressionList(rhs);
+	}
+
+	@Override
+	public void caseASkipSubstitution(ASkipSubstitution node) {
+		sb.append(" skip ");
+	}
+
+	@Override
+	public void caseABecomesElementOfSubstitution(
+			ABecomesElementOfSubstitution node) {
+		commaSeparatedExpressionList(node.getIdentifiers());
+		sb.append("::");
+		node.getSet().apply(this);
+
+	}
+
+	@Override
+	public void caseABecomesSuchSubstitution(ABecomesSuchSubstitution node) {
+		commaSeparatedExpressionList(node.getIdentifiers());
+		sb.append(" : (");
+
+		node.getPredicate().apply(this);
+		sb.append(") ");
+	}
+
+	@Override
+	public void caseAOperationCallSubstitution(AOperationCallSubstitution node) {
+		commaSeparatedExpressionList(node.getResultIdentifiers());
+		sb.append("<--");
+		ArrayList<TIdentifierLiteral> copy = new ArrayList<TIdentifierLiteral>(
+				node.getOperation());
+		for (final Iterator<TIdentifierLiteral> iterator = copy.iterator(); iterator
+				.hasNext();) {
+			final TIdentifierLiteral e = iterator.next();
+			e.apply(this);
+		}
+		sb.append("(");
+		commaSeparatedExpressionList(node.getParameters());
+		sb.append(")");
+	}
+
+	@Override
+	public void caseAParallelSubstitution(AParallelSubstitution node) {
+		List<PSubstitution> copy = new ArrayList<PSubstitution>(
+				node.getSubstitutions());
+		copy.get(0).apply(this);
+		for (int i = 1; i < copy.size(); i++) {
+			sb.append(" || ");
+			copy.get(i).apply(this);
+		}
+	}
+
+	@Override
+	public void caseASequenceSubstitution(ASequenceSubstitution node) {
+		List<PSubstitution> copy = new ArrayList<PSubstitution>(
+				node.getSubstitutions());
+		copy.get(0).apply(this);
+		for (int i = 1; i < copy.size(); i++) {
+			sb.append(" ; ");
+			copy.get(i).apply(this);
+		}
+	}
+
+	@Override
+	public void caseAAnySubstitution(AAnySubstitution node) {
+		sb.append("ANY ");
+		commaSeparatedExpressionList(node.getIdentifiers());
+		sb.append(" WHERE ");
+		node.getWhere().apply(this);
+		sb.append(" THEN ");
+		node.getThen().apply(this);
+		sb.append(" END ");
+	}
+
+	@Override
+	public void caseALetSubstitution(ALetSubstitution node) {
+		sb.append("LET ");
+		commaSeparatedExpressionList(node.getIdentifiers());
+		sb.append(" BE ");
+		node.getPredicate().apply(this);
+		sb.append(" IN ");
+		node.getSubstitution().apply(this);
+		sb.append(" END ");
+	}
+
+	@Override
+	public void caseAVarSubstitution(AVarSubstitution node) {
+		sb.append("VAR ");
+		commaSeparatedExpressionList(node.getIdentifiers());
+		sb.append(" IN ");
+		node.getSubstitution().apply(this);
+		sb.append(" END ");
+	}
+
+	@Override
+	public void caseAPreconditionSubstitution(APreconditionSubstitution node) {
+		sb.append("PRE ");
+		node.getPredicate().apply(this);
+		sb.append(" THEN ");
+		node.getSubstitution().apply(this);
+		sb.append(" END ");
+	}
+
+	@Override
+	public void caseAAssertionSubstitution(AAssertionSubstitution node) {
+		sb.append("ASSERT ");
+		node.getPredicate().apply(this);
+		sb.append(" THEN ");
+		node.getSubstitution().apply(this);
+		sb.append(" END ");
+	}
+
+	@Override
+	public void caseAChoiceSubstitution(AChoiceSubstitution node) {
+		sb.append("CHOICE ");
+		List<PSubstitution> copy = new ArrayList<PSubstitution>(
+				node.getSubstitutions());
+		for (PSubstitution e : copy) {
+			e.apply(this);
+		}
+		sb.append(" END ");
+	}
+
+	@Override
+	public void caseAChoiceOrSubstitution(AChoiceOrSubstitution node) {
+		sb.append(" OR ");
+		node.getSubstitution().apply(this);
+	}
+
+	@Override
+	public void caseASelectWhenSubstitution(ASelectWhenSubstitution node) {
+		sb.append(" WHEN ");
+		node.getCondition().apply(this);
+		sb.append(" THEN ");
+		node.getSubstitution().apply(this);
+	}
+
+	@Override
+	public void caseASelectSubstitution(ASelectSubstitution node) {
+		sb.append("SELECT ");
+		node.getCondition().apply(this);
+		sb.append(" THEN ");
+		node.getThen().apply(this);
+		{
+			List<PSubstitution> copy = new ArrayList<PSubstitution>(
+					node.getWhenSubstitutions());
+			for (PSubstitution e : copy) {
+				e.apply(this);
+			}
+		}
+		if (node.getElse() != null) {
+			sb.append(" ELSE ");
+			node.getElse().apply(this);
+		}
+		sb.append(" END ");
+	}
+
+	@Override
+	public void caseAIfElsifSubstitution(AIfElsifSubstitution node) {
+		sb.append(" ELSIF ");
+		node.getCondition().apply(this);
+		sb.append(" THEN ");
+		node.getThenSubstitution().apply(this);
+	}
+
+	@Override
+	public void caseAIfSubstitution(AIfSubstitution node) {
+		sb.append("IF ");
+		node.getCondition().apply(this);
+		sb.append(" THEN ");
+		node.getThen().apply(this);
+		{
+			List<PSubstitution> copy = new ArrayList<PSubstitution>(
+					node.getElsifSubstitutions());
+			for (PSubstitution e : copy) {
+				e.apply(this);
+			}
+		}
+		if (node.getElse() != null) {
+			sb.append(" ELSE ");
+			node.getElse().apply(this);
+		}
+		sb.append(" END ");
+	}
+
+	@Override
+	public void caseACaseOrSubstitution(ACaseOrSubstitution node) {
+		sb.append(" OR ");
+		commaSeparatedExpressionList(node.getExpressions());
+		sb.append(" THEN ");
+		node.getSubstitution().apply(this);
+	}
+
+	@Override
+	public void caseACaseSubstitution(ACaseSubstitution node) {
+		sb.append("CASE ");
+		node.getExpression().apply(this);
+		sb.append(" OF EITHER ");
+		commaSeparatedExpressionList(node.getEitherExpr());
+		sb.append(" THEN ");
+		node.getEitherSubst().apply(this);
+		List<PSubstitution> copy = new ArrayList<PSubstitution>(
+				node.getOrSubstitutions());
+		for (PSubstitution e : copy)
+			e.apply(this);
+		if (node.getElse() != null) {
+			sb.append(" ELSE ");
+			node.getElse().apply(this);
+		}
+		sb.append(" END END ");
+	}
+
+	@Override
+	public void caseAWhileSubstitution(AWhileSubstitution node) {
+		sb.append("WHILE ");
+		node.getCondition().apply(this);
+		sb.append(" DO ");
+		node.getDoSubst().apply(this);
+		sb.append(" INVARIANT ");
+		node.getInvariant().apply(this);
+		sb.append(" VARIANT ");
+		node.getVariant().apply(this);
+		sb.append(" END ");
+	}
+
+	private void commaSeparatedExpressionList(List<PExpression> list) {
+		list.get(0).apply(this);
+		for (int i = 1; i < list.size(); i++) {
+			sb.append(",");
+			list.get(i).apply(this);
+		}
+	}
+
 	public void leftPar(final Node node, final Node right) {
 		Integer priorityNode = prio.get(node.getClass());
 		Integer priorityRight = prio.get(right.getClass());

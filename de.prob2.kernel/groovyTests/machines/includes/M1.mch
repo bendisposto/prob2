@@ -1,0 +1,22 @@
+MACHINE
+    M1
+
+INCLUDES
+    MA.M2,
+    MB.M2
+
+PROMOTES
+    MA.set,
+    MB.set
+
+VARIABLES
+	v1
+INVARIANT
+	v1 : BOOL
+
+INITIALISATION
+	v1 := FALSE
+
+OPERATIONS
+	set(xx) = PRE xx:BOOL & xx/=v1 THEN v1:=xx END
+END

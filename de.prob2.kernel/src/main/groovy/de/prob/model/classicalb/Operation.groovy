@@ -1,7 +1,9 @@
 package de.prob.model.classicalb;
 
+import com.github.krukow.clj_lang.PersistentHashMap
 import com.google.common.base.Joiner
 
+import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Action
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Guard
@@ -11,24 +13,34 @@ public class Operation extends BEvent {
 
 	def final List<String> parameters;
 	def final List<String> output;
-	def ModelElementList<Action> actions = new ModelElementList<Action>()
-	def ModelElementList<Guard> guards = new ModelElementList<Guard>()
 
 	public Operation(final String name, final List<String> parameters,
 	final List<String> output) {
-		super(name);
+		this(name, parameters, output, PersistentHashMap.emptyMap())
+	}
+
+	private Operation(final String name, final List<String> parameters,
+	final List<String> output, children) {
+		super(name, children)
 		this.parameters = parameters;
 		this.output = output;
 	}
 
-	public void addGuards(final ModelElementList<ClassicalBGuard> guards) {
-		put(Guard.class, guards);
-		this.guards = guards
+	def <T extends AbstractElement> Operation addTo(T element) {
+		def kids = children.get(T)
+		new Operation(name, parameters, output, children.assoc(T, kids.addElement(element)))
 	}
 
-	public void addActions(final ModelElementList<ClassicalBAction> actions) {
-		put(Action.class, actions)
-		this.actions = actions
+	def Operation set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+		new Operation(name, parameters, output, children.assoc(clazz, elements))
+	}
+
+	def ModelElementList<ClassicalBGuard> addGuards() {
+		getChildrenOfType(Guard.class)
+	}
+
+	def ModelElementList<ClassicalBAction> addActions() {
+		getChildrenOfType(Action.class)
 	}
 
 	@Override

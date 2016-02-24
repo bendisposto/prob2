@@ -9,23 +9,22 @@ import de.prob.animator.domainobjects.EvalResult
 import de.prob.animator.domainobjects.EventB
 import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.animator.domainobjects.WDError
-import de.prob.model.representation.AbstractModel
 import de.prob.scripting.ClassicalBFactory
 import de.prob.scripting.EventBFactory
 
 class TraceEvaluationTest extends Specification {
 
-	static AbstractModel m
+	static StateSpace s
 	Trace t
 
 	def setupSpec() {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
-		m = factory.load(path)
+		s = factory.extract(path).load([:])
 	}
 
 	def setup() {
-		t = new Trace(m)
+		t = new Trace(s)
 	}
 
 	def "when not initialised the result is IdentifierNotInitialised"() {
@@ -80,7 +79,7 @@ class TraceEvaluationTest extends Specification {
 		then:
 		x.size() == 3
 		def sIds = t.getTransitionList().collect { it.getDestination().getId() }
-		def results = x.collect { [it.a, it.b.getValue()]}
+		def results = x.collect { [it.getFirst(), it.getSecond().getValue()]}
 
 		results[0] == [sIds[0], "{}"]
 		results[1] == [sIds[1], "{PID1}"]
@@ -90,12 +89,12 @@ class TraceEvaluationTest extends Specification {
 	def "It is possible to evaluate a parsed formula over the course of a Trace"() {
 		when:
 		def Trace t = t.$initialise_machine().new("pp = PID1").new("pp = PID2")
-		def x = t.eval("waiting" as ClassicalB)
+		def x = t.eval(new ClassicalB("waiting"))
 
 		then:
 		x.size() == 3
 		def sIds = t.getTransitionList().collect { it.getDestination().getId() }
-		def results = x.collect { [it.a, it.b.getValue()]}
+		def results = x.collect { [it.getFirst(), it.getSecond().getValue()]}
 
 		results[0] == [sIds[0], "{}"]
 		results[1] == [sIds[1], "{PID1}"]
@@ -106,14 +105,14 @@ class TraceEvaluationTest extends Specification {
 		when:
 		def path = System.getProperties().get("user.dir")+"/groovyTests/Lift/lift0.bcm"
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
-		AbstractModel m = factory.load(path)
-		t = new Trace(m)
+		StateSpace s = factory.extract(path).load([:])
+		t = new Trace(s)
 		def Trace t = t.$setup_constants().$initialise_machine().up()
-		def x = t.eval("level" as EventB)
+		def x = t.eval(new EventB("level"))
 
 		then:
 		x.size() == 2
-		x[0].b.getValue() == "L0"
-		x[1].b.getValue() == "L1"
+		x[0].getSecond().getValue() == "L0"
+		x[1].getSecond().getValue() == "L1"
 	}
 }

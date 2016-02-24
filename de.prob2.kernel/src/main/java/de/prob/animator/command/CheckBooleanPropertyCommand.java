@@ -23,6 +23,8 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class CheckBooleanPropertyCommand extends AbstractCommand {
 
+	private static final String PROLOG_COMMAND_NAME = "state_property";
+
 	private final Logger logger = LoggerFactory
 			.getLogger(CheckBooleanPropertyCommand.class);
 
@@ -58,7 +60,7 @@ public class CheckBooleanPropertyCommand extends AbstractCommand {
 
 	private static void writeCommand(final IPrologTermOutput pto,
 			final String propertyName, final String stateId) {
-		pto.openTerm("state_property");
+		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtom(propertyName);
 		pto.printAtomOrNumber(stateId);
 		pto.printVariable(PROP_RESULT);

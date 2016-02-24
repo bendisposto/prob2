@@ -2,10 +2,9 @@ package de.prob.model.eventb;
 
 import java.util.List;
 
-import org.parboiled.common.Tuple2;
-
 import de.prob.model.representation.AbstractElement;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.util.Tuple2;
 
 public class ProofObligation extends AbstractElement {
 
@@ -34,7 +33,7 @@ public class ProofObligation extends AbstractElement {
 	 * the given {@link IPrologTermOutput}. If certain elements are needed for a
 	 * given proof obligation, then this proof obligation must override this
 	 * method.
-	 * 
+	 *
 	 * @param pto
 	 */
 	public void toProlog(final IPrologTermOutput pto) {
@@ -43,8 +42,8 @@ public class ProofObligation extends AbstractElement {
 		pto.printAtom(description);
 		pto.openList();
 		for (Tuple2<String, String> element : elements) {
-			pto.openTerm(element.a);
-			pto.printAtom(element.b);
+			pto.openTerm(element.getFirst());
+			pto.printAtom(element.getSecond());
 			pto.closeTerm();
 		}
 		pto.closeList();

@@ -8,8 +8,7 @@ import de.prob.unicode.UnicodeTranslator;
 toUnicode = { str -> UnicodeTranslator.toUnicode(str) }
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 t = new Trace(s)
 t = t.$initialise_machine()
 
@@ -61,5 +60,4 @@ assert f211.getLabel() == 'active'
 assert f211.getValue() == toUnicode('{}')
 assert f211.getChildren() == null
 
-s.animator.cli.shutdown();
 "expanding a B formula works"

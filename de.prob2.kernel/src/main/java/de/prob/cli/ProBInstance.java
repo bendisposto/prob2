@@ -2,6 +2,7 @@ package de.prob.cli;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,16 @@ public class ProBInstance {
 
 	private String[] interruptCommand;
 
+	private AtomicInteger processCounter;
+
 	@Inject
 	public ProBInstance(final Process process, final BufferedReader stream,
 			final Long userInterruptReference, final ProBConnection connection,
-			final String home, final OsSpecificInfo osInfo) {
+			final String home, final OsSpecificInfo osInfo,
+			AtomicInteger processCounter) {
 		this.process = process;
 		this.connection = connection;
+		this.processCounter = processCounter;
 		final String command = home + osInfo.getUserInterruptCmd();
 		interruptCommand = new String[] { command,
 				Long.toString(userInterruptReference.longValue()) };
@@ -42,6 +47,9 @@ public class ProBInstance {
 	}
 
 	public void shutdown() {
+		if (shutingDown == false) {
+			processCounter.decrementAndGet();
+		}
 		shutingDown = true;
 		try {
 			if (thread.isAlive()) {
@@ -81,8 +89,8 @@ public class ProBInstance {
 
 	@Override
 	public String toString() {
-		return MoreObjects.toStringHelper(ProBInstance.class).addValue(connection)
-				.toString();
+		return MoreObjects.toStringHelper(ProBInstance.class)
+				.addValue(connection).toString();
 	}
 
 }

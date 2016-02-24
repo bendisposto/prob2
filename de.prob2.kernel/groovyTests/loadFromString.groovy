@@ -1,7 +1,7 @@
 import de.be4.classicalb.core.parser.BParser;
 import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
-
+import de.prob.Main
 
 modelString = """MACHINE blah
 SETS
@@ -15,21 +15,12 @@ OPERATIONS
 END"""
 
 
-modelProvider = api.modelFactoryProvider.classical_b_factory.modelCreator
-assert modelProvider != null 
+modelFactory = api.modelFactoryProvider.classical_b_factory
+assert modelFactory != null 
 
-m = modelProvider.get()
-s = m as StateSpace
-
-cmd = new LoadBProjectFromStringCommand(modelString)
-s.execute(cmd)
-p = new BParser()
-ast = cmd.parseString(modelString, p)
-rml = cmd.getLoader(modelString)
-
-m.initialize(ast, rml, new File(""), p)
-
-s.execute(new StartAnimationCommand())
+em = modelFactory.create(modelString)
+m = em.model
+s = em.load()
 
 // Test that animation works correctly
 t = new Trace(s)
@@ -42,5 +33,4 @@ assert m.blah.variables != null
 assert m.blah.variables.collect { it.name } == ["x"]
 assert m.blah.operations.collect { it.name } == ["ChangeX"]
 
-s.animator.cli.shutdown();
 "it is possible to load a b model from a string"

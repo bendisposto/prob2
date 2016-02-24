@@ -72,11 +72,18 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 		this(ast, FormulaExpand.truncate);
 	}
 
-	public ClassicalB(final Start ast, final FormulaExpand expansion) {
+	public ClassicalB(final Start ast, final FormulaExpand expansion, String code) {
 		this.ast = ast;
 		this.expansion = expansion;
-		code = prettyprint(ast);
+		this.code = code;
 	}
+	
+	
+	public ClassicalB(final Start ast, final FormulaExpand expansion) {
+		this(ast,expansion, prettyprint(ast));
+	}
+	
+	
 
 	/**
 	 * @see de.prob.animator.domainobjects.IEvalElement#getKind()
@@ -119,7 +126,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 
 	}
 
-	private String prettyprint(final Node predicate) {
+	private static String prettyprint(final Node predicate) {
 		final PrettyPrinter prettyPrinter = new PrettyPrinter();
 		predicate.apply(prettyPrinter);
 		return prettyPrinter.getPrettyPrint();

@@ -2,13 +2,11 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m0 = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s0 = m0 as StateSpace
+s0 = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 t0 = new Trace(s0)
 t0 = t0.$initialise_machine()
 
-m1 = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
-s1 = m1 as StateSpace
+s1 = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
 t1 = new Trace(s1)
 t1 = t1.$setup_constants().$initialise_machine()
 
@@ -50,6 +48,4 @@ assert tt3.traces[1] == t1
 
 assert tt.toString() instanceof String
 
-s0.animator.cli.shutdown();
-s1.animator.cli.shutdown();
 "it is possible to sync traces with event/parameter combinations"

@@ -2,8 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-s = m as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 t = new Trace(s)
 t = t.$initialise_machine()
 
@@ -13,7 +12,4 @@ t = t.ready("rr = PID1")
 
 assert t.getCurrentState().getStateRep() == "( active={PID1} &\n       ready={} &\n       waiting={PID2} )"
 
-
-
-s.animator.cli.shutdown();
 "can get the state representation from prolog"

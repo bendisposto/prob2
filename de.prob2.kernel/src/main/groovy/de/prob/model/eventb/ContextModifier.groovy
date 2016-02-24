@@ -1,22 +1,34 @@
 package de.prob.model.eventb
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.representation.Axiom
+import de.prob.model.representation.Constant
+import de.prob.model.representation.ElementComment
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 
-class ContextModifier extends AbstractModifier {
-	private axmctr = 0
-	Context context
+public class ContextModifier extends AbstractModifier {
+	final Context context
 
-	def ContextModifier(Context context, List<Context> extended=[]) {
-		this.context = context
-		this.context.addExtends(new ModelElementList(extended))
+	public ContextModifier(Context context, java.util.Set<IFormulaExtension> typeEnvironment=Collections.emptySet()) {
+		super(typeEnvironment)
+		this.context = validate('context',context)
 	}
 
-	def ContextModifier enumerated_set(HashMap properties) {
+	private ContextModifier newCM(Context context) {
+		return new ContextModifier(context, typeEnvironment)
+	}
+
+	def ContextModifier setExtends(Context extended) {
+		validate("extended", extended)
+		newCM(context.set(Context.class, new ModelElementList<Context>([extended])))
+	}
+
+	def ContextModifier enumerated_set(LinkedHashMap properties) throws ModelGenerationException {
 		Map validated = validateProperties(properties, [name: String, constants: String[]])
 		addEnumeratedSet(validated["name"], validated["constants"])
-		this
 	}
 
 	/**
@@ -25,147 +37,102 @@ class ContextModifier extends AbstractModifier {
 	 * @param elements contained in the specified set
 	 * @return the {@link EnumeratedSetBlock} generated when creating the set
 	 */
-	def EnumeratedSetBlock addEnumeratedSet(String setName, String... elements) {
-		Set set = new Set(new EventB(setName))
-		context.sets << set
-		def constants = elements.collect {
-			new EventBConstant(it, false, null)
+	def ContextModifier addEnumeratedSet(String setName, String... elements) throws ModelGenerationException {
+		ContextModifier cm = set(validate('setName', setName))
+		validate('elements',elements).each {
+			cm = cm.constant(it)
 		}
-		context.constants.addAll(constants)
 		def elementString = elements.collect { "{$it}" }.join(",")
-		def axiom = "partition($setName,$elementString)"
-		def typingAxiom = addAxiom(axiom)
-		new EnumeratedSetBlock(set, constants, typingAxiom)
+		cm.axiom("partition($setName,$elementString)")
 	}
 
-	/**
-	 * Removes an enumerated set, all of the elements contained in the set,
-	 * and the typing axiom.
-	 * @param block containing the elements to be removed
-	 * @return whether or not the removal was successful
-	 */
-	def boolean removeEnumeratedSet(EnumeratedSetBlock block) {
-		def a = context.sets.remove(block.set)
-		def bs = block.constants.collect {
-			context.constants.remove(it)
-		}
-		def b = bs.inject(true, {x,y -> x && y})
-		def c = removeAxiom(block.typingAxiom)
-		return a && b && c
+	def ContextModifier set(String set, String comment="") throws ModelGenerationException {
+		def bset = new Set(parseIdentifier(set), comment)
+		new ContextModifier(context.addTo(Set.class, bset))
 	}
 
-	def ContextModifier set(String set) {
-		addSet(set)
-		this
-	}
-
-	/**
-	 * Add a carrier set to a context
-	 * @param set to be added
-	 * @return {@link BSet} added to the {@link Context}
-	 */
-	def Set addSet(String set) {
-		def bset = new Set(new EventB(set))
-		context.sets << bset
-		bset
+	def ContextModifier removeSet(String setName) {
+		def set = context.sets.getElement(setName)
+		set ? removeSet(set) : this
 	}
 
 	/**
 	 * Remove a set from a context
 	 * @param set to be removed
-	 * @return whether or not the removal was successful
 	 */
-	def boolean removeSet(Set set) {
-		return context.sets.remove(set)
+	def ContextModifier removeSet(Set set) {
+		return newCM(context.removeFrom(Set.class, set))
 	}
 
-	def ContextModifier constants(String... constants) {
-		constants.each {
-			constant(it)
+	def ContextModifier constants(String... constants) throws ModelGenerationException {
+		ContextModifier cm = this
+		validate('constants', constants).each {
+			cm = cm.constant(it)
 		}
-		this
-	}
-	
-	def ContextModifier constant(String identifier) {
-		addConstant(identifier)
-		this
+		cm
 	}
 
-	/**
-	 * Add a constant to a context
-	 * @param identifier to be added as a constant
-	 * @return the {@link EventBConstant} added to the {@link Context}
-	 */
-	def EventBConstant addConstant(String identifier) {
-		def constant = new EventBConstant(identifier, false, null)
-		context.constants << constant
-		constant
+	def ContextModifier constant(String identifier, String comment="") throws ModelGenerationException {
+		parseIdentifier(identifier)
+		newCM(context.addTo(Constant.class, new EventBConstant(identifier, false, null, comment)))
+	}
+
+	def ContextModifier removeConstant(String name) {
+		def cst = context.constants.getElement(name)
+		cst ? removeConstant(cst) : this
 	}
 
 	/**
 	 * Remove a constant from the context
 	 * @param constant to be removed
-	 * @return whether or not the removal was successful
 	 */
-	def boolean removeConstant(EventBConstant constant) {
-		return context.constants.remove(constant)
-	}
-	
-	def genAxmLabel() {
-		return "ax" + axmctr++
-	}
-	
-	def ContextModifier axioms(Map axioms) {
-		axioms.each { k,v ->
-			axiom(k,v)
-		}
-		this
-	}
-	
-	def ContextModifier axioms(String... axioms) {
-		axioms.each {
-			axiom(it)
-		}
-		this
-	}
-	
-	def ContextModifier theorem(String thm) {
-		axiom(thm, true)
-	}
-		
-	def ContextModifier theorem(Map props) {
-		axiom(props, true)
+	def ContextModifier removeConstant(EventBConstant constant) {
+		def ctx = context.removeFrom(Constant.class, constant)
+		return newCM(ctx)
 	}
 
-	def ContextModifier axiom(Map props, boolean theorem=false) {
+	def ContextModifier axioms(LinkedHashMap axioms) throws ModelGenerationException {
+		ContextModifier cm = this
+		axioms.each { k,v ->
+			cm = cm.axiom(k,v)
+		}
+		cm
+	}
+
+	def ContextModifier axioms(String... axioms) throws ModelGenerationException {
+		ContextModifier cm = this
+		validate('axioms',axioms).each {
+			cm = cm.axiom(validate('axiom', it))
+		}
+		cm
+	}
+
+	def ContextModifier theorem(LinkedHashMap theorem) throws ModelGenerationException {
+		axiom(theorem, true)
+	}
+
+	def ContextModifier theorem(String theorem) throws ModelGenerationException {
+		axiom(validate("theorem", theorem), true)
+	}
+
+	def ContextModifier axiom(Map props, boolean theorem=false) throws ModelGenerationException {
 		Definition prop = getDefinition(props)
 		return axiom(prop.label, prop.formula, theorem)
 	}
-	
-	def ContextModifier axiom(String pred, boolean theorem=false) {
-		axiom(genAxmLabel(), pred, theorem)
+
+	def ContextModifier axiom(String pred, boolean theorem=false) throws ModelGenerationException {
+		axiom(theorem ? "thm0" : "axm0", pred, theorem)
 	}
 
-	def ContextModifier axiom(String name, String pred, boolean theorem=false) {
-		addAxiom(name, pred, theorem)
-		this
+	def ContextModifier axiom(String name, String predicate, boolean theorem=false, String comment="") throws ModelGenerationException {
+		def n = validate('name', name)
+		def axiom = new EventBAxiom(getUniqueName(n, context.getAllAxioms()), parsePredicate(predicate), theorem, comment)
+		newCM(context.addTo(Axiom.class, axiom))
 	}
 
-
-	def EventBAxiom addAxiom(String predicate, boolean theorem=false) {
-		addAxiom(genAxmLabel(), predicate, theorem)
-	}
-	
-	/**
-	 * Add an axiom to a context
-	 * @param predicate to be added as an axiom
-	 * @return {@link EventBAxiom} added to the {@link Context}
-	 */
-	def EventBAxiom addAxiom(String name, String predicate, boolean theorem=false) {
-		def axiom = new EventBAxiom(name, predicate, theorem, Collections.emptySet())
-		context.axioms << axiom
-		context.allAxioms << axiom
-		axiom
+	def ContextModifier removeAxiom(String name) {
+		def axm = context.axioms.getElement(name)
+		axm ? removeAxiom(axm) : this
 	}
 
 	/**
@@ -173,18 +140,17 @@ class ContextModifier extends AbstractModifier {
 	 * @param axiom to be removed
 	 * @return whether or not the removal was successful
 	 */
-	def boolean removeAxiom(EventBAxiom axiom) {
-		def a = context.allAxioms.remove(axiom)
-		def b = context.axioms.remove(axiom)
-		if(a && b) {
-			context.proofs.clear()
-		}
-		return a && b
+	def ContextModifier removeAxiom(EventBAxiom axiom) {
+		def ctx = context.removeFrom(Axiom.class, axiom)
+		def axms = ctx.axioms
+		return newCM(ctx)
 	}
 
-	def ContextModifier make(Closure definition) {
+	def ContextModifier addComment(String comment) {
+		comment ? newCM(context.addTo(ElementComment.class, new ElementComment(comment))) : this
+	}
+
+	def ContextModifier make(Closure definition) throws ModelGenerationException {
 		runClosure definition
-		this
 	}
-
 }

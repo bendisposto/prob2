@@ -126,8 +126,7 @@ public class Type extends AbstractElement {
 		@Override
 		public boolean verifyType(final org.eventb.core.ast.Type proposedType,
 				final Expression[] childExprs, final Predicate[] childPreds) {
-			// Not intended to be type checked.
-			return false;
+			return true;
 		}
 
 		@Override

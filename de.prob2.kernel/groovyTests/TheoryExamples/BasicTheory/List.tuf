@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.theory.core.theoryRoot org.eventb.core.comment="A theory of inductive lists.&#10;&#10;@author Issam Maamria&#10;@date August 2011" org.eventb.core.configuration="org.eventb.theory.core.thy">
+<org.eventb.theory.core.datatypeDefinition name="'" org.eventb.core.identifier="List">
+<org.eventb.theory.core.typeArgument name="'" org.eventb.theory.core.givenType="T"/>
+<org.eventb.theory.core.datatypeConstructor name="(" org.eventb.core.identifier="nil"/>
+<org.eventb.theory.core.datatypeConstructor name=")" org.eventb.core.identifier="cons">
+<org.eventb.theory.core.constructorArgument name="'" org.eventb.core.identifier="head" org.eventb.theory.core.type="T"/>
+<org.eventb.theory.core.constructorArgument name="(" org.eventb.core.identifier="tail" org.eventb.theory.core.type="List(T)"/>
+</org.eventb.theory.core.datatypeConstructor>
+</org.eventb.theory.core.datatypeDefinition>
+<org.eventb.theory.core.typeParameter name="(" org.eventb.core.identifier="T"/>
+<org.eventb.theory.core.newOperatorDefinition name=")" org.eventb.core.comment="The size of a list" org.eventb.core.label="listSize" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="List(T)" org.eventb.core.identifier="l"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.theory.core.inductiveArgument="l">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="nil " org.eventb.theory.core.formula="0"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="cons(x, l0)" org.eventb.theory.core.formula="1+listSize(l0)"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="*" org.eventb.core.label="append" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="List(T)" org.eventb.core.identifier="l"/>
+<org.eventb.theory.core.operatorArgument name="(" org.eventb.core.expression="T" org.eventb.core.identifier="x"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name=")" org.eventb.theory.core.inductiveArgument="l">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="nil" org.eventb.theory.core.formula="cons(x,nil)"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="cons(x0,l0)" org.eventb.theory.core.formula="cons(x0,append(l0,x))"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="+" org.eventb.core.label="rev" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="List(T)" org.eventb.core.identifier="l"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.theory.core.inductiveArgument="l">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="nil" org.eventb.theory.core.formula="nil ⦂ List(T)"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="cons(x,l0)" org.eventb.theory.core.formula="append(rev(l0),x)"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.typeParameter name="," org.eventb.core.identifier="S"/>
+<org.eventb.theory.core.newOperatorDefinition name="-" org.eventb.core.label="map" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="(" org.eventb.core.expression="T→S" org.eventb.core.identifier="f"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name=")" org.eventb.theory.core.inductiveArgument="l">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="nil" org.eventb.theory.core.formula="nil ⦂ List(S)"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="cons(x,l0)" org.eventb.theory.core.formula="cons(f(x),map(f,l0))"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="List(T)" org.eventb.core.identifier="l"/>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="3" org.eventb.core.label="conc" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="List(T)" org.eventb.core.identifier="l1"/>
+<org.eventb.theory.core.operatorArgument name="(" org.eventb.core.expression="List(T)" org.eventb.core.identifier="l2"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name=")" org.eventb.theory.core.inductiveArgument="l1">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="nil" org.eventb.theory.core.formula="l2"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="cons(x,l0)" org.eventb.theory.core.formula="cons(x,conc(l0,l2))"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.newOperatorDefinition name="2" org.eventb.core.label="flatten" org.eventb.theory.core.associative="false" org.eventb.theory.core.commutative="false" org.eventb.theory.core.formulaType="true" org.eventb.theory.core.notationType="PREFIX">
+<org.eventb.theory.core.operatorArgument name="'" org.eventb.core.expression="List(List(T))" org.eventb.core.identifier="l"/>
+<org.eventb.theory.core.recursiveOperatorDefinition name="(" org.eventb.theory.core.inductiveArgument="l">
+<org.eventb.theory.core.recursiveDefinitionCase name="'" org.eventb.core.expression="nil" org.eventb.theory.core.formula="nil ⦂ List(T)"/>
+<org.eventb.theory.core.recursiveDefinitionCase name="(" org.eventb.core.expression="cons(l0,ll0)" org.eventb.theory.core.formula="conc(l0,flatten(ll0))"/>
+</org.eventb.theory.core.recursiveOperatorDefinition>
+</org.eventb.theory.core.newOperatorDefinition>
+<org.eventb.theory.core.theorem name="=" org.eventb.core.label="thm0" org.eventb.core.predicate="∀l,x·l∈List(T) ∧ x∈T ⇒ listSize(append(l,x)) = 1+listSize(l)"/>
+<org.eventb.theory.core.theorem name="/" org.eventb.core.label="thm2" org.eventb.core.predicate="∀l,f,x·l∈List(T) ∧ f∈T→S ∧ x∈T ⇒ map(f,append(l,x)) = append(map(f,l),f(x))"/>
+<org.eventb.theory.core.theorem name="." org.eventb.core.label="thm1" org.eventb.core.predicate="∀l,f·l∈List(T) ∧ f∈T→S ⇒ rev(map(f,l)) = map(f,rev(l))"/>
+<org.eventb.theory.core.theorem name="1" org.eventb.core.label="thm4" org.eventb.core.predicate="∀l,x·l∈List(T) ∧ x∈T ⇒ rev(append(l,x)) = cons(x,rev(l))"/>
+<org.eventb.theory.core.theorem name="0" org.eventb.core.label="thm3" org.eventb.core.predicate="∀l·l∈List(T) ⇒ rev(rev(l)) = l"/>
+<org.eventb.theory.core.theorem name="5" org.eventb.core.label="thm6" org.eventb.core.predicate="∀l·l∈List(T) ⇒ conc(l,nil) = l"/>
+<org.eventb.theory.core.theorem name="6" org.eventb.core.label="thm7" org.eventb.core.predicate="∀l1,l2,x·l1∈List(T) ∧ l2∈List(T) ∧ x∈T ⇒ append(conc(l1,l2),x) = conc(l1,append(l2,x))"/>
+<org.eventb.theory.core.theorem name="4" org.eventb.core.label="thm5" org.eventb.core.predicate="∀l1·l1∈List(T) ⇒ (∀l2·l2∈List(T) ⇒ rev(conc(l1,l2)) = conc(rev(l2),rev(l1)))"/>
+<org.eventb.theory.core.theorem name=":" org.eventb.core.label="thm10" org.eventb.core.predicate="∀l1,l2,l3·l1∈List(T) ∧ l2∈List(T) ∧ l3∈List(T) ⇒ conc(conc(l1,l2),l3) = conc(l1,conc(l2,l3))"/>
+<org.eventb.theory.core.theorem name="8" org.eventb.core.label="thm9" org.eventb.core.predicate="∀ll,l·ll∈List(List(T)) ∧ l∈List(T) ⇒ flatten(append(ll,l)) = conc(flatten(ll),l)"/>
+</org.eventb.theory.core.theoryRoot>

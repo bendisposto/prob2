@@ -2,22 +2,21 @@ package de.prob.statespace
 
 import spock.lang.Specification
 import de.prob.Main
-import de.prob.model.representation.AbstractModel
 import de.prob.scripting.ClassicalBFactory
 
 class TraceAnimationTest extends Specification {
 
-	static AbstractModel m
+	static StateSpace s
 	Trace t
 
 	def setupSpec() {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
-		m = factory.load(path)
+		s = factory.extract(path).load([:])
 	}
 
 	def setup() {
-		t = new Trace(m)
+		t = new Trace(s)
 	}
 
 	def "if we specify that states should not be automatically explored, the destination state remains unexplored"() {
@@ -42,7 +41,7 @@ class TraceAnimationTest extends Specification {
 
 	def "the empty trace has a size of 0"(){
 		when:
-		Trace t = new Trace(m)
+		Trace t = new Trace(s)
 
 		then:
 		t.size() == 0
@@ -50,7 +49,7 @@ class TraceAnimationTest extends Specification {
 
 	def "a trace containing three steps has a size of 3"(){
 		when:
-		Trace t = new Trace(m).anyEvent().anyEvent().anyEvent()
+		Trace t = new Trace(s).anyEvent().anyEvent().anyEvent()
 
 		then:
 		t.size() == 3
@@ -317,7 +316,6 @@ class TraceAnimationTest extends Specification {
 
 	def "can use the static method to change a list of transitions into a Trace"() {
 		when:
-		StateSpace s = m as StateSpace
 		def transitions = []
 		def state = s.getRoot()
 		for (i in 0..9) {
@@ -341,7 +339,6 @@ class TraceAnimationTest extends Specification {
 
 	def "can add a list of transitions into a Trace"() {
 		when:
-		StateSpace s = m as StateSpace
 		def transitions = []
 		def state = s.getRoot()
 		for (i in 0..9) {
