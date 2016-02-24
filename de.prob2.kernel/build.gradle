@@ -20,6 +20,10 @@ repositories {
 		name "sonatype snapshots"
 		url "https://oss.sonatype.org/content/repositories/snapshots"
 	}
+	maven {
+		name "sonatype snapshots"
+		url "https://oss.sonatype.org/content/repositories/releases"
+	}
 }
 
 
@@ -50,7 +54,7 @@ dependencies {
 
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
-  compile(group: 'de.hhu.stups', name: 'rodin-eventb-ast', version: '3.2.0-SNAPSHOT')
+  compile(group: 'de.hhu.stups', name: 'rodin-eventb-ast', version: '3.2.0')
 
 	compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
@@ -63,7 +67,7 @@ dependencies {
 	compile group: "de.hhu.stups", name: "translator", version: parser_version, changing: true
 	compile group: "de.hhu.stups", name: "eventbalg", version: parser_version, changing: true
 
-	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.0.7', changing: true
+	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.0.8', changing: true
 
 	// The following dependencies are needed for FMI
 	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
