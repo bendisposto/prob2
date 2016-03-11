@@ -51,17 +51,17 @@ public class ModelGenerator {
 			}
 		});
 		Map<String, String> components = new HashMap<String, String>();
-		for (File f : files) {
-			checkFile(f, false);
-			String text = readFile(f);
-			components.put(f.getName(), text);
-		}
+		if (files != null)
+			for (File f : files) {
+				checkFile(f, false);
+				String text = readFile(f);
+				components.put(f.getName(), text);
+			}
 		this.modelM = addComponents(modelM, components);
 	}
 
 	@SuppressWarnings("unchecked")
-	private ModelModifier extractTheories(final EventBModel model,
-			final String path) throws IOException {
+	private ModelModifier extractTheories(final EventBModel model, final String path) throws IOException {
 		File theoryPath = new File(path + File.separator + "TheoryPath.json");
 		if (!theoryPath.exists()) {
 			return new ModelModifier(model);
