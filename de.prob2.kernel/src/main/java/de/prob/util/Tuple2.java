@@ -2,6 +2,8 @@ package de.prob.util;
 
 import java.util.List;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class Tuple2<S, T> {
 	private final S first;
 	private final T second;
@@ -41,4 +43,15 @@ public class Tuple2<S, T> {
 		}
 		return false;
 	}
+	
+	
+	@Override
+	public int hashCode() {
+		HashCodeBuilder hcb = new HashCodeBuilder();
+		hcb.append(getFirst());
+		hcb.append(getSecond());
+		return hcb.toHashCode();
+	}
+	
+	
 }
