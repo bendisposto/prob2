@@ -36,20 +36,20 @@ class Shell {
 					return arg1.endsWith(".groovy");
 				}
 			});
-			for (File file : files) {
-				runScript(script.getAbsolutePath(), file, silent);
-			}
-			if (!silent) {
-				System.out.println("TOTAL TIME: "
-						+ (System.currentTimeMillis() - time));
+			if (files != null) {
+				for (File file : files) {
+					runScript(script.getAbsolutePath(), file, silent);
+				}
+				if (!silent) {
+					System.out.println("TOTAL TIME: " + (System.currentTimeMillis() - time));
+				}
 			}
 		} else {
 			runSingleScript(script.getParent(), script, silent);
 		}
 	}
 
-	private void runSingleScript(final String dir, final File script,
-			final boolean silent) throws Throwable {
+	private void runSingleScript(final String dir, final File script, final boolean silent) throws Throwable {
 		long time = System.currentTimeMillis();
 		logger.debug("Runnning script: {}", script.getAbsolutePath());
 		ScriptEngine executor = sep.get();
