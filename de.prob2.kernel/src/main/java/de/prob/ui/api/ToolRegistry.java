@@ -20,7 +20,7 @@ public class ToolRegistry {
 
 	public void register(final String name, final ITool stateprovider) {
 		tools.put(name, stateprovider);
-		//notifyToolChange(stateprovider);
+		// notifyToolChange(stateprovider);
 	}
 
 	public void unregister(final String name) {
@@ -28,13 +28,15 @@ public class ToolRegistry {
 	}
 
 	public void notifyToolChange(String trigger, final ITool tool) {
-		for (WeakReference<IToolListener> listener : listeners) {
-			listener.get().animationChange(trigger, tool);
+		for (WeakReference<IToolListener> wr : listeners) {
+			IToolListener listener = wr.get();
+			if (listener != null)
+				listener.animationChange(trigger, tool);
 		}
 	}
 
 	public ITool getTool(String id) {
 		return tools.get(id);
 	}
-	
+
 }
