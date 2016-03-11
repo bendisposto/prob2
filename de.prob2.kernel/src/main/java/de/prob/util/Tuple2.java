@@ -24,6 +24,7 @@ public class Tuple2<S, T> {
 		return "(" + first + "," + second + ")";
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object that) {
 		if (that instanceof Tuple2<?, ?>) {

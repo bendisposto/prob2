@@ -21,7 +21,6 @@ import de.prob.model.eventb.Event.EventType;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.MachineModifier;
 import de.prob.model.eventb.ModelGenerationException;
-import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter;
 import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.representation.BEvent;
 
@@ -29,8 +28,7 @@ public class MachineExtractor extends ElementExtractor {
 
 	MachineModifier machineM;
 
-	public MachineExtractor(final MachineModifier machineM,
-			final Set<IFormulaExtension> typeEnv) {
+	public MachineExtractor(final MachineModifier machineM, final Set<IFormulaExtension> typeEnv) {
 		super(typeEnv);
 		this.machineM = machineM;
 	}
@@ -46,8 +44,7 @@ public class MachineExtractor extends ElementExtractor {
 	@Override
 	public void caseAVariable(final AVariable node) {
 		try {
-			machineM = machineM.variable(node.getName().getText(),
-					getComment(node.getComments()));
+			machineM = machineM.variable(node.getName().getText(), getComment(node.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -56,8 +53,7 @@ public class MachineExtractor extends ElementExtractor {
 	@Override
 	public void caseATypedVar(ATypedVar node) {
 		try {
-			machineM = machineM.var(node.getName().getText(), node
-					.getTypingpred().getText(), node.getInit().getText());
+			machineM = machineM.var(node.getName().getText(), node.getTypingpred().getText(), node.getInit().getText());
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -66,9 +62,8 @@ public class MachineExtractor extends ElementExtractor {
 	@Override
 	public void caseAInvariant(final AInvariant node) {
 		try {
-			machineM = machineM.invariant(node.getName().getText(), node
-					.getPredicate().getText(), false, getComment(node
-					.getComments()));
+			machineM = machineM.invariant(node.getName().getText(), node.getPredicate().getText(), false,
+					getComment(node.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -77,9 +72,8 @@ public class MachineExtractor extends ElementExtractor {
 	@Override
 	public void caseADerivedInvariant(final ADerivedInvariant node) {
 		try {
-			machineM = machineM.invariant(node.getName().getText(), node
-					.getPredicate().getText(), true, getComment(node
-					.getComments()));
+			machineM = machineM.invariant(node.getName().getText(), node.getPredicate().getText(), true,
+					getComment(node.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -88,8 +82,7 @@ public class MachineExtractor extends ElementExtractor {
 	@Override
 	public void caseAVariant(final AVariant node) {
 		try {
-			machineM = machineM.variant(node.getExpression().getText(),
-					getComment(node.getComments()));
+			machineM = machineM.variant(node.getExpression().getText(), getComment(node.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -97,22 +90,19 @@ public class MachineExtractor extends ElementExtractor {
 
 	@Override
 	public void caseAEvent(final AEvent node) {
-		EventExtractor eE = new EventExtractor(new Event(node.getName()
-				.getText(), EventType.ORDINARY, false), machineM.getMachine()
-				.getRefines(), typeEnv, getComment(node.getComments()));
+		EventExtractor eE = new EventExtractor(new Event(node.getName().getText(), EventType.ORDINARY, false),
+				machineM.getMachine().getRefines(), typeEnv, getComment(node.getComments()));
 
 		node.apply(eE);
 
-		machineM = new MachineModifier(machineM.getMachine().addTo(
-				BEvent.class, eE.getEvent()), typeEnv);
+		machineM = new MachineModifier(machineM.getMachine().addTo(BEvent.class, eE.getEvent()), typeEnv);
 	}
 
 	@Override
 	public void caseAAlgorithm(final AAlgorithm node) {
 		AlgorithmExtractor aE = new AlgorithmExtractor(typeEnv);
 		Block algorithm = aE.extract(node);
-		machineM = new MachineModifier(machineM.getMachine().addTo(Block.class,
-				algorithm), typeEnv);
+		machineM = new MachineModifier(machineM.getMachine().addTo(Block.class, algorithm), typeEnv);
 	}
 
 	public String getComment(final List<TComment> comments) {

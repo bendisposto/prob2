@@ -1,16 +1,11 @@
 package de.prob.model.eventb.algorithm;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
-import de.be4.classicalb.core.parser.node.AAssignSubstitution;
-import de.be4.classicalb.core.parser.node.ABecomesElementOfSubstitution;
-import de.be4.classicalb.core.parser.node.ABecomesSuchSubstitution;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.Node;
-import de.be4.classicalb.core.parser.node.PExpression;
 
 public class IdentifierExtractor extends DepthFirstAdapter {
 
