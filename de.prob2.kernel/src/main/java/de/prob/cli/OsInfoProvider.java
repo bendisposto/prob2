@@ -23,8 +23,7 @@ class OsInfoProvider implements Provider<OsSpecificInfo> {
 	private final OsSpecificInfo osInfo;
 
 	@Inject
-	public OsInfoProvider(@OsName final String osString,
-			@OsArch final String osArch) {
+	public OsInfoProvider(@OsName final String osString, @OsArch final String osArch) {
 		osInfo = whichOs(osString, osArch);
 	}
 
@@ -37,26 +36,22 @@ class OsInfoProvider implements Provider<OsSpecificInfo> {
 		String os = osString.toLowerCase();
 		if (os.indexOf("win") >= 0) {
 			if (osArch.equals("amd64")) {
-				new OsSpecificInfo("probcli.exe", null, "lib" + File.separator
-						+ "send_user_interrupt.exe", "Windows", osString,
-						"win64");
+				return new OsSpecificInfo("probcli.exe", null, "lib" + File.separator + "send_user_interrupt.exe",
+						"Windows", osString, "win64");
+			} else {
+				return new OsSpecificInfo("probcli.exe", null, "lib" + File.separator + "send_user_interrupt.exe",
+						"Windows", osString, "win32");
 			}
-			return new OsSpecificInfo("probcli.exe", null, "lib"
-					+ File.separator + "send_user_interrupt.exe", "Windows",
-					osString, "win32");
 		}
 		if (os.indexOf("mac") >= 0) {
-			return new OsSpecificInfo("probcli.sh", "sh",
-					"send_user_interrupt", "MacOs", osString, "leopard64");
+			return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "MacOs", osString, "leopard64");
 		}
 		if (os.indexOf("linux") >= 0) {
 			if (osArch.equals("i386")) {
-				return new OsSpecificInfo("probcli.sh", "sh",
-						"send_user_interrupt", "Linux", osString, "linux32");
+				return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "Linux", osString, "linux32");
 			}
 			if (osArch.equals("amd64")) {
-				return new OsSpecificInfo("probcli.sh", "sh",
-						"send_user_interrupt", "Linux", osString, "linux64");
+				return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "Linux", osString, "linux64");
 			}
 		}
 		throw new UnsupportedOperationException("OS not supported");
