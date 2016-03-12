@@ -27,6 +27,7 @@ public class Tuple2<S, T> {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value={"EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"},justification="We actually want to compare Tuples with Lists that have 2 elements")
 	@Override
 	public boolean equals(Object that) {
 		if (that instanceof Tuple2<?, ?>) {
