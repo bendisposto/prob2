@@ -156,7 +156,7 @@ public class EvalResult extends AbstractEvalResult {
 		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "NOT-WELL-DEFINED") {
 			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
 			return new WDError(arg2.collect { it.getFunctor()})
-		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "IDENTIFIER(S) NOT YET INITIALISED") {
+		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "IDENTIFIER(S) NOT YET INITIALISED; INITIALISE MACHINE FIRST") {
 			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
 			return new IdentifierNotInitialised(arg2.collect { it.getFunctor()})
 		} else if (pt.getFunctor() == "enum_warning") {
