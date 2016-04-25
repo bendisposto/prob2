@@ -13,4 +13,4 @@ assert list.collect { it.getName() } == ["\$setup_constants", "\$initialise_mach
 assert list.collect { it.getRep() } == ["\$setup_constants()","\$initialise_machine()","up()"]
 assert list.collect { it.getPrettyRep() } == ["SETUP_CONSTANTS()", "INITIALISATION()", "up()"]
 
-"a Transition has a pretty represenation for internal ProB transition names"
+"a Transition has a pretty representation for internal ProB transition names"
