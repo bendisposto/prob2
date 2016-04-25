@@ -42,6 +42,7 @@ public class Trace {
 		this.current = current
 		this.transitionList = transitionList
 		this.UUID = uuid
+		if (current != null) current.getCurrentState().explore();
 	}
 
 
