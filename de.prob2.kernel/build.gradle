@@ -200,13 +200,10 @@ task deploy(type: Copy, dependsOn: build) {
 }
 
 
-//javadoc {
-//	failOnError = false
-//}
+javadoc {
+	failOnError = false
+}
 
-tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
-      }
 
 
 tasks.eclipse.dependsOn createBuildConstants
