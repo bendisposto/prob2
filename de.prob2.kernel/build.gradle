@@ -45,7 +45,7 @@ dependencies {
 	// Used for escaping HTML and Unicode symbols within Java strings
 	compile 'commons-lang:commons-lang:2.6'
 
-	compile 'org.codehaus.groovy:groovy-all:2.3.0' // Apache Licence 2.0
+	compile 'org.codehaus.groovy:groovy-all:2.4.0' // Apache Licence 2.0
 
 	compile 'com.google.inject:guice:4.0' // Apache Licence 2.0
 	compile 'org.slf4j:slf4j-api:1.6.1' // MIT
@@ -54,7 +54,7 @@ dependencies {
 
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
-    compile(group: 'de.hhu.stups', name: 'rodin-eventb-ast', version: '3.2.0')
+	compile(group: 'de.hhu.stups', name: 'rodin-eventb-ast', version: '3.2.0')
 
 	compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
@@ -76,14 +76,15 @@ dependencies {
 
 
 	compile 'junit:junit:4.8.2'
-	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
+	//	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
+	compile 'org.spockframework:spock-core:1.0-groovy-2.4'
 
 	compile 'com.github.krukow:clj-ds:0.0.4'
 
 	// annotations to suppress findbugs warnings
 	compile 'findbugs:annotations:1.0.0'
-	
-	testCompile 'org.mockito:mockito-core:1.8.5'
+
+	testCompile 'org.mockito:mockito-core:1.10.19'
 	testCompile "org.gebish:geb-spock:0.9.1"
 
 }
@@ -95,13 +96,11 @@ def download(address,target) {
 	out.close()
 }
 
-ext{
-	cli_version = '1.5.1-beta4'
-}
+ext{ cli_version = '1.5.1-beta4' }
 
 
 def downloadUrlPath() {
-  if (project.version.endsWith("-SNAPSHOT")) {
+	if (project.version.endsWith("-SNAPSHOT")) {
 		return "https://www3.hhu.de/stups/downloads/prob/cli/nightly/"
 	}
 	else {
@@ -112,32 +111,38 @@ def downloadUrlPath() {
 
 
 task downloadCLIs << {
-		def dir = 'src/main/resources/cli/'
-		delete file(dir)
-		def f = file(dir)
-	  f.mkdirs()
+	def dir = 'src/main/resources/cli/'
+	delete file(dir)
+	def f = file(dir)
+	f.mkdirs()
 
-		['leopard64','linux32','linux64','win32','win64'].each { n ->
+	[
+		'leopard64',
+		'linux32',
+		'linux64',
+		'win32',
+		'win64'
+	].each { n ->
 
-			def targetdir = dir+n
-			def targetzip = dir+"probcli_${n}.zip"
-			def url = downloadUrlPath()+"probcli_${n}.zip"
-			download(url,targetzip)
+		def targetdir = dir+n
+		def targetzip = dir+"probcli_${n}.zip"
+		def url = downloadUrlPath()+"probcli_${n}.zip"
+		download(url,targetzip)
 
-			def cspmfname = n
-			if (n.startsWith("win")) {
-				n = "windows.exe"
-			}
-			cspmfname = "cspmf-"+n
-			def target = dir+cspmfname
-			download("http://www3.hhu.de/stups/downloads/cspmf/"+cspmfname,target)
-			file(target).setExecutable(true)
+		def cspmfname = n
+		if (n.startsWith("win")) {
+			n = "windows.exe"
 		}
+		cspmfname = "cspmf-"+n
+		def target = dir+cspmfname
+		download("http://www3.hhu.de/stups/downloads/cspmf/"+cspmfname,target)
+		file(target).setExecutable(true)
+	}
 
-		['32','64'].each { winV ->
-			def targetzip = dir+"windowslib${winV}.zip"
-			download(downloadUrlPath()+"windowslib${winV}.zip",targetzip)
-		}
+	['32', '64'].each { winV ->
+		def targetzip = dir+"windowslib${winV}.zip"
+		download(downloadUrlPath()+"windowslib${winV}.zip",targetzip)
+	}
 }
 
 task createBuildConstants  {
@@ -179,7 +184,7 @@ def os_extension() {
 }
 
 // run integration tests after downloading fresh CLI from Nightly Build
-task integrationtests(dependsOn: ['downloadCLIs','tests']);
+task integrationtests(dependsOn: ['downloadCLIs', 'tests']);
 
 // run integration tests WITHOUT downloading fresh CLI from Nightly Build
 task tests(dependsOn: ['classes'], type:JavaExec){
@@ -189,20 +194,16 @@ task tests(dependsOn: ['classes'], type:JavaExec){
 }
 
 eclipse {
-	project {
-		name = 'de.prob2.kernel'
-	}
+	project { name = 'de.prob2.kernel' }
 }
 
 task deploy(type: Copy, dependsOn: build) {
-    into "$buildDir/libs"
-    from configurations.runtime
+	into "$buildDir/libs"
+	from configurations.runtime
 }
 
 
-javadoc {
-	failOnError = false
-}
+javadoc { failOnError = false }
 
 
 
@@ -210,72 +211,68 @@ tasks.eclipse.dependsOn createBuildConstants
 
 if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
 
-println "Configuring deployment for ${ project.name }"
+	println "Configuring deployment for ${ project.name }"
 
-apply plugin: 'signing'
+	apply plugin: 'signing'
 
-task javadocJar(type: Jar) {
-	 classifier = 'javadoc'
-	 from javadoc
-}
+	task javadocJar(type: Jar) {
+		classifier = 'javadoc'
+		from javadoc
+	}
 
-task sourcesJar(type: Jar) {
-	 classifier = 'sources'
-	 from sourceSets.main.allSource
-}
+	task sourcesJar(type: Jar) {
+		classifier = 'sources'
+		from sourceSets.main.allSource
+	}
 
-artifacts {
-	 archives javadocJar, sourcesJar
-}
+	artifacts { archives javadocJar, sourcesJar }
 
 
-signing {
-	 sign configurations.archives
-}
+	signing { sign configurations.archives }
 
-uploadArchives {
- repositories {
-	 mavenDeployer {
-		 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-		 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-			 authentication(userName: ossrhUsername, password: ossrhPassword)
-		 }
+				repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+					authentication(userName: ossrhUsername, password: ossrhPassword)
+				}
 
-		 snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-			 authentication(userName: ossrhUsername, password: ossrhPassword)
-		 }
+				snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+					authentication(userName: ossrhUsername, password: ossrhPassword)
+				}
 
-		 pom.project {
-			 name "prob2-kernel"
-			 packaging 'jar'
-			 // optionally artifactId can be defined here
-			 description 'The ProB 2.0 Kernel'
-			 url 'http://www.prob2.de'
+				pom.project {
+					name "prob2-kernel"
+					packaging 'jar'
+					// optionally artifactId can be defined here
+					description 'The ProB 2.0 Kernel'
+					url 'http://www.prob2.de'
 
-			 licenses {
-				 license {
-					 name 'Eclipse Public License, Version 1.0'
-					 url 'http://www.eclipse.org/org/documents/epl-v10.html'
-				 }
-			 }
+					licenses {
+						license {
+							name 'Eclipse Public License, Version 1.0'
+							url 'http://www.eclipse.org/org/documents/epl-v10.html'
+						}
+					}
 
-			 scm {
-				 connection 'scm:git:git://github.com/bendisposto/prob2.git'
-				 developerConnection 'scm:git:git@github.com:bendisposto/prob2.git'
-				 url 'https://github.com/bendisposto/prob2'
-			 }
+					scm {
+						connection 'scm:git:git://github.com/bendisposto/prob2.git'
+						developerConnection 'scm:git:git@github.com:bendisposto/prob2.git'
+						url 'https://github.com/bendisposto/prob2'
+					}
 
 
-			 developers {
-				 developer {
-					 id 'bendisposto'
-					 name 'Jens Bendisposto'
-					 email 'jens@bendisposto.de'
-				 }
-			 }
-		 }
-	 }
- }
-}
+					developers {
+						developer {
+							id 'bendisposto'
+							name 'Jens Bendisposto'
+							email 'jens@bendisposto.de'
+						}
+					}
+				}
+			}
+		}
+	}
 }
