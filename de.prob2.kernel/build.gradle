@@ -167,9 +167,6 @@ groovydoc {
 
 task wrapper(type: Wrapper) { gradleVersion = gradle_version }
 
-test {
-  ignoreFailures=true
-}
 
 def os_extension() {
 	def bits = System.getProperty("sun.arch.data.model");
