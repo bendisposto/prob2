@@ -1,7 +1,5 @@
 package animation;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -13,7 +11,7 @@ import de.prob.scripting.Api;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
-public class AnimationTest {
+public class AnimationSmokeTest {
 
 	@Test
 	public void test() throws IOException, BException {
