@@ -39,7 +39,7 @@ def parser_version = '2.5.1'
 
 dependencies {
 
-	compile 'com.google.guava:guava:18.0'// Apache Licence 2.0
+	compile 'com.google.guava:guava:19.0'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
 
 	// Used for escaping HTML and Unicode symbols within Java strings
