@@ -18,8 +18,6 @@ import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
 public class LoadStdLibTest {
-
-	@Ignore
 	@Test
 	public void test() throws BException, URISyntaxException, IOException {
 
