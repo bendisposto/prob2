@@ -17,7 +17,9 @@ before_install:
   de.prob2.kernel/gradle.properties -d
 sudo: false
 install: /bin/true
-script: TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests uploadArchives
+script: TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests
+after_success:
+TERM=dumb gradle -b de.prob2.kernel/build.gradle uploadArchives
 env:
   global:
     secure: DtyDUbGXZOZzuYWvCnL8eSaKpM6fQXQqnDBQzwD5OoBaCv6S3ijGHvNmie2tGTe5c93siiRU/doaJNH5PN6JN8Fbw+nxBJRIzKpqjVFmLPy2hCwPXum1BI4Nsf4vH4fZ4eENK1mFUDUR4MWrTAk9Vl05jIjEvsNlkrusBnVWFmg=
