@@ -86,11 +86,11 @@ public class Main {
 	 * @param log
 	 */
 	@Inject
-	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell) {
+	public Main(final CommandLineParser parser, final Options options, final Shell shell, @Home String probdir) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
+		System.setProperty("prob.stdlib", probdir + File.separator + "stdlib");
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
