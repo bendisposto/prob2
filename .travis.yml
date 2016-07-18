@@ -7,18 +7,17 @@ branches:
     - master
     - develop
 
-
-before_install:
+sudo: false
+install: /bin/true
+script: TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests
+after_success:
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg
   -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out pubring.gpg
   -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in gradle.properties.enc -out
   de.prob2.kernel/gradle.properties -d
-sudo: false
-install: /bin/true
-script: TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests
-after_success: TERM=dumb gradle -b de.prob2.kernel/build.gradle uploadArchives
+- TERM=dumb gradle -b de.prob2.kernel/build.gradle uploadArchives
 env:
   global:
     secure: DtyDUbGXZOZzuYWvCnL8eSaKpM6fQXQqnDBQzwD5OoBaCv6S3ijGHvNmie2tGTe5c93siiRU/doaJNH5PN6JN8Fbw+nxBJRIzKpqjVFmLPy2hCwPXum1BI4Nsf4vH4fZ4eENK1mFUDUR4MWrTAk9Vl05jIjEvsNlkrusBnVWFmg=
