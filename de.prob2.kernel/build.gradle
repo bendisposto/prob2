@@ -45,7 +45,7 @@ dependencies {
 	// Used for escaping HTML and Unicode symbols within Java strings
 	compile 'commons-lang:commons-lang:2.6'
 
-	compile 'org.codehaus.groovy:groovy-all:2.4.0' // Apache Licence 2.0
+	compile 'org.codehaus.groovy:groovy-all:2.4.7' // Apache Licence 2.0
 
 	compile 'com.google.inject:guice:4.0' // Apache Licence 2.0
 	compile 'org.slf4j:slf4j-api:1.6.1' // MIT
