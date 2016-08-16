@@ -16,16 +16,9 @@ import com.google.inject.Singleton;
 import de.prob.model.representation.AbstractElement;
 
 /**
- * This class provides a registry of all currently running animations. It
- * provides the user to communicate between the UI and the console, and provides
- * a listener framework so that the user can animate machines using
- * {@link Trace} objects to represent the different animations. It also
- * maintains a pointer to one {@link Trace} object which is the current
- * animation.
- * 
- * @author joy
- * 
+ * @deprecated Use AnimationSelector instead
  */
+@Deprecated
 @Singleton
 public class Animations {
 

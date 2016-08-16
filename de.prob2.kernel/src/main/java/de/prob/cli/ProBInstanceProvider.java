@@ -63,8 +63,9 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	public void shutdownAll() {
 		for (WeakReference<ProBInstance> wr : processes) {
-			if (wr.get() != null) {
-				wr.get().shutdown();
+			ProBInstance process = wr.get();
+			if (process != null) {
+				process.shutdown();
 			}
 		}
 	}

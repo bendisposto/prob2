@@ -17,6 +17,8 @@ import com.github.krukow.clj_lang.PersistentVector
  */
 public class ModelElementList<E> implements List<E> {
 
+	//FIXME Maybe it is better to inherit from AbstractList and only override what we actually need
+
 	def final PersistentVector<E> list
 	def final PersistentHashMap<String,E> keys
 
@@ -246,8 +248,9 @@ public class ModelElementList<E> implements List<E> {
 		return list.toArray()
 	}
 
+	@SafeVarargs
 	@Override
-	public <T> T[] toArray(T[] a) {
+	public final <T> T[] toArray(T[] a) {
 		return list.toArray(a)
 	}
 

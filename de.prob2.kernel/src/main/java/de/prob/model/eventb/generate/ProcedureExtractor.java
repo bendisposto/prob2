@@ -3,7 +3,6 @@ package de.prob.model.eventb.generate;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;

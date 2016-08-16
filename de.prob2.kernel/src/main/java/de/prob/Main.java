@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 
+import de.prob.annotations.Home;
 import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.FileHandler;
 import de.prob.scripting.Installer;
@@ -39,8 +40,7 @@ public class Main {
 	private final Options options;
 	private final Shell shell;
 
-	private static Injector INJECTOR = Guice.createInjector(Stage.PRODUCTION,
-			new MainModule());
+	private static Injector _INJECTOR = null;
 
 	/**
 	 * Name of file in which the preferences are saved. Currently
@@ -48,8 +48,11 @@ public class Main {
 	 */
 	public static final String PREFERENCE_FILE_NAME = "prob2preferences";
 
-	public static Injector getInjector() {
-		return INJECTOR;
+	public synchronized static Injector getInjector() {
+		if (_INJECTOR == null) {
+			_INJECTOR = Guice.createInjector(Stage.PRODUCTION, new MainModule());
+		}
+		return _INJECTOR;
 	}
 
 	/**
@@ -57,8 +60,8 @@ public class Main {
 	 *
 	 * @param i
 	 */
-	public static void setInjector(final Injector i) {
-		INJECTOR = i;
+	public synchronized static void setInjector(final Injector i) {
+		_INJECTOR = i;
 	}
 
 	/**
@@ -86,11 +89,11 @@ public class Main {
 	 * @param log
 	 */
 	@Inject
-	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell) {
+	public Main(final CommandLineParser parser, final Options options, final Shell shell, @Home String probdir) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
+		System.setProperty("prob.stdlib", probdir + File.separator + "stdlib");
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 

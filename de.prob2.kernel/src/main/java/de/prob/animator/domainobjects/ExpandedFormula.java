@@ -76,8 +76,8 @@ public class ExpandedFormula {
 			hasError = true;
 			return cpt.getArgument(1).getFunctor();
 		}
-		v.getFunctor();
-		return null;
+		throw new IllegalArgumentException("Received unexpected result from Prolog. "
+				+ "Expected is either p,v or e as a functor, but Prolog returned" + v.getFunctor());
 	}
 
 	public String getLabel() {

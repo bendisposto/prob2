@@ -56,7 +56,10 @@ class BasicStateTest extends Specification {
 	def "if the model is not of type B, then it will not be generated"() {
 		setup:
 		def oldmodel = s.getModel()
-		def model = Mock(CSPModel)
+		
+		
+		def model = new CSPModel(null)
+
 		s.model = model
 
 		expect:
@@ -69,7 +72,7 @@ class BasicStateTest extends Specification {
 	def "equivalence in a state is based on id and state space"() {
 		when:
 		def sameroot = new State("root", s)
-		def otherroot = new State("root", Mock(StateSpace))
+		def otherroot = new State("root", mock(StateSpace))
 
 		then:
 		root == sameroot
@@ -86,7 +89,7 @@ class BasicStateTest extends Specification {
 	def "hashcode is based also on id and state space"() {
 		when:
 		def sameroot = new State("root", s)
-		def otherroot = new State("root", Mock(StateSpace))
+		def otherroot = new State("root", mock(StateSpace))
 
 		then:
 		root.hashCode() == sameroot.hashCode()

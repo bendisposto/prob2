@@ -11,7 +11,7 @@ cmd = new ExecuteUntilCommand(s, t.getCurrentState(), cond)
 s.execute(cmd)
 assert cmd.isSuccess()
 t = t.addTransitions(cmd.getNewTransitions())
-assert t.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machine(FALSE,FALSE)", "1 <-- read(1)", "nothing()", "end()"]
+assert t.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machine()", "1 <-- read(1)", "nothing()", "end()"]
 
 /*
 TODO: The command is too slow to do this.

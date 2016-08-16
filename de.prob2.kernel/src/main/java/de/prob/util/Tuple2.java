@@ -2,6 +2,8 @@ package de.prob.util;
 
 import java.util.List;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class Tuple2<S, T> {
 	private final S first;
 	private final T second;
@@ -24,6 +26,8 @@ public class Tuple2<S, T> {
 		return "(" + first + "," + second + ")";
 	}
 
+	@SuppressWarnings("rawtypes")
+	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value={"EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"},justification="We actually want to compare Tuples with Lists that have 2 elements")
 	@Override
 	public boolean equals(Object that) {
 		if (that instanceof Tuple2<?, ?>) {
@@ -40,4 +44,15 @@ public class Tuple2<S, T> {
 		}
 		return false;
 	}
+	
+	
+	@Override
+	public int hashCode() {
+		HashCodeBuilder hcb = new HashCodeBuilder();
+		hcb.append(getFirst());
+		hcb.append(getSecond());
+		return hcb.toHashCode();
+	}
+	
+	
 }

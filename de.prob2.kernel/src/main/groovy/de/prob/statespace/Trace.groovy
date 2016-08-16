@@ -9,6 +9,7 @@ import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.AbstractModel
 import de.prob.util.Tuple2
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
  * @author joy
@@ -23,6 +24,7 @@ public class Trace {
 	def final UUID UUID
 	def final List<Transition> transitionList
 
+	@SuppressWarnings(value="RANGE_ARRAY_INDEX", justification="False positive, Findbugs vs. Groovy")
 	def Trace(final StateSpace s) {
 		this(s.getRoot())
 	}
