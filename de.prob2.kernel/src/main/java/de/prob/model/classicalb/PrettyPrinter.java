@@ -122,9 +122,11 @@ public class PrettyPrinter extends DepthFirstAdapter {
 			final TIdentifierLiteral e = iterator.next();
 			e.apply(this);
 		}
-		sb.append("(");
-		commaSeparatedExpressionList(node.getParameters());
-		sb.append(")");
+		if (!node.getParameters().isEmpty()) {
+			sb.append("(");
+			commaSeparatedExpressionList(node.getParameters());
+			sb.append(")");
+		}
 	}
 
 	@Override
