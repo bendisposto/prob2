@@ -11,6 +11,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -21,6 +23,7 @@ public class EventBDatabaseTranslator {
 
 	private AbstractElement mainComponent;
 	private EventBModel model;
+	private final Logger logger = LoggerFactory.getLogger(EventBDatabaseTranslator.class);
 
 	public EventBDatabaseTranslator(EventBModel m,
 			final String fileName) throws FileNotFoundException {
@@ -64,11 +67,9 @@ public class EventBDatabaseTranslator {
 				this.model = ((MachineXmlHandler) xmlHandler).getModel();
 			}
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error during EventB translation", e);
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error during EventB translation", e);
 		} catch (IOException e) {
 			if (e instanceof FileNotFoundException) {
 				throw (FileNotFoundException) e;

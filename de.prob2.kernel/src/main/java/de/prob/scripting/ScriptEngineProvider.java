@@ -9,6 +9,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Resources;
@@ -24,24 +27,22 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 	private final Api api;
 	private final AnimationSelector animations;
 	private final ScriptEngineManager manager;
+	private final Logger logger = LoggerFactory.getLogger(ScriptEngineProvider.class);
 
 	private static final String[] IMPORTS = new String[] {
-		"import de.prob.statespace.*;",
-		"import de.prob.model.representation.*;",
-		"import de.prob.model.classicalb.*;",
-		"import de.prob.model.eventb.*;",
-		"import de.prob.animator.domainobjects.*;",
-		"import de.prob.animator.command.*;",
-		"import de.prob.visualization.*", "import de.prob.bmotion.*" };
-	private UiFunctionRegistry functionRegistry;
+			"import de.prob.statespace.*;",
+			"import de.prob.model.representation.*;",
+			"import de.prob.model.classicalb.*;",
+			"import de.prob.model.eventb.*;",
+			"import de.prob.animator.domainobjects.*;",
+			"import de.prob.animator.command.*;",
+			"import de.prob.visualization.*", "import de.prob.bmotion.*" };
 
 	@Inject
 	public ScriptEngineProvider(final Api api,
-			final AnimationSelector animations,
-			UiFunctionRegistry functionRegistry) {
+			final AnimationSelector animations) {
 		this.api = api;
 		this.animations = animations;
-		this.functionRegistry = functionRegistry;
 		manager = new ScriptEngineManager(this.getClass().getClassLoader());
 	}
 
@@ -51,7 +52,6 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 		Bindings bindings = engine.getBindings(ScriptContext.GLOBAL_SCOPE);
 		bindings.put("api", api);
 		bindings.put("animations", animations);
-		bindings.put("ui_functions", functionRegistry);
 		bindings.put("engine", engine);
 		URL url = Resources.getResource("initscript");
 		String script;
@@ -59,9 +59,10 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 			script = Resources.toString(url, Charsets.UTF_8);
 			engine.eval(Joiner.on("\n").join(IMPORTS) + script);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Error evaluating initial script", e);
+
 		} catch (ScriptException e) {
-			e.printStackTrace();
+			logger.error("Error evaluating initial script", e);
 		}
 		return new GroovySE(engine);
 	}

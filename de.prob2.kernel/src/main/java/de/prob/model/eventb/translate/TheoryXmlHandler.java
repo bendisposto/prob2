@@ -62,11 +62,9 @@ public class TheoryXmlHandler extends DefaultHandler {
 					theories = theories.addMultiple(extractor.getTheories());
 					typeEnv.addAll(extractor.getTypeEnv());
 				} catch (ParserConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Error extracting theory", e);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Error extracting theory", e);
 				}
 			} else {
 				theories = theories.addElement(theoryMap.get(path));

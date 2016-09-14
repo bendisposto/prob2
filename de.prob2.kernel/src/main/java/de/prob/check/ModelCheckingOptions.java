@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class ModelCheckingOptions {
 
-	public static ModelCheckingOptions DEFAULT = new ModelCheckingOptions()
+	public static final ModelCheckingOptions DEFAULT = new ModelCheckingOptions()
 			.checkDeadlocks(true).checkInvariantViolations(true);
 	private final EnumSet<Options> options;
 

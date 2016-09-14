@@ -34,8 +34,8 @@ import de.prob.scripting.Installer;
  */
 public class Main {
 
-	public static int maxCacheSize = 100;
-	private final Logger logger = LoggerFactory.getLogger(Main.class);
+	private static int maxCacheSize = 100;
+	private final static Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
 	private final Options options;
 	private final Shell shell;
@@ -77,7 +77,7 @@ public class Main {
 	 */
 	public final static String LOG_CONFIG = System
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
-			.getProperty("PROB_LOG_CONFIG");
+					.getProperty("PROB_LOG_CONFIG");
 
 	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
@@ -105,7 +105,7 @@ public class Main {
 				logger.debug("setting maximum cache size requested");
 				String value = line.getOptionValue("maxCacheSize");
 				logger.debug("retrieved maxSize");
-				Main.maxCacheSize = Integer.valueOf(value);
+				maxCacheSize = Integer.valueOf(value);
 				logger.debug("Max size set successfully to {}", value);
 			}
 
@@ -151,6 +151,10 @@ public class Main {
 		return prefs;
 	}
 
+	public static int getMaxCacheSize() {
+		return maxCacheSize;
+	}
+
 	/**
 	 * Start the ProB 2.0 shell with argument -s. Run integration tests with
 	 * -test /path/to/testDir
@@ -167,7 +171,7 @@ public class Main {
 			main.run(args);
 		} catch (Throwable e) {
 			getInjector().getInstance(ProBInstanceProvider.class).shutdownAll();
-			e.printStackTrace();
+			logger.error("Unhandled exception", e);
 			System.exit(-1);
 		}
 		System.exit(0);

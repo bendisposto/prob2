@@ -28,7 +28,7 @@ import de.prob.util.Tuple2;
 
 public class ProofExtractor {
 
-	Logger logger = LoggerFactory.getLogger(ProofExtractor.class);
+	private final Logger logger = LoggerFactory.getLogger(ProofExtractor.class);
 
 	Map<String, String> descriptions;
 	Set<String> discharged;
@@ -78,11 +78,9 @@ public class ProofExtractor {
 						+ ". Assuming that no proofs are discharged for model element.");
 			}
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error extracting proof", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error extracting proof", e);
 		}
 	}
 

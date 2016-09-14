@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.inject.Injector;
@@ -23,7 +22,7 @@ public class LoadStdLibTest {
 
 		assertNull(System.getProperty("prob.stdlib"));
 		Injector injector = Main.getInjector();
-		Main instance = injector.getInstance(Main.class);
+		injector.getInstance(Main.class);
 		assertNotNull(System.getProperty("prob.stdlib"));
 		System.out.println(System.getProperty("prob.stdlib"));
 

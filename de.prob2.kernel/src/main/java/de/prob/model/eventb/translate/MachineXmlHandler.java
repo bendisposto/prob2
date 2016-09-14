@@ -13,6 +13,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -82,6 +84,8 @@ public class MachineXmlHandler extends DefaultHandler {
 	private final Map<String, Map<String, EventBAxiom>> axiomCache = new HashMap<String, Map<String, EventBAxiom>>();
 	private final Map<String, Map<String, EventBInvariant>> invariantCache = new HashMap<String, Map<String, EventBInvariant>>();
 	private final Map<String, Map<String, Event>> eventCache = new HashMap<String, Map<String, Event>>();
+
+	private final Logger logger = LoggerFactory.getLogger(MachineXmlHandler.class);
 
 	public MachineXmlHandler(EventBModel model, final String fileName, final Set<IFormulaExtension> typeEnv) {
 		this.model = model;
@@ -278,14 +282,11 @@ public class MachineXmlHandler extends DefaultHandler {
 
 				model = handler.getModel();
 			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error parsing XML",e);
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error parsing XML",e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error parsing XML",e);
 			}
 		}
 	}
@@ -401,7 +402,8 @@ public class MachineXmlHandler extends DefaultHandler {
 		internalContext = internalContext.set(Axiom.class, axms);
 		internalContext = internalContext.set(Constant.class, new ModelElementList<EventBConstant>(constants));
 		internalContext = internalContext.set(Context.class, new ModelElementList<Context>(Extends));
-		internalContext = internalContext.set(de.prob.model.representation.Set.class, new ModelElementList<de.prob.model.representation.Set>(sets));
+		internalContext = internalContext.set(de.prob.model.representation.Set.class,
+				new ModelElementList<de.prob.model.representation.Set>(sets));
 
 		ProofExtractor extractor = new ProofExtractor(internalContext,
 				directoryPath + File.separatorChar + internalContext.getName());
@@ -412,7 +414,6 @@ public class MachineXmlHandler extends DefaultHandler {
 			sees.add(internalContext);
 		}
 		extractingContext = false;
-
 
 	}
 
@@ -430,7 +431,7 @@ public class MachineXmlHandler extends DefaultHandler {
 
 		ProofExtractor proofExtractor = new ProofExtractor(machine,
 				directoryPath + File.separatorChar + machine.getName());
-		machine = machine.set(ProofObligation.class,proofExtractor.getProofs());
+		machine = machine.set(ProofObligation.class, proofExtractor.getProofs());
 		model = model.addMachine(machine);
 
 	}

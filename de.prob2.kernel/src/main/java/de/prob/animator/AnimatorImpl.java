@@ -29,7 +29,7 @@ class AnimatorImpl implements IAnimator {
 	private final Logger logger = LoggerFactory.getLogger(AnimatorImpl.class);
 	private final CommandProcessor processor;
 	private final GetErrorsCommand getErrors;
-	public static boolean DEBUG = false;
+	public static final boolean DEBUG = false;
 	private final AnimationSelector animations;
 	private boolean busy = false;
 
@@ -44,6 +44,7 @@ class AnimatorImpl implements IAnimator {
 		processor.configure(cli);
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public synchronized void execute(final AbstractCommand command) {
 		if (cli == null) {
@@ -74,7 +75,6 @@ class AnimatorImpl implements IAnimator {
 							+ command.getClass().getSimpleName()
 							+ ". Message was: " + e.getMessage();
 					System.out.println(message + "\n");
-					e.printStackTrace();
 					logger.error(message, e);
 					System.exit(-1);
 				}
@@ -122,10 +122,6 @@ class AnimatorImpl implements IAnimator {
 	public void sendInterrupt() {
 		logger.info("Sending an interrupt to the CLI");
 		cli.sendInterrupt();
-	}
-
-	public static void setDebug(final boolean debug) {
-		DEBUG = debug;
 	}
 
 	@Override

@@ -63,7 +63,6 @@ public class GroovySE implements ScriptEngine {
 			groovy.eval(imports + "\n" + initscript);
 		} catch (ScriptException e) {
 			logger.error("Error initializing groovy", e);
-			e.printStackTrace();
 		} // run init script
 	}
 
