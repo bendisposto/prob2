@@ -1,12 +1,12 @@
 language: java
+addons:
+  sonarqube: true
 jdk:
 - oraclejdk7
-
 branches:
   only:
-    - master
-    - develop
-
+  - master
+  - develop
 sudo: false
 install: /bin/true
 script: TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests
@@ -20,4 +20,5 @@ after_success:
 - TERM=dumb gradle -b de.prob2.kernel/build.gradle uploadArchives
 env:
   global:
-    secure: DtyDUbGXZOZzuYWvCnL8eSaKpM6fQXQqnDBQzwD5OoBaCv6S3ijGHvNmie2tGTe5c93siiRU/doaJNH5PN6JN8Fbw+nxBJRIzKpqjVFmLPy2hCwPXum1BI4Nsf4vH4fZ4eENK1mFUDUR4MWrTAk9Vl05jIjEvsNlkrusBnVWFmg=
+  - secure: DtyDUbGXZOZzuYWvCnL8eSaKpM6fQXQqnDBQzwD5OoBaCv6S3ijGHvNmie2tGTe5c93siiRU/doaJNH5PN6JN8Fbw+nxBJRIzKpqjVFmLPy2hCwPXum1BI4Nsf4vH4fZ4eENK1mFUDUR4MWrTAk9Vl05jIjEvsNlkrusBnVWFmg=
+  - secure: CzvIhQI58TrL9egcS8Mv9JwxczwxhghuOR81EcD1H0lzt5U0bzNWYgRlBv2gntVg9Rv7O5eIOEcvc03lYRgIRbMfNsFDmJwne3CoCdYq7CpXyiQMWLo/C9NEzVIEKBZMIZ+/nx5MJsdG7fqjT/PzNJi43/jOtZSWbnWp8kNvbTM=
