@@ -9,7 +9,9 @@ branches:
   - develop
 sudo: false
 install: /bin/true
-script: TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests
+script:
+  - TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests
+  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 after_success:
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg
   -d
