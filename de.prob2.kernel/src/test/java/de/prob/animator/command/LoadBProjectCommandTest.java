@@ -24,8 +24,7 @@ public class LoadBProjectCommandTest {
 	public void testWriteCommand() throws Exception {
 		ClassLoader classLoader = getClass().getClassLoader();
 		URL resource = classLoader.getResource("examples/scheduler.mch");
-		File f = null;
-		f = new File(resource.toURI());
+		File f =  new File(resource.toURI());
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		ClassicalBFactory factory = new ClassicalBFactory(null);
 		BParser bparser = new BParser();
