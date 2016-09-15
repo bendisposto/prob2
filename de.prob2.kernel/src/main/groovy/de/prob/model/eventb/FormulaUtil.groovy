@@ -184,7 +184,6 @@ class FormulaUtil {
 		try {
 			List<EventB> split = formula.getCode().split("&").collect { new EventB(it.trim(), formula.getTypes()) }
 			split.collect { EventB f ->
-				def rodinF = getRodinFormula(f)
 				if (!(f.getAst() instanceof AEqualPredicate)) {
 					throw new IllegalArgumentException("Expected predicate to be conjunct of equivalences.")
 				}

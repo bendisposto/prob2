@@ -2,7 +2,6 @@ package de.prob.model.eventb
 
 import org.eventb.core.ast.extension.IFormulaExtension
 
-import de.prob.animator.domainobjects.EventB
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.Constant
 import de.prob.model.representation.ElementComment
@@ -142,7 +141,6 @@ public class ContextModifier extends AbstractModifier {
 	 */
 	def ContextModifier removeAxiom(EventBAxiom axiom) {
 		def ctx = context.removeFrom(Axiom.class, axiom)
-		def axms = ctx.axioms
 		return newCM(ctx)
 	}
 
