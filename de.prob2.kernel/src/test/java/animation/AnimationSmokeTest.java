@@ -17,7 +17,6 @@ public class AnimationSmokeTest {
 	public void test() throws IOException, BException {
 		Api api = Main.getInjector().getInstance(Api.class);
 
-		System.out.println(api.getVersion());
 
 		StateSpace s = api.b_load("groovyTests" + File.separator + "machines" + File.separator + "scheduler.mch");
 
