@@ -76,6 +76,7 @@ class AnimatorImpl implements IAnimator {
 							+ ". Message was: " + e.getMessage();
 					System.out.println(message + "\n");
 					logger.error(message, e);
+					// FIXME kill all Clis?
 					System.exit(-1);
 				}
 			} else {
