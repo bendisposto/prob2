@@ -5,7 +5,6 @@ import de.be4.classicalb.core.parser.node.ABecomesSuchSubstitution
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.FormulaUtil
 import de.prob.model.eventb.algorithm.ast.While
-import de.prob.util.Tuple2
 
 public class VariantAssertion {
 	final FormulaUtil fuu = new FormulaUtil()

@@ -1,8 +1,5 @@
 package de.prob.model.eventb.algorithm.graph
 
-import groovy.transform.ToString;
-
-import com.github.krukow.clj_lang.PersistentHashMap
 import com.github.krukow.clj_lang.PersistentHashSet
 import com.github.krukow.clj_lang.PersistentVector
 
