@@ -3,7 +3,7 @@ package de.prob.model.eventb.algorithm.ast
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.ModelGenerationException;
+import de.prob.model.eventb.ModelGenerationException
 import de.prob.model.eventb.algorithm.Procedure
 
 class Call extends Statement implements IAssignment {

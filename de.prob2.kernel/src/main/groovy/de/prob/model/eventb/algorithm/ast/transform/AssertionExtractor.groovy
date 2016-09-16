@@ -1,9 +1,7 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
-import java.util.List
-
 import com.github.krukow.clj_lang.PersistentHashMap
-import com.github.krukow.clj_lang.PersistentVector;
+import com.github.krukow.clj_lang.PersistentVector
 
 import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Block

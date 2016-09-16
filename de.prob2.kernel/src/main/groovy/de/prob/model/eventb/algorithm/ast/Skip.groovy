@@ -1,8 +1,6 @@
 package de.prob.model.eventb.algorithm.ast
 
-import java.util.Set;
-
-import org.eventb.core.ast.extension.IFormulaExtension;
+import org.eventb.core.ast.extension.IFormulaExtension
 
 /**
  * the equivalent of an empty assignment.
