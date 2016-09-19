@@ -269,7 +269,7 @@ class ControlFlowGraph {
 		edges.findAll {  it.to == stmt  } as Set
 	}
 
-	private Tuple2<Set<String>, Map<String, String>> representation() {
+	Tuple2<Set<String>, Map<String, String>> representation() {
 		NodeNaming n = new NodeNaming(algorithm)
 		Set<String> node = nodes.collect { n.getName(it) }
 		Map<String, String> edge = [:]
@@ -279,7 +279,7 @@ class ControlFlowGraph {
 		return new Tuple2<List<String>, Map<String, String>>(node, edge)
 	}
 
-	private Map<While, Set<Edge>> loopsToWhile() {
+	public Map<While, Set<Edge>> loopsToWhile() {
 		PCCalculator pcCalc = new PCCalculator(this)
 		def loops = [:]
 		def whiles = nodes.findAll { it instanceof While }

@@ -1,7 +1,6 @@
 package de.prob.model.eventb.algorithm.graph
 
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
-import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions.Options;
 
 public class GraphTransformer implements IGraphTransformer {
 

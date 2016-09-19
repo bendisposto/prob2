@@ -117,7 +117,7 @@ class FileHandler {
 			}
 			result.withStream{
 				def entry
-				while(entry = result.nextEntry){
+				while(entry = result.nextEntry){ // FIXME this seems a bit strange
 					if (!entry.isDirectory()){
 						new File(dest + File.separator + entry.name).parentFile?.mkdirs()
 						def output = new FileOutputStream(dest + File.separator

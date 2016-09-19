@@ -31,7 +31,7 @@ public class VariantAssertion {
 		this.variantCondition = variantCondition
 	}
 
-	private VariantAssertion applyAssignment(EventB assignment) {
+	VariantAssertion applyAssignment(EventB assignment) {
 		if (assignment.getAst() instanceof ABecomesSuchSubstitution ||
 		assignment.getAst() instanceof ABecomesElementOfSubstitution) {
 			def v = new VariantAssertion(name, stmt)
@@ -40,7 +40,7 @@ public class VariantAssertion {
 		return new VariantAssertion(name, stmt, conditions.collect { fuu.applyAssignment(it, assignment)}, fuu.applyAssignment(variantCondition, assignment))
 	}
 
-	private VariantAssertion addCondition(EventB condition) {
+	VariantAssertion addCondition(EventB condition) {
 		return new VariantAssertion(name, stmt, [condition]+conditions, variantCondition)
 	}
 
