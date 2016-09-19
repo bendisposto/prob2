@@ -2,16 +2,11 @@ package de.prob.scripting
 
 import static java.io.File.*
 
-import com.google.common.io.Resources;
-import com.google.inject.Inject
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import de.prob.cli.OsSpecificInfo
 import de.prob.cli.ProBInstanceProvider
-
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory;
 
 public class Installer {
 

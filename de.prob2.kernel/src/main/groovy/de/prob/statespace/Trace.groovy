@@ -199,7 +199,6 @@ public class Trace {
 		}
 
 		State currentState = this.current.getCurrentState()
-		Trace oldTrace = this
 		TraceElement current = this.current
 		PersistentVector<Transition> transitionList = this.transitionList
 		for (int i = 0; i < numOfSteps; i++) {

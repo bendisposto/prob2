@@ -74,7 +74,6 @@ class AnimatorImpl implements IAnimator {
 							+ " was thrown when executing "
 							+ command.getClass().getSimpleName()
 							+ ". Message was: " + e.getMessage();
-					System.out.println(message + "\n");
 					logger.error(message, e);
 					// FIXME kill all Clis?
 					System.exit(-1);
@@ -89,23 +88,23 @@ class AnimatorImpl implements IAnimator {
 	}
 
 	private synchronized List<String> getErrors() {
-		List<String> errors = Collections.emptyList();
 		IPrologResult errorresult = processor.sendCommand(getErrors);
-		if (errorresult instanceof YesResult) {
+		if (errorresult instanceof NoResult
+				|| errorresult instanceof InterruptedResult) {
+			throw new ProBError("Get errors must be successful");
+		} else
+			if (errorresult instanceof YesResult) {
 			getErrors.processResult(((YesResult) errorresult).getBindings());
-			errors = getErrors.getErrors();
-			if (!errors.isEmpty()) {
+			List<String> errors = getErrors.getErrors();
+			if (errors.isEmpty())
+				return Collections.emptyList();
+			else {
 				String msg = Joiner.on('\n').join(errors);
 				logger.error("ProB raised exception(s):\n", msg);
 				return errors;
 			}
-		} else if (errorresult instanceof NoResult
-				|| errorresult instanceof InterruptedResult) {
-			throw new ProBError("Get errors must be successful");
-		} else {
-			throw new ProBError("Unknown result type");
 		}
-		return errors;
+		throw new ProBError("Unknown result type");
 	}
 
 	@Override
