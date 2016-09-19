@@ -73,7 +73,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		setup();
 	}
 
-	private final StringBuffer sb = new StringBuffer();
+	private final StringBuilder sb = new StringBuilder();
 
 	public String getPrettyPrint() {
 		return sb.toString();
