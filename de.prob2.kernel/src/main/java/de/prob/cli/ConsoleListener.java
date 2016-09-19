@@ -17,19 +17,22 @@ final class ConsoleListener implements Runnable {
 		this.logger = logger;
 	}
 
+	//FIXME can we change this to use try with resource?
 	public void run() {
 		try {
 			logLines();
 		} catch (IOException e) {
-			if (!"Stream closed".equals(e.getMessage())) {
-				final String message = "OutputLogger died with error";
-				logger.info(message, e);
+			String message = e.getMessage();
+			if (!"Stream closed".equals(message)) {
+				message = "OutputLogger died with error";
 			}
+			logger.info(message, e);
 		} finally {
 			if (stream != null) {
 				try {
 					stream.close();
 				} catch (IOException e) {
+					logger.debug("Error closing Stream, ignore!");
 				}
 			}
 		}
@@ -39,7 +42,8 @@ final class ConsoleListener implements Runnable {
 		String line = null;
 		ProBInstance instance;
 		do {
-			if ((instance = cli.get()) == null || instance.isShuttingDown()) {
+			instance = cli.get();
+			if (instance == null || instance.isShuttingDown()) {
 				return;
 			}
 			instance = null;
