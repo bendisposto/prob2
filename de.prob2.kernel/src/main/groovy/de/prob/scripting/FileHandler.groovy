@@ -117,7 +117,7 @@ class FileHandler {
 			}
 			result.withStream{
 				def entry
-				while(entry = result.nextEntry){ // FIXME this seems a bit strange
+				while(entry = result.nextEntry){ // null is falsey in Groovy! 
 					if (entry.isDirectory()){
 						createDirectory(dest, entry)
 					}

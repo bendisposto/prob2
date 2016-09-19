@@ -73,7 +73,7 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 		if (!tracefound) {
 			String msg = "No trace was found";
 			logger.error(msg);
-			throw new RuntimeException(msg);
+			throw new NoTraceFoundException(msg);
 		}
 		return Trace.getTraceFromTransitions(s, transitions);
 	}

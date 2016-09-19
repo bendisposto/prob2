@@ -102,7 +102,8 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 				loopEntry = ((IntegerPrologTerm) loopStatus.getArgument(1))
 						.getValue().intValue();
 			} else {
-				throw new RuntimeException(
+				
+				throw new UnexpectedLoopStatusException(
 						"LTL model check returned unexpected loop status: "
 								+ loopStatus);
 			}
@@ -117,7 +118,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			result = res;
 			value = res;
 		} else {
-			throw new RuntimeException("Unknown result from LTL checking: "
+			throw new UnknownLtlResult("Unknown result from LTL checking: "
 					+ term.toString());
 		}
 	}
