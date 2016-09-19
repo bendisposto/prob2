@@ -122,7 +122,7 @@ class FileHandler {
 						createDirectory(dest, entry)
 					}
 					else {
-						writeFile(dest, entry)
+						writeFile(result,dest, entry)
 					}
 				}
 			}
@@ -133,14 +133,14 @@ class FileHandler {
 		new File(dest + File.separator + entry.name).mkdir()
 	}
 
-	private static void writeFile(String dest, java.util.zip.ZipEntry entry) {
+	private static void writeFile(InputStream stream, String dest, java.util.zip.ZipEntry entry) {
 		new File(dest + File.separator + entry.name).parentFile?.mkdirs()
 		def output = new FileOutputStream(dest + File.separator
 				+ entry.name)
 		output.withStream{
 			int len = 0;
 			byte[] buffer = new byte[4096]
-			while ((len = result.read(buffer)) > 0){
+			while ((len = stream.read(buffer)) > 0){
 				output.write(buffer, 0, len);
 			}
 		}
