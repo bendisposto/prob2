@@ -1,6 +1,8 @@
 # Experimental ProB 2.0 
 
 [![Build Status](https://travis-ci.org/bendisposto/prob2.svg?branch=develop)](https://travis-ci.org/bendisposto/prob2)
+[![SonarQube Tech Debt](https://img.shields.io/sonar/http/sonarqube.com/prob2kernel/tech_debt.svg?maxAge=2592000)]()
+
 
 Sonarqube: https://sonarqube.com/overview?id=1131223
 
