@@ -32,21 +32,20 @@ final class ConsoleListener implements Runnable {
 				try {
 					stream.close();
 				} catch (IOException e) {
-					logger.debug("Error closing Stream, ignore!");
+					logger.debug("Error closing Stream, ignore!",e);
 				}
 			}
 		}
 	}
 
 	void logLines() throws IOException {
-		String line = null;
+		String line;
 		ProBInstance instance;
 		do {
 			instance = cli.get();
 			if (instance == null || instance.isShuttingDown()) {
 				return;
 			}
-			instance = null;
 			line = readAndLog();
 		} while (line != null);
 	}
