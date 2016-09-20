@@ -13,20 +13,20 @@ import de.prob.prolog.term.PrologTerm;
 public class GetCurrentPreferencesCommand extends AbstractCommand {
 
 	private static final String PROLOG_COMMAND_NAME = "list_current_eclipse_preferences";
-	private final String PREFERENCES = "Preferences";
+	private static final String PREFERENCES_VARIABLE = "Preferences";
 	private final Map<String, String> preferences = new HashMap<String, String>();
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME)
-				.printVariable(PREFERENCES).closeTerm();
+				.printVariable(PREFERENCES_VARIABLE).closeTerm();
 	}
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm prefs = BindingGenerator.getList(bindings
-				.get(PREFERENCES));
+				.get(PREFERENCES_VARIABLE));
 
 		for (PrologTerm prologTerm : prefs) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(

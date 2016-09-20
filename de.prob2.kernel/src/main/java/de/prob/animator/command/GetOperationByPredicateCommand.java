@@ -37,7 +37,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	Logger logger = LoggerFactory
 			.getLogger(GetOperationByPredicateCommand.class);
 	private static final String NEW_STATE_ID_VARIABLE = "NewStateID";
-	private static final String ERRORS = "Errors";
+	private static final String ERRORS_VARIABLE = "Errors";
 	private final IEvalElement evalElement;
 	private final String stateId;
 	private final String name;
@@ -76,7 +76,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 		evalElement.printProlog(pto);
 		pto.printNumber(nrOfSolutions);
 		pto.printVariable(NEW_STATE_ID_VARIABLE);
-		pto.printVariable(ERRORS).closeTerm();
+		pto.printVariable(ERRORS_VARIABLE).closeTerm();
 	}
 
 	/**
@@ -100,7 +100,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 			operations.add(Transition.createTransitionFromCompoundPrologTerm(s, cpt));
 		}
 
-		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS));
+		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS_VARIABLE));
 		for (PrologTerm prologTerm : errors) {
 			this.errors.add(prologTerm.getFunctor());
 		}

@@ -20,7 +20,7 @@ public class FilterStatesForPredicateCommand extends AbstractCommand {
 	private static final String PROLOG_COMMAND_NAME = "filter_states_for_predicate";
 	private final Collection<State> ids;
 	private final IEvalElement predicate;
-	private final String FILTERED = "Filtered";
+	private static final String FILTERED_VARIABLE = "Filtered";
 	private final List<String> filtered = new ArrayList<String>();
 	private final List<String> errors = new ArrayList<String>();
 
@@ -43,14 +43,14 @@ public class FilterStatesForPredicateCommand extends AbstractCommand {
 			pto.printAtomOrNumber(id.getId());
 		}
 		pto.closeList();
-		pto.printVariable(FILTERED);
+		pto.printVariable(FILTERED_VARIABLE);
 		pto.closeTerm();
 	}
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		PrologTerm term = bindings.get(FILTERED);
+		PrologTerm term = bindings.get(FILTERED_VARIABLE);
 		if (term.hasFunctor("errors", 1)) {
 			PrologTerm errorL = BindingGenerator.getCompoundTerm(term, 1)
 					.getArgument(1);

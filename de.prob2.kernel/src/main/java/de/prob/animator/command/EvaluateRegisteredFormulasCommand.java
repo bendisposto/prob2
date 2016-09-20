@@ -17,7 +17,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 	private static final String PROLOG_COMMAND_NAME = "evaluate_registered_formulas";
-	private final String RESULTS = "Results";
+	private static final String RESULTS_VARIABLE = "Results";
 	private final String stateId;
 	private final Map<IEvalElement, AbstractEvalResult> results = new HashMap<IEvalElement, AbstractEvalResult>();
 	private final List<IEvalElement> formulas;
@@ -37,14 +37,14 @@ public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 			formula.getFormulaId().printUUID(pto);
 		}
 		pto.closeList();
-		pto.printVariable(RESULTS);
+		pto.printVariable(RESULTS_VARIABLE);
 		pto.closeTerm();
 	}
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		PrologTerm terms = bindings.get(RESULTS);
+		PrologTerm terms = bindings.get(RESULTS_VARIABLE);
 		if (terms instanceof ListPrologTerm) {
 			ListPrologTerm lpt = BindingGenerator.getList(terms);
 			for (int i = 0; i < lpt.size(); i++) {

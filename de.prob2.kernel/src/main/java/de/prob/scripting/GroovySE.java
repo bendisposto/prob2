@@ -41,7 +41,7 @@ public class GroovySE implements ScriptEngine {
 			"import de.prob.visualization.*;", "import de.prob.check.*;",
 			"import de.prob.bmotion.*;", "\n " };
 
-	private static final String imports = Joiner.on("\n").join(IMPORTS);
+	private static final String IMPORTS_STATEMENT = Joiner.on("\n").join(IMPORTS);
 
 	public GroovySE(final ScriptEngine engine) {
 		groovy = engine;
@@ -60,7 +60,7 @@ public class GroovySE implements ScriptEngine {
 			logger.error("Error reading from initscript.");
 		}
 		try {
-			groovy.eval(imports + "\n" + initscript);
+			groovy.eval(IMPORTS_STATEMENT + "\n" + initscript);
 		} catch (ScriptException e) {
 			logger.error("Error initializing groovy", e);
 		} // run init script
@@ -73,7 +73,7 @@ public class GroovySE implements ScriptEngine {
 		if (groovy.get("__console") == null) {
 			groovy.put("__console", buff);
 		}
-		Object result = groovy.eval(imports + "\n" + script, context);
+		Object result = groovy.eval(IMPORTS_STATEMENT + "\n" + script, context);
 		if (result == null) {
 			return "null";
 		}

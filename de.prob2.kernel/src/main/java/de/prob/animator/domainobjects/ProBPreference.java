@@ -17,18 +17,18 @@ public final class ProBPreference {
 	public final String category;
 	public final String defaultValue;
 
-	private final static int NAME = 1;
-	private final static int TYPE = 2;
-	private final static int DESC = 3;
-	private final static int CAT = 4;
-	private final static int DEFAULT = 5;
+	private final static int NAME_POSITION = 1;
+	private final static int TYPE_POSITION = 2;
+	private final static int DESC_POSITION = 3;
+	private final static int CAT_POSITION = 4;
+	private final static int DEFAULT_POSITION = 5;
 
 	public ProBPreference(final CompoundPrologTerm term) {
-		name = PrologTerm.atomicString(term.getArgument(NAME));
-		type = term.getArgument(TYPE);
-		description = PrologTerm.atomicString(term.getArgument(DESC));
-		category = PrologTerm.atomicString(term.getArgument(CAT));
-		final PrologTerm defaultTerm = term.getArgument(DEFAULT);
+		name = PrologTerm.atomicString(term.getArgument(NAME_POSITION));
+		type = term.getArgument(TYPE_POSITION);
+		description = PrologTerm.atomicString(term.getArgument(DESC_POSITION));
+		category = PrologTerm.atomicString(term.getArgument(CAT_POSITION));
+		final PrologTerm defaultTerm = term.getArgument(DEFAULT_POSITION);
 		defaultValue = defaultTerm.isAtom() ? PrologTerm
 				.atomicString(defaultTerm) : defaultTerm.toString();
 	}
