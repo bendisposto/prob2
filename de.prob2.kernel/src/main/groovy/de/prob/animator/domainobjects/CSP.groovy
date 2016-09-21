@@ -37,13 +37,15 @@ class CSP extends AbstractEvalElement {
 	 * @param model
 	 */
 	public CSP(String formula, CSPModel model) {
+		throw new UnsupportedOperationException("CSP is currently not working");
 		this.code = formula;
 		this.home = Main.getProBDirectory();
 		this.fileName = model.getModelFile().getAbsolutePath()
 		def osInfoProvider = Main.getInjector().getInstance(OsInfoProvider.class);
 		def osInfo = osInfoProvider.get()
-		if(osInfo.dirName == "win32")
+		if(osInfo.dirName == "win32") {
 			this.target = ".exe"
+		}
 		this.procname = home+"lib"+File.separator+"cspmf" + target
 		this.expansion = FormulaExpand.truncate // this doesn't matter
 	}
