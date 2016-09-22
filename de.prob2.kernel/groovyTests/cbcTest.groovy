@@ -12,8 +12,8 @@ cbc_solve = { String str ->
 
 cmd = cbc_solve("1 = 2")
 res = cmd.getValue()
-assert res instanceof ComputationNotCompletedResult
-assert res.getReason() == "contradiction found"
+assert res instanceof EvalResult
+assert res.getValue() == "FALSE"
 assert cmd.getFreeVariables() == []
 
 //TODO: Get another example for timeout ?
