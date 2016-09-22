@@ -37,7 +37,6 @@ class CSP extends AbstractEvalElement {
 	 * @param model
 	 */
 	public CSP(String formula, CSPModel model) {
-		throw new UnsupportedOperationException("CSP is currently not working");
 		this.code = formula;
 		this.home = Main.getProBDirectory();
 		this.fileName = model.getModelFile().getAbsolutePath()
