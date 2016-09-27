@@ -73,8 +73,7 @@ public class CbcSolveCommand extends AbstractCommand {
 					"time out");
 		}
 		if ("contradiction_found".equals(functor)) {
-			result = new ComputationNotCompletedResult(evalElement.getCode(),
-					"contradiction found");
+			result = EvalResult.FALSE;
 		}
 		if ("solution".equals(functor)) {
 			ListPrologTerm solutionBindings = BindingGenerator
