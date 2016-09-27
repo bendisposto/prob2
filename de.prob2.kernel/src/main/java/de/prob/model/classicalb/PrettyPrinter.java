@@ -1381,9 +1381,11 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	@Override
 	public void caseADefinitionExpression(final ADefinitionExpression node) {
 		String defLiteral = node.getDefLiteral().getText();
-		sb.append(defLiteral + "(");
-		printExprList(node.getParameters());
-		sb.append(")");
+		if (!node.getParameters().isEmpty()) {
+			sb.append(defLiteral + "(");
+			printExprList(node.getParameters());
+			sb.append(")");
+		}
 	}
 
 	private void printExprList(final LinkedList<PExpression> parameters) {
