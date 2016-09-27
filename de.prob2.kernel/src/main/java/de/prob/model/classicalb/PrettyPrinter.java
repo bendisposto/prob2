@@ -1381,16 +1381,16 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	@Override
 	public void caseADefinitionExpression(final ADefinitionExpression node) {
 		String defLiteral = node.getDefLiteral().getText();
+		sb.append(defLiteral);
 		if (!node.getParameters().isEmpty()) {
-			sb.append(defLiteral + "(");
+			sb.append("(");
 			printExprList(node.getParameters());
 			sb.append(")");
 		}
 	}
 
 	private void printExprList(final LinkedList<PExpression> parameters) {
-		for (final Iterator<PExpression> iterator = parameters.iterator(); iterator
-				.hasNext();) {
+		for (final Iterator<PExpression> iterator = parameters.iterator(); iterator.hasNext();) {
 			final PExpression e = iterator.next();
 			e.apply(this);
 			if (iterator.hasNext()) {
@@ -1402,8 +1402,9 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	@Override
 	public void caseADefinitionPredicate(final ADefinitionPredicate node) {
 		String defLiteral = node.getDefLiteral().getText();
+		sb.append(defLiteral);
 		if (!node.getParameters().isEmpty()) {
-			sb.append(defLiteral + "(");
+			sb.append("(");
 			printExprList(node.getParameters());
 			sb.append(")");
 		}
