@@ -100,7 +100,7 @@ public class Edge {
 		return "unknown_branch_$name"
 	}
 
-	private String rep() {
+	public String rep() {
 		StringBuilder sb = new StringBuilder()
 		conditions.each { Tuple2<Statement, EventB>  t ->
 			sb.append(t.getFirst().toString())

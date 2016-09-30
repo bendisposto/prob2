@@ -48,7 +48,7 @@ import de.prob.util.Tuple2;
 
 public class TheoryExtractor extends DefaultHandler {
 
-	Logger logger = LoggerFactory.getLogger(TheoryExtractor.class);
+	private final Logger logger = LoggerFactory.getLogger(TheoryExtractor.class);
 
 	private Theory theory;
 	private ModelElementList<Theory> imported = new ModelElementList<Theory>();
@@ -126,9 +126,9 @@ public class TheoryExtractor extends DefaultHandler {
 					+ name
 					+ ". This means that ProB has no information on how to interpret this theory.");
 		} catch (TheoryMappingException e) {
-			e.printStackTrace();
+			logger.error("Error extracting theory", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Error extracting theory", e);
 		}
 		theory = new Theory(name, project, mappings);
 		typeEnv = new HashSet<IFormulaExtension>();
@@ -142,7 +142,7 @@ public class TheoryExtractor extends DefaultHandler {
 	@Override
 	public void startElement(final String uri, final String localName,
 			final String qName, final Attributes attributes)
-			throws SAXException {
+					throws SAXException {
 		if (qName.equals("org.eventb.theory.core.scTypeParameter")) {
 			addTypeParameter(attributes);
 		} else if (qName.equals("org.eventb.theory.core.useTheory")) {
@@ -389,9 +389,9 @@ public class TheoryExtractor extends DefaultHandler {
 				theories = theories.addElement(extractor.getTheory());
 				typeEnv.addAll(extractor.getTypeEnv());
 			} catch (ParserConfigurationException e) {
-				e.printStackTrace();
+				logger.error("Error extracting theory", e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("Error extracting theory", e);
 			}
 		}
 	}

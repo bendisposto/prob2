@@ -88,7 +88,7 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	 *         condition holds.
 	 */
 	public boolean isSuccess() {
-		return result.getFunctor().equals("ltl_found");
+		return "ltl_found".equals(result.getFunctor());
 	}
 
 	/**
@@ -96,14 +96,14 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	 *         state was found in which the condition holds.
 	 */
 	public boolean conditionNotReached() {
-		return result.getFunctor().equals("maximum_nr_of_steps_reached");
+		return "maximum_nr_of_steps_reached".equals(result.getFunctor());
 	}
 
 	/**
 	 * @return if the formula for the condition contains a type error
 	 */
 	public boolean hasTypeError() {
-		return result.getFunctor().equals("typeerror");
+		return "typeerror".equals(result.getFunctor());
 	}
 
 	/**
@@ -111,6 +111,6 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	 *         condition holds.
 	 */
 	public boolean isDeadlocked() {
-		return result.getFunctor().equals("deadlock");
+		return "deadlock".equals(result.getFunctor());
 	}
 }

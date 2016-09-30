@@ -2,7 +2,6 @@ package de.prob.model.eventb.algorithm.ast;
 
 import org.eventb.core.ast.extension.IFormulaExtension
 
-import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.AbstractModifier
 
 public abstract class Statement extends AbstractModifier {

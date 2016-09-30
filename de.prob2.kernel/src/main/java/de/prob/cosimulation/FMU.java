@@ -85,7 +85,7 @@ public class FMU {
 				interactive, callbacks, loggingOn);
 
 		if (component.equals(Pointer.NULL)) {
-			throw new RuntimeException("Could not instantiate model.");
+			throw new CantInstantiateFMUException("Could not instantiate model.");
 		}
 	}
 
@@ -239,7 +239,8 @@ public class FMU {
 		int fmiFlag = ((Integer) function.invoke(Integer.class, arguments))
 				.intValue();
 		if (fmiFlag > FMILibrary.FMIStatus.fmiWarning) {
-			throw new RuntimeException(message + fmiFlag);
+			logger.error("FMU invocation error. Flag: {}, Message: {}", fmiFlag, message);
+			throw new FMUInvocationException(message +" Flag:"+ fmiFlag);
 		}
 	}
 

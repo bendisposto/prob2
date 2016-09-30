@@ -109,7 +109,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 				return t;
 			}
 		}
-		throw new RuntimeException(
+		throw new NoStateFoundException(
 				"Was not able to produce a valid trace to the state specified by predicate: "
 						+ predicate.getCode() + " Result type was: " + result);
 	}

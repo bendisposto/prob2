@@ -40,7 +40,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 	private static final String PROLOG_COMMAND_NAME = "prob2_construct_trace";
 	Logger logger = LoggerFactory.getLogger(ConstructTraceCommand.class);
 	private static final String RESULT_VARIABLE = "Res";
-	private static final String ERRORS = "Errors";
+	private static final String ERRORS_VARIABLE = "Errors";
 
 	private final List<ClassicalB> evalElement;
 	private final State stateId;
@@ -119,7 +119,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 		}
 		pto.closeList();
 		pto.printVariable(RESULT_VARIABLE);
-		pto.printVariable(ERRORS);
+		pto.printVariable(ERRORS_VARIABLE);
 		pto.closeTerm();
 	}
 
@@ -136,7 +136,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 			resultTrace.add(operation);
 		}
 
-		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS));
+		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS_VARIABLE));
 		for (PrologTerm prologTerm : errors) {
 			this.errors.add(prologTerm.getFunctor());
 		}

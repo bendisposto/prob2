@@ -29,7 +29,7 @@ class AnimatorImpl implements IAnimator {
 	private final Logger logger = LoggerFactory.getLogger(AnimatorImpl.class);
 	private final CommandProcessor processor;
 	private final GetErrorsCommand getErrors;
-	public static boolean DEBUG = false;
+	public static final boolean DEBUG = false;
 	private final AnimationSelector animations;
 	private boolean busy = false;
 
@@ -44,6 +44,7 @@ class AnimatorImpl implements IAnimator {
 		processor.configure(cli);
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public synchronized void execute(final AbstractCommand command) {
 		if (cli == null) {
@@ -73,9 +74,8 @@ class AnimatorImpl implements IAnimator {
 							+ " was thrown when executing "
 							+ command.getClass().getSimpleName()
 							+ ". Message was: " + e.getMessage();
-					System.out.println(message + "\n");
-					e.printStackTrace();
 					logger.error(message, e);
+					// FIXME kill all Clis?
 					System.exit(-1);
 				}
 			} else {
@@ -88,23 +88,23 @@ class AnimatorImpl implements IAnimator {
 	}
 
 	private synchronized List<String> getErrors() {
-		List<String> errors = Collections.emptyList();
 		IPrologResult errorresult = processor.sendCommand(getErrors);
-		if (errorresult instanceof YesResult) {
+		if (errorresult instanceof NoResult
+				|| errorresult instanceof InterruptedResult) {
+			throw new ProBError("Get errors must be successful");
+		} else
+			if (errorresult instanceof YesResult) {
 			getErrors.processResult(((YesResult) errorresult).getBindings());
-			errors = getErrors.getErrors();
-			if (!errors.isEmpty()) {
+			List<String> errors = getErrors.getErrors();
+			if (errors.isEmpty())
+				return Collections.emptyList();
+			else {
 				String msg = Joiner.on('\n').join(errors);
 				logger.error("ProB raised exception(s):\n", msg);
 				return errors;
 			}
-		} else if (errorresult instanceof NoResult
-				|| errorresult instanceof InterruptedResult) {
-			throw new ProBError("Get errors must be successful");
-		} else {
-			throw new ProBError("Unknown result type");
 		}
-		return errors;
+		throw new ProBError("Unknown result type");
 	}
 
 	@Override
@@ -122,10 +122,6 @@ class AnimatorImpl implements IAnimator {
 	public void sendInterrupt() {
 		logger.info("Sending an interrupt to the CLI");
 		cli.sendInterrupt();
-	}
-
-	public static void setDebug(final boolean debug) {
-		DEBUG = debug;
 	}
 
 	@Override

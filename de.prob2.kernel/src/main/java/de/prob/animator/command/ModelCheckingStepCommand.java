@@ -45,8 +45,8 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	private final int time;
 	private final ModelCheckingOptions options;
 	private IModelCheckingResult result;
-	private final String RESULT = "Result";
-	private final String STATS = "Stats";
+	private static final String RESULT_VARIABLE = "Result";
+	private static final String STATS_VARIABLE = "Stats";
 
 	Logger logger = LoggerFactory.getLogger(ModelCheckingStepCommand.class);
 
@@ -66,7 +66,7 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		CompoundPrologTerm statsTerm = BindingGenerator.getCompoundTerm(
-				bindings.get(STATS), STATS_ARITY);
+				bindings.get(STATS_VARIABLE), STATS_ARITY);
 		int numberNodes = BindingGenerator.getInteger(statsTerm.getArgument(1))
 				.getValue().intValue();
 		int numberTrans = BindingGenerator.getInteger(statsTerm.getArgument(2))
@@ -75,7 +75,7 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 				.getInteger(statsTerm.getArgument(3)).getValue().intValue();
 
 		stats = new StateSpaceStats(numberNodes, numberTrans, numberProcessed);
-		result = extractResult(bindings.get(RESULT));
+		result = extractResult(bindings.get(RESULT_VARIABLE));
 	}
 
 	private IModelCheckingResult extractResult(final PrologTerm prologTerm) {
@@ -156,7 +156,7 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 		for (ModelCheckingOptions.Options o : options.getPrologOptions()) {
 			pto.printAtom(o.name());
 		}
-		pto.closeList().printVariable(RESULT).printVariable(STATS).closeTerm();
+		pto.closeList().printVariable(RESULT_VARIABLE).printVariable(STATS_VARIABLE).closeTerm();
 	}
 
 	public StateSpaceStats getStats() {

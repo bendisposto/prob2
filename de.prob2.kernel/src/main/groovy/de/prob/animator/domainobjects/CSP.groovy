@@ -42,8 +42,9 @@ class CSP extends AbstractEvalElement {
 		this.fileName = model.getModelFile().getAbsolutePath()
 		def osInfoProvider = Main.getInjector().getInstance(OsInfoProvider.class);
 		def osInfo = osInfoProvider.get()
-		if(osInfo.dirName == "win32")
+		if(osInfo.dirName == "win32") {
 			this.target = ".exe"
+		}
 		this.procname = home+"lib"+File.separator+"cspmf" + target
 		this.expansion = FormulaExpand.truncate // this doesn't matter
 	}

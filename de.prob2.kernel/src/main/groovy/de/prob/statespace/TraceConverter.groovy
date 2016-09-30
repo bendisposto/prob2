@@ -93,7 +93,7 @@ class TraceConverter {
 				def params = []
 				it.Parameter.each { params << "${it.@name}" }
 				def name = "${it.@name}"
-				t = t.add("${it.@name}", params)
+				t = t.add(name, params)
 			} else {
 				t = t.add(op.id)
 			}
@@ -102,9 +102,7 @@ class TraceConverter {
 		t
 	}
 
-	def static xmlToSpock(def xmlFile) {
-		def trace = new XmlSlurper().parse(xmlFile)
-	}
+
 
 	def static generateSpockTests(def directory) {
 		def traceFiles = []

@@ -7,6 +7,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.prob.animator.command.ComputeCoverageCommand;
 import de.prob.animator.command.ComputeCoverageCommand.ComputeCoverageResult;
 import de.prob.statespace.StateSpace;
@@ -27,6 +30,7 @@ public class ModelChecker {
 	public static String generateJobId() {
 		return JOBPREFIX + counter++;
 	}
+	private Logger logger = LoggerFactory.getLogger(ModelChecker.class);
 
 	private final ExecutorService executor;
 	private Future<IModelCheckingResult> f;
@@ -67,10 +71,14 @@ public class ModelChecker {
 				return f.get();
 			}
 		} catch (InterruptedException e) {
+			logger.debug("Interrupted",e);
 			f.cancel(true);
+		    Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
+			logger.debug("Execution failed",e);
 			launderThrowable(e.getCause());
 		} catch (CancellationException e) {
+			logger.debug("Cancellation",e);
 			return job.getResult();
 		}
 		return null;

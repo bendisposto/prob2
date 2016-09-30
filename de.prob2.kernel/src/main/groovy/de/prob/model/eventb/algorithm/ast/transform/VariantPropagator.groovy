@@ -1,21 +1,11 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
-import groovyjarjarantlr.ASTVisitor;
 import de.be4.classicalb.core.parser.node.ABecomesElementOfSubstitution
 import de.be4.classicalb.core.parser.node.ABecomesSuchSubstitution
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.FormulaUtil
 import de.prob.model.eventb.algorithm.Procedure
-import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor;
-import de.prob.model.eventb.algorithm.ast.Assertion
-import de.prob.model.eventb.algorithm.ast.Assignment
-import de.prob.model.eventb.algorithm.ast.Block
-import de.prob.model.eventb.algorithm.ast.Call
-import de.prob.model.eventb.algorithm.ast.If
-import de.prob.model.eventb.algorithm.ast.Return
-import de.prob.model.eventb.algorithm.ast.Skip
-import de.prob.model.eventb.algorithm.ast.Statement
-import de.prob.model.eventb.algorithm.ast.While
+import de.prob.model.eventb.algorithm.ast.*
 import de.prob.model.eventb.algorithm.graph.NodeNaming
 import de.prob.model.representation.ModelElementList
 import de.prob.util.Tuple2

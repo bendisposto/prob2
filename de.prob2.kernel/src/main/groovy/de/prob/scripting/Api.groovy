@@ -7,8 +7,7 @@ import com.google.inject.Inject
 import com.google.inject.Provider
 
 import de.be4.classicalb.core.parser.exceptions.BException
-import de.be4.classicalb.core.parser.node.Start;
-import de.prob.Main
+import de.be4.classicalb.core.parser.node.Start
 import de.prob.animator.IAnimator
 import de.prob.animator.command.GetVersionCommand
 import de.prob.cli.CliVersionNumber

@@ -1,15 +1,17 @@
-language: java
+language: groovy
+addons:
+  sonarqube: true
 jdk:
-- oraclejdk7
-
+- oraclejdk8
 branches:
   only:
-    - master
-    - develop
-
+  - master
+  - develop
 sudo: false
 install: /bin/true
-script: TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests
+script:
+  - TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests --stacktrace
+  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 after_success:
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg
   -d
@@ -20,4 +22,6 @@ after_success:
 - TERM=dumb gradle -b de.prob2.kernel/build.gradle uploadArchives
 env:
   global:
-    secure: DtyDUbGXZOZzuYWvCnL8eSaKpM6fQXQqnDBQzwD5OoBaCv6S3ijGHvNmie2tGTe5c93siiRU/doaJNH5PN6JN8Fbw+nxBJRIzKpqjVFmLPy2hCwPXum1BI4Nsf4vH4fZ4eENK1mFUDUR4MWrTAk9Vl05jIjEvsNlkrusBnVWFmg=
+  - GRADLE_OPTS="-Xms128m"
+  - secure: DtyDUbGXZOZzuYWvCnL8eSaKpM6fQXQqnDBQzwD5OoBaCv6S3ijGHvNmie2tGTe5c93siiRU/doaJNH5PN6JN8Fbw+nxBJRIzKpqjVFmLPy2hCwPXum1BI4Nsf4vH4fZ4eENK1mFUDUR4MWrTAk9Vl05jIjEvsNlkrusBnVWFmg=
+  - secure: CzvIhQI58TrL9egcS8Mv9JwxczwxhghuOR81EcD1H0lzt5U0bzNWYgRlBv2gntVg9Rv7O5eIOEcvc03lYRgIRbMfNsFDmJwne3CoCdYq7CpXyiQMWLo/C9NEzVIEKBZMIZ+/nx5MJsdG7fqjT/PzNJi43/jOtZSWbnWp8kNvbTM=

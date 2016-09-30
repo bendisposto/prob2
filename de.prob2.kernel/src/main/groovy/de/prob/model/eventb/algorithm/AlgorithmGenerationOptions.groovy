@@ -1,9 +1,5 @@
 package de.prob.model.eventb.algorithm;
 
-import java.util.EnumSet;
-
-import de.prob.check.ModelCheckingOptions;
-import de.prob.check.ModelCheckingOptions.Options;
 
 public class AlgorithmGenerationOptions {
 	public static AlgorithmGenerationOptions DEFAULT = new AlgorithmGenerationOptions()

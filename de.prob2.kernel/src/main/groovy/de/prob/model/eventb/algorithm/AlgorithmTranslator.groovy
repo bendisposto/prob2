@@ -14,7 +14,6 @@ import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Call
-import de.prob.model.eventb.algorithm.ast.IAssignment
 import de.prob.model.eventb.algorithm.ast.Return
 import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement

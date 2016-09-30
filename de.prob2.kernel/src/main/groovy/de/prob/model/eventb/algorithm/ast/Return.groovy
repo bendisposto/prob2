@@ -1,9 +1,9 @@
 package de.prob.model.eventb.algorithm.ast
 
-import org.eventb.core.ast.extension.IFormulaExtension;
+import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.ModelGenerationException;
+import de.prob.model.eventb.ModelGenerationException
 
 class Return extends Statement implements IAssignment {
 	List<EventB> returnVals

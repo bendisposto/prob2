@@ -85,7 +85,7 @@ public class ProBConnection {
 	}
 
 	private String getAnswer() throws IOException {
-		String input = null;
+		String input;
 		input = readAnswer();
 		if (input == null) {
 			throw new IOException(

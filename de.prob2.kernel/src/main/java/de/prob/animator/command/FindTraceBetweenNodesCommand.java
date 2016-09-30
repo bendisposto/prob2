@@ -59,7 +59,7 @@ public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 			String msg = "Trace was not found. Error was: "
 					+ trace.getFunctor();
 			logger.error(msg);
-			throw new RuntimeException(msg);
+			throw new NoTraceFoundException(msg);
 		}
 	}
 

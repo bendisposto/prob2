@@ -1,7 +1,5 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
-import java.awt.im.InputContext;
-
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Assignment

@@ -51,8 +51,7 @@ public final class GetDefaultPreferencesCommand extends AbstractCommand {
 				.get(PREFS_VARIABLE));
 		prefs = new ArrayList<ProBPreference>();
 		for (PrologTerm term : p) {
-			ProBPreference preference = null;
-			preference = verifyTerm(term);
+			ProBPreference preference = verifyTerm(term);
 			prefs.add(preference);
 		}
 	}

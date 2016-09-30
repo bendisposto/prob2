@@ -4,7 +4,6 @@ import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.If
-import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
 

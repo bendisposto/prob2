@@ -9,10 +9,24 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 
+if (System.env.TRAVIS == 'true') {
+	allprojects {
+	  tasks.withType(GroovyCompile) {
+		groovyOptions.fork = false
+	  }
+	  tasks.withType(Test) {
+		// containers (currently) have 2 dedicated cores and 4GB of memory
+		maxParallelForks = 2
+		minHeapSize = '128m'
+	  }
+	}
+  }
+
+
 
 def gradle_version = '1.0-rc-3'
 
-project.version = '2.0.2'
+project.version = '2.0.3'
 
 repositories {
 	mavenCentral();
@@ -108,6 +122,16 @@ def downloadUrlPath() {
 	}
 }
 
+def cspmfmapping(n) {
+	def m = ['darwin-64': 'leopard64',
+	         'linux-32': 'linux32',
+					 'linux-64': 'linux64',
+					 'windows': 'windows']
+	return m.get(n)
+}
+
+
+
 
 task downloadCLIs << {
 	def dir = 'src/main/resources/cli/'
@@ -128,14 +152,7 @@ task downloadCLIs << {
 		def url = downloadUrlPath()+"probcli_${n}.zip"
 		download(url,targetzip)
 
-		def cspmfname = n
-		if (n.startsWith("win")) {
-			n = "windows.exe"
-		}
-		cspmfname = "cspmf-"+n
-		def target = dir+cspmfname
-		download("http://www3.hhu.de/stups/downloads/cspmf/"+cspmfname,target)
-		file(target).setExecutable(true)
+
 	}
 
 	['32', '64'].each { winV ->
@@ -143,6 +160,30 @@ task downloadCLIs << {
 		download(downloadUrlPath()+"windowslib${winV}.zip",targetzip)
 	}
 }
+
+task downloadCSPMFrontend {
+	doLast {
+ 	def dir = 'src/main/resources/cli/'
+
+	['darwin-64',
+	 'linux-32',
+	 'linux-64',
+	 'windows',
+	].each { n ->
+   def libName = "cspmf"
+	 def target = dir + cspmfmapping(n) + "-cspmf"
+	 if (n=="windows") {
+		 target += ".exe"
+		 libName += ".exe"
+   }
+	 download('https://www3.hhu.de/stups/downloads/cspmf/'+n+'/'+libName,target)
+	 file(target).setExecutable(true)
+ }
+}
+dependsOn downloadCLIs
+
+}
+
 
 task createBuildConstants  {
 	doFirst {
@@ -152,7 +193,7 @@ version=${project.version}"""
 		f.delete()
 		f <<  buildconstants_class
 	}
-	dependsOn downloadCLIs
+	dependsOn downloadCSPMFrontend
 }
 
 compileGroovy { dependsOn= [createBuildConstants]}

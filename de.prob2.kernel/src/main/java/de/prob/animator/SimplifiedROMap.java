@@ -29,7 +29,7 @@ class SimplifiedROMap<K, V> implements ISimplifiedROMap<K, V> {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		Set<Entry<K, V>> entrySet = map.entrySet();
 		for (Entry<K, V> entry : entrySet) {
 			sb.append(entry.getKey());

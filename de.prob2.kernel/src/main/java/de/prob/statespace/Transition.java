@@ -42,7 +42,7 @@ import de.prob.util.StringUtil;
  * 
  */
 public class Transition {
-	public StateSpace stateSpace;
+	public final StateSpace stateSpace;
 
 	private final String id;
 	private final String name;

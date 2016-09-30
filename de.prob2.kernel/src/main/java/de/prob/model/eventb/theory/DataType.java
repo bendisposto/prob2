@@ -13,6 +13,8 @@ import org.eventb.core.ast.datatype.IConstructorBuilder;
 import org.eventb.core.ast.datatype.IDatatype;
 import org.eventb.core.ast.datatype.IDatatypeBuilder;
 import org.eventb.core.ast.extension.IFormulaExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.model.representation.AbstractElement;
 import de.prob.util.Tuple2;
@@ -22,6 +24,8 @@ public class DataType extends AbstractElement {
 	final String identifierString;
 	private final Map<String, List<Tuple2<String, String>>> constructors;
 	private final List<String> typeArguments;
+
+	private Logger logger = LoggerFactory.getLogger(DataType.class);
 
 	public DataType(final String identifier,
 			Map<String, List<Tuple2<String, String>>> constructors,
@@ -68,7 +72,10 @@ public class DataType extends AbstractElement {
 				types.add((GivenType) parseType.getParsedType());
 			}
 		}
-		assert types.size() == typeArguments.size();
+		if (types.size() != typeArguments.size()) {
+			logger.error("Types size ({}) should match Argument numbers ({})", types.size(), typeArguments.size());
+			throw new IllegalStateException("Mistmath between declared and actual argument sizes.");
+		}
 		IDatatypeBuilder builder = ff.makeDatatypeBuilder(identifierString,
 				types.toArray(new GivenType[typeArguments.size()]));
 		for (Entry<String, List<Tuple2<String, String>>> entry : constructors

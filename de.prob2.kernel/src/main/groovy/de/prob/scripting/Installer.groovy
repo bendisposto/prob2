@@ -1,17 +1,10 @@
 package de.prob.scripting
 
-import static java.io.File.*
-
-import com.google.common.io.Resources;
-import com.google.inject.Inject
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import de.prob.cli.OsSpecificInfo
 import de.prob.cli.ProBInstanceProvider
-
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory;
 
 public class Installer {
 
@@ -44,17 +37,16 @@ public class Installer {
 			zip.unzip(dir)
 			new File(zipPath).delete()
 
-			def cspmf = os
 			def outcspmf = dir + "lib"+ File.separator+"cspmf"
+			def cspmf = os + "-cspmf"
 			if(os.startsWith('win')) {
 				def zipFile = os == "win32" ? "windowslib32.zip" : "windowslib64.zip"
 				zipPath = dir + zipFile
 				zip = getResource("cli/"+zipFile, zipPath)
 				zip.unzip(dir)
-				cspmf = "windows.exe"
-				outcspmf = outcspmf+".exe"
+				cspmf = "windows-cspmf.exe"
+				outcspmf += ".exe"
 			}
-			cspmf = "cspmf-"+cspmf
 			def f = getResource("cli/"+cspmf,outcspmf)
 			f.setExecutable(true)
 			logger.info("CLI binaries successfully installed")
@@ -66,7 +58,9 @@ public class Installer {
 	def File getResource(String resource, String outFile) {
 		InputStream is = getClass().getClassLoader().getResourceAsStream(resource)
 		File file = new File(outFile)
-		file.append(is)
+		OutputStream os = new BufferedOutputStream(new FileOutputStream(file))
+		os << is
+		os.close()
 		file
 	}
 }

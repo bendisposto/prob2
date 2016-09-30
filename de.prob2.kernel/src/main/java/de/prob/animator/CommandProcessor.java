@@ -19,12 +19,11 @@ import de.prob.prolog.term.PrologTerm;
 
 class CommandProcessor {
 
-
 	private ProBInstance cli;
 
 	public IPrologResult sendCommand(final AbstractCommand command) {
 
-		String query = "";
+		String query;
 		if (command instanceof IRawCommand) {
 			query = ((IRawCommand) command).getCommand();
 			if (!query.endsWith(".")) {
@@ -36,7 +35,6 @@ class CommandProcessor {
 			pto.printAtom("true");
 			query = pto.fullstop().toString();
 		}
-
 		String result = cli.send(query);
 
 		final Start ast = parseResult(result);

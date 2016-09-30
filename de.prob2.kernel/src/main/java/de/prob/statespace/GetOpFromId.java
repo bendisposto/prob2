@@ -17,8 +17,8 @@ public class GetOpFromId extends AbstractCommand {
 
 	private static final String PROLOG_COMMAND_NAME = "get_op_from_id";
 	private final Transition op;
-	private final String PARAMS = "Params";
-	private final String RETVALS = "RetVals";
+	private static final String PARAMETERS_VARIABLE = "Params";
+	private static final String RETURNVALUES_VARIABLE = "RetVals";
 	private List<String> params;
 	private List<String> returnValues;
 	private final FormulaExpand expansion;
@@ -31,14 +31,14 @@ public class GetOpFromId extends AbstractCommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME).printAtomOrNumber(op.getId())
-				.printAtom(expansion.name()).printVariable(PARAMS)
-				.printVariable(RETVALS).closeTerm();
+				.printAtom(expansion.name()).printVariable(PARAMETERS_VARIABLE)
+				.printVariable(RETURNVALUES_VARIABLE).closeTerm();
 	}
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		ListPrologTerm plist = BindingGenerator.getList(bindings.get(PARAMS));
+		ListPrologTerm plist = BindingGenerator.getList(bindings.get(PARAMETERS_VARIABLE));
 		params = Collections.emptyList();
 		if (!plist.isEmpty()) {
 			params = new ArrayList<String>();
@@ -47,7 +47,7 @@ public class GetOpFromId extends AbstractCommand {
 			params.add(StringUtil.generateString(p.getFunctor()));
 		}
 
-		ListPrologTerm rlist = BindingGenerator.getList(bindings.get(RETVALS));
+		ListPrologTerm rlist = BindingGenerator.getList(bindings.get(RETURNVALUES_VARIABLE));
 		returnValues = Collections.emptyList();
 		if (!rlist.isEmpty()) {
 			returnValues = new ArrayList<String>();
@@ -59,9 +59,23 @@ public class GetOpFromId extends AbstractCommand {
 		op.setInfo(expansion, params, returnValues);
 	}
 
+	
+	/**
+	 * @deprecated Use getParameters() instead
+	 */
+	@Deprecated
 	public List<String> getParams() {
 		return params;
 	}
+	
+	
+	
+	public List<String> getParameters() {
+		return params;
+	}
+	
+	
+	
 
 	public List<String> getReturnValues() {
 		return returnValues;

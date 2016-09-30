@@ -1,8 +1,5 @@
 package de.prob.model.eventb.algorithm.graph
 
-import de.be4.classicalb.core.parser.node.AImplicationPredicate
-import de.be4.ltl.core.parser.node.THistorically;
-import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.Procedure
@@ -17,7 +14,6 @@ import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.While
 import de.prob.model.eventb.algorithm.ast.transform.VariantAssertion
 import de.prob.model.eventb.algorithm.ast.transform.VariantPropagator
-import de.prob.util.Tuple2
 
 /**
  * Translates assertions and assumptions

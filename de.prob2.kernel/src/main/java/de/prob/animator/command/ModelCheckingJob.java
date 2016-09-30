@@ -12,7 +12,7 @@ import de.prob.prolog.term.PrologTerm;
 
 public class ModelCheckingJob extends AbstractCommand {
 
-	private static final int TIME = 500;
+	private static final int TIMEOUT_MS = 500;
 	private final String jobId;
 	private ModelCheckingOptions options;
 	private ModelCheckingStepCommand cmd;
@@ -28,7 +28,7 @@ public class ModelCheckingJob extends AbstractCommand {
 		this.jobId = jobId;
 		this.ui = ui;
 		this.completed = false;
-		cmd = new ModelCheckingStepCommand(TIME, options);
+		cmd = new ModelCheckingStepCommand(TIMEOUT_MS, options);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class ModelCheckingJob extends AbstractCommand {
 		completed = !(res instanceof NotYetFinished) || res == null;
 
 		options = options.recheckExisting(false);
-		cmd = new ModelCheckingStepCommand(TIME, options);
+		cmd = new ModelCheckingStepCommand(TIMEOUT_MS, options);
 	}
 
 	public IModelCheckingResult getResult() {
