@@ -201,6 +201,12 @@ compileGroovy { dependsOn= [createBuildConstants]}
 
 test.doFirst { systemProperties['integrationtest'] = 'true' }
 
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
 groovydoc {
 	docTitle="ProB Core "+project.version
 }
