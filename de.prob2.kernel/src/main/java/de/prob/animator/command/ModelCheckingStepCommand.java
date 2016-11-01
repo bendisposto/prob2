@@ -84,60 +84,41 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 
 		String type = cpt.getFunctor();
 
-		if (type.equals("not_yet_finished")) {
+		switch (type) {
+		case "not_yet_finished":
 			int maxNodesLeft = BindingGenerator.getInteger(cpt.getArgument(1))
 					.getValue().intValue();
 			return new NotYetFinished("Model checking not completed",
 					maxNodesLeft);
-		}
-
-		if (type.equals("ok")) {
+		case "ok":
 			return new ModelCheckOk(
 					"Model Checking complete. No error nodes found.");
-		}
-
-		if (type.equals("full_coverage")) {
+		case "full_coverage":
 			return new ModelCheckOk(
 					"Model Checking complete. All operations were covered.");
-		}
-
-		if (type.equals("ok_not_all_nodes_considered")) {
+		case "ok_not_all_nodes_considered":
 			return new ModelCheckOk(
 					"Model Checking complete. No error nodes found. Not all nodes were considered.");
-		}
-
-		if (type.equals("deadlock")) {
+		case "deadlock":
 			return new ModelCheckErrorUncovered("Deadlock found.", cpt
 					.getArgument(1).getFunctor());
-		}
-
-		if (type.equals("invariant_violation")) {
+		case "invariant_violation":
 			return new ModelCheckErrorUncovered("Invariant violation found.",
 					cpt.getArgument(1).getFunctor());
-		}
-
-		if (type.equals("assertion_violation")) {
+		case "assertion_violation":
 			return new ModelCheckErrorUncovered("Assertion violation found.",
 					cpt.getArgument(1).getFunctor());
-		}
-
-		if (type.equals("state_error")) {
+		case "state_error":
 			return new ModelCheckErrorUncovered("A state error occured.", cpt
 					.getArgument(1).getFunctor());
-		}
-
-		if (type.equals("goal_found")) {
+		case "goal_found":
 			return new ModelCheckErrorUncovered("Goal found", cpt
 					.getArgument(1).getFunctor());
-		}
-
-		if (type.equals("well_definedness_error")) {
+		case "well_definedness_error":
 			return new ModelCheckErrorUncovered(
 					"A well definedness error occured.", cpt.getArgument(1)
 							.getFunctor());
-		}
-
-		if (type.equals("general_error")) {
+		case "general_error":
 			if (cpt.getArity() == 2)
 				return new ModelCheckErrorUncovered(
 						"An unknown result was uncovered: "
@@ -148,12 +129,16 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 				return new ModelCheckErrorUncovered(
 						"A general error occured in state: ", cpt.getArgument(1)
 								.getFunctor());
+
+		default:
+			logger.error(
+					"Model checking result unknown. This should not happen "
+							+ "unless someone changed the prolog kernel. Result was: {} ",
+					cpt.toString());
+			throw new IllegalArgumentException("model checking result unknown: "
+					+ cpt.toString());
 		}
 
-		logger.error("Model checking result unknown. " + cpt.toString());
-		// This should not happen unless someone changed the prolog kernel
-		throw new IllegalArgumentException("model checking result unknown: "
-				+ cpt.toString());
 	}
 
 	@Override
