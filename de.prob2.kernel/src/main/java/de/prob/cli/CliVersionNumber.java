@@ -36,4 +36,9 @@ public class CliVersionNumber implements Comparable<CliVersionNumber> {
 				.result();
 	}
 
+	@Override
+	public boolean equals(Object that) {
+		return that != null && this.toString().equals(that.toString());
+	}
+
 }

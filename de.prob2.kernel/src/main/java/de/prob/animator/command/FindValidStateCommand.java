@@ -19,7 +19,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 
 	public static enum ResultType {
 		STATE_FOUND, NO_STATE_FOUND, INTERRUPTED, ERROR
-	};
+	}
 
 	private static final String PROLOG_COMMAND_NAME = "find_state_for_predicate";
 	private static final String RESULT_VARIABLE = "R";
