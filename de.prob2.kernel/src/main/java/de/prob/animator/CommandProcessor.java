@@ -2,6 +2,9 @@ package de.prob.animator;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
 import de.prob.cli.ProBInstance;
@@ -21,6 +24,8 @@ class CommandProcessor {
 
 	private ProBInstance cli;
 
+	private final Logger logger = LoggerFactory.getLogger(CommandProcessor.class);
+
 	public IPrologResult sendCommand(final AbstractCommand command) {
 
 		String query;
@@ -35,6 +40,7 @@ class CommandProcessor {
 			pto.printAtom("true");
 			query = pto.fullstop().toString();
 		}
+		logger.debug("SEND QUERY: {}", query);
 		String result = cli.send(query);
 
 		final Start ast = parseResult(result);
