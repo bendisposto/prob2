@@ -124,7 +124,7 @@ public class TheoryExtractor extends DefaultHandler {
 		} catch (FileNotFoundException e) {
 			logger.warn("No .ptm file found for Theory "
 					+ name
-					+ ". This means that ProB has no information on how to interpret this theory.");
+					+ ". This means that ProB has no information on how to interpret this theory.", e);
 		} catch (TheoryMappingException e) {
 			logger.error("Error extracting theory", e);
 		} catch (IOException e) {
