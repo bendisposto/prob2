@@ -169,7 +169,15 @@ public class TheoryExtractor extends DefaultHandler {
 			addRecursiveDefinitionCase(attributes);
 		} else if (qName
 				.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
-			addDirectDefinition(attributes);
+			addDirectDefinition(attributes); /*
+												 * FIXME This is unreachable!
+												 * Probably a copy and paste
+												 * error. Question is: Is there
+												 * a case missing, should the
+												 * body be united with the
+												 * clause above or is this
+												 * just a leftover of copy & paste
+												 */
 		} else if (qName.equals("org.eventb.theory.core.scOperatorArgument")) {
 			addOperatorArgument(attributes);
 		} else if (qName
