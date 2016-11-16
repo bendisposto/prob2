@@ -14,7 +14,7 @@ The source code of the current ProB release is located at http://github.com/bend
 
 # Documentation
 * Tutorial: http://stups.hhu.de/ProB/w/Tutorial13
-* Developer Handbook: https://www3.hhu.de/stups/handbook/prob2/current/devel/pdf/prob-devel.pdf
+* Developer Handbook: https://www3.hhu.de/stups/handbook/prob2/current/devel/pdf/prob2_devel.pdf
 
 # Bugs
 Please report bugs and feature requests at https://probjira.atlassian.net
