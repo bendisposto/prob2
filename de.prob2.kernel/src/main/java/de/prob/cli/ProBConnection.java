@@ -43,8 +43,7 @@ public class ProBConnection {
 		socket = new Socket(InetAddress.getByName(null), port);
 		inputStream = new BufferedInputStream(socket.getInputStream());
 		OutputStream outstream = socket.getOutputStream();
-		outputStream = new PrintStream(outstream, false, Charset
-				.defaultCharset().name());
+		outputStream = new PrintStream(outstream, false, "utf8");
 		logger.debug("Connected");
 		// } catch (final IOException e) {
 		// if (socket != null) {
@@ -122,8 +121,7 @@ public class ProBConnection {
 				// trim white spaces and append
 				// instead of removing the last byte trim is used, because on
 				// windows prob uses \r\n as new line.
-				String s = new String(buffer, 0, count, Charset
-						.defaultCharset().name());
+				String s = new String(buffer, 0, count, "utf8");
 				result.append(s.replace("\r", "").replace("\n", ""));
 			} else {
 				done = true;
