@@ -62,9 +62,9 @@ dependencies {
 	compile 'org.codehaus.groovy:groovy-all:2.4.7' // Apache Licence 2.0
 
 	compile 'com.google.inject:guice:4.0' // Apache Licence 2.0
-	compile 'org.slf4j:slf4j-api:1.6.1' // MIT
-	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
-	compile 'ch.qos.logback:logback-classic:0.9.29' // EPL
+	compile 'org.slf4j:slf4j-api:1.7.21' // MIT
+	compile 'ch.qos.logback:logback-core:1.1.7' // EPL
+	compile 'ch.qos.logback:logback-classic:1.1.7' // EPL
 
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
