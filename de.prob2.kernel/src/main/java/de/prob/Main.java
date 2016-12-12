@@ -159,6 +159,13 @@ public class Main {
 		return p.getProperty("version");
 	}
 
+	public static String getGitSha() throws IOException {
+		Properties p = new Properties();
+		p.load(Main.class.getResourceAsStream("/build.properties"));
+		return p.getProperty("git");
+	}
+
+
 	public static int getMaxCacheSize() {
 		return maxCacheSize;
 	}
