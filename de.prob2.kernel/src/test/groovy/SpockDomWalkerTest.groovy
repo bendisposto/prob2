@@ -1,7 +1,7 @@
 import static org.junit.Assert.*
 import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
-import de.be4.classicalb.core.parser.exceptions.BException
+import de.be4.classicalb.core.parser.exceptions.BCompoundException
 import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.classicalb.ClassicalBMachine
 import de.prob.model.classicalb.DomBuilder
@@ -11,7 +11,7 @@ class SpockDomWalkerTest extends Specification {
 
 	def static serialVersionUID = -9047892808993422222L;
 
-	private Start parse(final String testMachine) throws BException {
+	private Start parse(final String testMachine) throws BCompoundException {
 		final BParser parser = new BParser("testcase");
 		return parser.parse(testMachine, false);
 	}

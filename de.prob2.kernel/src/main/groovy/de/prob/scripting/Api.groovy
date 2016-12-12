@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 import com.google.inject.Inject
 import com.google.inject.Provider
 
-import de.be4.classicalb.core.parser.exceptions.BException
 import de.be4.classicalb.core.parser.node.Start
 import de.prob.animator.IAnimator
 import de.prob.animator.command.GetVersionCommand
@@ -102,11 +101,11 @@ public class Api {
 	 *
 	 * @param file
 	 * @return classicalBModel
-	 * @throws BException
+	 * @throws ModelTranslationError
 	 * @throws IOException
 	 */
 	public StateSpace b_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, ModelTranslationError {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 		Closure loadClosure=getSubscribeClosure(LoadClosures.B)
@@ -117,7 +116,7 @@ public class Api {
 	}
 
 	public StateSpace b_load(final Start ast,
-			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, ModelTranslationError {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 		Closure loadClosure=getSubscribeClosure(LoadClosures.B)
@@ -128,7 +127,7 @@ public class Api {
 	}
 
 	public StateSpace tla_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, ModelTranslationError {
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
 		Closure loadClosure=getSubscribeClosure(LoadClosures.B)
 		def extracted = tlaFactory.extract(file)

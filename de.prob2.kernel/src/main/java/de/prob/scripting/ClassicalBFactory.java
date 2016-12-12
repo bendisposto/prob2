@@ -14,7 +14,6 @@ import de.be4.classicalb.core.parser.CachingDefinitionFileProvider;
 import de.be4.classicalb.core.parser.IDefinitionFileProvider;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.ClassicalBModel;
 
@@ -88,7 +87,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	 * @param bparser
 	 *            {@link BParser} for parsing
 	 * @return {@link RecursiveMachineLoader} rml with all loaded machines
-	 * @throws BException
+	 * @throws ModelTranslationError
 	 */
 	public RecursiveMachineLoader parseAllMachines(final Start ast,
 			final String directory, final File f,
@@ -114,7 +113,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	 * @return {@link Start} AST after parsing model with {@link BParser}
 	 *         bparser
 	 * @throws IOException
-	 * @throws BException
+	 * @throws ModelTranslationError
 	 */
 	public Start parseFile(final File model, final BParser bparser)
 			throws IOException, ModelTranslationError {

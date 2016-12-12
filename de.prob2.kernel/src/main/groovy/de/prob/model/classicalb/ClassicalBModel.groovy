@@ -6,7 +6,7 @@ import com.google.inject.Inject
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.NoContentProvider
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
-import de.be4.classicalb.core.parser.exceptions.BException
+import de.be4.classicalb.core.parser.exceptions.BCompoundException
 import de.be4.classicalb.core.parser.node.Start
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral
 import de.prob.animator.command.LoadBProjectCommand
@@ -98,7 +98,7 @@ public class ClassicalBModel extends AbstractModel {
 		try {
 			return new ClassicalB(bparser.parse(BParser.FORMULA_PREFIX + " "
 					+ formula, false, new NoContentProvider()));
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 			throw new EvaluationException(e.getMessage());
 		}
 	}
