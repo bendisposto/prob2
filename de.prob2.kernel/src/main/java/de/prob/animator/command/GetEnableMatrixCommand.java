@@ -48,12 +48,30 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 		}
 	}
 
+	public static class EnableMatixEntry {
+
+		public final String enable, keepEnabled, disable, keepDisabled;
+
+		public EnableMatixEntry(PrologTerm term) {
+			enable = term.getArgument(1).getFunctor();
+			keepEnabled = term.getArgument(2).getFunctor();
+			disable = term.getArgument(3).getFunctor();
+			keepDisabled = term.getArgument(4).getFunctor();
+		}
+		
+		@Override
+		public String toString() {
+			return String.format("Enable: %s, Keep enabled: %s, Disable: %s, Keep disabled: %s %n", enable, keepEnabled,disable, keepDisabled);
+		}
+
+	}
+
 	private static final String PROLOG_COMMAND_NAME = "get_enable_matrix";
 	private static final String MATRIX = "Matrix";
 	private final EventPair[] pairs;
-	private Map<EventPair, String> matrix = new HashMap<>();
+	private Map<EventPair, EnableMatixEntry> matrix = new HashMap<>();
 
-	public GetEnableMatrixCommand(EventPair[] eventPairs) {
+	public GetEnableMatrixCommand(EventPair... eventPairs) {
 		this.pairs = eventPairs;
 	}
 
@@ -72,6 +90,8 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 		pto.closeTerm();
 	}
 
+	// yes('.'(=('Matrix','.'(enable_rel(new,del,enable_edges(ok,ok,false,false)),[])),[]))
+	// enable_edges(Enable,KeepEnabled,Disable,KeepDisabled)
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
@@ -79,13 +99,13 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 		matrix.clear();
 		for (PrologTerm term : elements) {
 			EventPair key = new EventPair(term.getArgument(1).getFunctor(), term.getArgument(2).getFunctor());
-			String value = term.getArgument(3).getFunctor();
-			matrix.put(key, value);
+			matrix.put(key, new EnableMatixEntry(term.getArgument(3)));
 		}
 	}
 
-	public String getEnableInfo(EventPair key) {
-		return matrix.get(key);
+	public EnableMatixEntry getEnableInfo(EventPair key) {
+		EnableMatixEntry enableMatixEntry = matrix.get(key);
+		return enableMatixEntry;
 	}
 
 }
