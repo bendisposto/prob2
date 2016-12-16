@@ -183,11 +183,23 @@ dependsOn downloadCLIs
 
 }
 
+def getCheckedOutGitCommitHash() {
+    def gitFolder = "$projectDir/../.git/"
+    def takeFromHash = 40
+    try{
+     def head = new File(gitFolder + "HEAD").text.split(":") // .git/HEAD
+     def isCommit = head.length == 1 // e5a7c79edabbf7dd39888442df081b1c9d8e88fd
+     if(isCommit) return head[0].trim().take(takeFromHash) // e5a7c79edabb
+     def refHead = new File(gitFolder + head[1].trim()) // .git/refs/heads/master
+     refHead.text.trim().take takeFromHash
+    } catch (Exception e) { "unknown" }
+}
 
 task createBuildConstants  {
 	doFirst {
 		def buildconstants_class = """
-version=${project.version}"""
+version=${project.version}
+git=${getCheckedOutGitCommitHash()}"""
 		File f = file("src/main/resources/build.properties")
 		f.delete()
 		f <<  buildconstants_class
