@@ -48,8 +48,7 @@ sourceSets.main.java.srcDirs = [
 	'src/main/generated'] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
 
-def parser_version = '2.7.1-SNAPSHOT'
-
+def parser_version = '2.8.0'
 
 dependencies {
 
