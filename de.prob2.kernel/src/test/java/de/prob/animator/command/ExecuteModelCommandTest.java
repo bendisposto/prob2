@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.prob.Main;
@@ -23,6 +24,17 @@ import de.prob.statespace.Transition;
 public class ExecuteModelCommandTest {
 
 	private Api api;
+	
+	
+	@BeforeClass 
+	public static void prepare(){
+		if ("true".equals(System.getenv("TRAVIS"))) {
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
 
 	@Before
 	public void setup() {
