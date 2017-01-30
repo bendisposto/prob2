@@ -108,7 +108,7 @@ def download(address,target) {
 	out.close()
 }
 
-ext{ cli_version = '1.6.1-beta3' }
+ext{ cli_version = '1.6.2-beta1' }
 
 
 def downloadUrlPath() {
