@@ -26,7 +26,10 @@ if (System.env.TRAVIS == 'true') {
 
 def gradle_version = '3.0'
 
+// Remember to release the cli!
 project.version = '3.0.1-SNAPSHOT'
+ext{ cli_version = '1.6.2-beta1' }
+
 
 repositories {
 	mavenCentral();
@@ -108,7 +111,6 @@ def download(address,target) {
 	out.close()
 }
 
-ext{ cli_version = '1.6.1-beta3' }
 
 
 def downloadUrlPath() {
