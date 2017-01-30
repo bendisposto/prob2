@@ -3,7 +3,9 @@ package de.prob;
 import static java.io.File.separator;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -151,6 +153,19 @@ public class Main {
 		return prefs;
 	}
 
+	public static String getVersion() throws IOException {
+		Properties p = new Properties();
+		p.load(Main.class.getResourceAsStream("/build.properties"));
+		return p.getProperty("version");
+	}
+
+	public static String getGitSha() throws IOException {
+		Properties p = new Properties();
+		p.load(Main.class.getResourceAsStream("/build.properties"));
+		return p.getProperty("git");
+	}
+
+
 	public static int getMaxCacheSize() {
 		return maxCacheSize;
 	}
@@ -163,6 +178,7 @@ public class Main {
 	 * @throws Throwable
 	 */
 	public static void main(final String[] args) {
+
 		try {
 			System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
 

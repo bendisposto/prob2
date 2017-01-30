@@ -75,7 +75,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		Process process = processTuple.getProcess();
 		String key = processTuple.getKey();
 		final BufferedReader stream = new BufferedReader(new InputStreamReader(
-				process.getInputStream(), Charset.defaultCharset()));
+				process.getInputStream(), Charset.forName("utf8")));
 
 		Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> cliInformation = extractCliInformation(stream);
 

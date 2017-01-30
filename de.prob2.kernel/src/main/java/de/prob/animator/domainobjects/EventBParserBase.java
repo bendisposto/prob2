@@ -2,7 +2,7 @@ package de.prob.animator.domainobjects;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.parserbase.ProBParseException;
@@ -38,7 +38,7 @@ public class EventBParserBase implements ProBParserBase {
 		Start ast;
 		try {
 			ast = BParser.parse(formula);
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 			throw new ProBParseException(e.getLocalizedMessage());
 		}
 		toPrologTerm(pto, ast, wrap, TRANS_WRAPPER);

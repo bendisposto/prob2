@@ -35,7 +35,7 @@ class OsInfoProvider implements Provider<OsSpecificInfo> {
 	private OsSpecificInfo whichOs(final String osString, final String osArch) {
 		String os = osString.toLowerCase();
 		if (os.indexOf("win") >= 0) {
-			if (osArch.equals("amd64")) {
+			if ("amd64".equals(osArch)) {
 				return new OsSpecificInfo("probcli.exe", null, "lib" + File.separator + "send_user_interrupt.exe",
 						"Windows", osString, "win64");
 			} else {
@@ -47,10 +47,10 @@ class OsInfoProvider implements Provider<OsSpecificInfo> {
 			return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "MacOs", osString, "leopard64");
 		}
 		if (os.indexOf("linux") >= 0) {
-			if (osArch.equals("i386")) {
+			if ("i386".equals(osArch)) {
 				return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "Linux", osString, "linux32");
 			}
-			if (osArch.equals("amd64")) {
+			if ("amd64".equals(osArch)) {
 				return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "Linux", osString, "linux64");
 			}
 		}

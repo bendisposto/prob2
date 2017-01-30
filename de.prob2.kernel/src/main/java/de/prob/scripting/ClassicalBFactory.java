@@ -13,7 +13,7 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.CachingDefinitionFileProvider;
 import de.be4.classicalb.core.parser.IDefinitionFileProvider;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.ClassicalBModel;
 
@@ -87,7 +87,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	 * @param bparser
 	 *            {@link BParser} for parsing
 	 * @return {@link RecursiveMachineLoader} rml with all loaded machines
-	 * @throws BException
+	 * @throws ModelTranslationError
 	 */
 	public RecursiveMachineLoader parseAllMachines(final Start ast,
 			final String directory, final File f,
@@ -100,7 +100,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 			rml.loadAllMachines(f, ast, null, bparser.getDefinitions());
 			logger.trace("Done parsing '{}'", f.getAbsolutePath());
 			return rml;
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 			throw new ModelTranslationError(e.getMessage(), e);
 		}
 	}
@@ -113,7 +113,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	 * @return {@link Start} AST after parsing model with {@link BParser}
 	 *         bparser
 	 * @throws IOException
-	 * @throws BException
+	 * @throws ModelTranslationError
 	 */
 	public Start parseFile(final File model, final BParser bparser)
 			throws IOException, ModelTranslationError {
@@ -122,7 +122,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 			Start ast = null;
 			ast = bparser.parseFile(model, false);
 			return ast;
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 			throw new ModelTranslationError(e.getMessage(), e);
 		}
 	}
@@ -134,7 +134,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 			Start ast = null;
 			ast = bparser.parse(model, false);
 			return ast;
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 			throw new ModelTranslationError(e.getMessage(), e);
 		}
 	}

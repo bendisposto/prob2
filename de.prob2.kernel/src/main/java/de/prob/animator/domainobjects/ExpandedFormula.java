@@ -61,23 +61,20 @@ public class ExpandedFormula {
 	}
 
 	private Object getValue(final PrologTerm v) {
-		if (v.getFunctor().equals("p")) {
-			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
-			if (cpt.getArgument(1).getFunctor().equals("true")) {
-				return Boolean.TRUE;
-			} else {
-				return Boolean.FALSE;
-			}
-		} else if (v.getFunctor().equals("v")) {
-			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
+		String functor = v.getFunctor();
+		CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
+		switch (functor) {
+		case "p":
+			return cpt.getArgument(1).getFunctor().equals("true");
+		case "v":
 			return UnicodeTranslator.toUnicode(cpt.getArgument(1).getFunctor());
-		} else if (v.getFunctor().equals("e")) {
-			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
+		case "e":
 			hasError = true;
 			return cpt.getArgument(1).getFunctor();
+		default:
+			throw new IllegalArgumentException("Received unexpected result from Prolog. "
+					+ "Expected is either p,v or e as a functor, but Prolog returned" + functor);
 		}
-		throw new IllegalArgumentException("Received unexpected result from Prolog. "
-				+ "Expected is either p,v or e as a functor, but Prolog returned" + v.getFunctor());
 	}
 
 	public String getLabel() {

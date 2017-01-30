@@ -35,10 +35,14 @@ public class StateSpaceProvider {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 
-		s.execute(new ComposedCommand(cmds));
-		s.execute(loadCmd);
-		s.execute(new StartAnimationCommand());
-
+		try {
+			s.execute(new ComposedCommand(cmds));
+			s.execute(loadCmd);
+			s.execute(new StartAnimationCommand());
+		} catch (Exception e) {
+			s.kill();
+			throw e;
+		}
 		return s;
 	}
 }

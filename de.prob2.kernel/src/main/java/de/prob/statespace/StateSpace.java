@@ -22,7 +22,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckIfStateIdValidCommand;
@@ -265,7 +264,6 @@ public class StateSpace implements IAnimator {
 	 *            int number of solutions that should be found for the given
 	 *            predicate
 	 * @return list of operations calculated by ProB
-	 * @throws BException
 	 */
 	public List<Transition> transitionFromPredicate(final State stateId,
 			final String name, final String predicate, final int nrOfSolutions)

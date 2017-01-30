@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.Operation;
@@ -115,7 +115,7 @@ public class Transition {
 		return params;
 	}
 
-	public List<BObject> getTranslatedParams() throws BException {
+	public List<BObject> getTranslatedParams() throws BCompoundException {
 		if (translatedParams != null) {
 			return translatedParams;
 		}
@@ -123,7 +123,7 @@ public class Transition {
 		return translatedParams;
 	}
 
-	private void translateParamsAndRetVals() throws BException {
+	private void translateParamsAndRetVals() throws BCompoundException {
 		if (!evaluated || formulaExpansion != FormulaExpand.expand) {
 			evaluate(FormulaExpand.expand);
 		}
@@ -151,7 +151,7 @@ public class Transition {
 		return returnValues;
 	}
 
-	public List<BObject> getTranslatedReturnValues() throws BException {
+	public List<BObject> getTranslatedReturnValues() throws BCompoundException {
 		if (translatedRetV != null) {
 			return translatedRetV;
 		}

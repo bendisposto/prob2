@@ -31,7 +31,7 @@ class PortPattern extends AbstractCliPattern<Integer> {
 	protected void setValue(final Matcher matcher)
 			throws IllegalArgumentException {
 		port = Integer.parseInt(matcher.group(1));
-		logger.info("Server has startet and listens on port " + port);
+		logger.info("Server has started and listens on port " + port);
 	}
 
 	/**

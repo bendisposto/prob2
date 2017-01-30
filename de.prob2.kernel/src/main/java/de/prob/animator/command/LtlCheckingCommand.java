@@ -33,7 +33,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 
 	public static enum PathType {
 		INFINITE, FINITE, REDUCED
-	};
+	}
 
 	private final int max;
 	private IModelCheckingResult result;

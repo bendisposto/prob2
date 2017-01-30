@@ -124,7 +124,7 @@ public class TheoryExtractor extends DefaultHandler {
 		} catch (FileNotFoundException e) {
 			logger.warn("No .ptm file found for Theory "
 					+ name
-					+ ". This means that ProB has no information on how to interpret this theory.");
+					+ ". This means that ProB has no information on how to interpret this theory.", e);
 		} catch (TheoryMappingException e) {
 			logger.error("Error extracting theory", e);
 		} catch (IOException e) {
@@ -169,7 +169,15 @@ public class TheoryExtractor extends DefaultHandler {
 			addRecursiveDefinitionCase(attributes);
 		} else if (qName
 				.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
-			addDirectDefinition(attributes);
+			addDirectDefinition(attributes); /*
+												 * FIXME This is unreachable!
+												 * Probably a copy and paste
+												 * error. Question is: Is there
+												 * a case missing, should the
+												 * body be united with the
+												 * clause above or is this
+												 * just a leftover of copy & paste
+												 */
 		} else if (qName.equals("org.eventb.theory.core.scOperatorArgument")) {
 			addOperatorArgument(attributes);
 		} else if (qName

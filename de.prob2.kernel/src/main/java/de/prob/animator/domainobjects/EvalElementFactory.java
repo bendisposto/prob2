@@ -22,15 +22,15 @@ public class EvalElementFactory {
 	}
 
 	private EventB toEventB(final String content) {
-		return new EventB(content.substring(content.indexOf(":") + 1));
+		return new EventB(content.substring(content.indexOf(':') + 1));
 	}
 
 	private ClassicalB toClassicalB(final String content) {
-		return new ClassicalB(content.substring(content.indexOf(":") + 1));
+		return new ClassicalB(content.substring(content.indexOf(':') + 1));
 	}
 
 	private CSP toCSP(final String content) {
-		String objects = content.substring(content.indexOf(":") + 1);
+		String objects = content.substring(content.indexOf(':') + 1);
 
 		Gson g = new Gson();
 		CSP fromJson = g.fromJson(objects, CSP.class);
