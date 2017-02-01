@@ -78,7 +78,7 @@ public class ProBInstance {
 		try {
 			return connection.send(term);
 		} catch (IOException e) {
-			throw new CliError("Error during communicating with Prolog core.",
+			throw new CliError("Error during communication with Prolog core.",
 					e);
 		}
 	}
