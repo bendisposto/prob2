@@ -302,8 +302,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		if (machineName.equals(machine.getName())) {
 			String label = attributes.getValue("org.eventb.core.label");
 			String predicate = attributes.getValue("org.eventb.core.predicate");
-			boolean theorem = attributes.getValue("org.eventb.core.theorem")
-					.equals("true");
+			boolean theorem = "true".equals(attributes.getValue("org.eventb.core.theorem"));
 			EventBInvariant inv = new EventBInvariant(label, predicate,
 					theorem, typeEnv);
 			invariants.add(inv);
@@ -351,8 +350,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		if (contextName.equals(internalContext.getName())) {
 			String label = attributes.getValue("org.eventb.core.label");
 			String predicate = attributes.getValue("org.eventb.core.predicate");
-			boolean theorem = attributes.getValue("org.eventb.core.theorem")
-					.equals("true");
+			boolean theorem = "true".equals(attributes.getValue("org.eventb.core.theorem"));
 			EventBAxiom axiom = new EventBAxiom(label, predicate, theorem,
 					typeEnv);
 			axioms.add(axiom);
