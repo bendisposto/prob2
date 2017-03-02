@@ -9,6 +9,7 @@ package de.prob.animator.domainobjects;
 import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
 import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
 import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
+
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
@@ -110,7 +111,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	@Override
 	public void printProlog(final IPrologTermOutput pout) {
 		if (getKind().equals(ASSIGNMENT.toString())) {
-			throw new EvaluationException("Subsitutions are currently unsupported for evaluation");
+			throw new EvaluationException("Substitutions are currently unsupported for evaluation");
 		}
 		final ASTProlog prolog = new ASTProlog(pout, null);
 		if (ast.getEOF() == null) {
