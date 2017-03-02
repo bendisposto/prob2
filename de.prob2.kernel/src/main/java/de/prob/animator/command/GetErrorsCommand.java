@@ -18,7 +18,7 @@ public class GetErrorsCommand extends AbstractCommand {
 	private static final String PROLOG_COMMAND_NAME = "get_error_messages";
 	public static final String ERRORS_VARIABLE = "Errors";
 	public static final String WARNINGS_ONLY_VARIABLE = "WarningsOnly";
-	private List<String> errors;
+	private List<String> errors = Collections.emptyList();
 	private boolean warningsOnly;
 
 	@Override
@@ -31,7 +31,6 @@ public class GetErrorsCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		errors = Collections.emptyList();
 		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(WARNINGS_ONLY_VARIABLE).printVariable(ERRORS_VARIABLE)
 				.closeTerm();
 	}
@@ -39,7 +38,7 @@ public class GetErrorsCommand extends AbstractCommand {
 	public List<String> getErrors() {
 		return errors;
 	}
-	
+
 	public boolean onlyWarningsOccurred() {
 		return warningsOnly;
 	}
