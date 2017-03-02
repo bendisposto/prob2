@@ -11,7 +11,7 @@ public class ModelCheckingOptions {
 	private final EnumSet<Options> options;
 
 	public enum Options {
-		breadth_first_search("breadth first"), find_deadlocks("deadlock check"), find_invariant_violations(
+		breadth_first_search("breadth first"), depth_first_search("depth first"), find_deadlocks("deadlock check"), find_invariant_violations(
 				"invariant check"), find_assertion_violations("assertion check"), inspect_existing_nodes(
 				"recheck existing states"), stop_at_full_coverage(
 				"stop at full coverage"), partial_order_reduction(
@@ -39,6 +39,10 @@ public class ModelCheckingOptions {
 
 	public ModelCheckingOptions breadthFirst(final boolean value) {
 		return changeOption(value, Options.breadth_first_search);
+	}
+	
+	public ModelCheckingOptions depthFirst(final boolean value) {
+		return changeOption(value, Options.depth_first_search);
 	}
 
 	public ModelCheckingOptions checkDeadlocks(final boolean value) {
