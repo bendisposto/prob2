@@ -27,6 +27,10 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class CbcSolveCommand extends AbstractCommand {
 
+	public enum Solvers {
+		PROB, KODKOD, SMT_SUPPORTED_INTERPRETER, Z3
+	};
+
 	private static final String PROLOG_COMMAND_NAME = "cbc_solve";
 
 	private static final int BINDINGS = 1;
@@ -44,8 +48,15 @@ public class CbcSolveCommand extends AbstractCommand {
 	private AbstractEvalResult result;
 	private final List<String> freeVariables = new ArrayList<String>();
 
+	private Solvers solver;
+
 	public CbcSolveCommand(final IEvalElement evalElement) {
+		this(evalElement, Solvers.PROB);
+	}
+
+	public CbcSolveCommand(final IEvalElement evalElement, final Solvers solver) {
 		this.evalElement = evalElement;
+		this.solver = solver;
 	}
 
 	public AbstractEvalResult getValue() {
@@ -53,8 +64,7 @@ public class CbcSolveCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		PrologTerm idList = bindings.get(IDENTIFIER_LIST);
 		if (idList instanceof ListPrologTerm) {
 			for (PrologTerm id : (ListPrologTerm) idList) {
@@ -69,15 +79,13 @@ public class CbcSolveCommand extends AbstractCommand {
 		String functor = prologTerm.getFunctor();
 
 		if ("time_out".equals(functor)) {
-			result = new ComputationNotCompletedResult(evalElement.getCode(),
-					"time out");
+			result = new ComputationNotCompletedResult(evalElement.getCode(), "time out");
 		}
 		if ("contradiction_found".equals(functor)) {
 			result = EvalResult.FALSE;
 		}
 		if ("solution".equals(functor)) {
-			ListPrologTerm solutionBindings = BindingGenerator
-					.getList(prologTerm.getArgument(BINDINGS));
+			ListPrologTerm solutionBindings = BindingGenerator.getList(prologTerm.getArgument(BINDINGS));
 
 			if (solutionBindings.isEmpty()) {
 				result = EvalResult.TRUE;
@@ -88,8 +96,7 @@ public class CbcSolveCommand extends AbstractCommand {
 
 			for (PrologTerm b : solutionBindings) {
 				CompoundPrologTerm t = (CompoundPrologTerm) b;
-				solutions.put(t.getArgument(VAR_NAME).getFunctor(), t
-						.getArgument(PRETTY_PRINT).getFunctor());
+				solutions.put(t.getArgument(VAR_NAME).getFunctor(), t.getArgument(PRETTY_PRINT).getFunctor());
 			}
 
 			result = new EvalResult("TRUE", solutions);
@@ -104,9 +111,8 @@ public class CbcSolveCommand extends AbstractCommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
 		pout.openTerm(PROLOG_COMMAND_NAME);
-		pout.openList();
+		pout.printAtom(solver.toString());
 		evalElement.printProlog(pout);
-		pout.closeList();
 		pout.printVariable(IDENTIFIER_LIST);
 		pout.printVariable(EVALUATE_TERM_VARIABLE);
 		pout.closeTerm();
