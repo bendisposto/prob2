@@ -34,9 +34,8 @@ class AnimatorImpl implements IAnimator {
 	private boolean busy = false;
 
 	@Inject
-	public AnimatorImpl(@Nullable final ProBInstance cli,
-			final CommandProcessor processor, final GetErrorsCommand getErrors,
-			final AnimationSelector animations) {
+	public AnimatorImpl(@Nullable final ProBInstance cli, final CommandProcessor processor,
+			final GetErrorsCommand getErrors, final AnimationSelector animations) {
 		this.cli = cli;
 		this.processor = processor;
 		this.getErrors = getErrors;
@@ -70,13 +69,15 @@ class AnimatorImpl implements IAnimator {
 				try {
 					command.processResult(((YesResult) result).getBindings());
 				} catch (Exception e) {
-					String message = "Exception of type " + e.getClass()
-							+ " was thrown when executing "
-							+ command.getClass().getSimpleName()
-							+ ". Message was: " + e.getMessage();
+					String message = "Exception of type " + e.getClass() + " was thrown when executing "
+							+ command.getClass().getSimpleName() + ". Message was: " + e.getMessage();
 					logger.error(message, e);
 					// FIXME kill all Clis?
-					System.exit(-1);
+					if (!System.getProperty("dontexit").equals("true")) {
+						System.exit(-1);
+					} else {
+						throw new CliError("exception during result handling", e);
+					}
 				}
 			} else {
 				command.processErrorResult(result, errormessages);
@@ -89,11 +90,9 @@ class AnimatorImpl implements IAnimator {
 
 	private synchronized List<String> getErrors() {
 		IPrologResult errorresult = processor.sendCommand(getErrors);
-		if (errorresult instanceof NoResult
-				|| errorresult instanceof InterruptedResult) {
+		if (errorresult instanceof NoResult || errorresult instanceof InterruptedResult) {
 			throw new ProBError("Get errors must be successful");
-		} else
-			if (errorresult instanceof YesResult) {
+		} else if (errorresult instanceof YesResult) {
 			getErrors.processResult(((YesResult) errorresult).getBindings());
 			List<String> errors = getErrors.getErrors();
 			if (errors.isEmpty())
@@ -109,8 +108,7 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public String toString() {
-		return MoreObjects.toStringHelper(AnimatorImpl.class).addValue(cli)
-				.toString();
+		return MoreObjects.toStringHelper(AnimatorImpl.class).addValue(cli).toString();
 	}
 
 	@Override

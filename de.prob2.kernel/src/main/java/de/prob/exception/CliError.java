@@ -1,7 +1,5 @@
 package de.prob.exception;
 
-import java.io.IOException;
-
 @SuppressWarnings("serial")
 public class CliError extends RuntimeException {
 
@@ -9,7 +7,7 @@ public class CliError extends RuntimeException {
 		super(msg);
 	}
 
-	public CliError(String message, IOException e) {
+	public CliError(String message, Exception e) {
 		super(message, e);
 	}
 
