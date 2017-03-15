@@ -35,5 +35,4 @@ checker.start()
 res = checker.getResult()
 assert res instanceof CheckError
 
-
 "checking for goal works"
