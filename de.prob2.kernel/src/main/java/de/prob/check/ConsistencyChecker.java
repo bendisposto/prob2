@@ -92,13 +92,13 @@ public class ConsistencyChecker implements IModelCheckJob {
 			} catch (ProBError e) {
 				return new CheckError("Type error in specified goal.");
 			}
-		} else {
+		} /*else {
 			// TODO: I don't know if this is the behavior we desire
 			if (options.getPrologOptions().contains(Options.find_goal)) {
 				return new CheckError(
 						"Cannot search for goal because no goal is specified.");
 			}
-		}
+		}*/
 
 		s.execute(job);
 		IModelCheckingResult result = job.getResult();
