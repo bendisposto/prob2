@@ -35,10 +35,5 @@ checker.start()
 res = checker.getResult()
 assert res instanceof CheckError
 
-job = new ConsistencyChecker(s, new ModelCheckingOptions().checkGoal(true))
-checker = new ModelChecker(job)
-checker.start()
-res = checker.getResult()
-assert res instanceof CheckError
 
 "checking for goal works"
