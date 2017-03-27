@@ -20,7 +20,7 @@ import de.tla2bAst.Translator;
 
 public class TLAFactory implements ModelFactory<ClassicalBModel> {
 
-	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(TLAFactory.class);
 	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
