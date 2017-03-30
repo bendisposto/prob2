@@ -134,31 +134,30 @@ def cspmfmapping(n) {
 
 
 
-task downloadCLIs << {
-	def dir = 'src/main/resources/cli/'
-	delete file(dir)
-	def f = file(dir)
-	f.mkdirs()
+task downloadCLIs {
+	doLast {
+		def dir = 'src/main/resources/cli/'
+		delete file(dir)
+		def f = file(dir)
+		f.mkdirs()
 
-	[
-		'leopard64',
-		'linux32',
-		'linux64',
-		'win32',
-		'win64'
-	].each { n ->
+		[
+			'leopard64',
+			'linux32',
+			'linux64',
+			'win32',
+			'win64'
+		].each { n ->
+			def targetdir = dir+n
+			def targetzip = dir+"probcli_${n}.zip"
+			def url = downloadUrlPath()+"probcli_${n}.zip"
+			download(url,targetzip)
+		}
 
-		def targetdir = dir+n
-		def targetzip = dir+"probcli_${n}.zip"
-		def url = downloadUrlPath()+"probcli_${n}.zip"
-		download(url,targetzip)
-
-
-	}
-
-	['32', '64'].each { winV ->
-		def targetzip = dir+"windowslib${winV}.zip"
-		download(downloadUrlPath()+"windowslib${winV}.zip",targetzip)
+		['32', '64'].each { winV ->
+			def targetzip = dir+"windowslib${winV}.zip"
+			download(downloadUrlPath()+"windowslib${winV}.zip",targetzip)
+		}
 	}
 }
 
