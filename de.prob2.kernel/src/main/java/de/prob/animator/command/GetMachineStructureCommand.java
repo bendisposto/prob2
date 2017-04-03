@@ -12,6 +12,7 @@ public class GetMachineStructureCommand extends AbstractCommand {
 
 	private static final String PROLOG_COMMAND_NAME = "get_machine_formulas";
 	private static final String STATE = "Formulas";
+	ListPrologTerm nodes;
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
@@ -22,16 +23,16 @@ public class GetMachineStructureCommand extends AbstractCommand {
 
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
-		ListPrologTerm nodes = BindingGenerator.getList(bindings.get(STATE));
+		this.nodes = BindingGenerator.getList(bindings.get(STATE));
 	}
 
-	public PrologASTNode getPrologASTRoot(ListPrologTerm nodes){
+	public PrologASTNode getPrologASTRoot(){
 		PrologAST tree = new PrologAST(nodes);
-		return tree.getRoot(nodes);
+		return tree.getRoot(this.nodes);
 	}
 
-	public PrologAST getPrologAST(ListPrologTerm nodes){
-		return new PrologAST(nodes);
+	public PrologAST getPrologAST(){
+		return new PrologAST(this.nodes);
 	}
 
 }
