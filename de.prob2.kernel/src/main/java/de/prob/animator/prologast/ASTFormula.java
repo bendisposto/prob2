@@ -9,7 +9,7 @@ public class ASTFormula extends PrologASTNode{
         super();
     }
 
-    public ASTFormula(PrologASTNode left, List<PrologASTNode> right){
+    ASTFormula(PrologASTNode left, List<PrologASTNode> right){
         super(left, right);
     }
 

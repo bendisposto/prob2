@@ -11,7 +11,7 @@ public class ASTCategory extends PrologASTNode{
         super();
     }
 
-    public ASTCategory(PrologASTNode left, List<PrologASTNode> right){
+    ASTCategory(PrologASTNode left, List<PrologASTNode> right){
         super(left, right);
     }
 
@@ -23,11 +23,11 @@ public class ASTCategory extends PrologASTNode{
         this.propagated = propagated;
     }
 
-    private boolean isExpanded(){
+    public boolean isExpanded(){
         return expanded;
     }
 
-    private boolean isPropagated(){
+    public boolean isPropagated(){
         return propagated;
     }
 

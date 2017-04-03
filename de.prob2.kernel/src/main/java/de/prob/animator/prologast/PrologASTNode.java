@@ -19,11 +19,11 @@ public abstract class PrologASTNode {
         this.right = right;
     }
 
-    PrologASTNode getLeft(){
+    public PrologASTNode getLeft(){
         return left;
     }
 
-    List<PrologASTNode> getRight(){
+    public List<PrologASTNode> getRight(){
         return right;
     }
 
