@@ -100,7 +100,7 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 		final File tempdir = File.createTempDir("eventb-model","")
 
 		// the temporary directory will be deleted on shutdown of the JVM
-		Runtime.getRuntime().addShutdownHook(new Thread() {
+		Runtime.getRuntime().addShutdownHook(new Thread("EventB TempDir Deleter") {
 					public void run()
 					{
 						tempdir.deleteDir()
