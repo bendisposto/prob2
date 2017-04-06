@@ -177,11 +177,13 @@ public class Api {
 	 *         console.
 	 */
 	public String help() {
-		return "Api Commands: \n\n ClassicalBModel b_load(String PathToFile): load .mch files \n"
-		+ " CSPModel csp_load(String PathToFile): load .csp files \n"
-		+ " toFile(StateSpace s): save StateSpace\n"
-		+ " readFile(): reload saved StateSpace\n"
-		+ " shutdown(ProBInstance x): shutdown ProBInstance\n"
-		+ " help(): print out available commands";
+		return (
+			"Api Commands: \n\n ClassicalBModel b_load(String PathToFile): load .mch files \n"
+			+ " CSPModel csp_load(String PathToFile): load .csp files \n"
+			+ " toFile(StateSpace s): save StateSpace\n"
+			+ " readFile(): reload saved StateSpace\n"
+			+ " shutdown(ProBInstance x): shutdown ProBInstance\n"
+			+ " help(): print out available commands"
+		)
 	}
 }
