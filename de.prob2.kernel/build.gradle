@@ -27,8 +27,9 @@ if (System.env.TRAVIS == 'true') {
 def gradle_version = '3.0'
 
 // Remember to release the cli!
-project.version = '3.2.1-SNAPSHOT'
+project.version = '3.2.2-SNAPSHOT'
 ext{ cli_version = '1.7.0-beta1-2' }
+def parser_version = '2.9.2'
 
 
 repositories {
@@ -51,7 +52,6 @@ sourceSets.main.java.srcDirs = [
 	'src/main/generated'] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
 
-def parser_version = '2.9.1-SNAPSHOT'
 
 dependencies {
 
