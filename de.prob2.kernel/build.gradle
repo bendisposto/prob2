@@ -27,8 +27,8 @@ if (System.env.TRAVIS == 'true') {
 def gradle_version = '3.0'
 
 // Remember to release the cli!
-project.version = '3.1.0'
-ext{ cli_version = '1.7.0-beta1' }
+project.version = '3.2.0'
+ext{ cli_version = '1.7.0-beta1-2' }
 
 
 repositories {
@@ -51,7 +51,7 @@ sourceSets.main.java.srcDirs = [
 	'src/main/generated'] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
 
-def parser_version = '2.9.0'
+def parser_version = '2.9.1-SNAPSHOT'
 
 dependencies {
 
@@ -134,31 +134,30 @@ def cspmfmapping(n) {
 
 
 
-task downloadCLIs << {
-	def dir = 'src/main/resources/cli/'
-	delete file(dir)
-	def f = file(dir)
-	f.mkdirs()
+task downloadCLIs {
+	doLast {
+		def dir = 'src/main/resources/cli/'
+		delete file(dir)
+		def f = file(dir)
+		f.mkdirs()
 
-	[
-		'leopard64',
-		'linux32',
-		'linux64',
-		'win32',
-		'win64'
-	].each { n ->
+		[
+			'leopard64',
+			'linux32',
+			'linux64',
+			'win32',
+			'win64'
+		].each { n ->
+			def targetdir = dir+n
+			def targetzip = dir+"probcli_${n}.zip"
+			def url = downloadUrlPath()+"probcli_${n}.zip"
+			download(url,targetzip)
+		}
 
-		def targetdir = dir+n
-		def targetzip = dir+"probcli_${n}.zip"
-		def url = downloadUrlPath()+"probcli_${n}.zip"
-		download(url,targetzip)
-
-
-	}
-
-	['32', '64'].each { winV ->
-		def targetzip = dir+"windowslib${winV}.zip"
-		download(downloadUrlPath()+"windowslib${winV}.zip",targetzip)
+		['32', '64'].each { winV ->
+			def targetzip = dir+"windowslib${winV}.zip"
+			download(downloadUrlPath()+"windowslib${winV}.zip",targetzip)
+		}
 	}
 }
 

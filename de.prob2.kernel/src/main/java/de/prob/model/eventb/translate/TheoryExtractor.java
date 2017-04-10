@@ -155,42 +155,23 @@ public class TheoryExtractor extends DefaultHandler {
 			beginAddingDataTypeConstructor(attributes);
 		} else if (qName.equals("org.eventb.theory.core.scConstructorArgument")) {
 			addDestructor(attributes);
-		} else if (qName
-				.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
+		} else if (qName.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
 			beginAddingOperator(attributes);
-		} else if (qName
-				.equals("org.eventb.theory.core.scDirectOperatorDefinition")) {
+		} else if (qName.equals("org.eventb.theory.core.scDirectOperatorDefinition")) {
 			addDirectDefinition(attributes);
-		} else if (qName
-				.equals("org.eventb.theory.core.scRecursiveOperatorDefinition")) {
+		} else if (qName.equals("org.eventb.theory.core.scRecursiveOperatorDefinition")) {
 			beginRecursiveOpDef(attributes);
-		} else if (qName
-				.equals("org.eventb.theory.core.scRecursiveDefinitionCase")) {
+		} else if (qName.equals("org.eventb.theory.core.scRecursiveDefinitionCase")) {
 			addRecursiveDefinitionCase(attributes);
-		} else if (qName
-				.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
-			addDirectDefinition(attributes); /*
-												 * FIXME This is unreachable!
-												 * Probably a copy and paste
-												 * error. Question is: Is there
-												 * a case missing, should the
-												 * body be united with the
-												 * clause above or is this
-												 * just a leftover of copy & paste
-												 */
 		} else if (qName.equals("org.eventb.theory.core.scOperatorArgument")) {
 			addOperatorArgument(attributes);
-		} else if (qName
-				.equals("org.eventb.theory.core.scAxiomaticDefinitionsBlock")) {
+		} else if (qName.equals("org.eventb.theory.core.scAxiomaticDefinitionsBlock")) {
 			addAxiomaticDefinitionBlock(attributes);
-		} else if (qName
-				.equals("org.eventb.theory.core.scAxiomaticOperatorDefinition")) {
+		} else if (qName.equals("org.eventb.theory.core.scAxiomaticOperatorDefinition")) {
 			beginAddingAxiomaticOperator(attributes);
-		} else if (qName
-				.equals("org.eventb.theory.core.scAxiomaticDefinitionAxiom")) {
+		} else if (qName.equals("org.eventb.theory.core.scAxiomaticDefinitionAxiom")) {
 			addDefinitionAxiom(attributes);
-		} else if (qName
-				.equals("org.eventb.theory.core.scAxiomaticTypeDefinition")) {
+		} else if (qName.equals("org.eventb.theory.core.scAxiomaticTypeDefinition")) {
 			addTypeParameter(attributes);
 		} else if (qName.equals("org.eventb.theory.core.scTheorem")) {
 			addTheorem(attributes);

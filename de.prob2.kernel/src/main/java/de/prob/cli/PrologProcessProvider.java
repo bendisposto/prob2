@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.annotations.Home;
 import de.prob.cli.ModuleCli.DebuggingKey;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class PrologProcessProvider implements Provider<ProcessHandle> {
 
@@ -72,7 +72,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 			public void run() {
 				p.destroy();
 			}
-		}));
+		}, "Prolog Process Destroyer"));
 	}
 
 	private List<String> makeCommand(final String executable) {
