@@ -15,7 +15,6 @@ public class PrologAST {
 
     public PrologAST(ListPrologTerm nodes){
         this.root = buildAST(nodes);
-        testRun();
     }
 
     public PrologASTNode getRoot(ListPrologTerm nodes){
