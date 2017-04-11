@@ -1,5 +1,6 @@
 package de.prob.animator.prologast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ public abstract class PrologASTNode {
     private List<PrologASTNode> subnodes;
 
     PrologASTNode(){
-        this.subnodes = null;
+        this.subnodes = new ArrayList<>();
     }
 
     PrologASTNode(List<PrologASTNode> subnodes) {
