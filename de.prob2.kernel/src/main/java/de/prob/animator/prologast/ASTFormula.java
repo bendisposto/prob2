@@ -11,10 +11,6 @@ public class ASTFormula extends PrologASTNode{
         super();
     }
 
-    ASTFormula(PrologASTNode left, List<PrologASTNode> right){
-        super(left, right);
-    }
-
     public ProBEvalElement getFormula(){
         PrologTerm term = this.formula.getArgument(1);
         String prettyPrint = this.formula.getArgument(2).toString();

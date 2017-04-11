@@ -11,8 +11,8 @@ public class ASTCategory extends PrologASTNode{
         super();
     }
 
-    ASTCategory(PrologASTNode left, List<PrologASTNode> right){
-        super(left, right);
+    ASTCategory(List<PrologASTNode> subnodes){
+        super(subnodes);
     }
 
     void setExpanded(boolean expanded){

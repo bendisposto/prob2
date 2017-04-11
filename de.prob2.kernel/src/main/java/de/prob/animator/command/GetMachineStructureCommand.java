@@ -8,6 +8,8 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+import java.util.List;
+
 public class GetMachineStructureCommand extends AbstractCommand {
 
 	private static final String PROLOG_COMMAND_NAME = "get_machine_formulas";
@@ -24,15 +26,13 @@ public class GetMachineStructureCommand extends AbstractCommand {
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		this.nodes = BindingGenerator.getList(bindings.get(STATE));
-	}
-
-	public PrologASTNode getPrologASTRoot(){
 		PrologAST tree = new PrologAST(this.nodes);
-		return tree.getRoot();
+		tree.getASTNodes();
 	}
 
-	public PrologAST getPrologAST(){
-		return new PrologAST(this.nodes);
+	public List<PrologASTNode> getPrologASTList(){
+		PrologAST tree = new PrologAST(this.nodes);
+		return tree.getASTNodes();
 	}
 
 }
