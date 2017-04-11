@@ -27,8 +27,8 @@ public class GetMachineStructureCommand extends AbstractCommand {
 	}
 
 	public PrologASTNode getPrologASTRoot(){
-		PrologAST tree = new PrologAST(nodes);
-		return tree.getRoot(this.nodes);
+		PrologAST tree = new PrologAST(this.nodes);
+		return tree.getRoot();
 	}
 
 	public PrologAST getPrologAST(){
