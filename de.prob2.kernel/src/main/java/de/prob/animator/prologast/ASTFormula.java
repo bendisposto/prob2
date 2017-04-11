@@ -2,7 +2,6 @@ package de.prob.animator.prologast;
 
 import de.prob.animator.domainobjects.ProBEvalElement;
 import de.prob.prolog.term.PrologTerm;
-import java.util.List;
 
 public class ASTFormula extends PrologASTNode{
     private PrologTerm formula;
@@ -13,7 +12,7 @@ public class ASTFormula extends PrologASTNode{
 
     public ProBEvalElement getFormula(){
         PrologTerm term = this.formula.getArgument(1);
-        String prettyPrint = this.formula.getArgument(2).toString();
+        String prettyPrint = this.formula.getArgument(2).getFunctor();
         return new ProBEvalElement(term, prettyPrint);
     }
 
