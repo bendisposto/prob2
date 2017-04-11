@@ -1,5 +1,6 @@
 package de.prob.animator.prologast;
 
+import de.prob.animator.domainobjects.ProBEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -39,7 +40,7 @@ public class PrologAST {
     private PrologASTNode makeASTNode(PrologTerm node){
         if(node.getFunctor().equals("formula")){
             ASTFormula formula = new ASTFormula();
-            formula.setFormula(node.toString());
+            formula.setFormula(node);
             return formula;
         } else if(node.getFunctor().equals("category")){
             ASTCategory category = new ASTCategory();
