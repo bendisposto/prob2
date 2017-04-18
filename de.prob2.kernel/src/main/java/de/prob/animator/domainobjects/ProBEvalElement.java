@@ -6,6 +6,8 @@
 
 package de.prob.animator.domainobjects;
 
+import java.util.Objects;
+
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.representation.FormulaUUID;
@@ -53,6 +55,22 @@ public class ProBEvalElement extends AbstractEvalElement {
 		this.expansion = expansion;
 	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final ProBEvalElement other = (ProBEvalElement)obj;
+		return Objects.equals(this.ast, other.ast)
+			&& Objects.equals(this.getCode(), other.getCode())
+			&& Objects.equals(this.expansion(), other.expansion());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.ast, this.code, this.expansion);
+	}
+	
 	/**
 	 * @see de.prob.animator.domainobjects.IEvalElement#getKind()
 	 * 
