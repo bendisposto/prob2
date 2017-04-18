@@ -1,12 +1,11 @@
 package de.prob.animator.prologast;
 
-import de.prob.animator.domainobjects.ProBEvalElement;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *The left node is the category given by Prolog, the right node is a formula or another category inside the root-category
@@ -35,9 +34,7 @@ public class PrologAST {
 
     private PrologASTNode makeASTNode(PrologTerm node){
         if(node.getFunctor().equals("formula")){
-            ASTFormula formula = new ASTFormula();
-            formula.setFormula(node);
-            return formula;
+            return new ASTFormula(node);
         } else if(node.getFunctor().equals("category")){
             ASTCategory category = new ASTCategory();
             category.setExpanded(node.getArgument(2).toString().contains("expanded"));
