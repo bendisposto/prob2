@@ -1,13 +1,14 @@
 package de.prob.animator.command;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.ProBEvalElement;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the values of Classical-B Predicates and Expressions.
@@ -42,11 +43,16 @@ public class EvaluateFormulaCommand extends EvaluationCommand {
 		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.printAtomOrNumber(stateId);
 
-		pout.openTerm("eval");
-		evalElement.printProlog(pout);
-		pout.printAtom(evalElement.getKind().toString());
-		pout.printAtom(evalElement.getCode());
-		pout.printAtom(evalElement.expansion().name());
+		if (this.evalElement instanceof ProBEvalElement) {
+			pout.openTerm("eval_typed");
+			evalElement.printProlog(pout);
+			pout.printAtom(evalElement.expansion().name());
+		} else {
+			pout.openTerm("eval");
+			evalElement.printProlog(pout);
+			pout.printAtom(evalElement.getKind());
+			pout.printAtom(evalElement.expansion().name());
+		}
 		pout.closeTerm();
 
 		pout.printVariable(EVALUATE_RESULT_VARIABLE);

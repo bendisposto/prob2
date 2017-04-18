@@ -16,10 +16,6 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
 
-import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
-import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
 /**
  * Representation of a ClassicalB formula.
  * 
@@ -71,18 +67,9 @@ public class ProBEvalElement extends AbstractEvalElement {
 		return Objects.hash(this.ast, this.code, this.expansion);
 	}
 	
-	/**
-	 * @see de.prob.animator.domainobjects.IEvalElement#getKind()
-	 * 
-	 * @return kind {@link EvalElementType#toString()}. Either '#EXPRESSION' or
-	 *         '#PREDICATE'
-	 */
 	@Override
 	public String getKind() {
-		if ("pred".equals(ast.getArgument(2).toString())) {
-			return PREDICATE.toString();
-		}
-		return EXPRESSION.toString();
+		throw new UnsupportedOperationException("Should never be called on a ProBEvalElement");
 	}
 
 	@Override
@@ -92,11 +79,7 @@ public class ProBEvalElement extends AbstractEvalElement {
 
 	@Override
 	public void printProlog(final IPrologTermOutput pout) {
-		if (getKind().equals(ASSIGNMENT.toString())) {
-			throw new EvaluationException("Substitutions are currently unsupported for evaluation");
-		}
 		pout.printTerm(ast);
-
 	}
 
 	@Override

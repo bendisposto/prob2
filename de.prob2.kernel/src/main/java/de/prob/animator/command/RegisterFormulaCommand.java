@@ -19,12 +19,17 @@ public class RegisterFormulaCommand extends AbstractCommand {
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME);
 		formula.getFormulaId().printUUID(pto);
-		pto.openTerm(this.formula instanceof ProBEvalElement ? "eval_typed" : "eval");
-		formula.printProlog(pto);
-		pto.printAtom(formula.getKind().toString());
-		pto.printAtom(formula.expansion().name());
+		if (this.formula instanceof ProBEvalElement) {
+			pto.openTerm("eval_typed");
+			formula.printProlog(pto);
+			pto.printAtom(formula.expansion().name());
+		} else {
+			pto.openTerm("eval");
+			formula.printProlog(pto);
+			pto.printAtom(formula.getKind());
+			pto.printAtom(formula.expansion().name());
+		}
 		pto.closeTerm();
-
 		pto.closeTerm();
 	}
 
