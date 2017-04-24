@@ -15,7 +15,6 @@ public class PrologAST {
 
     public PrologAST(ListPrologTerm nodes){
         this.astNodes = buildAST(nodes);
-        testRun();
     }
 
     public List<PrologASTNode> getASTNodes(){
