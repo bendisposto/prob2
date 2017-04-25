@@ -29,7 +29,7 @@ def gradle_version = '3.0'
 // Remember to release the cli!
 project.version = '3.2.2-SNAPSHOT'
 ext{ cli_version = '1.7.0-beta1-2' }
-def parser_version = '2.9.3-SNAPSHOT'
+def parser_version = '2.9.3'
 
 
 repositories {
@@ -55,7 +55,7 @@ sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as gr
 
 dependencies {
 
-	compile 'com.google.code.findbugs:jsr305:3.0.2'	
+	compile 'com.google.code.findbugs:jsr305:3.0.2'
 
 	compile 'com.google.guava:guava:19.0'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
