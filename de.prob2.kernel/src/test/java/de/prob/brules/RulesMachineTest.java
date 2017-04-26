@@ -4,15 +4,25 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 
+import de.prob.Main;
 import de.prob.model.brules.*;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
+import de.prob.scripting.Api;
 
 public class RulesMachineTest {
 
+	private Api api;
+
+	@Before
+	public void setup() {
+		api = Main.getInjector().getInstance(Api.class);
+	}
+	
 	@Test
 	public void testSimpleRulesMachine() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun("src/test/resources/brules/SimpleRulesMachine.rmch");
