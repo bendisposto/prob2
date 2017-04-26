@@ -23,6 +23,6 @@ public class ASTFormula extends PrologASTNode{
     }
 
     public String toString(){
-        return "[Formula]\n" + this.formula;
+        return "\n[Formula] : " + this.formula;
     }
 }

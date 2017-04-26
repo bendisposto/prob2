@@ -26,6 +26,6 @@ public abstract class PrologASTNode {
     }
 
     public String toString(){
-        return "[Node]\n";
+        return "\n[Node]";
     }
 }

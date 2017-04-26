@@ -40,6 +40,6 @@ public class ASTCategory extends PrologASTNode{
     }
 
     public String toString(){
-        return "[Category]\n"+this.name+((isExpanded())?("\n[expanded]"):"\n[]")+((isPropagated())?("\n[propagated]"):"\n[]");
+        return "\n[Category] : "+this.name+((isExpanded())?("\n[expanded]"):"\n[]")+((isPropagated())?("\n[propagated]"):"\n[]");
     }
 }
