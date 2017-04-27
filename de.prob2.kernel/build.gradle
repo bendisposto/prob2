@@ -266,7 +266,7 @@ jacocoTestReport {
 	}
 }
 
-build.dependsOn jacocoTestReport
+check.dependsOn jacocoTestReport
 
 task deploy(type: Copy, dependsOn: build) {
 	into "$buildDir/libs"
