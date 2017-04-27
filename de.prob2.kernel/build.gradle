@@ -3,6 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'jacoco'
 
 project.group = 'de.hhu.stups'
 sourceCompatibility = 1.7
@@ -21,7 +22,6 @@ if (System.env.TRAVIS == 'true') {
 	  }
 	}
   }
-
 
 
 def gradle_version = '3.0'
@@ -253,6 +253,29 @@ task tests(dependsOn: ['classes'], type:JavaExec){
 eclipse {
 	project { name = 'de.prob2.kernel' }
 }
+
+// type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
+jacocoTestReport {
+	doFirst{
+		classDirectories = files('build/classes/main')
+	}
+	group = "Reporting"
+	description = "Generate Jacoco coverage reports after running tests."
+	executionData = fileTree(dir: 'build/jacoco', include: '**/*.exec')
+	reports {
+	  xml.enabled false
+	  csv.enabled false
+	  html.destination "${buildDir}/reports/jacocoHtml"
+	}
+	afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/sablecc/**'])
+        })
+  }
+}
+
+build.dependsOn jacocoTestReport
 
 task deploy(type: Copy, dependsOn: build) {
 	into "$buildDir/libs"
