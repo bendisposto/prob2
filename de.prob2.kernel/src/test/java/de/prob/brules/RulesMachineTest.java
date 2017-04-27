@@ -16,11 +16,9 @@ import de.prob.scripting.Api;
 
 public class RulesMachineTest {
 
-	private Api api;
-
 	@Before
 	public void setup() {
-		api = Main.getInjector().getInstance(Api.class);
+		Main.getInjector().getInstance(Api.class);
 	}
 	
 	@Test
