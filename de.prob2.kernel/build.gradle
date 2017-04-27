@@ -259,20 +259,11 @@ jacocoTestReport {
 	doFirst{
 		classDirectories = files('build/classes/main')
 	}
-	group = "Reporting"
-	description = "Generate Jacoco coverage reports after running tests."
-	executionData = fileTree(dir: 'build/jacoco', include: '**/*.exec')
 	reports {
 	  xml.enabled false
 	  csv.enabled false
 	  html.destination "${buildDir}/reports/jacocoHtml"
 	}
-	afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it,
-                    exclude: ['**/sablecc/**'])
-        })
-  }
 }
 
 build.dependsOn jacocoTestReport
