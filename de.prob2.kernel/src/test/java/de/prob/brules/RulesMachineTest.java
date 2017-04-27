@@ -16,11 +16,13 @@ import de.prob.scripting.Api;
 
 public class RulesMachineTest {
 
+	private Api api;
+
 	@Before
 	public void setup() {
-		Main.getInjector().getInstance(Api.class);
+		api = Main.getInjector().getInstance(Api.class);
 	}
-	
+
 	@Test
 	public void testSimpleRulesMachine() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun("src/test/resources/brules/SimpleRulesMachine.rmch");
