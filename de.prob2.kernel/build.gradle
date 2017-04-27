@@ -3,7 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
-apply plugin: 'jacoco'
+//apply plugin: 'jacoco'
 
 project.group = 'de.hhu.stups'
 sourceCompatibility = 1.7
@@ -255,6 +255,7 @@ eclipse {
 }
 
 // type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
+/*
 jacocoTestReport {
 	doFirst{
 		classDirectories = files('build/classes/main')
@@ -265,8 +266,8 @@ jacocoTestReport {
 	  html.destination "${buildDir}/reports/jacocoHtml"
 	}
 }
-
 check.dependsOn jacocoTestReport
+*/
 
 task deploy(type: Copy, dependsOn: build) {
 	into "$buildDir/libs"
