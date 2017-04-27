@@ -19,7 +19,7 @@ after_success:
   -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in gradle.properties.enc -out
   de.prob2.kernel/gradle.properties -d
-- TERM=dumb gradle -b de.prob2.kernel/build.gradle uploadArchives
+- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives
 env:
   global:
   - GRADLE_OPTS="-Xms128m"
