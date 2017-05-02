@@ -25,7 +25,7 @@ public class RulesMachineRun {
 	private final RulesMachineRunner prob2Runner = RulesMachineRunner.getInstance();
 
 	private RulesProject rulesProject;
-	private ExecuteRun proB2ExecuteRun;
+	private ExecuteRun executeRun;
 
 	private Error error;
 
@@ -52,21 +52,21 @@ public class RulesMachineRun {
 			return;
 		}
 
-		this.proB2ExecuteRun = prob2Runner.createRulesMachineExecuteRun(this.rulesProject, runnerFile);
+		this.executeRun = prob2Runner.createRulesMachineExecuteRun(this.rulesProject, runnerFile);
 
 		try {
 			StopWatch.start("prob2Run");
 			debugPrint("Start execute ...");
 
 			// start
-			this.proB2ExecuteRun.start();
+			this.executeRun.start();
 
 			debugPrint("End execute.");
 			debugPrint(StopWatch.getRunTimeAsString("prob2Run"));
 		} catch (ProBError e) {
 			debugPrint("****ProBError: " + e.getMessage());
-			if (proB2ExecuteRun.getExecuteModelCommand() != null) {
-				State finalState = proB2ExecuteRun.getExecuteModelCommand().getFinalState();
+			if (executeRun.getExecuteModelCommand() != null) {
+				State finalState = executeRun.getExecuteModelCommand().getFinalState();
 				Collection<StateError> stateErrors = finalState.getStateErrors();
 				for (StateError stateError : stateErrors) {
 
@@ -84,7 +84,7 @@ public class RulesMachineRun {
 			return;
 		}
 
-		this.rulesResult = new RuleResults(this.rulesProject, proB2ExecuteRun.getFinalState());
+		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getFinalState());
 
 	}
 
@@ -122,8 +122,8 @@ public class RulesMachineRun {
 		return this.rulesResult;
 	}
 
-	public ExecuteRun getProB2ExecuteRun() {
-		return this.proB2ExecuteRun;
+	public ExecuteRun getExecuteRun() {
+		return this.executeRun;
 	}
 
 	public File getMainMachineFile() {

@@ -132,7 +132,23 @@ public class RuleResults {
 		return this.summary;
 	}
 
-	class ResultSummary {
+	public RuleResult getRuleResult(final String ruleName) {
+		return this.ruleResultsMap.get(ruleName);
+	}
+
+	public List<RuleResult> getSortedReportRules() {
+		List<RuleResult> list = new ArrayList<>();
+		for (RuleResult ruleResult : specificRules) {
+			if (ruleResult.getResultEnum() != RESULT_ENUM.DISABLED) {
+				list.add(ruleResult);
+			}
+		}
+		list.addAll(this.getFailingGeneralRules());
+		Collections.sort(list);
+		return list;
+	}
+	
+	public class ResultSummary {
 		public final int numberOfRules;
 		public final int numberOfRulesFailed;
 		public final int numberOfRulesSucceeded;
@@ -149,22 +165,5 @@ public class RuleResults {
 			this.numberOfRulesDisabled = numberOfRulesDisabled;
 			this.numberOfRulesNotImplemented = numberOfRulesNotImplemented;
 		}
-
-	}
-
-	public RuleResult getRuleResult(final String ruleName) {
-		return this.ruleResultsMap.get(ruleName);
-	}
-
-	public List<RuleResult> getSortedReportRules() {
-		List<RuleResult> list = new ArrayList<>();
-		for (RuleResult ruleResult : specificRules) {
-			if (ruleResult.getResultEnum() != RESULT_ENUM.DISABLED) {
-				list.add(ruleResult);
-			}
-		}
-		list.addAll(this.getFailingGeneralRules());
-		Collections.sort(list);
-		return list;
 	}
 }
