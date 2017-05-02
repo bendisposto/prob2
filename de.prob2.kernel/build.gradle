@@ -3,6 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'application'
 //apply plugin: 'jacoco'
 
 project.group = 'de.hhu.stups'
@@ -30,6 +31,8 @@ def gradle_version = '3.0'
 project.version = '3.2.2-SNAPSHOT'
 ext{ cli_version = '1.7.0-beta1-2' }
 def parser_version = '2.9.3'
+
+mainClassName = "de.prob.Main"
 
 
 repositories {
