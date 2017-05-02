@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.GetErrorsCommand;
+import de.prob.animator.command.GetTotalNumberOfErrorsCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
@@ -147,6 +148,13 @@ class AnimatorImpl implements IAnimator {
 	@Override
 	public void kill() {
 		cli.shutdown();
+	}
+
+	@Override
+	public long getTotalNumberOfErrors() {
+		GetTotalNumberOfErrorsCommand command = new GetTotalNumberOfErrorsCommand();
+		execute(command);
+		return command.getTotalNumberOfErrors().longValue();
 	}
 
 }
