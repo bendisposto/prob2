@@ -3,7 +3,6 @@ package de.prob.check;
 import de.prob.animator.command.ModelCheckingJob;
 import de.prob.animator.command.SetBGoalCommand;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.check.ModelCheckingOptions.Options;
 import de.prob.exception.ProBError;
 import de.prob.statespace.StateSpace;
 
@@ -41,7 +40,7 @@ public class ConsistencyChecker implements IModelCheckJob {
 
 	/**
 	 * calls
-	 * {@link #ConsistencyChecker(StateSpace, ModelCheckingOptions, ModelCheckingUI)}
+	 * {@link #ConsistencyChecker(StateSpace, ModelCheckingOptions)}
 	 * with null for UI
 	 * 
 	 * @param s
@@ -67,7 +66,7 @@ public class ConsistencyChecker implements IModelCheckJob {
 	 * @param options
 	 *            {@link ModelCheckingOptions} specified by the user
 	 * @param ui
-	 *            {@link ModelCheckingUI} if the UI should be informed of
+	 *            {@link IModelCheckListener} if the UI should be informed of
 	 *            updates. Otherwise, null.
 	 */
 	public ConsistencyChecker(final StateSpace s,

@@ -6,13 +6,8 @@
 
 package de.prob.animator.command;
 
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
@@ -21,8 +16,13 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Transition;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 /**
  * Command to execute an event that has not been enumerated by ProB.
@@ -64,8 +64,6 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	 * This method is called when the command is prepared for sending. The
 	 * method is called by the Animator class, most likely it is not interesting
 	 * for other classes.
-	 * 
-	 * @throws ProBException
 	 * 
 	 * @see de.prob.animator.command.AbstractCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */

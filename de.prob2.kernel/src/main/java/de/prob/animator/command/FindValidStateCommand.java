@@ -6,6 +6,7 @@ import java.util.List;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
+import de.prob.parserbase.ProBParserBase;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -34,8 +35,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 	/**
 	 * @param predicate
 	 *            is a parsed predicate or <code>null</code>
-	 * @see LanguageDependendAnimationPart#parsePredicate(IPrologTermOutput,
-	 *      String, boolean)
+	 * @see ProBParserBase#parsePredicate(IPrologTermOutput, String, boolean)
 	 */
 	public FindValidStateCommand(final StateSpace s,
 			final IEvalElement predicate) {

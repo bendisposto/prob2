@@ -9,12 +9,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Singleton;
 
 import de.prob.model.representation.AbstractElement;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class provides a registry of all currently running animations. It
@@ -84,7 +84,7 @@ public class AnimationSelector {
 
 	/**
 	 * Changes the current trace to the specified {@link Trace} and notifies an
-	 * animation change ({@link AnimationSelector#notifyAnimationChange(Trace)})
+	 * animation change ({@link AnimationSelector#notifyModelChanged(StateSpace)})
 	 * 
 	 * @param trace
 	 */
@@ -106,7 +106,7 @@ public class AnimationSelector {
 	/**
 	 * Adds the specified {@link Trace} trace to the registry, sets the current
 	 * trace to trace, and notifies an animation change (
-	 * {@link AnimationSelector#notifyAnimationChange(Trace)}). If a trace with
+	 * {@link AnimationSelector#notifyModelChanged(StateSpace)}). If a trace with
 	 * the same UUID is already being tracked, a {@link Trace#copy()} is made
 	 * and this is animated.
 	 * 
@@ -251,7 +251,7 @@ public class AnimationSelector {
 
 	/**
 	 * notify all of the listeners using the current trace
-	 * {@link AnimationSelector#notifyAnimationChange(Trace)}
+	 * {@link AnimationSelector#notifyModelChanged(StateSpace)}
 	 */
 	public void refresh() {
 		notifyAnimationChange(currentTrace, true);

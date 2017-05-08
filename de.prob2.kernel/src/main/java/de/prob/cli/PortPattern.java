@@ -5,16 +5,16 @@ package de.prob.cli;
 
 import java.util.regex.Matcher;
 
+import de.prob.exception.CliError;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.prob.exception.CliError;
 
 /**
  * This {@link AbstractCliPattern} looks for a network port number where the
  * executable listens for commands.
  * 
- * If no port number is found, {@link #notFound()} throws a {@link CliError}
+ * If no port number is found, {@link #notifyNotFound()} throws a {@link CliError}
  * 
  * @author plagge
  */

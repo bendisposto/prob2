@@ -36,7 +36,7 @@ public class CBCDeadlockChecker implements IModelCheckJob {
 
 	/**
 	 * Calls
-	 * {@link #CBCDeadlockChecker(StateSpace, IEvalElement, ModelCheckingUI)}
+	 * {@link #CBCDeadlockChecker(StateSpace, IEvalElement, IModelCheckListener)}
 	 * with <code>null</code> as the UI component
 	 * 
 	 * @param s
@@ -56,7 +56,7 @@ public class CBCDeadlockChecker implements IModelCheckJob {
 	 *            {@link IEvalElement} formula constraint or <code>null</code>
 	 *            if no constraint is specified
 	 * @param ui
-	 *            {@link ModelCheckingUI} ui component if the checker should
+	 *            {@link IModelCheckListener} ui component if the checker should
 	 *            communicate with the UI or <code>null</code> if not.
 	 */
 	public CBCDeadlockChecker(final StateSpace s,

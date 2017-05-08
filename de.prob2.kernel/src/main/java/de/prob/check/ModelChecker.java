@@ -7,12 +7,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.animator.command.ComputeCoverageCommand;
 import de.prob.animator.command.ComputeCoverageCommand.ComputeCoverageResult;
 import de.prob.statespace.StateSpace;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The ModelChecker is a thread safe encapsulation of the model checking
@@ -62,7 +62,7 @@ public class ModelChecker {
 	}
 
 	/**
-	 * @return the {@link ModelCheckingResult} of the model checking process if
+	 * @return the {@link IModelCheckingResult} of the model checking process if
 	 *         the model checking has been started.
 	 */
 	public IModelCheckingResult getResult() {
@@ -86,7 +86,7 @@ public class ModelChecker {
 
 	/**
 	 * Starts the model checking process. Creates a {@link Future} of type
-	 * {@link ModelCheckingResult} by submitting the {@link ModelChecker#worker}
+	 * {@link IModelCheckingResult} by submitting the {@link ModelChecker#job}
 	 * to a single threaded {@link ExecutorService}
 	 */
 	public void start() {

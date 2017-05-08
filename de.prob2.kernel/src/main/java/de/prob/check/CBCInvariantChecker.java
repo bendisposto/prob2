@@ -35,7 +35,7 @@ public class CBCInvariantChecker implements IModelCheckJob {
 	}
 
 	/**
-	 * Calls {@link #CBCInvariantChecker(StateSpace, List, ModelCheckingUI)}
+	 * Calls {@link #CBCInvariantChecker(StateSpace, List, IModelCheckListener)}
 	 * with null for the UI element
 	 * 
 	 * @param s
@@ -57,7 +57,7 @@ public class CBCInvariantChecker implements IModelCheckJob {
 	 *            List of events which are to be checked or <code>null</code> if
 	 *            they are all to be checked
 	 * @param ui
-	 *            {@link ModelCheckingUI} object if the UI should be notified of
+	 *            {@link IModelCheckListener} object if the UI should be notified of
 	 *            changes, or null if not
 	 */
 	public CBCInvariantChecker(final StateSpace s,

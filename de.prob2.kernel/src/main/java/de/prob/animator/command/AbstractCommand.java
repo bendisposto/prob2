@@ -59,7 +59,7 @@ public abstract class AbstractCommand {
 	 * This will be called if the Prolog query was successful and no error
 	 * messages were logged during the execution of the query. If the query was
 	 * not successful, or if there were errors
-	 * {@link AbstractCommand#processErrorResult(ISimplifiedROMap, String)} will
+	 * {@link AbstractCommand#processErrorResult(IPrologResult, List)} will
 	 * be called.
 	 * </p>
 	 * 

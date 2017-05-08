@@ -12,13 +12,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -48,6 +46,9 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.CSPModel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -190,7 +191,7 @@ public class StateSpace implements IAnimator {
 	 * This method is implemented to provide access to the {@link State} objects
 	 * specified by an integer identifier. This maps to a groovy operator so
 	 * that in the console users can type variableOfTypeStateSpace[stateId] and
-	 * receive the corresponding StateId back. An IllegalArgumentException is
+	 * receive the corresponding State back. An IllegalArgumentException is
 	 * thrown if the specified id is unknown.
 	 *
 	 * @throws IllegalArgumentException

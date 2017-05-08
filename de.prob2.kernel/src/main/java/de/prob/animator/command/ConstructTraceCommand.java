@@ -6,15 +6,11 @@
 
 package de.prob.animator.command;
 
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
+
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -23,10 +19,15 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.Transition;
 import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.statespace.Transition;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 /**
  * Command to execute an event that has not been enumerated by ProB.
@@ -93,8 +94,6 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 	 * This method is called when the command is prepared for sending. The
 	 * method is called by the Animator class, most likely it is not interesting
 	 * for other classes.
-	 * 
-	 * @throws ProBException
 	 * 
 	 * @see de.prob.animator.command.AbstractCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */

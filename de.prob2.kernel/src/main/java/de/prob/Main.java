@@ -1,19 +1,9 @@
 package de.prob;
 
-import static java.io.File.separator;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -25,11 +15,22 @@ import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.FileHandler;
 import de.prob.scripting.Installer;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.io.File.separator;
+
 /**
  * The Main class initializes ProB 2.0. This class should NOT be instantiated
  * but should rather be started from a .jar file, accessed through Guice via
- * {@link ServletContextListener#getInjector()#getInstance()} with Main.class as
- * parameter, or started in a jetty server via {@link WebConsole#run()}.
+ * {@code ServletContextListener.getInjector().getInstance()} with Main.class as
+ * parameter, or started in a jetty server via {@code WebConsole.run()}.
  *
  * @author joy
  *
@@ -88,7 +89,7 @@ public class Main {
 	 * @param parser
 	 * @param options
 	 * @param shell
-	 * @param log
+	 * @param probdir
 	 */
 	@Inject
 	public Main(final CommandLineParser parser, final Options options, final Shell shell, @Home String probdir) {

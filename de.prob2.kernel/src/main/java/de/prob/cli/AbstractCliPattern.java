@@ -6,6 +6,8 @@ package de.prob.cli;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.prob.exception.CliError;
+
 /**
  * Base class for doing pattern matching on the standard output on startup of
  * the ProB command line executable.

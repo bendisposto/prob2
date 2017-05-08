@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import de.be4.classicalb.core.parser.node.*;
+
 import org.eventb.core.ast.AssociativeExpression;
 import org.eventb.core.ast.AssociativePredicate;
 import org.eventb.core.ast.AtomicExpression;
@@ -47,8 +49,6 @@ import org.eventb.core.ast.Type;
 import org.eventb.core.ast.UnaryExpression;
 import org.eventb.core.ast.UnaryPredicate;
 import org.eventb.core.ast.extension.IExpressionExtension;
-
-import de.be4.classicalb.core.parser.node.*;
 
 /**
  * This visitor on an Event-B AST generates an AST in ProB's format.
@@ -149,7 +149,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * Translate a Event-B type to a corresponding ProB AST.
 	 * 
 	 * This could theoretically directly be done by using
-	 * {@link Type#toExpression(org.eventb.core.ast.FormulaFactory)} and
+	 * {@link Type#toExpression()} and
 	 * translating that expression, but then we would need a formula factory.
 	 * 
 	 * @param type
