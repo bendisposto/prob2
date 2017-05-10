@@ -1,16 +1,13 @@
-/**
+/*
  * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
- * */
+ */
 
 package de.prob.animator.command;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.ProBPreference;
 import de.prob.parser.BindingGenerator;
@@ -20,11 +17,13 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Gets the eclipse preferences from ProB
+ * Gets the eclipse preferences from ProB.
  * 
  * @author joy
- * 
  */
 public final class GetDefaultPreferencesCommand extends AbstractCommand {
 

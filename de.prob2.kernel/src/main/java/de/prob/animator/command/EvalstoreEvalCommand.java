@@ -1,6 +1,3 @@
-/**
- * 
- */
 package de.prob.animator.command;
 
 import java.util.ArrayList;
@@ -20,7 +17,6 @@ import de.prob.prolog.term.PrologTerm;
 
 /**
  * @author plagge
- * 
  */
 public class EvalstoreEvalCommand extends AbstractCommand {
 

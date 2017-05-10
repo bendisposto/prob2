@@ -1,6 +1,3 @@
-/**
- * 
- */
 package de.prob.animator;
 
 import java.util.Map;

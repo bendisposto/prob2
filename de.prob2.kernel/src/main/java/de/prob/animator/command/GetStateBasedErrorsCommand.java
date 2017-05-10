@@ -1,6 +1,3 @@
-/**
- * 
- */
 package de.prob.animator.command;
 
 import java.util.ArrayList;

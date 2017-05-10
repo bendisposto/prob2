@@ -1,6 +1,3 @@
-/**
- * 
- */
 package de.prob.cli;
 
 import java.util.regex.Matcher;

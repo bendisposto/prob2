@@ -1,8 +1,8 @@
-/**
+/*
  * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
- * */
+ */
 
 package de.prob.animator.command;
 
@@ -28,7 +28,6 @@ import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
  * Command to execute an event that has not been enumerated by ProB.
  * 
  * @author Jens Bendisposto
- * 
  */
 public final class GetOperationByPredicateCommand extends AbstractCommand
 		implements IStateSpaceModifier {
