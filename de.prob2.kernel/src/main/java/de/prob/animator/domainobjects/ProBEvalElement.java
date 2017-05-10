@@ -16,34 +16,25 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
 
-/**
- * Representation of a ClassicalB formula.
- * 
- * @author joy
- */
 public class ProBEvalElement extends AbstractEvalElement {
 
 	private final FormulaUUID uuid = new FormulaUUID();
 	private PrologTerm ast;
 
 	/**
-	 * Convenience Constructor that defaults to truncationg the result values
-	 * for Parameters, see the other constructor
+	 * Convenience Constructor that defaults to truncating the result values.
+	 * 
+	 * @param ast see {@link #ProBEvalElement(PrologTerm, String, FormulaExpand)}
+	 * @param code see {@link #ProBEvalElement(PrologTerm, String, FormulaExpand)}
 	 */
 	public ProBEvalElement(final PrologTerm ast, final String code) {
 		this(ast, code, FormulaExpand.truncate);
 	}
 
 	/**
-	 * @param ast
-	 *            is the Prolog AST retrieved using GetMachineStructureCommand
-	 * @param code
-	 *            is the prettyprint of the formula as created by probcli (this
-	 *            may not be parsabel!)
-	 * @param expansion
-	 *            is used to determine if we want to get expanded or shortened
-	 *            values (e.g. for large sets)
-	 * @throws EvaluationException
+	 * @param ast the Prolog AST retrieved using GetMachineStructureCommand
+	 * @param code the prettyprint of the formula as created by probcli (this may not be parsable!)
+	 * @param expansion whether we want to get expanded or shortened values (e.g. for large sets)
 	 */
 	public ProBEvalElement(final PrologTerm ast, final String code, final FormulaExpand expansion) {
 		this.ast = ast;

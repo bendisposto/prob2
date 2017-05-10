@@ -61,7 +61,7 @@ public class Main {
 	/**
 	 * Allows to customize the Injector. Handle with care!
 	 *
-	 * @param i
+	 * @param i the new injector to use
 	 */
 	public synchronized static void setInjector(final Injector i) {
 		_INJECTOR = i;
@@ -86,10 +86,10 @@ public class Main {
 	 * Parameters are injected by Guice via {@link MainModule}. This class
 	 * should NOT be instantiated by hand.
 	 *
-	 * @param parser
-	 * @param options
-	 * @param shell
-	 * @param probdir
+	 * @param parser command-line parser
+	 * @param options command-line options
+	 * @param shell ProB shell
+	 * @param probdir the ProB home directory
 	 */
 	@Inject
 	public Main(final CommandLineParser parser, final Options options, final Shell shell, @Home String probdir) {
@@ -175,8 +175,7 @@ public class Main {
 	 * Start the ProB 2.0 shell with argument -s. Run integration tests with
 	 * -test /path/to/testDir
 	 *
-	 * @param args
-	 * @throws Throwable
+	 * @param args command-line arguments
 	 */
 	public static void main(final String[] args) {
 

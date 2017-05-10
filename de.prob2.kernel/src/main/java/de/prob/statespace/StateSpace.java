@@ -194,10 +194,10 @@ public class StateSpace implements IAnimator {
 	 * receive the corresponding State back. An IllegalArgumentException is
 	 * thrown if the specified id is unknown.
 	 *
-	 * @throws IllegalArgumentException
 	 * @param stateId
 	 *            of the state thate is to be found.
 	 * @return {@link State} for the specified id
+	 * @throws IllegalArgumentException if a state with the specified id doesn't exist
 	 */
 	public Object getAt(final int stateId) {
 		return getState(stateId);
@@ -662,7 +662,8 @@ public class StateSpace implements IAnimator {
 	 * {@link ClassicalBModel}, {@link EventBModel}, or {@link CSPModel}. A
 	 * StateSpace object always corresponds with exactly one model.
 	 *
-	 * @param model
+	 * @param model the new model
+	 * @param mainComponent the new main component
 	 */
 	public void setModel(final AbstractModel model, final AbstractElement mainComponent) {
 		this.model = model;
@@ -670,7 +671,7 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
-	 * Returns the specified model for the given StateSpace
+	 * Returns the specified model for the given StateSpace.
 	 *
 	 * @return the {@link AbstractModel} that represents the model for the given
 	 *         StateSpace instance
@@ -690,7 +691,7 @@ public class StateSpace implements IAnimator {
 	 * {@link ClassicalBModel}, or {@link CSPModel}. If they specify the class
 	 * {@link Trace}, a new Trace object will be created and returned.
 	 *
-	 * @param clazz
+	 * @param clazz the class to convert to
 	 * @return the Model or Trace corresponding to the StateSpace instance
 	 */
 	public Object asType(final Class<?> clazz) {
@@ -709,11 +710,10 @@ public class StateSpace implements IAnimator {
 	/**
 	 * Takes a collection of transitions and retrieves any information that
 	 * needs to be retrieved (i.e. parameters, return values, etc.) if the
-	 * transitions have not yet been evaluated ({@link Transition#isEvaluated()}
-	 * ).
+	 * transitions have not yet been evaluated ({@link Transition#isEvaluated()}).
 	 *
-	 * @param transitions
-	 *            to be evaluated
+	 * @param transitions the transitions to be evaluated
+	 * @param expansion how formulas should be expanded
 	 * @return a set containing all of the evaluated transitions
 	 */
 	public Set<Transition> evaluateTransitions(final Collection<Transition> transitions,

@@ -52,7 +52,7 @@ public class AnimationSelector {
 	 * An {@link IAnimationChangeListener} can register itself via this method
 	 * when it wants to receive updates about any changes in the current state.
 	 * 
-	 * @param listener
+	 * @param listener the listener to regiseter
 	 */
 	public void registerAnimationChangeListener(
 			final IAnimationChangeListener listener) {
@@ -84,9 +84,9 @@ public class AnimationSelector {
 
 	/**
 	 * Changes the current trace to the specified {@link Trace} and notifies an
-	 * animation change ({@link AnimationSelector#notifyModelChanged(StateSpace)})
+	 * animation change ({@link AnimationSelector#notifyModelChanged(StateSpace)}).
 	 * 
-	 * @param trace
+	 * @param trace the new current trace
 	 */
 	public void changeCurrentAnimation(final Trace trace) {
 		currentTrace = trace;
@@ -236,9 +236,10 @@ public class AnimationSelector {
 	}
 
 	/**
-	 * @param trace
-	 * @return the {@link AbstractElement} model that corresponds to the given
-	 *         {@link Trace}
+	 * Get the {@link AbstractElement} model that corresponds to the given {@link Trace}.
+	 *
+	 * @param trace the trace for which to get the model
+	 * @return the trace's model
 	 */
 	public AbstractElement getModel(final Trace trace) {
 		return trace.getModel();
@@ -322,7 +323,7 @@ public class AnimationSelector {
 	 * {@link Trace}s available to animate, one of these is selected as the new
 	 * current trace. Otherwise, the current {@link Trace} is set to null.
 	 * 
-	 * @param trace
+	 * @param trace the trace to remove
 	 */
 	public void removeTrace(final Trace trace) {
 		remove(trace);

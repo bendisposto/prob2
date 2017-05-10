@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -15,6 +12,10 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.ClassicalBModel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.tla2b.exceptions.TLA2BException;
 import de.tla2bAst.Translator;
 
@@ -68,7 +69,7 @@ public class TLAFactory implements ModelFactory<ClassicalBModel> {
 	 * @param bparser
 	 *            {@link BParser} for parsing
 	 * @return {@link RecursiveMachineLoader} rml with all loaded machines
-	 * @throws BCompoundException
+	 * @throws BCompoundException if the machines could not be loaded
 	 */
 	public RecursiveMachineLoader parseAllMachines(final Start ast, final File f, final BParser bparser)
 			throws BCompoundException {
@@ -81,14 +82,16 @@ public class TLAFactory implements ModelFactory<ClassicalBModel> {
 	}
 
 	/**
+	 * Parse a file into an AST {@link Start}.
+	 * 
 	 * @param model
 	 *            {@link File} containing B machine
 	 * @param bparser
 	 *            {@link BParser} for parsing
 	 * @return {@link Start} AST after parsing model with {@link BParser}
 	 *         bparser
-	 * @throws IOException
-	 * @throws BCompoundException
+	 * @throws IOException if an I/O error occurred
+	 * @throws BCompoundException if the file could not be parsed
 	 */
 	public Start parseFile(final File model, final BParser bparser) throws IOException, BCompoundException {
 		logger.trace("Parsing main file '{}'", model.getAbsolutePath());

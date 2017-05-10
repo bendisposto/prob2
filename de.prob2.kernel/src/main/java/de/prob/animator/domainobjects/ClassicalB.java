@@ -6,18 +6,11 @@
 
 package de.prob.animator.domainobjects;
 
-import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
-import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
-import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
-import de.be4.classicalb.core.parser.node.APredicateParseUnit;
-import de.be4.classicalb.core.parser.node.EOF;
-import de.be4.classicalb.core.parser.node.Node;
-import de.be4.classicalb.core.parser.node.Start;
+import de.be4.classicalb.core.parser.node.*;
+
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.classicalb.PrettyPrinter;
@@ -27,6 +20,10 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
 import de.prob.translator.TranslatingVisitor;
 import de.prob.translator.types.BObject;
+
+import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
+import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
+import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 /**
  * Representation of a ClassicalB formula.
@@ -42,7 +39,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	/**
 	 * @param code
 	 *            will be parsed and the resulting {@link Start} ast saved
-	 * @throws EvaluationException
+	 * @throws EvaluationException if the code could not be parsed
 	 */
 	public ClassicalB(final String code) {
 		this(code, FormulaExpand.truncate);

@@ -3,9 +3,6 @@ package de.prob.scripting;
 import java.io.File;
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -16,6 +13,9 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.ClassicalBModel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates new {@link ClassicalBModel} objects.
@@ -82,12 +82,14 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	 * @param ast
 	 *            {@link Start} representing the abstract syntax tree for the
 	 *            machine
+	 * @param directory the directory relative to which machines should be loaded
 	 * @param f
 	 *            {@link File} containing machine
+	 * @param contentProvider the content provider to use
 	 * @param bparser
 	 *            {@link BParser} for parsing
 	 * @return {@link RecursiveMachineLoader} rml with all loaded machines
-	 * @throws ModelTranslationError
+	 * @throws ModelTranslationError if the model could not be loaded
 	 */
 	public RecursiveMachineLoader parseAllMachines(final Start ast,
 			final String directory, final File f,
@@ -106,14 +108,16 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	}
 
 	/**
+	 * Parse a file into an AST {@link Start}.
+	 * 
 	 * @param model
 	 *            {@link File} containing B machine
 	 * @param bparser
 	 *            {@link BParser} for parsing
 	 * @return {@link Start} AST after parsing model with {@link BParser}
 	 *         bparser
-	 * @throws IOException
-	 * @throws ModelTranslationError
+	 * @throws IOException if an I/O error occurred
+	 * @throws ModelTranslationError if the file could not be parsed
 	 */
 	public Start parseFile(final File model, final BParser bparser)
 			throws IOException, ModelTranslationError {

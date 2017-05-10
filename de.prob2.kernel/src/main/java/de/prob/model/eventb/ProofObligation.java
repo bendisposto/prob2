@@ -34,7 +34,7 @@ public class ProofObligation extends AbstractElement {
 	 * given proof obligation, then this proof obligation must override this
 	 * method.
 	 *
-	 * @param pto
+	 * @param pto the {@link IPrologTermOutput} to write to
 	 */
 	public void toProlog(final IPrologTermOutput pto) {
 		pto.openTerm("po");

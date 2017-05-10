@@ -5,8 +5,6 @@ import java.util.List;
 /**
  * API for integration of ProB visualization into other tools. A tool has to
  * implement this interface and register itself in the ToolRegistry.
- * 
- * 
  */
 public interface ITool {
 
@@ -31,11 +29,11 @@ public interface ITool {
 	 * and the tool. Usually doing a step requires an operation name and some
 	 * parameters, but the interpretation of the Strings are up to the tool.
 	 * 
-	 * @param stateref
-	 * @param event
-	 * @param parameters
+	 * @param stateref a reference to the state to operate on
+	 * @param event the event to execute
+	 * @param parameters parameters for the event
 	 * @return Reference of the next state
-	 * @throws ImpossibleStepException
+	 * @throws ImpossibleStepException if this step is not possible
 	 */
 	public String doStep(String stateref, String event, String... parameters)
 			throws ImpossibleStepException;
@@ -45,9 +43,8 @@ public interface ITool {
 	 * expression or predicate. The formula has to be valid in that particular
 	 * formalism, i.e., it is syntactically correct and well-typed.
 	 * 
-	 * @param stateref
-	 *            see {@link ITool#doStep}
-	 * @param formula
+	 * @param stateref see {@link #doStep(String, String, String...)}
+	 * @param formula the formula to evaluate
 	 * @return the result of the evaluation
 	 * @throws IllegalFormulaException
 	 *             if the formula is illegal
@@ -59,25 +56,28 @@ public interface ITool {
 	 * Checks if a given formula contains errors. If the formula is valid this
 	 * method must return an empty list.
 	 * 
-	 * @param state
-	 * @param Formula
+	 * @param state see {@link #doStep(String, String, String...)}
+	 * @param formula the formula to get errors for
 	 * @return A list of error messages associated with the formula in the given
 	 *         state.
 	 */
-	public List<String> getErrors(String state, String Formula);
+	public List<String> getErrors(String state, String formula);
 
 	/**
+	 * Get a reference to the current state.
 	 * @return the reference String for the current state
 	 */
 	public String getCurrentState();
 
 	/**
+	 * Check whether backtracking is possible.
 	 * @return true if and only if the tool is able to evaluate a formula in a
 	 *         different state than the current one.
 	 */
 	public boolean canBacktrack();
 
 	/**
+	 * Get a unique name for this tool.
 	 * @return the String representation that specifies this exact instance of
 	 *         the ITool. This should be as unique as possible.
 	 */
