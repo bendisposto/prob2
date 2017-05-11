@@ -6,7 +6,7 @@ import java.util.Map;
 import com.github.krukow.clj_lang.PersistentHashMap;
 import com.google.inject.Inject;
 
-import de.be4.classicalb.core.parser.rules.project.RulesProject;
+import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.animator.command.LoadRulesProjectCommand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.classicalb.ClassicalBMachine;

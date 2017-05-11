@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import de.be4.classicalb.core.parser.rules.project.RulesProject;
+import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.scripting.ClassicalBFactory;
 import de.prob.scripting.ExtractedModel;
 

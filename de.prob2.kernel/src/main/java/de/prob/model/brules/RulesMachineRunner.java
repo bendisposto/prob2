@@ -8,7 +8,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 //import com.google.inject.Injector;
 
-import de.be4.classicalb.core.parser.rules.project.RulesProject;
+import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.Main;
 import de.prob.cli.CliVersionNumber;
 import de.prob.scripting.Api;

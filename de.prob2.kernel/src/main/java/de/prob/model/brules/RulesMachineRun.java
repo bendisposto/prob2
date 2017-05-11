@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import de.be4.classicalb.core.parser.ParsingBehaviour;
 import de.be4.classicalb.core.parser.exceptions.BException;
-import de.be4.classicalb.core.parser.rules.project.RulesProject;
+import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.exception.ProBError;
 import de.prob.statespace.State;
@@ -112,6 +112,10 @@ public class RulesMachineRun {
 
 	public Error getError() {
 		return this.error;
+	}
+
+	public RulesProject getRulesProject() {
+		return this.rulesProject;
 	}
 
 	public RulesMachineRunner getProb2Runner() {

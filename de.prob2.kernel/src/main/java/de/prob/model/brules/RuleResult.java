@@ -5,9 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.be4.classicalb.core.parser.rules.tranformation.AbstractOperation;
-import de.be4.classicalb.core.parser.rules.tranformation.RuleOperation;
-import de.be4.classicalb.core.parser.rules.tranformation.RulesTransformation;
+import de.be4.classicalb.core.parser.rules.*;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EnumerationWarning;

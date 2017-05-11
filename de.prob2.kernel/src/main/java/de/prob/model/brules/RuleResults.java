@@ -7,8 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import de.be4.classicalb.core.parser.rules.project.*;
-import de.be4.classicalb.core.parser.rules.tranformation.*;
+import de.be4.classicalb.core.parser.rules.*;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -56,7 +55,6 @@ public class RuleResults {
 		addNotCheckedCauses();
 	}
 
-
 	private void addNotCheckedCauses() {
 		final HashSet<String> failingRules = new HashSet<>();
 		for (RuleResult ruleResult : ruleResults) {
@@ -99,7 +97,7 @@ public class RuleResults {
 			}
 		}
 		this.summary = new ResultSummary(numberOfRules, numberOfRulesFailed, numberOfRulesSucceeded,
-				numberOfRulesNotChecked, numberOfRulesDisabled, 0);//TODO 
+				numberOfRulesNotChecked, numberOfRulesDisabled, 0);// TODO
 	}
 
 	public List<RuleResult> getGeneralRules() {
@@ -147,7 +145,7 @@ public class RuleResults {
 		Collections.sort(list);
 		return list;
 	}
-	
+
 	public class ResultSummary {
 		public final int numberOfRules;
 		public final int numberOfRulesFailed;

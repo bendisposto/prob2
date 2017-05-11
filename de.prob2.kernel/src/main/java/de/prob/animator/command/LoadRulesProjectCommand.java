@@ -5,7 +5,7 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.be4.classicalb.core.parser.rules.project.RulesProject;
+import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.parser.ISimplifiedROMap;
