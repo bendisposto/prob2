@@ -145,7 +145,9 @@ public class PrettyPrinterTest {
 			"2**3**4**5",
 			"bool(B=TRUE => (3>2 & 4+4=8))",
 			"bool((B=TRUE => 3>2) & 4+4=8)",
-			"bool((C=TRUE => 3>2) & (C=FALSE => 2>3))"
+			"bool((C=TRUE => 3>2) & (C=FALSE => 2>3))",
+			"bool(A=TRUE or B=TRUE & C=TRUE => D=TRUE <=> E=TRUE)",
+			"bool((A=TRUE or B=TRUE) & (C=TRUE => (D=TRUE <=> E=TRUE)))"
 			};
 
 	private static final String PREFIX = "#EXPRESSION ";
