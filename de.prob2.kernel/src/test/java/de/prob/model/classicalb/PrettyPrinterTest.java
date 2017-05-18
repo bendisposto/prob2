@@ -142,7 +142,10 @@ public class PrettyPrinterTest {
 			"{1}*({2}*{3})",
 			"({1}*{2})*{3}",
 			"2**(3+4)",
-			"2**3**4**5"
+			"2**3**4**5",
+			"bool(B=TRUE => (3>2 & 4+4=8))",
+			"bool((B=TRUE => 3>2) & 4+4=8)",
+			"bool((C=TRUE => 3>2) & (C=FALSE => 2>3))"
 			};
 
 	private static final String PREFIX = "#EXPRESSION ";
