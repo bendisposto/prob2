@@ -4,14 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.base.MoreObjects;
+
 import com.google.inject.Inject;
 
 import de.prob.exception.CliError;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.MoreObjects;
 
 public class ProBInstance {
 
@@ -44,7 +44,7 @@ public class ProBInstance {
 	}
 
 	private Thread makeOutputPublisher(final BufferedReader stream) {
-		return new Thread(new ConsoleListener(this, stream, logger), "ProB Output Logger");
+		return new Thread(new ConsoleListener(this, stream, logger), String.format("ProB Output Logger for instance %x", this.hashCode()));
 	}
 
 	public void shutdown() {
