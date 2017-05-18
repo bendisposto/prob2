@@ -57,6 +57,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		prio.put(AAddExpression.class, PRIORITY180);
 		prio.put(ASetSubtractionExpression.class, PRIORITY180);
 		prio.put(AMultiplicationExpression.class, PRIORITY190);
+		prio.put(AMultOrCartExpression.class, PRIORITY190);
 		prio.put(ADivExpression.class, PRIORITY190);
 		prio.put(AModuloExpression.class, PRIORITY190);
 		prio.put(APowerOfExpression.class, PRIORITY200); // right associative
@@ -321,6 +322,24 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		}
 	}
 
+	public void leftParAssoc(final Node node, final Node right) {
+		Integer priorityNode = prio.get(node.getClass());
+		Integer priorityRight = prio.get(right.getClass());
+		if (priorityNode != null && priorityRight != null
+				&& priorityRight < priorityNode) {  // we do not insert parentheses when priority the same
+			sb.append("(");
+		}
+	}
+
+	public void rightParAssoc(final Node node, final Node right) {
+		Integer priorityNode = prio.get(node.getClass());
+		Integer priorityRight = prio.get(right.getClass());
+		if (priorityNode != null && priorityRight != null
+				&& priorityRight < priorityNode) {
+			sb.append(")");
+		}
+	}
+
 	public void leftPar(final Node node, final Node right) {
 		Integer priorityNode = prio.get(node.getClass());
 		Integer priorityRight = prio.get(right.getClass());
@@ -340,12 +359,14 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	public void applyLeftAssociative(final Node left, final Node node,
-			final Node right, final String append) {
+			final Node right, final String operatorStr) {
 		if (left != null) {
+			leftParAssoc(node, left);
 			left.apply(this);
+			rightParAssoc(node, left);
 		}
 
-		sb.append(append);
+		sb.append(operatorStr);
 
 		if (right != null) {
 			leftPar(node, right);
@@ -355,17 +376,19 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	public void applyRightAssociative(final Node left, final Node node,
-			final Node right, final String append) {
+			final Node right, final String operatorStr) {
 		if (left != null) {
 			leftPar(node, left);
 			left.apply(this);
 			rightPar(node, left);
 		}
 
-		sb.append(append);
+		sb.append(operatorStr);
 
 		if (right != null) {
+			leftParAssoc(node, right);
 			right.apply(this);
+			rightParAssoc(node, right);
 		}
 	}
 

@@ -23,9 +23,6 @@ public class PrettyPrinterTest {
 			"4+5-6",
 			"4+5*6",
 			"4*5+6*7",
-			"(4+5)*6",
-			"4*(5+6)",
-			"(4+5)*(6+7)",
 			"A\\B",
 			"5*6",
 			"5/6",
@@ -138,7 +135,15 @@ public class PrettyPrinterTest {
 			"{1 |-> 2, 2 |-> 3, 1 |-> 4, 3 |-> 7, 5 |-> 9}[{1, 2}]",
 			"{1 |-> 2, 2 |-> 3, 1 |-> 4, 3 |-> 7, 5 |-> 9}~",
 			"{3 |-> 5, 3 |-> 9, 6 |-> 3, 9 |-> 2} <+ {2 |-> 7, 3 |-> 4, 5 |-> 1, 9 |-> 5}",
-			"{8|->10, 7|->11, 2|->11, 6|->12}><{1|->20, 7|->20, 2|->21, 1|->22}" };
+			"{8|->10, 7|->11, 2|->11, 6|->12}><{1|->20, 7|->20, 2|->21, 1|->22}",
+			"(4+5)*6",
+			"4*(5+6)",
+			"(4+5)*(6+7)",
+			"{1}*({2}*{3})",
+			"({1}*{2})*{3}",
+			"2**(3+4)",
+			"2**3**4**5"
+			};
 
 	private static final String PREFIX = "#EXPRESSION ";
 
@@ -155,10 +160,12 @@ public class PrettyPrinterTest {
 
 		parse.apply(prettyprinter);
 		String prettyPrint = prettyprinter.getPrettyPrint();
+		System.out.println(prettyPrint);
 		Start parse2 = BParser.parse(PREFIX + prettyPrint);
 		PrettyPrinter prettyprinter2 = new PrettyPrinter();
 
 		parse2.apply(prettyprinter2);
+		System.out.println( prettyprinter2.getPrettyPrint());
 		assertEquals(Ast2String.getTreeAsString(parse),
 				Ast2String.getTreeAsString(parse2));
 		assertEquals(prettyPrint, prettyprinter2.getPrettyPrint());
