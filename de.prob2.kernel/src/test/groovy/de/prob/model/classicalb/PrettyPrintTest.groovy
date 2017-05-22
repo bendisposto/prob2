@@ -8,7 +8,11 @@ import de.be4.classicalb.core.parser.util.PrettyPrinter
 
 
 public class PrettyPrintTest extends Specification {
-
+	/*
+	 * TODO 
+	 * If the prettyprinter inserts a whitespace, this test will fail.
+	 * Thus, we should convert this test to a junit test and move it to the parser.
+	 */
 	def "test pretty printing"() {
 		when:
 		Start parse = BParser.parse("#EXPRESSION" + a);
