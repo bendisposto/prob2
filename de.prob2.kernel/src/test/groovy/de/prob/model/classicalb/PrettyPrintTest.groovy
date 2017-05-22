@@ -60,10 +60,9 @@ public class PrettyPrintTest extends Specification {
 							END'''
 		Start parse = BParser.parse(toParse);
 		PrettyPrinter prettyprinter = new PrettyPrinter();
-		def foo = parse.getPParseUnit().getMachineClauses().get(0);
+		def foo = parse.getPParseUnit().getMachineClauses().get(0).getSetDefinitions().get(0);
 		foo.apply(prettyprinter);
 		String prettyPrint = prettyprinter.getPrettyPrint();
-
 		then:
 		prettyPrint == "PID={PID1,PID2,PID3}"
 	}
