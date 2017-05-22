@@ -5,11 +5,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
+
 import com.google.inject.Inject;
 
 import de.prob.animator.command.AbstractCommand;
@@ -20,6 +18,9 @@ import de.prob.cli.ProBInstance;
 import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
 import de.prob.statespace.AnimationSelector;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class AnimatorImpl implements IAnimator {
 
@@ -60,13 +61,16 @@ class AnimatorImpl implements IAnimator {
 		}
 
 		if (command.blockAnimator()) {
+			logger.debug("Blocking animator");
 			startTransaction();
 		}
+		logger.debug("Starting execution of {}", command);
 		do {
 			IPrologResult result = processor.sendCommand(command);
 			List<String> errormessages = getErrors();
 
 			if (result instanceof YesResult && errormessages.isEmpty()) {
+				logger.debug("Execution successful, processing result");
 				try {
 					command.processResult(((YesResult) result).getBindings());
 				} catch (Exception e) {
@@ -81,11 +85,15 @@ class AnimatorImpl implements IAnimator {
 					}
 				}
 			} else {
+				logger.debug("Execution unsuccessful, processing error");
 				command.processErrorResult(result, errormessages);
 			}
+			logger.debug("Executed {} (completed: {}, interrupted: {})", command, command.isCompleted(), command.isInterrupted());
 		} while (!command.isCompleted());
+		logger.debug("Done executing {}", command);
 		if (command.blockAnimator()) {
 			endTransaction();
+			logger.debug("Unblocked animator");
 		}
 	}
 
