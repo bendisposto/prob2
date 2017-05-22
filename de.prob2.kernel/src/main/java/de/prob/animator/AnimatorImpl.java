@@ -89,6 +89,11 @@ class AnimatorImpl implements IAnimator {
 				command.processErrorResult(result, errormessages);
 			}
 			logger.debug("Executed {} (completed: {}, interrupted: {})", command, command.isCompleted(), command.isInterrupted());
+			
+			if (!command.isCompleted() && Thread.currentThread().isInterrupted()) {
+				logger.info("Stopping execution of {} because this thread was interrupted", command);
+				break;
+			}
 		} while (!command.isCompleted());
 		logger.debug("Done executing {}", command);
 		if (command.blockAnimator()) {
