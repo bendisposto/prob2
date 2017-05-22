@@ -10,10 +10,9 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.*;
-
+import de.be4.classicalb.core.parser.util.PrettyPrinter;
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
-import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
