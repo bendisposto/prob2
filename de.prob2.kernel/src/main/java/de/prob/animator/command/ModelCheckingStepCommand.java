@@ -29,7 +29,7 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	 * <p>
 	 * The prolog core returns a compound term containing the current stats
 	 * about the state space. This term has the arity {@link #STATS_ARITY}.
-	 * <p>
+	 * </p>
 	 * 
 	 * <p>
 	 * The arguments of the term have the following meanings
@@ -38,9 +38,9 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	 * <li>Total number of nodes in the state space</li>
 	 * <li>Total number of transitions in the state space</li>
 	 * <li>Number of nodes that have already been processed</li>
-	 * <ol>
+	 * </ol>
 	 */
-	private final static int STATS_ARITY = 3;
+	private static final int STATS_ARITY = 3;
 
 	private final int time;
 	private final ModelCheckingOptions options;
