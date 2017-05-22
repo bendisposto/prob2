@@ -8,61 +8,61 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
- *The left node is the category given by Prolog, the right node is a formula or another category inside the root-category
+ * The left node is the category given by Prolog, the right node is a formula or
+ * another category inside the root-category
  */
 public class PrologAST {
-    private List<PrologASTNode> astNodes;
+	private List<PrologASTNode> astNodes;
 
-    public PrologAST(ListPrologTerm nodes){
-        this.astNodes = buildAST(nodes);
-    }
+	public PrologAST(ListPrologTerm nodes) {
+		this.astNodes = buildAST(nodes);
+	}
 
-    public List<PrologASTNode> getASTNodes(){
-        return astNodes;
-    }
+	public List<PrologASTNode> getASTNodes() {
+		return astNodes;
+	}
 
-    private List<PrologASTNode> buildAST(ListPrologTerm nodes){
-        List<PrologASTNode> categoryList = new ArrayList<>();
-        for(int i = 0; i < nodes.size(); i++){
-            ASTCategory temp = (ASTCategory)makeASTNode(nodes.get(i));
-            categoryList.add(temp);
-        }
-        return categoryList;
-    }
+	private List<PrologASTNode> buildAST(ListPrologTerm nodes) {
+		List<PrologASTNode> categoryList = new ArrayList<>();
+		for (int i = 0; i < nodes.size(); i++) {
+			ASTCategory temp = (ASTCategory) makeASTNode(nodes.get(i));
+			categoryList.add(temp);
+		}
+		return categoryList;
+	}
 
+	private PrologASTNode makeASTNode(PrologTerm node) {
+		if (node.getFunctor().equals("formula")) {
+			return new ASTFormula(node);
+		} else if (node.getFunctor().equals("category")) {
+			ASTCategory category = new ASTCategory();
+			category.setExpanded(node.getArgument(2).toString().contains("expanded"));
+			category.setPropagated(node.getArgument(2).toString().contains("propagated"));
+			category.setName(node.getArgument(1).getFunctor());
+			category.setSubnodes(makeSubnodes((BindingGenerator.getList(node.getArgument(3)))));
+			return category;
+		}
+		return null;
+	}
 
-    private PrologASTNode makeASTNode(PrologTerm node){
-        if(node.getFunctor().equals("formula")){
-            return new ASTFormula(node);
-        } else if(node.getFunctor().equals("category")){
-            ASTCategory category = new ASTCategory();
-            category.setExpanded(node.getArgument(2).toString().contains("expanded"));
-            category.setPropagated(node.getArgument(2).toString().contains("propagated"));
-            category.setName(node.getArgument(1).getFunctor());
-            category.setSubnodes(makeSubnodes((BindingGenerator.getList(node.getArgument(3)))));
-            return category;
-        }
-        return null;
-    }
+	private List<PrologASTNode> makeSubnodes(ListPrologTerm subnodes) {
+		List<PrologASTNode> rightList = new ArrayList<>();
+		for (PrologTerm m : subnodes) {
+			rightList.add(makeASTNode(m));
+		}
+		return rightList;
+	}
 
-
-    private List<PrologASTNode> makeSubnodes(ListPrologTerm subnodes){
-        List<PrologASTNode> rightList = new ArrayList<>();
-        for(PrologTerm m : subnodes){
-            rightList.add(makeASTNode(m));
-        }
-        return rightList;
-    }
-
-    /*For debugging only*/
-    private void testRun(){
-        for(int i = 0; i < astNodes.size(); i++){
-            PrologASTNode temp = astNodes.get(i);
-            System.out.println(astNodes.get(i).toString());
-            for(PrologASTNode n : temp.getSubnodes()){
-                System.out.println(n.toString());
-            }
-        }
-    }
+	/* For debugging only */
+	@SuppressWarnings("unused")
+	private void testRun() {
+		for (int i = 0; i < astNodes.size(); i++) {
+			PrologASTNode temp = astNodes.get(i);
+			System.out.println(astNodes.get(i).toString());
+			for (PrologASTNode n : temp.getSubnodes()) {
+				System.out.println(n.toString());
+			}
+		}
+	}
 
 }
