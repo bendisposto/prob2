@@ -15,10 +15,6 @@ s.execute(c);
 x = c.getEnableInfo(p1);
 y = c.getEnableInfo(p2);
 
-//println ""
-//println "Get enable from Matrix-Entry (new->del): "+ x.enable
-//println "Full entry for (del->del)"+y
-
 assert x.enable == "ok"
 assert y.enable == "false"
 assert y.disable == "ok"

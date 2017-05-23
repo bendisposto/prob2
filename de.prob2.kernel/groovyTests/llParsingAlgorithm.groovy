@@ -55,9 +55,4 @@ mm = new ModelModifier().make {
 m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 
-mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "LLParsing", "/tmp")
-//d.deleteDir()
-
-//s.animator.cli.shutdown();
 "generate and animate a model"

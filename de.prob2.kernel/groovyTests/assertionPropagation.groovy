@@ -165,8 +165,4 @@ mm = new ModelModifier().make {
 m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 
-mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "BinarySearch", "/tmp")
-//d.deleteDir()
-
 "generating a model of a binary search algorithm"
