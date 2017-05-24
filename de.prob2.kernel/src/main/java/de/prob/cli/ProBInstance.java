@@ -17,7 +17,7 @@ public class ProBInstance {
 
 	private final Thread thread;
 
-	private volatile boolean shutingDown = false;
+	private volatile boolean shuttingDown = false;
 
 	final Logger logger = LoggerFactory.getLogger(ProBInstance.class);
 	private final Process process;
@@ -29,29 +29,28 @@ public class ProBInstance {
 	private AtomicInteger processCounter;
 
 	@Inject
-	public ProBInstance(final Process process, final BufferedReader stream,
-			final Long userInterruptReference, final ProBConnection connection,
-			final String home, final OsSpecificInfo osInfo,
+	public ProBInstance(final Process process, final BufferedReader stream, final Long userInterruptReference,
+			final ProBConnection connection, final String home, final OsSpecificInfo osInfo,
 			AtomicInteger processCounter) {
 		this.process = process;
 		this.connection = connection;
 		this.processCounter = processCounter;
 		final String command = home + osInfo.getUserInterruptCmd();
-		interruptCommand = new String[] { command,
-				Long.toString(userInterruptReference.longValue()) };
+		interruptCommand = new String[] { command, Long.toString(userInterruptReference.longValue()) };
 		thread = makeOutputPublisher(stream);
 		thread.start();
 	}
 
 	private Thread makeOutputPublisher(final BufferedReader stream) {
-		return new Thread(new ConsoleListener(this, stream, logger), String.format("ProB Output Logger for instance %x", this.hashCode()));
+		return new Thread(new ConsoleListener(this, stream, logger),
+				String.format("ProB Output Logger for instance %x", this.hashCode()));
 	}
 
 	public void shutdown() {
-		if (shutingDown == false) {
+		if (shuttingDown == false) {
 			processCounter.decrementAndGet();
 		}
-		shutingDown = true;
+		shuttingDown = true;
 		try {
 			if (thread.isAlive()) {
 				thread.interrupt();
@@ -79,19 +78,17 @@ public class ProBInstance {
 		try {
 			return connection.send(term);
 		} catch (IOException e) {
-			throw new CliError("Error during communication with Prolog core.",
-					e);
+			throw new CliError("Error during communication with Prolog core.", e);
 		}
 	}
 
 	public boolean isShuttingDown() {
-		return shutingDown;
+		return shuttingDown;
 	}
 
 	@Override
 	public String toString() {
-		return MoreObjects.toStringHelper(ProBInstance.class)
-				.addValue(connection).toString();
+		return MoreObjects.toStringHelper(ProBInstance.class).addValue(connection).toString();
 	}
 
 }
