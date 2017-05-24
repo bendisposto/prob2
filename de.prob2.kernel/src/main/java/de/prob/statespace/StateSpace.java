@@ -115,6 +115,7 @@ public class StateSpace implements IAnimator {
 
 	private AbstractModel model;
 	private AbstractElement mainComponent;
+	private volatile boolean killed;
 
 	@Inject
 	public StateSpace(final Provider<IAnimator> panimator, @MaxCacheSize final int maxSize) {
@@ -197,7 +198,8 @@ public class StateSpace implements IAnimator {
 	 * @param stateId
 	 *            of the state thate is to be found.
 	 * @return {@link State} for the specified id
-	 * @throws IllegalArgumentException if a state with the specified id doesn't exist
+	 * @throws IllegalArgumentException
+	 *             if a state with the specified id doesn't exist
 	 */
 	public Object getAt(final int stateId) {
 		return getState(stateId);
@@ -662,8 +664,10 @@ public class StateSpace implements IAnimator {
 	 * {@link ClassicalBModel}, {@link EventBModel}, or {@link CSPModel}. A
 	 * StateSpace object always corresponds with exactly one model.
 	 *
-	 * @param model the new model
-	 * @param mainComponent the new main component
+	 * @param model
+	 *            the new model
+	 * @param mainComponent
+	 *            the new main component
 	 */
 	public void setModel(final AbstractModel model, final AbstractElement mainComponent) {
 		this.model = model;
@@ -691,7 +695,8 @@ public class StateSpace implements IAnimator {
 	 * {@link ClassicalBModel}, or {@link CSPModel}. If they specify the class
 	 * {@link Trace}, a new Trace object will be created and returned.
 	 *
-	 * @param clazz the class to convert to
+	 * @param clazz
+	 *            the class to convert to
 	 * @return the Model or Trace corresponding to the StateSpace instance
 	 */
 	public Object asType(final Class<?> clazz) {
@@ -710,10 +715,13 @@ public class StateSpace implements IAnimator {
 	/**
 	 * Takes a collection of transitions and retrieves any information that
 	 * needs to be retrieved (i.e. parameters, return values, etc.) if the
-	 * transitions have not yet been evaluated ({@link Transition#isEvaluated()}).
+	 * transitions have not yet been evaluated
+	 * ({@link Transition#isEvaluated()}).
 	 *
-	 * @param transitions the transitions to be evaluated
-	 * @param expansion how formulas should be expanded
+	 * @param transitions
+	 *            the transitions to be evaluated
+	 * @param expansion
+	 *            how formulas should be expanded
 	 * @return a set containing all of the evaluated transitions
 	 */
 	public Set<Transition> evaluateTransitions(final Collection<Transition> transitions,
@@ -772,7 +780,12 @@ public class StateSpace implements IAnimator {
 
 	@Override
 	public void kill() {
+		killed = true;
 		animator.kill();
+	}
+
+	public boolean isKilled() {
+		return killed;
 	}
 
 	@Override
