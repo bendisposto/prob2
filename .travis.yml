@@ -1,27 +1,34 @@
 language: java
-addons:
-  sonarqube:
-    branches:
-      - master
-      - develop
 jdk:
 - oraclejdk8
-branches:
-  only:
-  - master
-  - develop
-sudo: false
-install: /bin/true
-script:
-  - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean test integrationtests --stacktrace
-  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
-after_success:
+
+before_install:
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg
   -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out pubring.gpg
   -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in gradle.properties.enc -out
   de.prob2.kernel/gradle.properties -d
+
+branches:
+  only:
+    - master
+    - develop
+
+addons:
+  sonarqube:
+    branches:
+      - master
+      - develop
+
+sudo: false
+install: /bin/true
+
+script:
+  - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean test integrationtests --stacktrace
+  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
+
+after_success:
 - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives
 env:
   global:
