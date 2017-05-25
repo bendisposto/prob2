@@ -26,7 +26,7 @@ install: /bin/true
 
 script:
   - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean test integrationtests --stacktrace
-  - sonar-scanner -Dsonar.login=$SONAR_TOKEN -X
+ # - sonar-scanner -Dsonar.login=$SONAR_TOKEN -X
 
 after_success:
 - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives
