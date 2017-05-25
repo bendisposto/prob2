@@ -1,6 +1,9 @@
 language: java
 addons:
   sonarqube: true
+    branches:
+      - master
+      - develop
 jdk:
 - oraclejdk8
 branches:
