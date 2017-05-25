@@ -1,6 +1,6 @@
 language: java
 addons:
-  sonarqube: true
+  sonarqube:
     branches:
       - master
       - develop
