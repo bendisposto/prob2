@@ -56,9 +56,4 @@ mm = new ModelModifier().make {
 m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().optimize(true).propagateAssertions(true)).run()
 
-mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "Bauern2", "/tmp")
-//d.deleteDir()
-
-//s.animator.cli.shutdown();
 "generate and animate a model"
