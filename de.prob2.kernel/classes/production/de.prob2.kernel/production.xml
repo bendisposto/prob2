@@ -1,0 +1,30 @@
+<included>
+	<!-- <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"> 
+		<filter class="ch.qos.logback.classic.filter.LevelFilter"> <level>ERROR</level> 
+		<onMatch>ACCEPT</onMatch> <onMismatch>DENY</onMismatch> </filter> <encoder> 
+		<pattern>%msg%n%nopex</pattern> </encoder> </appender> -->
+
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>./prob_log.txt</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>ProB.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>%d %-4relative [%thread] %-5level %logger{35} Method:
+				%method Line: %line - %msg%n%ex{full}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- <appender name="PROB" class="de.prob.exception.ProBAppender"> </appender> -->
+
+	<root level="debug">
+		<appender-ref ref="FILE" />
+		<!-- <appender-ref ref="PROB" /> -->
+	</root>
+</included>
