@@ -16,9 +16,6 @@ mm = new ModelModifier().make {
 	
 	machine(name: "m0", sees: ["cd"]) {
 		var "n", "n : NAT", "n := 0"
-		/*var_block name: "n",
-		          invariant: "n : NAT",
-				  init: "n:=0"*/
 		invariant "n <= d"
 		theorem "n > 0 or n < d"
 		
@@ -37,15 +34,6 @@ mm = new ModelModifier().make {
 		var "a", "a : NAT", "a := 0"
 		var "b", "b : NAT", "b := 0"
 		var "c", "c : NAT", "c := 0"
-		/*var_block name: "a",
-		          invariant: "a : NAT",
-				  init: "a := 0"
-		var_block name: "b",
-		          invariant: "b : NAT",
-				  init: "b := 0"
-		var_block name: "c",
-				  invariant: "c : NAT",
-				  init: "c := 0"*/
 		invariants gluing: "n = a+b+c",
 		           oneway: "a=0 or c=0"
 		theorem "a+b+c : NAT"
@@ -75,18 +63,14 @@ mm = new ModelModifier().make {
 	}
 }
 
-//m = mm.getModifiedModel()
-//s = m.load(m.getComponent("m1"))
-//t = s as Trace
+m = mm.getModel()
+s = m.load(m.getComponent("m1"))
+t = s as Trace
 
-/*
+
 assert m.m1.variant.getExpression().getCode() == "2*a+b"
 assert m.m1.events.IL_in.type == CONVERGENT
 assert m.m1.events.IL_out.type == ANTICIPATED
-t = t.randomAnimation(10)*/
+t = t.randomAnimation(10)
 
-//mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "cars", "/tmp")
-//d.deleteDir()
-
-"cars on a bridge model can be made"
+"cars on a bridge model can be made and anticipated and convergent events work"
