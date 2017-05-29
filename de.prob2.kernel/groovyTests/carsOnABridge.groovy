@@ -7,6 +7,7 @@ import static de.prob.model.eventb.Event.EventType.ANTICIPATED
 // You can change the model you are testing here.
 
 mm = new ModelModifier().make {
+
 	context(name: "cd") {
 		constant "d"
 		axioms "d : NAT",
@@ -51,18 +52,6 @@ mm = new ModelModifier().make {
 		theorem "c > 0 or a > 0 or (a+b<d & c=0) or (0<b & a=0)"
 		
 		variant "2*a+b"
-
-		/*refine(name: "ML_out") {
-			parameter "a"
-			witness   for: "a", with: "a>0"
-			action    "a:=a-1", "b:=b+1"
-		}
-
-		refine(name: "ML_in") {
-			parameter "c"
-			witness   for: "x", with: "c>0"
-			action    "c := c-1"
-		}*/
 		
 		refine(name: "ML_out") {
 			when "a+b<d", "c=0"
@@ -86,17 +75,18 @@ mm = new ModelModifier().make {
 	}
 }
 
-m = mm.getModifiedModel()
-s = m.load(m.getComponent("m1"))
-t = s as Trace
+//m = mm.getModifiedModel()
+//s = m.load(m.getComponent("m1"))
+//t = s as Trace
 
+/*
 assert m.m1.variant.getExpression().getCode() == "2*a+b"
 assert m.m1.events.IL_in.type == CONVERGENT
 assert m.m1.events.IL_out.type == ANTICIPATED
-t = t.randomAnimation(10)
+t = t.randomAnimation(10)*/
 
 //mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "cars", "/tmp")
 //d.deleteDir()
 
-"testing convergent and anticipated events"
+"cars on a bridge model can be made"
