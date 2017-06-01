@@ -15,7 +15,6 @@ public class PrologAST {
 
     public PrologAST(ListPrologTerm nodes){
         this.root = buildAST(nodes);
-        testRun();
     }
 
     public PrologASTNode getRoot(ListPrologTerm nodes){
@@ -38,11 +37,11 @@ public class PrologAST {
 
 
     private PrologASTNode makeASTNode(PrologTerm node){
-        if(node.getFunctor().equals("formula")){
+        if("formula".equals(node.getFunctor())){
             ASTFormula formula = new ASTFormula();
             formula.setFormula(node.toString());
             return formula;
-        } else if(node.getFunctor().equals("category")){
+        } else if("category".equals(node.getFunctor())){
             ASTCategory category = new ASTCategory();
             category.setExpanded(node.getArgument(2).toString().contains("expanded"));
             category.setPropagated(node.getArgument(2).toString().contains("propagated"));
@@ -60,27 +59,6 @@ public class PrologAST {
             rightList.add(makeASTNode(m));
         }
         return rightList;
-    }
-
-    /*For debugging only*/
-    private void testRun(){
-        System.out.println("TRY PRINT");
-        PrologASTNode temp = root;
-        while(temp != null){
-            System.out.println("ROOT");
-            System.out.println(temp.toString());
-            System.out.println("LEFT");
-            if(temp.getLeft() != null)
-                System.out.println(temp.getLeft().toString());
-            System.out.println("RIGHT");
-            if(temp.getRight() != null) {
-                List<PrologASTNode> rightList = temp.getRight();
-                for (PrologASTNode n : rightList) {
-                    System.out.println(n.toString());
-                }
-            }
-            temp = temp.getLeft();
-        }
     }
 
 }
