@@ -2,10 +2,10 @@ package de.prob.model.brules;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.be4.classicalb.core.parser.rules.*;
 import de.prob.animator.domainobjects.AbstractEvalResult;
@@ -16,7 +16,7 @@ import de.prob.statespace.State;
 
 public class RuleResults {
 	private final LinkedHashMap<String, RuleResult> ruleResultsMap = new LinkedHashMap<>();
-	private final List<RuleResult> ruleResults = new ArrayList<>();
+	private final List<RuleResult> ruleResultList = new ArrayList<>();
 	private final List<String> reqIds = new ArrayList<>();
 	private final List<RuleResult> generalRules = new ArrayList<>();
 	private final List<RuleResult> specificRules = new ArrayList<>();
@@ -24,7 +24,7 @@ public class RuleResults {
 	private ResultSummary summary;
 
 	public RuleResults(RulesProject project, State state) {
-		final HashMap<String, AbstractOperation> operationsMap = project.getOperationsMap();
+		final Map<String, AbstractOperation> operationsMap = project.getOperationsMap();
 		final ArrayList<RuleOperation> ruleList = new ArrayList<>();
 		final List<IEvalElement> evalElements = new ArrayList<>();
 		for (AbstractOperation operation : operationsMap.values()) {
@@ -44,7 +44,7 @@ public class RuleResults {
 			RuleResult ruleResult = new RuleResult(ruleOperation, evalResults.get(index), evalResults.get(index + 1));
 			ruleResultsMap.put(ruleOperation.getName(), ruleResult);
 
-			ruleResults.add(ruleResult);
+			ruleResultList.add(ruleResult);
 			if (ruleResult.hasRuleId()) {
 				specificRules.add(ruleResult);
 				this.reqIds.add(ruleResult.getRuleId());
@@ -57,13 +57,13 @@ public class RuleResults {
 
 	private void addNotCheckedCauses() {
 		final HashSet<String> failingRules = new HashSet<>();
-		for (RuleResult ruleResult : ruleResults) {
+		for (RuleResult ruleResult : ruleResultList) {
 			RESULT_ENUM result = ruleResult.getResultEnum();
 			if (result == RESULT_ENUM.FAIL) {
 				failingRules.add(ruleResult.getRuleName());
 			}
 		}
-		for (RuleResult ruleResult : ruleResults) {
+		for (RuleResult ruleResult : ruleResultList) {
 			RESULT_ENUM result = ruleResult.getResultEnum();
 			if (result == RESULT_ENUM.NOT_CHECKED) {
 				ruleResult.setNotCheckedCauses(failingRules);
@@ -72,12 +72,12 @@ public class RuleResults {
 	}
 
 	private void createSummary() {
-		final int numberOfRules = ruleResults.size();
+		final int numberOfRules = ruleResultList.size();
 		int numberOfRulesFailed = 0;
 		int numberOfRulesSucceeded = 0;
 		int numberOfRulesNotChecked = 0;
 		int numberOfRulesDisabled = 0;
-		for (RuleResult ruleResult : ruleResults) {
+		for (RuleResult ruleResult : ruleResultList) {
 			RESULT_ENUM resultEnum = ruleResult.getResultEnum();
 			switch (resultEnum) {
 			case FAIL:
@@ -120,7 +120,7 @@ public class RuleResults {
 	}
 
 	public List<RuleResult> getRuleResultList() {
-		return this.ruleResults;
+		return this.ruleResultList;
 	}
 
 	public ResultSummary getSummary() {

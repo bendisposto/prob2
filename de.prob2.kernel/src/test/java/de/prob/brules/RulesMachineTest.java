@@ -3,6 +3,7 @@ package de.prob.brules;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.Collections;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -71,7 +72,7 @@ public class RulesMachineTest {
 
 	private RulesMachineRun startRulesMachineRun(String string) {
 		File f = new File(string);
-		RulesMachineRun rulesMachineRun = new RulesMachineRun(f);
+		RulesMachineRun rulesMachineRun = new RulesMachineRun(f, Collections.<String, String>emptyMap());
 		rulesMachineRun.start();
 		return rulesMachineRun;
 	}
