@@ -1,21 +1,16 @@
 package de.prob.model.brules;
 
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
-import de.prob.animator.command.AbstractCommand;
-import de.prob.animator.command.ComposedCommand;
+import com.google.inject.Provider;
+
 import de.prob.animator.command.ExecuteModelCommand;
-import de.prob.animator.command.SetPreferenceCommand;
-import de.prob.animator.command.StartAnimationCommand;
 import de.prob.animator.command.ExecuteModelCommand.ExecuteModelResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.ExtractedModel;
+import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
@@ -33,12 +28,11 @@ import de.prob.util.StopWatch;
  * 
  **/
 public class ExecuteRun {
-	private int maxNumberOfStatesToBeExecuted = 10000;
-
-	private final ExtractedModel<? extends AbstractModel> extractedModel;
-	private final Map<String, String> prefs;
 	private static StateSpace stateSpace;
 
+	private int maxNumberOfStatesToBeExecuted = 100000;
+	private final ExtractedModel<? extends AbstractModel> extractedModel;
+	private final Map<String, String> prefs;
 	private ExecuteModelCommand executeModelCommand;
 	private ExecuteModelResult executeModelResult;
 	private int numberofStatesExecuted;
@@ -53,29 +47,36 @@ public class ExecuteRun {
 	public void start() {
 		StopWatch.start("loadStateSpace");
 		StateSpace stateSpace = this.getStateSpace();
-		//debugPrint(StopWatch.getRunTimeAsString("loadStateSpace"));
+		// debugPrint(StopWatch.getRunTimeAsString("loadStateSpace"));
 
 		unsubscribeAllFormulas(stateSpace);
 
 		StopWatch.start("execute");
 		executeUntilEnd(stateSpace);
-		//debugPrint(StopWatch.getRunTimeAsString("execute"));
+		// debugPrint(StopWatch.getRunTimeAsString("execute"));
+	}
+
+	private static void storeStateSpace(StateSpace stateSpace2) {
+		stateSpace = stateSpace2;
 	}
 
 	private StateSpace getStateSpace() {
-		if (stateSpace == null) {
-			stateSpace = this.extractedModel.load(this.prefs);
+		if (stateSpace == null || stateSpace.isKilled()) {
+			/*
+			 * create a new state space if there is no previous one or if the
+			 * previous state space has been killed due to a ProBError
+			 */
+			storeStateSpace(this.extractedModel.load(this.prefs));
 		} else {
+			// reuse the previous state space
+			StateSpaceProvider ssProvider = new StateSpaceProvider(new Provider<StateSpace>() {
+				@Override
+				public StateSpace get() {
+					return stateSpace;
+				}
+			});
 			RulesModel model = (RulesModel) extractedModel.getModel();
-			stateSpace.setModel(model, null);
-			List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
-
-			for (Entry<String, String> pref : this.prefs.entrySet()) {
-				cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
-			}
-			stateSpace.execute(new ComposedCommand(cmds));
-			stateSpace.execute(model.getLoadCommand());
-			stateSpace.execute(new StartAnimationCommand());
+			ssProvider.loadFromCommand(model, model.getMainMachine(), prefs, model.getLoadCommand());
 		}
 		return stateSpace;
 	}
@@ -94,11 +95,7 @@ public class ExecuteRun {
 		stateSpace.execute(executeModelCommand);
 		this.numberofStatesExecuted = executeModelCommand.getNumberofStatesExecuted();
 		this.executeModelResult = executeModelCommand.getResult();
-		
 		this.finalState = executeModelCommand.getFinalState();
-//		List<Transition> newTransitions = executeModelCommand.getNewTransitions();
-//		Transition transition = newTransitions.get(0);
-//		finalState = transition.getDestination();
 	}
 
 	public ExtractedModel<? extends AbstractModel> getExtractedModel() {

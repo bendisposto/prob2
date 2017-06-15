@@ -18,7 +18,7 @@ import de.prob.util.StopWatch;
 
 public class RulesMachineRun {
 
-	public static enum ERROR_TYPES {
+	public enum ERROR_TYPES {
 		PARSE_ERROR, PROB_ERROR, UNEXPECTED_ERROR
 	}
 
@@ -80,7 +80,6 @@ public class RulesMachineRun {
 			// storing all error messages
 			debugPrint("****Unkown error: " + e.getMessage());
 			this.error = new Error(ERROR_TYPES.UNEXPECTED_ERROR, e.getMessage());
-			e.printStackTrace();
 			return;
 		}
 

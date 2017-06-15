@@ -26,6 +26,6 @@ public class RulesModelFactory {
 		RulesModel rulesModel = modelCreator.get();
 
 		rulesModel = rulesModel.create(runnerFile, rulesProject);
-		return new ExtractedModel<RulesModel>(rulesModel, null);
+		return new ExtractedModel<>(rulesModel, null);
 	}
 }

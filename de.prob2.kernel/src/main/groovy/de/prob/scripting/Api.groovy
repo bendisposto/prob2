@@ -11,6 +11,7 @@ import de.prob.animator.IAnimator
 import de.prob.animator.command.GetVersionCommand
 import de.prob.cli.CliVersionNumber
 import de.prob.cli.ProBInstance
+import de.prob.exception.CliError
 import de.prob.exception.ProBError
 import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.prolog.output.PrologTermOutput
@@ -141,18 +142,17 @@ public class Api {
 	 * they need to install it.
 	 *
 	 * @param file
-	 * @throws Exception
 	 */
 	public StateSpace csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap())
-	throws Exception {
+	throws IOException, ModelTranslationError {
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
 		StateSpace s = null;
 		try {
 			def extracted = cspFactory.extract(file)
 			s = extracted.load(prefs)
 		} catch (ProBError error) {
-			throw new Exception(
-			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory");
+			throw new CliError(
+			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory", error);
 		}
 		return s;
 	}
