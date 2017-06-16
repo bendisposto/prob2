@@ -4,6 +4,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'application'
+apply plugin: 'antlr'
 //apply plugin: 'jacoco'
 
 project.group = 'de.hhu.stups'
@@ -89,6 +90,10 @@ dependencies {
 	compile group: "de.hhu.stups", name: "eventbalg", version: parser_version, changing: true
 
 	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.0.8', changing: true
+	
+	antlr "org.antlr:antlr4:4.5"
+	compile group: 'de.hhu.stups', name: 'ltl-dsl', version: '0.1.0'
+	
 
 	// The following dependencies are needed for FMI
 	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
