@@ -10,6 +10,7 @@ import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.parserbase.ProBParserBase;
 import de.prob.ltl.parser.LtlParser;
+import de.prob.ltl.parser.pattern.PatternManager;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
@@ -24,6 +25,12 @@ public class LTL extends AbstractEvalElement {
 	
 	public LTL(final String code, ProBParserBase languageSpecificParser)
 			throws LtlParseException {
+		this.code = code;
+		generatedTerm = new de.be4.ltl.core.parser.LtlParser(languageSpecificParser)
+							.generatePrologTerm(code, "root");
+	}
+	
+	public LTL(final String code, ProBParserBase languageSpecificParser, PatternManager patternManager) {
 		this.code = code;
 		generatedTerm = new LtlParser(code).generatePrologTerm("root", languageSpecificParser);
 	}
