@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
@@ -14,6 +15,7 @@ import de.prob.cli.ProBInstanceProvider;
 import de.prob.model.brules.*;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
 
+@Ignore
 public class RulesMachineTest {
 
 	@BeforeClass
