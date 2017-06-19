@@ -30,9 +30,9 @@ public class LTL extends AbstractEvalElement {
 							.generatePrologTerm(code, "root");
 	}
 	
-	public LTL(final String code, ProBParserBase languageSpecificParser, PatternManager patternManager) {
+	public LTL(final String code, ProBParserBase languageSpecificParser, LtlParser parser) {
 		this.code = code;
-		generatedTerm = new LtlParser(code).generatePrologTerm("root", languageSpecificParser);
+		generatedTerm = parser.generatePrologTerm("root", languageSpecificParser);
 	}
 		
 	@Override
