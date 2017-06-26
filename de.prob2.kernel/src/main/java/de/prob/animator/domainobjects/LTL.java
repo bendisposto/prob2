@@ -41,8 +41,8 @@ public class LTL extends AbstractEvalElement {
 		
 	@Override
 	public void printProlog(final IPrologTermOutput pout) {
-		if(pout == null) {
-			logger.error("PrologTermOutput is null");
+		if(generatedTerm == null) {
+			logger.error("PrologTerm is null");
 			return;
 		}
 		pout.printTerm(generatedTerm);
