@@ -1,4 +1,4 @@
-package de.prob.brules;
+package de.prob.model.brules;
 
 import static org.junit.Assert.*;
 
@@ -12,10 +12,8 @@ import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 
 import de.prob.Main;
 import de.prob.cli.ProBInstanceProvider;
-import de.prob.model.brules.*;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
 
-@Ignore
 public class RulesMachineTest {
 
 	@BeforeClass
