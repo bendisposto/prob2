@@ -12,11 +12,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -25,8 +27,8 @@ import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckIfStateIdValidCommand;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluationCommand;
+import de.prob.animator.command.FindStateCommand;
 import de.prob.animator.command.FindTraceBetweenNodesCommand;
-import de.prob.animator.command.FindValidStateCommand;
 import de.prob.animator.command.FormulaTypecheckCommand;
 import de.prob.animator.command.GetCurrentPreferencesCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
@@ -46,9 +48,6 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.CSPModel;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -653,7 +652,7 @@ public class StateSpace implements IAnimator {
 	 * @return {@link Trace} containing a magic operation leading to the state.
 	 */
 	public Trace getTraceToState(final IEvalElement predicate) {
-		FindValidStateCommand cmd = new FindValidStateCommand(this, predicate);
+		FindStateCommand cmd = new FindStateCommand(this, predicate, true);
 		execute(cmd);
 		return getTrace(cmd);
 	}
