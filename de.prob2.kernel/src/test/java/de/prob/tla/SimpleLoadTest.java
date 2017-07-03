@@ -7,23 +7,25 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.prob.Main;
+import de.prob.model.AbstratUnitTestRunModelWithCli;
 import de.prob.scripting.Api;
 import de.prob.scripting.ModelTranslationError;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
-public class SimpleLoadTest {
+public class SimpleLoadTest extends AbstratUnitTestRunModelWithCli {
 
 	private Api api;
 
 	@Before
-	public void setup() {
+	public void setupClass() {
 		api = Main.getInjector().getInstance(Api.class);
 	}
-
+	
 	@Test
 	public void testLoadTLAFile() throws IOException, ModelTranslationError {
 		StateSpace s = api.tla_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
