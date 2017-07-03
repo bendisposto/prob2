@@ -1,24 +1,30 @@
-package de.prob.model.brules;
+package de.prob.model.classicalb;
 
 import static org.junit.Assert.*;
 
 import java.io.File;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 
 import de.prob.Main;
 import de.prob.cli.ProBInstanceProvider;
+import de.prob.cli.OsSpecificInfo;
+import de.prob.model.brules.RuleResult;
+import de.prob.model.brules.RuleResults;
+import de.prob.model.brules.RulesMachineRun;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
+import de.prob.scripting.Installer;
 
 public class RulesMachineTest {
 
 	@BeforeClass
 	public static void setup() {
-		Main.getInjector().getInstance(ProBInstanceProvider.class);
+		ProBInstanceProvider provider = Main.getInjector().getInstance(ProBInstanceProvider.class);
+		OsSpecificInfo osInfo = provider.getOsInfo();
+		new Installer(osInfo).ensureCLIsInstalled();
 	}
 
 	@Test
