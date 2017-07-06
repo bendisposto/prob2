@@ -3,8 +3,10 @@ package de.prob.model.brules;
 import static de.prob.util.DebugPrinter.debugPrint;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,12 +29,17 @@ public class RulesMachineRun {
 	private RulesProject rulesProject;
 	private ExecuteRun executeRun;
 
-	private Error error;
+	private final ArrayList<Error> errors;
 
 	private final File runnerFile;
-	private final Map<String, String> constantValuesToBeInjected;
-	private RuleResults rulesResult;
 	private final Map<String, String> proBCorePreferences;
+	private final Map<String, String> constantValuesToBeInjected;
+
+	private RuleResults rulesResult;
+
+	public RulesMachineRun(File runner) {
+		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
+	}
 
 	public RulesMachineRun(File runner, Map<String, String> prefs) {
 		this(runner, prefs, new HashMap<String, String>());
@@ -40,7 +47,7 @@ public class RulesMachineRun {
 
 	public RulesMachineRun(File runner, Map<String, String> prefs, Map<String, String> constantValuesToBeInjected) {
 		this.runnerFile = runner;
-
+		this.errors = new ArrayList<>();
 		this.proBCorePreferences = new HashMap<>();
 		if (prefs != null) {
 			this.proBCorePreferences.putAll(prefs);
@@ -87,22 +94,21 @@ public class RulesMachineRun {
 				State finalState = executeRun.getExecuteModelCommand().getFinalState();
 				Collection<StateError> stateErrors = finalState.getStateErrors();
 				for (StateError stateError : stateErrors) {
-
-					this.error = new Error(ERROR_TYPES.PROB_ERROR, stateError.getShortDescription(), e);
+					this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, stateError.getShortDescription(), e));
 					return;
 				}
 			}
-			this.error = new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e);
+			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
 			return;
 		} catch (Exception e) {
 			// storing all error messages
 			debugPrint("****Unkown error: " + e.getMessage());
-			this.error = new Error(ERROR_TYPES.UNEXPECTED_ERROR, e.getMessage(), e);
+			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
 			return;
 		}
-
+		StopWatch.start("ExtractResults");
 		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getFinalState());
-
+		debugPrint(StopWatch.getRunTimeAsString("ExtractResults"));
 	}
 
 	private boolean parseAndTranslateRulesProject() {
@@ -123,13 +129,21 @@ public class RulesMachineRun {
 			BException bException = rulesProject.getBExceptionList().get(0);
 			String message = bException.getMessage();
 			debugPrint("****ParseError: " + message);
-			this.error = new Error(ERROR_TYPES.PARSE_ERROR, message, bException);
+			this.errors.add(new Error(ERROR_TYPES.PARSE_ERROR, message, bException));
 		}
 		return rulesProject.hasErrors();
 	}
 
+	public boolean hasError() {
+		return !this.errors.isEmpty();
+	}
+
+	public List<Error> getErrorList() {
+		return new ArrayList<>(this.errors);
+	}
+
 	public Error getError() {
-		return this.error;
+		return this.errors.get(0);
 	}
 
 	public RulesProject getRulesProject() {
@@ -167,6 +181,15 @@ public class RulesMachineRun {
 
 		public String getMessage() {
 			return this.message;
+		}
+
+		public Exception getException() {
+			return this.exception;
+		}
+
+		@Override
+		public String toString() {
+			return type + ": " + message;
 		}
 
 		Error(ERROR_TYPES type, String message, Exception exception) {

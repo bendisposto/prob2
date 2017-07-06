@@ -61,16 +61,16 @@ class AnimatorImpl implements IAnimator {
 		}
 
 		if (command.blockAnimator()) {
-			logger.debug("Blocking animator");
+			logger.trace("Blocking animator");
 			startTransaction();
 		}
-		logger.debug("Starting execution of {}", command);
+		logger.trace("Starting execution of {}", command);
 		do {
 			IPrologResult result = processor.sendCommand(command);
 			List<String> errormessages = getErrors();
 
 			if (result instanceof YesResult && errormessages.isEmpty()) {
-				logger.debug("Execution successful, processing result");
+				logger.trace("Execution successful, processing result");
 				try {
 					command.processResult(((YesResult) result).getBindings());
 				} catch (Exception e) {
@@ -85,20 +85,20 @@ class AnimatorImpl implements IAnimator {
 					}
 				}
 			} else {
-				logger.debug("Execution unsuccessful, processing error");
+				logger.trace("Execution unsuccessful, processing error");
 				command.processErrorResult(result, errormessages);
 			}
-			logger.debug("Executed {} (completed: {}, interrupted: {})", command, command.isCompleted(), command.isInterrupted());
+			logger.trace("Executed {} (completed: {}, interrupted: {})", command, command.isCompleted(), command.isInterrupted());
 			
 			if (!command.isCompleted() && Thread.currentThread().isInterrupted()) {
 				logger.info("Stopping execution of {} because this thread was interrupted", command);
 				break;
 			}
 		} while (!command.isCompleted());
-		logger.debug("Done executing {}", command);
+		logger.trace("Done executing {}", command);
 		if (command.blockAnimator()) {
 			endTransaction();
-			logger.debug("Unblocked animator");
+			logger.trace("Unblocked animator");
 		}
 	}
 

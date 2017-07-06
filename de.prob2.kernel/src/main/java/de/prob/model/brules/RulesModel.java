@@ -79,9 +79,8 @@ public class RulesModel extends AbstractModel {
 
 	@Override
 	public StateSpace load(AbstractElement mainComponent, Map<String, String> preferences) {
-		StateSpace stateSpace = stateSpaceProvider.loadFromCommand(this, mainComponent, preferences,
+		return stateSpaceProvider.loadFromCommand(this, mainComponent, preferences,
 				new LoadRulesProjectCommand(project, modelFile));
-		return stateSpace;
 	}
 
 	public LoadRulesProjectCommand getLoadCommand() {
