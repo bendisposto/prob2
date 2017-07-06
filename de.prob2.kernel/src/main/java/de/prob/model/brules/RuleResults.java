@@ -1,7 +1,6 @@
 package de.prob.model.brules;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,8 +17,6 @@ public class RuleResults {
 	private final LinkedHashMap<String, RuleResult> ruleResultsMap = new LinkedHashMap<>();
 	private final List<RuleResult> ruleResultList = new ArrayList<>();
 	private final List<String> reqIds = new ArrayList<>();
-	private final List<RuleResult> generalRules = new ArrayList<>();
-	private final List<RuleResult> specificRules = new ArrayList<>();
 
 	private ResultSummary summary;
 
@@ -46,10 +43,7 @@ public class RuleResults {
 
 			ruleResultList.add(ruleResult);
 			if (ruleResult.hasRuleId()) {
-				specificRules.add(ruleResult);
 				this.reqIds.add(ruleResult.getRuleId());
-			} else {
-				generalRules.add(ruleResult);
 			}
 		}
 		addNotCheckedCauses();
@@ -82,41 +76,22 @@ public class RuleResults {
 			switch (resultEnum) {
 			case FAIL:
 				numberOfRulesFailed++;
-				continue;
+				break;
 			case SUCCESS:
 				numberOfRulesSucceeded++;
-				continue;
+				break;
 			case NOT_CHECKED:
 				numberOfRulesNotChecked++;
-				continue;
+				break;
 			case DISABLED:
 				numberOfRulesDisabled++;
-				continue;
+				break;
 			default:
 				throw new IllegalStateException();
 			}
 		}
 		this.summary = new ResultSummary(numberOfRules, numberOfRulesFailed, numberOfRulesSucceeded,
-				numberOfRulesNotChecked, numberOfRulesDisabled, 0);// TODO
-	}
-
-	public List<RuleResult> getGeneralRules() {
-		return this.generalRules;
-	}
-
-	public List<RuleResult> getFailingGeneralRules() {
-		List<RuleResult> failingRules = new ArrayList<>();
-		for (RuleResult ruleResult : this.generalRules) {
-			RESULT_ENUM result = ruleResult.getResultEnum();
-			if (result == RESULT_ENUM.FAIL) {
-				failingRules.add(ruleResult);
-			}
-		}
-		return failingRules;
-	}
-
-	public List<RuleResult> getSpecificRules() {
-		return this.specificRules;
+				numberOfRulesNotChecked, numberOfRulesDisabled);
 	}
 
 	public List<RuleResult> getRuleResultList() {
@@ -134,34 +109,20 @@ public class RuleResults {
 		return this.ruleResultsMap.get(ruleName);
 	}
 
-	public List<RuleResult> getSortedReportRules() {
-		List<RuleResult> list = new ArrayList<>();
-		for (RuleResult ruleResult : specificRules) {
-			if (ruleResult.getResultEnum() != RESULT_ENUM.DISABLED) {
-				list.add(ruleResult);
-			}
-		}
-		list.addAll(this.getFailingGeneralRules());
-		Collections.sort(list);
-		return list;
-	}
-
 	public class ResultSummary {
 		public final int numberOfRules;
 		public final int numberOfRulesFailed;
 		public final int numberOfRulesSucceeded;
 		public final int numberOfRulesNotChecked;
 		public final int numberOfRulesDisabled;
-		public final int numberOfRulesNotImplemented;
 
 		protected ResultSummary(int numberOfRules, int numberOfRulesFailed, int numberOfRulesSucceeded,
-				int numberOfRulesNotChecked, int numberOfRulesDisabled, int numberOfRulesNotImplemented) {
+				int numberOfRulesNotChecked, int numberOfRulesDisabled) {
 			this.numberOfRules = numberOfRules;
 			this.numberOfRulesFailed = numberOfRulesFailed;
 			this.numberOfRulesSucceeded = numberOfRulesSucceeded;
 			this.numberOfRulesNotChecked = numberOfRulesNotChecked;
 			this.numberOfRulesDisabled = numberOfRulesDisabled;
-			this.numberOfRulesNotImplemented = numberOfRulesNotImplemented;
 		}
 	}
 }
