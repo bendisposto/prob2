@@ -36,10 +36,11 @@ public class RulesMachineRun {
 
 	private RuleResults rulesResult;
 
+	
 	public RulesMachineRun(File runner) {
 		this(runner, new HashMap<String, String>());
 	}
-
+	
 	public RulesMachineRun(File runner, Map<String, String> injectedConstantValues) {
 		this.runnerFile = runner;
 		this.injectedConstantValues = injectedConstantValues;

@@ -1,4 +1,4 @@
-package de.prob.model.brules;
+package de.prob.cli.integration;
 
 import static org.junit.Assert.*;
 
@@ -8,13 +8,12 @@ import org.junit.Test;
 
 import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 
-import de.prob.model.AbstratUnitTestRunModelWithCli;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResults;
 import de.prob.model.brules.RulesMachineRun;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
 
-public class RulesMachineTest extends AbstratUnitTestRunModelWithCli {
+public class RulesMachineTest {
 
 	@Test
 	public void testSimpleRulesMachine() {
@@ -64,8 +63,8 @@ public class RulesMachineTest extends AbstratUnitTestRunModelWithCli {
 		assertEquals(ERROR_TYPES.PARSE_ERROR, rulesMachineRun.getError().getType());
 	}
 
-	private RulesMachineRun startRulesMachineRun(String string) {
-		File f = new File(string);
+	public static RulesMachineRun startRulesMachineRun(String file) {
+		File f = new File(file);
 		RulesMachineRun rulesMachineRun = new RulesMachineRun(f);
 		rulesMachineRun.start();
 		return rulesMachineRun;

@@ -1,4 +1,4 @@
-package de.prob.tla;
+package de.prob.cli.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -10,13 +10,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.prob.Main;
-import de.prob.model.AbstratUnitTestRunModelWithCli;
 import de.prob.scripting.Api;
 import de.prob.scripting.ModelTranslationError;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
-public class SimpleLoadTest extends AbstratUnitTestRunModelWithCli {
+public class SimpleLoadTest  {
 
 	private Api api;
 
