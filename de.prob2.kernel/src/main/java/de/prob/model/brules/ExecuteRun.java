@@ -38,10 +38,13 @@ public class ExecuteRun {
 	private int numberofStatesExecuted;
 	private State rootState;
 	private State finalState;
+	private final boolean reuseStateSpaceOfPreviousRun;
 
-	public ExecuteRun(final ExtractedModel<? extends AbstractModel> extractedModel, Map<String, String> prefs) {
+	public ExecuteRun(final ExtractedModel<? extends AbstractModel> extractedModel, Map<String, String> prefs,
+			boolean reuseStateSpaceOfPreviousRun) {
 		this.extractedModel = extractedModel;
 		this.prefs = prefs;
+		this.reuseStateSpaceOfPreviousRun = reuseStateSpaceOfPreviousRun;
 	}
 
 	public void start() {
@@ -61,7 +64,7 @@ public class ExecuteRun {
 	}
 
 	private StateSpace getStateSpace() {
-		if (stateSpace == null || stateSpace.isKilled()) {
+		if (stateSpace == null || stateSpace.isKilled() || !reuseStateSpaceOfPreviousRun) {
 			/*
 			 * create a new state space if there is no previous one or if the
 			 * previous state space has been killed due to a ProBError

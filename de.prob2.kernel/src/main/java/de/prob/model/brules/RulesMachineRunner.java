@@ -1,7 +1,6 @@
 package de.prob.model.brules;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 
 //import com.google.inject.Guice;
@@ -19,9 +18,10 @@ public class RulesMachineRunner {
 	// public static Injector INJECTOR =
 	// Guice.createInjector(com.google.inject.Stage.PRODUCTION,
 	// new RulesMachineGuiceConfig());
-	private static RulesMachineRunner prob2Runner; // singleton
+	private static RulesMachineRunner rulesMachineRunner; // singleton
 	private final CliVersionNumber cliVersion;
 	private final RulesModelFactory rulesFactory;
+	private boolean reuseStateSpaceOfPreviousRun = false;
 
 	@Inject
 	public RulesMachineRunner(Api api) {
@@ -31,11 +31,11 @@ public class RulesMachineRunner {
 	}
 
 	public static RulesMachineRunner getInstance() {
-		if (prob2Runner == null) {
-			prob2Runner = Main.getInjector().getInstance(RulesMachineRunner.class);
-			return prob2Runner;
+		if (rulesMachineRunner == null) {
+			rulesMachineRunner = Main.getInjector().getInstance(RulesMachineRunner.class);
+			return rulesMachineRunner;
 		} else {
-			return prob2Runner;
+			return rulesMachineRunner;
 		}
 	}
 
@@ -43,7 +43,8 @@ public class RulesMachineRunner {
 		return this.cliVersion;
 	}
 
-	public ExecuteRun createRulesMachineExecuteRun(RulesProject rulesProject, File mainMachineFile) {
+	public ExecuteRun createRulesMachineExecuteRun(RulesProject rulesProject, File mainMachineFile,
+			Map<String, String> proBCorePreferences) {
 		String probHome = System.getProperty("prob.home");
 		if (probHome != null) {
 			// debugPrint("using prob.home: " +
@@ -51,19 +52,13 @@ public class RulesMachineRunner {
 		}
 		// debugPrint("ProB version: " + cliVersion);
 
-		final Map<String, String> prefs = new HashMap<>();
-		prefs.put("TIME_OUT", "500000");
-		prefs.put("TRY_FIND_ABORT", "TRUE");
-		prefs.put("CLPFD", "FALSE");
-		// prefs.put("MAX_OPERATIONS", "0");
-		// prefs.put("COMPRESSION", "TRUE");
-		// prefs.put("IGNORE_HASH_COLLISIONS", "TRUE");
-		// prefs.put("FORGET_STATE_SPACE", "TRUE");
-
 		ExtractedModel<RulesModel> extract;
 		extract = this.rulesFactory.extract(mainMachineFile, rulesProject);
-		return new ExecuteRun(extract, prefs);
+		return new ExecuteRun(extract, proBCorePreferences, this.reuseStateSpaceOfPreviousRun);
+	}
 
+	public void setReuseStateSpace(boolean b) {
+		this.reuseStateSpaceOfPreviousRun = b;
 	}
 
 }

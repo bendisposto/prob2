@@ -134,8 +134,8 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	@Override
-	public EvaluationCommand getCommand(final State stateId) {
-		return new EvaluateFormulaCommand(this, stateId.getId());
+	public EvaluationCommand getCommand(final State state) {
+		return new EvaluateFormulaCommand(this, state.getId());
 	}
 
 	@Override

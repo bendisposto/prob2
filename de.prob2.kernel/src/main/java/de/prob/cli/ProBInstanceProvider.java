@@ -53,6 +53,10 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		return create();
 	}
 
+	public OsSpecificInfo getOsInfo(){
+		return this.osInfo;
+	}
+	
 	public ProBInstance create() {
 		return startProlog();
 	}

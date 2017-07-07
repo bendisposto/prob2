@@ -1,4 +1,4 @@
-# Experimental ProB 2.0
+# ProB 2.0
 
 [![Build Status](https://travis-ci.org/bendisposto/prob2.svg?branch=develop)](https://travis-ci.org/bendisposto/prob2)
 [![SonarQube Tech Debt](https://img.shields.io/sonar/http/sonarqube.com/prob2kernel/tech_debt.svg?maxAge=2592000)](https://sonarqube.com/dashboard?id=prob2kernel)
@@ -30,4 +30,4 @@ We assume, you have a fresh copy of Eclipse and an empty workspace at hand. We u
 3. cd into gitrepo/prob2/de.prob2.kernel, switch to the development branch (git checkout develop) and run `gradle eclipse`
 4. In Eclipse, import project from gitrepo/prob2/de.prob2.kernel  
 
-(c) 2012-2014 Jens Bendisposto et.al. , all rights reserved
+(c) 2012-2017 Jens Bendisposto et.al. , all rights reserved

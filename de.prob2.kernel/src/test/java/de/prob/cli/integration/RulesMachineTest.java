@@ -1,27 +1,19 @@
-package de.prob.brules;
+package de.prob.cli.integration;
 
 import static org.junit.Assert.*;
 
 import java.io.File;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 
-import de.prob.Main;
-import de.prob.cli.ProBInstanceProvider;
-import de.prob.model.brules.*;
+import de.prob.model.brules.RuleResult;
+import de.prob.model.brules.RuleResults;
+import de.prob.model.brules.RulesMachineRun;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
 
-@Ignore
 public class RulesMachineTest {
-
-	@BeforeClass
-	public static void setup() {
-		Main.getInjector().getInstance(ProBInstanceProvider.class);
-	}
 
 	@Test
 	public void testSimpleRulesMachine() {
@@ -71,8 +63,8 @@ public class RulesMachineTest {
 		assertEquals(ERROR_TYPES.PARSE_ERROR, rulesMachineRun.getError().getType());
 	}
 
-	private RulesMachineRun startRulesMachineRun(String string) {
-		File f = new File(string);
+	public static RulesMachineRun startRulesMachineRun(String file) {
+		File f = new File(file);
 		RulesMachineRun rulesMachineRun = new RulesMachineRun(f);
 		rulesMachineRun.start();
 		return rulesMachineRun;

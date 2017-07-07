@@ -31,7 +31,7 @@ def gradle_version = '4.0'
 // Remember to release the cli!
 project.version = '3.2.2-SNAPSHOT'
 ext{ cli_version = '1.7.0-beta1-2' }
-def parser_version = '2.9.4'
+def parser_version = '2.9.5'
 
 mainClassName = "de.prob.Main"
 
@@ -90,10 +90,10 @@ dependencies {
 	compile group: "de.hhu.stups", name: "eventbalg", version: parser_version, changing: true
 
 	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.0.8', changing: true
-	
+
 	antlr "org.antlr:antlr4:4.5"
 	compile group: 'de.hhu.stups', name: 'ltl-dsl', version: '0.1.0'
-	
+
 
 	// The following dependencies are needed for FMI
 	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
@@ -224,9 +224,10 @@ compileGroovy { dependsOn= [createBuildConstants]}
 test.doFirst { systemProperties['integrationtest'] = 'true' }
 
 test {
-    testLogging {
-        exceptionFormat = 'full'
-    }
+  exclude('de/prob/cli/integration')
+  testLogging {
+    exceptionFormat = 'full'
+  }
 }
 
 groovydoc {
@@ -249,13 +250,19 @@ def os_extension() {
 }
 
 // run integration tests after downloading fresh CLI from Nightly Build
-task integrationtests(dependsOn: ['downloadCLIs', 'tests']);
+task integrationtests(dependsOn: ['downloadCLIs', 'tests', 'cliIntegrationTests']);
 
 // run integration tests WITHOUT downloading fresh CLI from Nightly Build
 task tests(dependsOn: ['classes'], type:JavaExec){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ['-script', 'groovyTests']
+}
+
+task cliIntegrationTests(type: Test, dependsOn: ['downloadCLIs', 'test']){
+  doFirst{ println("Running cli integration tests") }
+  scanForTestClasses = true
+  include('de/prob/cli/integration/**/*')
 }
 
 eclipse {
