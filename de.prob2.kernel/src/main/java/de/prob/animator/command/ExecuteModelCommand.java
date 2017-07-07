@@ -43,7 +43,7 @@ public class ExecuteModelCommand extends AbstractCommand implements IStateSpaceM
 	public void writeCommand(final IPrologTermOutput pout) {
 		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.printAtomOrNumber(this.startstate.getId());
-		pout.printAtomOrNumber("" + maxNrSteps);
+		pout.printAtomOrNumber(String.valueOf(maxNrSteps));
 		pout.printVariable(TRANSITION_VARIABLE);
 		pout.printVariable(EXECUTED_STEPS_VARIABLE);
 		pout.printVariable(RESULT_VARIABLE);
