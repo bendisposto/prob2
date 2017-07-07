@@ -3,7 +3,6 @@ package de.prob.cli.integration;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,42 +38,45 @@ public class RulesMachineTest {
 		assertEquals("ERROR2", message);
 
 		assertEquals(NOT_CHECKED, ruleResults.getRuleResult("Rule3").getResultEnum());
-		assertEquals("Rule2", ruleResults.getRuleResult("Rule3").getNotCheckedCauses().get(0));
+		assertEquals("Rule2", ruleResults.getRuleResult("Rule3").getFailedDependencies().get(0));
 	}
 
 	@Test
 	public void testRulesMachineExample() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineExample.rmch");
 		assertEquals(false, rulesMachineRun.hasError());
+		System.out.println(rulesMachineRun.getRuleResults());
 	}
 
 	@Test
 	public void testRulesMachineWithParseError() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithParseError.rmch");
-		System.out.println(rulesMachineRun.getError().getMessage());
-		assertEquals(ERROR_TYPES.PARSE_ERROR, rulesMachineRun.getError().getType());
+		System.out.println(rulesMachineRun.getFirstError().getMessage());
+		assertEquals(ERROR_TYPES.PARSE_ERROR, rulesMachineRun.getFirstError().getType());
 	}
 
 	@Test
 	public void testRulesMachineWithTypeError() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithTypeError.rmch");
-		System.out.println(rulesMachineRun.getError().getMessage());
-		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getError().getType());
+		// System.out.println(rulesMachineRun.getError().getMessage());
+		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getFirstError().getType());
 	}
 
 	@Test
 	public void testRulesMachineWithWDError() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithWDError.rmch");
-		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getError().getType());
+		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getFirstError().getType());
+		System.out.println(rulesMachineRun.getRuleResults());
 	}
 
 	@Test
 	public void testRulesMachineFileNotFound() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineFileDoesNotExist123.rmch");
-		assertEquals(ERROR_TYPES.PARSE_ERROR, rulesMachineRun.getError().getType());
+		assertEquals(ERROR_TYPES.PARSE_ERROR, rulesMachineRun.getFirstError().getType());
 	}
 
-	@Ignore //requires that ProB core can handle timeouts defined in the machine for execute_all command
+	@Ignore // requires that ProB core can handle timeouts defined in the
+			// machine for execute_all command
 	@Test
 	public void testRulesMachineWithTimeout() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithTimeout.rmch");
@@ -109,8 +111,13 @@ public class RulesMachineTest {
 				assertTrue(String.format("Rule operation '%s' is not contained in the result map.", ruleName),
 						ruleResultMap.containsKey(ruleName));
 				RuleResult ruleResult = ruleResultMap.get(ruleName);
+				if (ruleResult.getResultEnum() == FAIL) {
+					assertTrue(String.format("No violation found but rule failed: '%s'", ruleName),
+							ruleResult.getNumberOfViolations() > 0);
+				}
+
 				if (ruleResult.getResultEnum() == NOT_CHECKED) {
-					List<String> notCheckedCauses = ruleResult.getNotCheckedCauses();
+					List<String> notCheckedCauses = ruleResult.getFailedDependencies();
 					assertTrue(String.format("There is no cause why rule '%s' is not checked.", ruleName),
 							!notCheckedCauses.isEmpty());
 				}

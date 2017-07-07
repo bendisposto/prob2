@@ -1,7 +1,6 @@
 package de.prob.model.brules;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,26 +16,32 @@ import de.prob.translator.types.Tuple;
 
 public class RuleResult implements Comparable<RuleResult> {
 	private final RuleOperation ruleOperation;
-	private final AbstractEvalResult ruleResult;
-	// private final AbstractEvalResult counterExampleResult;
+	private final AbstractEvalResult evalResult;
+	private final int numberOfViolations;
 	private final List<CounterExampleResult> counterExamples = new ArrayList<>();
 	// causes leading to NOT_CHECKED result
-	private final ArrayList<String> notCheckedCauses = new ArrayList<>();
+	private final ArrayList<String> failedDependencies = new ArrayList<>();
 
-	public static enum RESULT_ENUM {
+	private final ArrayList<String> notCheckedDependencies = new ArrayList<>();
+
+	public enum RESULT_ENUM {
 		FAIL, SUCCESS, NOT_CHECKED, DISABLED
 	}
 
-	public RuleResult(RuleOperation rule, AbstractEvalResult result, AbstractEvalResult counterExampleResult) {
+	public RuleResult(RuleOperation rule, AbstractEvalResult result, AbstractEvalResult numberOfCounterExamples,
+			AbstractEvalResult counterExampleResult) {
 		this.ruleOperation = rule;
-		this.ruleResult = result;
-		// this.counterExampleResult = counterExampleResult;
-
+		this.evalResult = result;
+		this.numberOfViolations = Integer.parseInt(((EvalResult) numberOfCounterExamples).getValue());
 		transformCounterExamples(counterExampleResult);
 	}
 
 	public RuleOperation getRuleOperation() {
 		return this.ruleOperation;
+	}
+
+	public int getNumberOfViolations() {
+		return this.numberOfViolations;
 	}
 
 	private void transformCounterExamples(AbstractEvalResult abstractEvalResult) {
@@ -71,7 +76,7 @@ public class RuleResult implements Comparable<RuleResult> {
 					String message = second.getValue();
 					counterExamples.add(new CounterExampleResult(errorType, message));
 				} else {
-					throw new IllegalStateException();
+					throw new AssertionError();
 				}
 			}
 		} else if (translatedResult.getValue() instanceof de.prob.translator.types.Sequence) {
@@ -90,18 +95,23 @@ public class RuleResult implements Comparable<RuleResult> {
 
 	}
 
-	public void setNotCheckedCauses(HashSet<String> failingRules) {
-		Set<AbstractOperation> transitiveDependencies = ruleOperation.getTransitiveDependencies();
-		for (AbstractOperation abstractOperation : transitiveDependencies) {
+	public void addAdditionalInformation(Set<String> failingRules, Set<String> allNotCheckedRules) {
+		for (AbstractOperation abstractOperation : ruleOperation.getTransitiveDependencies()) {
 			String operationName = abstractOperation.getName();
 			if (failingRules.contains(operationName)) {
-				this.notCheckedCauses.add(operationName);
+				this.failedDependencies.add(operationName);
+			} else if (allNotCheckedRules.contains(operationName)) {
+				notCheckedDependencies.add(operationName);
 			}
 		}
 	}
 
-	public List<String> getNotCheckedCauses() {
-		return this.notCheckedCauses;
+	public List<String> getFailedDependencies() {
+		return this.failedDependencies;
+	}
+
+	public List<String> getNotCheckedDependencies() {
+		return this.failedDependencies;
 	}
 
 	public List<CounterExampleResult> getCounterExamples() {
@@ -113,17 +123,13 @@ public class RuleResult implements Comparable<RuleResult> {
 	}
 
 	public String getResultValue() {
-		String res = ruleResult.toString();
+		String res = evalResult.toString();
 		res = res.substring(1, res.length() - 1);
 		return res;
 	}
 
 	public boolean hasRuleId() {
-		if (ruleOperation.getRuleIdString() == null) {
-			return false;
-		} else {
-			return true;
-		}
+		return ruleOperation.getRuleIdString() != null;
 	}
 
 	public String getRuleId() {
@@ -133,11 +139,21 @@ public class RuleResult implements Comparable<RuleResult> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("[Name: ").append(this.getRuleName());
+		sb.append("[OperationName: ").append(this.getRuleName());
+		sb.append(", Result: ").append(this.getResultValue());
 		if (this.getRuleId() != null) {
 			sb.append(", RuleID: " + this.getRuleId());
 		}
-		sb.append(", Result: ").append(this.getResultValue());
+		if (this.numberOfViolations > 0) {
+			sb.append(", NumberOfViolations: " + this.numberOfViolations);
+			sb.append(", Violations: " + this.counterExamples);
+		}
+		if (!this.failedDependencies.isEmpty()) {
+			sb.append(", FailedDependencies: " + this.failedDependencies);
+		}
+		if (!this.notCheckedDependencies.isEmpty()) {
+			sb.append(", NotCheckedDependencies: " + this.notCheckedDependencies);
+		}
 		sb.append("]");
 		return sb.toString();
 	}
@@ -153,7 +169,7 @@ public class RuleResult implements Comparable<RuleResult> {
 		case RulesTransformation.RULE_DISABLED:
 			return RESULT_ENUM.DISABLED;
 		default:
-			throw new IllegalStateException();
+			throw new AssertionError();
 		}
 	}
 
@@ -190,11 +206,16 @@ public class RuleResult implements Comparable<RuleResult> {
 		}
 
 		public String getErrorTypeAsString() {
-			return "" + errorType;
+			return String.valueOf(errorType);
 		}
 
 		public Integer getErrorType() {
 			return this.errorType;
+		}
+
+		@Override
+		public String toString() {
+			return this.message;
 		}
 	}
 

@@ -36,6 +36,7 @@ public class RulesMachineRun {
 	private final Map<String, String> constantValuesToBeInjected;
 
 	private RuleResults rulesResult;
+	private int maxNumberOfReportedCounterExamples = 50;
 
 	public RulesMachineRun(File runner) {
 		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
@@ -55,8 +56,13 @@ public class RulesMachineRun {
 		// add mandatory preferences
 		this.proBCorePreferences.put("TRY_FIND_ABORT", "TRUE");
 		this.proBCorePreferences.put("CLPFD", "FALSE");
+		this.proBCorePreferences.put("MAX_DISPLAY_SET", "-1");
 
 		this.constantValuesToBeInjected = constantValuesToBeInjected;
+	}
+
+	public void setMaxNumberOfReportedCounterExamples(int i) {
+		this.maxNumberOfReportedCounterExamples = i;
 	}
 
 	public void setProBCorePreferences(Map<String, String> prefs) {
@@ -92,11 +98,16 @@ public class RulesMachineRun {
 				Collection<StateError> stateErrors = finalState.getStateErrors();
 				for (StateError stateError : stateErrors) {
 					this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, stateError.getShortDescription(), e));
-					return;
 				}
+			} else {
+				// static errors such as type errors or error while loading the
+				// state space
+				this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
+
+				// no final state is available and thus we can not create
+				// RuleResults
+				return;
 			}
-			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
-			return;
 		} catch (Exception e) {
 			// storing all error messages
 			debugPrint("****Unkown error: " + e.getMessage());
@@ -104,7 +115,8 @@ public class RulesMachineRun {
 			return;
 		}
 		StopWatch.start("ExtractResults");
-		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getFinalState());
+		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
+				maxNumberOfReportedCounterExamples);
 		debugPrint(StopWatch.getRunTimeAsString("ExtractResults"));
 	}
 
@@ -141,7 +153,7 @@ public class RulesMachineRun {
 		return new ArrayList<>(this.errors);
 	}
 
-	public Error getError() {
+	public Error getFirstError() {
 		return this.errors.get(0);
 	}
 

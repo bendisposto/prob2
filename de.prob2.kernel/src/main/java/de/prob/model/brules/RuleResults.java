@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.be4.classicalb.core.parser.rules.*;
 import de.prob.animator.domainobjects.AbstractEvalResult;
@@ -20,7 +21,7 @@ public class RuleResults {
 
 	private ResultSummary summary;
 
-	public RuleResults(RulesProject project, State state) {
+	public RuleResults(RulesProject project, State state, int maxNumberOfReportedCounterExamples) {
 		final Map<String, AbstractOperation> operationsMap = project.getOperationsMap();
 		final ArrayList<RuleOperation> ruleList = new ArrayList<>();
 		final List<IEvalElement> evalElements = new ArrayList<>();
@@ -30,15 +31,23 @@ public class RuleResults {
 				ruleList.add(rule);
 				ClassicalB ruleObject = new ClassicalB(rule.getName());
 				evalElements.add(ruleObject);
-				ClassicalB counterExampleObject = new ClassicalB(rule.getCounterExampleVariableName());
+				// get number of counter examples
+				String numberOfCtsFormula = String.format("card(%s)", rule.getCounterExampleVariableName());
+				ClassicalB numberOfCtsFormulaObject = new ClassicalB(numberOfCtsFormula);
+				evalElements.add(numberOfCtsFormulaObject);
+				// get the (restricted) set of counter examples
+				String ctFormula = String.format("SORT(%s)[1..%s]", rule.getCounterExampleVariableName(),
+						maxNumberOfReportedCounterExamples);
+				ClassicalB counterExampleObject = new ClassicalB(ctFormula);
 				evalElements.add(counterExampleObject);
 			}
 		}
-		List<AbstractEvalResult> evalResults = state.eval(evalElements);
+		List<AbstractEvalResult> evalResults = state.evalFormulas(evalElements);
 		for (int i = 0; i < ruleList.size(); i++) {
-			int index = i * 2;
+			int index = i * 3;
 			RuleOperation ruleOperation = ruleList.get(i);
-			RuleResult ruleResult = new RuleResult(ruleOperation, evalResults.get(index), evalResults.get(index + 1));
+			RuleResult ruleResult = new RuleResult(ruleOperation, evalResults.get(index), evalResults.get(index + 1),
+					evalResults.get(index + 2));
 			ruleResultsMap.put(ruleOperation.getName(), ruleResult);
 
 			if (ruleResult.hasRuleId()) {
@@ -49,18 +58,20 @@ public class RuleResults {
 	}
 
 	private void addNotCheckedCauses() {
-		final HashSet<String> allFailingRules = new HashSet<>();
+		final Set<String> allFailingRules = new HashSet<>();
+		final Set<String> allNotCheckedRules = new HashSet<>();
+		final Set<RuleResult> allNotCheckedRulesObjects = new HashSet<>();
 		for (RuleResult ruleResult : ruleResultsMap.values()) {
 			RESULT_ENUM result = ruleResult.getResultEnum();
 			if (result == RESULT_ENUM.FAIL) {
 				allFailingRules.add(ruleResult.getRuleName());
+			} else if (result == RESULT_ENUM.NOT_CHECKED) {
+				allNotCheckedRules.add(ruleResult.getRuleName());
+				allNotCheckedRulesObjects.add(ruleResult);
 			}
 		}
-		for (RuleResult ruleResult : ruleResultsMap.values()) {
-			RESULT_ENUM result = ruleResult.getResultEnum();
-			if (result == RESULT_ENUM.NOT_CHECKED) {
-				ruleResult.setNotCheckedCauses(allFailingRules);
-			}
+		for (RuleResult ruleResult : allNotCheckedRulesObjects) {
+			ruleResult.addAdditionalInformation(allFailingRules, allNotCheckedRules);
 		}
 	}
 
@@ -110,6 +121,15 @@ public class RuleResults {
 
 	public RuleResult getRuleResult(final String ruleName) {
 		return this.ruleResultsMap.get(ruleName);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (RuleResult result : this.ruleResultsMap.values()) {
+			sb.append(result.toString()).append("\n");
+		}
+		return sb.toString();
 	}
 
 	public class ResultSummary {

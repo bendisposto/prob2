@@ -29,7 +29,7 @@ BODY
     WHERE
       v : x-5..x+5
     EXPECT
-      x > 0
+      v > 0
     COUNTEREXAMPLE
       STRING_FORMAT(
         "Value ~w is not greater than zero"
@@ -47,7 +47,7 @@ BODY
     RULE_ANY v
     WHERE
       v : x-5..x+5
-      & x <= 0
+      & v <= 0
     COUNTEREXAMPLE
       STRING_FORMAT(
         "Value ~w is not greater than zero"
@@ -64,7 +64,7 @@ BODY
   TYPE
     POW(INTEGER)
   VALUE
-    1..10
+    2..10
   END//DEFINE
 END//COMPUTATION
 ;
@@ -74,10 +74,25 @@ BODY
   WHERE
     x : V_Value1 //dependency to COMPUTATION COMP_comp1 will be inferred and automatically injected
   EXPECT
-    x > 0
+    x > 2
   COUNTEREXAMPLE
     STRING_FORMAT(
       "Value ~w is not greater than zero"
+      , x
+    )
+  END//RULE_FORALL
+END
+;
+RULE RULE_Errros
+BODY
+  RULE_FORALL x
+  WHERE
+    x : 1..140
+  EXPECT
+    1=2
+  COUNTEREXAMPLE
+    STRING_FORMAT(
+      "Value ~w"
       , x
     )
   END//RULE_FORALL

@@ -31,14 +31,11 @@ import de.prob.util.StopWatch;
 public class ExecuteRun {
 	private static StateSpace stateSpace;
 
-	private int maxNumberOfStatesToBeExecuted = 100000;
+	private int maxNumberOfStatesToBeExecuted = Integer.MAX_VALUE;
 	private final ExtractedModel<? extends AbstractModel> extractedModel;
 	private final Map<String, String> prefs;
 	private ExecuteModelCommand executeModelCommand;
-	private ExecuteModelResult executeModelResult;
-	private int numberofStatesExecuted;
 	private State rootState;
-	private State finalState;
 	private final boolean reuseStateSpaceOfPreviousRun;
 
 	public ExecuteRun(final ExtractedModel<? extends AbstractModel> extractedModel, Map<String, String> prefs,
@@ -56,7 +53,7 @@ public class ExecuteRun {
 		unsubscribeAllFormulas(stateSpace);
 
 		StopWatch.start("execute");
-		executeUntilEnd(stateSpace);
+		executeModel(stateSpace);
 		debugPrint(StopWatch.getRunTimeAsString("execute"));
 	}
 
@@ -92,14 +89,11 @@ public class ExecuteRun {
 		}
 	}
 
-	private void executeUntilEnd(final StateSpace stateSpace) {
+	private void executeModel(final StateSpace stateSpace) {
 		final Trace t = new Trace(stateSpace);
 		this.rootState = t.getCurrentState();
 		executeModelCommand = new ExecuteModelCommand(stateSpace, rootState, maxNumberOfStatesToBeExecuted);
 		stateSpace.execute(executeModelCommand);
-		this.numberofStatesExecuted = executeModelCommand.getNumberofStatesExecuted();
-		this.executeModelResult = executeModelCommand.getResult();
-		this.finalState = executeModelCommand.getFinalState();
 	}
 
 	public ExtractedModel<? extends AbstractModel> getExtractedModel() {
@@ -111,11 +105,11 @@ public class ExecuteRun {
 	}
 
 	public ExecuteModelResult getExecuteModelResult() {
-		return this.executeModelResult;
+		return executeModelCommand.getResult();
 	}
 
 	public int getNumberOfStatesExecuted() {
-		return this.numberofStatesExecuted;
+		return executeModelCommand.getNumberofStatesExecuted();
 	}
 
 	public ExecuteModelCommand getExecuteModelCommand() {
@@ -127,7 +121,7 @@ public class ExecuteRun {
 	}
 
 	public State getFinalState() {
-		return this.finalState;
+		return executeModelCommand.getFinalState();
 	}
 
 }

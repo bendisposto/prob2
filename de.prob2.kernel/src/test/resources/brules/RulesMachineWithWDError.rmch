@@ -7,26 +7,25 @@ OPERATIONS
   END
   ;
   RULE Rule2
-  DEPENDS_ON_RULE Rule1
   RULEID RuleId1
   BODY
-    skip
+    VAR xx
+    IN
+      xx := {1|->2}(3)
+    END
   END
   ;
   RULE Rule3
-  DEPENDS_ON_RULE Rule2
   BODY
     skip
   END
   ;
   RULE Rule4
-  DEPENDS_ON_RULE Rule3
   BODY
     skip
   END
   ;
   RULE Rule5
-  DEPENDS_ON_RULE Rule4
   RULEID RuleId5
   BODY
     VAR xx
@@ -34,5 +33,15 @@ OPERATIONS
       xx := {1|->2}(3)
     END
   END
-
+  ;
+  RULE Rule6
+  DEPENDS_ON_RULE Rule5
+  BODY
+    skip
+  END
+  ;
+  RULE Rule7
+  BODY
+    skip
+  END
 END
