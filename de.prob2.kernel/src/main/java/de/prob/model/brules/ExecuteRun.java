@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.google.inject.Provider;
 
+import static de.prob.util.DebugPrinter.debugPrint;
 import de.prob.animator.command.ExecuteModelCommand;
 import de.prob.animator.command.ExecuteModelCommand.ExecuteModelResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -50,13 +51,13 @@ public class ExecuteRun {
 	public void start() {
 		StopWatch.start("loadStateSpace");
 		StateSpace stateSpace = this.getStateSpace();
-		// debugPrint(StopWatch.getRunTimeAsString("loadStateSpace"));
+		debugPrint(StopWatch.getRunTimeAsString("loadStateSpace"));
 
 		unsubscribeAllFormulas(stateSpace);
 
 		StopWatch.start("execute");
 		executeUntilEnd(stateSpace);
-		// debugPrint(StopWatch.getRunTimeAsString("execute"));
+		debugPrint(StopWatch.getRunTimeAsString("execute"));
 	}
 
 	private static void storeStateSpace(StateSpace stateSpace2) {

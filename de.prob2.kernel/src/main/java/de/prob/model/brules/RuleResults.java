@@ -1,6 +1,7 @@
 package de.prob.model.brules;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,7 +16,6 @@ import de.prob.statespace.State;
 
 public class RuleResults {
 	private final LinkedHashMap<String, RuleResult> ruleResultsMap = new LinkedHashMap<>();
-	private final List<RuleResult> ruleResultList = new ArrayList<>();
 	private final List<String> reqIds = new ArrayList<>();
 
 	private ResultSummary summary;
@@ -41,7 +41,6 @@ public class RuleResults {
 			RuleResult ruleResult = new RuleResult(ruleOperation, evalResults.get(index), evalResults.get(index + 1));
 			ruleResultsMap.put(ruleOperation.getName(), ruleResult);
 
-			ruleResultList.add(ruleResult);
 			if (ruleResult.hasRuleId()) {
 				this.reqIds.add(ruleResult.getRuleId());
 			}
@@ -50,28 +49,28 @@ public class RuleResults {
 	}
 
 	private void addNotCheckedCauses() {
-		final HashSet<String> failingRules = new HashSet<>();
-		for (RuleResult ruleResult : ruleResultList) {
+		final HashSet<String> allFailingRules = new HashSet<>();
+		for (RuleResult ruleResult : ruleResultsMap.values()) {
 			RESULT_ENUM result = ruleResult.getResultEnum();
 			if (result == RESULT_ENUM.FAIL) {
-				failingRules.add(ruleResult.getRuleName());
+				allFailingRules.add(ruleResult.getRuleName());
 			}
 		}
-		for (RuleResult ruleResult : ruleResultList) {
+		for (RuleResult ruleResult : ruleResultsMap.values()) {
 			RESULT_ENUM result = ruleResult.getResultEnum();
 			if (result == RESULT_ENUM.NOT_CHECKED) {
-				ruleResult.setNotCheckedCauses(failingRules);
+				ruleResult.setNotCheckedCauses(allFailingRules);
 			}
 		}
 	}
 
 	private void createSummary() {
-		final int numberOfRules = ruleResultList.size();
+		final int numberOfRules = ruleResultsMap.size();
 		int numberOfRulesFailed = 0;
 		int numberOfRulesSucceeded = 0;
 		int numberOfRulesNotChecked = 0;
 		int numberOfRulesDisabled = 0;
-		for (RuleResult ruleResult : ruleResultList) {
+		for (RuleResult ruleResult : ruleResultsMap.values()) {
 			RESULT_ENUM resultEnum = ruleResult.getResultEnum();
 			switch (resultEnum) {
 			case FAIL:
@@ -95,7 +94,11 @@ public class RuleResults {
 	}
 
 	public List<RuleResult> getRuleResultList() {
-		return this.ruleResultList;
+		return new ArrayList<>(ruleResultsMap.values());
+	}
+
+	public Map<String, RuleResult> getRuleResultMap() {
+		return new HashMap<>(this.ruleResultsMap);
 	}
 
 	public ResultSummary getSummary() {

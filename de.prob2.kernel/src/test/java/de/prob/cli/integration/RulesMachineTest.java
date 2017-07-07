@@ -3,11 +3,18 @@ package de.prob.cli.integration;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 
+import de.be4.classicalb.core.parser.rules.AbstractOperation;
+import de.be4.classicalb.core.parser.rules.RuleOperation;
+import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResults;
 import de.prob.model.brules.RulesMachineRun;
@@ -15,9 +22,11 @@ import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
 
 public class RulesMachineTest {
 
+	static final String dir = "src/test/resources/brules/";
+
 	@Test
 	public void testSimpleRulesMachine() {
-		RulesMachineRun rulesMachineRun = startRulesMachineRun("src/test/resources/brules/SimpleRulesMachine.rmch");
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "SimpleRulesMachine.rmch");
 
 		RuleResults ruleResults = rulesMachineRun.getRuleResults();
 		assertEquals(3, ruleResults.getRuleResultList().size());
@@ -34,39 +43,80 @@ public class RulesMachineTest {
 	}
 
 	@Test
+	public void testRulesMachineExample() {
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineExample.rmch");
+		assertEquals(false, rulesMachineRun.hasError());
+	}
+
+	@Test
 	public void testRulesMachineWithParseError() {
-		RulesMachineRun rulesMachineRun = startRulesMachineRun(
-				"src/test/resources/brules/RulesMachineWithParseError.rmch");
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithParseError.rmch");
 		System.out.println(rulesMachineRun.getError().getMessage());
 		assertEquals(ERROR_TYPES.PARSE_ERROR, rulesMachineRun.getError().getType());
 	}
 
 	@Test
 	public void testRulesMachineWithTypeError() {
-		RulesMachineRun rulesMachineRun = startRulesMachineRun(
-				"src/test/resources/brules/RulesMachineWithTypeError.rmch");
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithTypeError.rmch");
 		System.out.println(rulesMachineRun.getError().getMessage());
 		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getError().getType());
 	}
 
 	@Test
 	public void testRulesMachineWithWDError() {
-		RulesMachineRun rulesMachineRun = startRulesMachineRun(
-				"src/test/resources/brules/RulesMachineWithWDError.rmch");
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithWDError.rmch");
 		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getError().getType());
 	}
 
 	@Test
 	public void testRulesMachineFileNotFound() {
-		RulesMachineRun rulesMachineRun = startRulesMachineRun(
-				"src/test/resources/brules/RulesMachineFileDoesNotExist123.rmch");
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineFileDoesNotExist123.rmch");
 		assertEquals(ERROR_TYPES.PARSE_ERROR, rulesMachineRun.getError().getType());
+	}
+
+	@Ignore //requires that ProB core can handle timeouts defined in the machine for execute_all command
+	@Test
+	public void testRulesMachineWithTimeout() {
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithTimeout.rmch");
+		System.out.println(rulesMachineRun.hasError());
+	}
+
+	@Ignore // requires new Parser version
+	@Test
+	public void testReplaces() {
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "Replaces.rmch");
+		RuleResult ruleResult = rulesMachineRun.getRuleResults().getRuleResult("RULE_BasedOnValue1");
+		assertTrue(ruleResult.hasFailed());
 	}
 
 	public static RulesMachineRun startRulesMachineRun(String file) {
 		File f = new File(file);
 		RulesMachineRun rulesMachineRun = new RulesMachineRun(f);
 		rulesMachineRun.start();
+		if (!rulesMachineRun.hasError()) {
+			checkRulesMachineRunForConsistency(rulesMachineRun);
+		}
 		return rulesMachineRun;
+	}
+
+	public static void checkRulesMachineRunForConsistency(RulesMachineRun rulesMachineRun) {
+		RulesProject rulesProject = rulesMachineRun.getRulesProject();
+		RuleResults ruleResults = rulesMachineRun.getRuleResults();
+		Map<String, RuleResult> ruleResultMap = ruleResults.getRuleResultMap();
+		for (AbstractOperation abstractOperation : rulesProject.getOperationsMap().values()) {
+			if (abstractOperation instanceof RuleOperation) {
+				String ruleName = abstractOperation.getName();
+				assertTrue(String.format("Rule operation '%s' is not contained in the result map.", ruleName),
+						ruleResultMap.containsKey(ruleName));
+				RuleResult ruleResult = ruleResultMap.get(ruleName);
+				if (ruleResult.getResultEnum() == NOT_CHECKED) {
+					List<String> notCheckedCauses = ruleResult.getNotCheckedCauses();
+					assertTrue(String.format("There is no cause why rule '%s' is not checked.", ruleName),
+							!notCheckedCauses.isEmpty());
+				}
+			}
+
+		}
+
 	}
 }

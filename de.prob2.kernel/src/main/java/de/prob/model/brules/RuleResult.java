@@ -40,13 +40,15 @@ public class RuleResult implements Comparable<RuleResult> {
 	}
 
 	private void transformCounterExamples(AbstractEvalResult abstractEvalResult) {
+		// the following tests are only here for sake of completeness
+		// because abstractEvalResult should be an instance of EvalResult
 		if (abstractEvalResult instanceof ComputationNotCompletedResult) {
-			throw new IllegalStateException();
+			throw new AssertionError(abstractEvalResult.toString());
 		} else if (abstractEvalResult instanceof WDError) {
-			// WDError error = (WDError) evalCurrent2;
-			throw new IllegalStateException();
+			WDError wdError = (WDError) abstractEvalResult;
+			throw new AssertionError(wdError.getResult());
 		} else if (abstractEvalResult instanceof EnumerationWarning) {
-			throw new IllegalStateException();
+			throw new AssertionError("Enumeration warning");
 		}
 		EvalResult evalCurrent = (EvalResult) abstractEvalResult;
 		TranslatedEvalResult translatedResult = null;
@@ -153,6 +155,10 @@ public class RuleResult implements Comparable<RuleResult> {
 		default:
 			throw new IllegalStateException();
 		}
+	}
+
+	public boolean hasFailed() {
+		return getResultEnum() == RESULT_ENUM.FAIL;
 	}
 
 	public int getCompareValue() {

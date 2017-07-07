@@ -1,0 +1,16 @@
+RULES_MACHINE RulesMachineWithTimeout
+DEFINITIONS
+  SET_PREF_TIME_OUT == 10000;
+OPERATIONS
+  RULE RULE_rule1
+  BODY
+    VAR counter
+    IN
+      counter := 0;
+      FOR x IN 1..10000000
+      DO
+        counter := counter + 1
+      END
+    END
+  END
+END

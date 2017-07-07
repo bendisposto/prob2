@@ -55,10 +55,6 @@ public class RulesMachineRun {
 		// add mandatory preferences
 		this.proBCorePreferences.put("TRY_FIND_ABORT", "TRUE");
 		this.proBCorePreferences.put("CLPFD", "FALSE");
-		// prefs.put("MAX_OPERATIONS", "0");
-		// prefs.put("COMPRESSION", "TRUE");
-		// prefs.put("IGNORE_HASH_COLLISIONS", "TRUE");
-		// prefs.put("FORGET_STATE_SPACE", "TRUE");
 
 		this.constantValuesToBeInjected = constantValuesToBeInjected;
 	}
@@ -73,6 +69,7 @@ public class RulesMachineRun {
 		boolean hasParseErrors = parseAndTranslateRulesProject();
 		debugPrint(StopWatch.getRunTimeAsString("parsing"));
 		if (hasParseErrors) {
+			debugPrint("RULES_MACHINE has errors!");
 			return;
 		}
 
@@ -114,7 +111,9 @@ public class RulesMachineRun {
 	private boolean parseAndTranslateRulesProject() {
 		this.rulesProject = new RulesProject();
 		rulesProject.parseProject(runnerFile);
-		rulesProject.setParsingBehaviour(new ParsingBehaviour());
+		ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
+		parsingBehaviour.setAddLineNumbers(true);
+		rulesProject.setParsingBehaviour(parsingBehaviour);
 
 		for (Entry<String, String> pair : constantValuesToBeInjected.entrySet()) {
 			rulesProject.addConstantValue(pair.getKey(), pair.getValue());
