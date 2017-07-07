@@ -3,6 +3,7 @@ package de.prob.statespace
 import com.google.common.base.Objects
 
 import de.prob.animator.command.ComposedCommand
+import de.prob.animator.command.EvaluateFormulasCommand
 import de.prob.animator.command.EvaluateRegisteredFormulasCommand
 import de.prob.animator.command.ExploreStateCommand
 import de.prob.animator.command.GetBStateCommand
@@ -212,6 +213,12 @@ class State {
 		}
 	}
 
+	def List<AbstractEvalResult> evalFormulas(List<IEvalElement> formulas) {
+		//currently no caching
+		def cmd = new EvaluateFormulasCommand(formulas, this.getId());
+		stateSpace.execute(cmd)
+		cmd.getValues()
+	}
 
 
 	def String toString() {
