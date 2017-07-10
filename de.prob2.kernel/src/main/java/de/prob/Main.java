@@ -156,13 +156,13 @@ public class Main {
 
 	public static String getVersion() throws IOException {
 		Properties p = new Properties();
-		p.load(Main.class.getResourceAsStream("/build.properties"));
+		p.load(Main.class.getResourceAsStream("/prob2-build.properties"));
 		return p.getProperty("version");
 	}
 
 	public static String getGitSha() throws IOException {
 		Properties p = new Properties();
-		p.load(Main.class.getResourceAsStream("/build.properties"));
+		p.load(Main.class.getResourceAsStream("/prob2-build.properties"));
 		return p.getProperty("git");
 	}
 

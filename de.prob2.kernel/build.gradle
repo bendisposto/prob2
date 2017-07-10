@@ -211,7 +211,7 @@ task createBuildConstants  {
 		def buildconstants_class = """
 version=${project.version}
 git=${getCheckedOutGitCommitHash()}"""
-		File f = file("src/main/resources/build.properties")
+		File f = file("src/main/resources/prob2-build.properties")
 		f.delete()
 		f <<  buildconstants_class
 	}
