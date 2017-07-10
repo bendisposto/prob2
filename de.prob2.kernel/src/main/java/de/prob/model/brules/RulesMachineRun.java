@@ -1,7 +1,5 @@
 package de.prob.model.brules;
 
-import static de.prob.util.DebugPrinter.debugPrint;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.ParsingBehaviour;
 import de.be4.classicalb.core.parser.exceptions.BException;
@@ -37,6 +38,8 @@ public class RulesMachineRun {
 
 	private RuleResults rulesResult;
 	private int maxNumberOfReportedCounterExamples = 50;
+
+	final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public RulesMachineRun(File runner) {
 		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
@@ -70,12 +73,13 @@ public class RulesMachineRun {
 	}
 
 	public void start() {
-		debugPrint("------- Starting RulesMachine Run: " + this.runnerFile.getAbsolutePath());
-		StopWatch.start("parsing");
+		logger.info("Starting rules machine run: {}", this.runnerFile.getAbsolutePath());
+		final String PARSER_TIMER = "parsing";
+		StopWatch.start(PARSER_TIMER);
 		boolean hasParseErrors = parseAndTranslateRulesProject();
-		debugPrint(StopWatch.getRunTimeAsString("parsing"));
+		logger.info("Time to parse rules project: {} ms", StopWatch.stop(PARSER_TIMER));
 		if (hasParseErrors) {
-			debugPrint("RULES_MACHINE has errors!");
+			logger.error("RULES_MACHINE has errors!");
 			return;
 		}
 
@@ -83,16 +87,16 @@ public class RulesMachineRun {
 				this.proBCorePreferences);
 
 		try {
-			StopWatch.start("prob2Run");
-			debugPrint("Start execute ...");
+			final String PROB2_RUN_TIMER = "prob2Run";
+			StopWatch.start(PROB2_RUN_TIMER);
+			logger.info("Start execute ...");
 
 			// start
 			this.executeRun.start();
 
-			debugPrint("End execute.");
-			debugPrint(StopWatch.getRunTimeAsString("prob2Run"));
+			logger.info("Execute run finished. Time: {} ms", StopWatch.stop(PROB2_RUN_TIMER));
 		} catch (ProBError e) {
-			debugPrint("****ProBError: " + e.getMessage());
+			logger.error("ProBError: ", e.getMessage());
 			if (executeRun.getExecuteModelCommand() != null) {
 				State finalState = executeRun.getExecuteModelCommand().getFinalState();
 				Collection<StateError> stateErrors = finalState.getStateErrors();
@@ -109,15 +113,16 @@ public class RulesMachineRun {
 				return;
 			}
 		} catch (Exception e) {
+			logger.error("Unexpected error occured: {}", e.getMessage());
 			// storing all error messages
-			debugPrint("****Unkown error: " + e.getMessage());
 			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
 			return;
 		}
-		StopWatch.start("ExtractResults");
+		final String EXTRACT_RESULTS_TIMER = "extractResults";
+		StopWatch.start(EXTRACT_RESULTS_TIMER);
 		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
-		debugPrint(StopWatch.getRunTimeAsString("ExtractResults"));
+		logger.info("Time to extract results form final state: {}", StopWatch.stop(EXTRACT_RESULTS_TIMER));
 	}
 
 	private boolean parseAndTranslateRulesProject() {
@@ -139,7 +144,8 @@ public class RulesMachineRun {
 		if (rulesProject.hasErrors()) {
 			BException bException = rulesProject.getBExceptionList().get(0);
 			String message = bException.getMessage();
-			debugPrint("****ParseError: " + message);
+			logger.error("Parse error:  {}", message);
+
 			this.errors.add(new Error(ERROR_TYPES.PARSE_ERROR, message, bException));
 		}
 		return rulesProject.hasErrors();

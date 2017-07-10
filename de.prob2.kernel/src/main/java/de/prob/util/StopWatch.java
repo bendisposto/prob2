@@ -1,11 +1,14 @@
 package de.prob.util;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class StopWatch {
 
-	private static final Hashtable<String, Long> startTime = new Hashtable<>();
-	private static final Hashtable<String, Long> runTime = new Hashtable<>();
+	private static final HashMap<String, Long> startTime = new HashMap<>();
+	private static final HashMap<String, Long> runTime = new HashMap<>();
+
+	private StopWatch() {
+	}
 
 	public static void start(String watch) {
 		startTime.put(watch, System.currentTimeMillis());

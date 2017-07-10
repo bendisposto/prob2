@@ -3,9 +3,11 @@ package de.prob.model.brules;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Provider;
 
-import static de.prob.util.DebugPrinter.debugPrint;
 import de.prob.animator.command.ExecuteModelCommand;
 import de.prob.animator.command.ExecuteModelCommand.ExecuteModelResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -46,15 +48,18 @@ public class ExecuteRun {
 	}
 
 	public void start() {
-		StopWatch.start("loadStateSpace");
+		final Logger logger = LoggerFactory.getLogger(getClass());
+		final String LOAD_STATESPACE_TIMER = "loadStateSpace";
+		StopWatch.start(LOAD_STATESPACE_TIMER);
 		StateSpace stateSpace = this.getStateSpace();
-		debugPrint(StopWatch.getRunTimeAsString("loadStateSpace"));
+		logger.info("Time to load statespace: {} ms", StopWatch.stop(LOAD_STATESPACE_TIMER));
 
 		unsubscribeAllFormulas(stateSpace);
 
-		StopWatch.start("execute");
+		final String EXECUTE_TIMER = "executeTimer";
+		StopWatch.start(EXECUTE_TIMER);
 		executeModel(stateSpace);
-		debugPrint(StopWatch.getRunTimeAsString("execute"));
+		logger.info("Time run execute command: {} ms", StopWatch.stop(EXECUTE_TIMER));
 	}
 
 	private static void storeStateSpace(StateSpace stateSpace2) {
