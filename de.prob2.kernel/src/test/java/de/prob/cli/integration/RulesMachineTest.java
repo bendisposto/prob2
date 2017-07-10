@@ -6,7 +6,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
@@ -75,15 +74,6 @@ public class RulesMachineTest {
 		assertEquals(ERROR_TYPES.PARSE_ERROR, rulesMachineRun.getFirstError().getType());
 	}
 
-	@Ignore // requires that ProB core can handle timeouts defined in the
-			// machine for execute_all command
-	@Test
-	public void testRulesMachineWithTimeout() {
-		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithTimeout.rmch");
-		System.out.println(rulesMachineRun.hasError());
-	}
-
-	@Ignore // requires new Parser version
 	@Test
 	public void testReplaces() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "Replaces.rmch");
