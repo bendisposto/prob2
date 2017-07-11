@@ -29,7 +29,7 @@ public class StateSpaceProvider {
 			final Map<String, String> preferences, final AbstractCommand loadCmd) {
 		StateSpace s = ssProvider.get();
 		s.setModel(model, mainComponent);
-		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
+		List<AbstractCommand> cmds = new ArrayList<>();
 
 		for (Entry<String, String> pref : preferences.entrySet()) {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
