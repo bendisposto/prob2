@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Provider;
 
 import de.prob.animator.command.ExecuteModelCommand;
-import de.prob.animator.command.ExecuteModelCommand.ExecuteModelResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.ExtractedModel;
@@ -21,11 +20,12 @@ import de.prob.util.StopWatch;
 
 /**
  * 
- * This class performs the following actions and is not specific to a RULES
- * machine: 1) loads an ExtractedModel 2) unsubscribes all formulas (reduces
- * evaluation efforts) 3) run the execute command.
+ * This class performs the following actions: 
+ * 1) loads an ExtractedModel 
+ * 2) unsubscribes all formulas (reduces evaluation efforts) 
+ * 3) run the execute command.
  * 
- * The final state of a Prob2 run is stored. Moreover, all errors which can
+ * The final state of the probcli execute run is stored. Moreover, all errors which can
  * occur while loading a model are stored. Note, that RULES projects are not
  * parsed and checked by this class. This is done before entering this class.
  * 
@@ -51,7 +51,7 @@ public class ExecuteRun {
 		final Logger logger = LoggerFactory.getLogger(getClass());
 		final String LOAD_STATESPACE_TIMER = "loadStateSpace";
 		StopWatch.start(LOAD_STATESPACE_TIMER);
-		StateSpace stateSpace = this.getStateSpace();
+		StateSpace stateSpace = this.getOrCreateStateSpace();
 		logger.info("Time to load statespace: {} ms", StopWatch.stop(LOAD_STATESPACE_TIMER));
 
 		unsubscribeAllFormulas(stateSpace);
@@ -66,7 +66,7 @@ public class ExecuteRun {
 		stateSpace = stateSpace2;
 	}
 
-	private StateSpace getStateSpace() {
+	private StateSpace getOrCreateStateSpace() {
 		if (stateSpace == null || stateSpace.isKilled() || !reuseStateSpaceOfPreviousRun) {
 			/*
 			 * create a new state space if there is no previous one or if the
@@ -82,7 +82,7 @@ public class ExecuteRun {
 				}
 			});
 			RulesModel model = (RulesModel) extractedModel.getModel();
-			ssProvider.loadFromCommand(model, model.getMainMachine(), prefs, model.getLoadCommand());
+			ssProvider.loadFromCommand(model, null, prefs, model.getLoadCommand());
 		}
 		return stateSpace;
 	}
@@ -98,7 +98,9 @@ public class ExecuteRun {
 		final Trace t = new Trace(stateSpace);
 		this.rootState = t.getCurrentState();
 		executeModelCommand = new ExecuteModelCommand(stateSpace, rootState, maxNumberOfStatesToBeExecuted);
+
 		stateSpace.execute(executeModelCommand);
+
 	}
 
 	public ExtractedModel<? extends AbstractModel> getExtractedModel() {
@@ -107,10 +109,6 @@ public class ExecuteRun {
 
 	public Map<String, String> getPrefs() {
 		return prefs;
-	}
-
-	public ExecuteModelResult getExecuteModelResult() {
-		return executeModelCommand.getResult();
 	}
 
 	public int getNumberOfStatesExecuted() {
@@ -125,8 +123,8 @@ public class ExecuteRun {
 		return this.rootState;
 	}
 
-	public State getFinalState() {
-		return executeModelCommand.getFinalState();
+	public StateSpace getUsedStateSpace() {
+		return stateSpace;
 	}
 
 }

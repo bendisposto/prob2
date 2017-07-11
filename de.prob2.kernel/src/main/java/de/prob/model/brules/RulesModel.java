@@ -9,7 +9,6 @@ import com.google.inject.Inject;
 import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.animator.command.LoadRulesProjectCommand;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph;
@@ -21,7 +20,6 @@ import de.prob.statespace.StateSpace;
 
 public class RulesModel extends AbstractModel {
 
-	// private BParser bparser;
 	private RulesProject project;
 
 	@Inject
@@ -60,10 +58,6 @@ public class RulesModel extends AbstractModel {
 		// } catch (BCompoundException e) {
 		// throw new EvaluationException(e.getMessage());
 		// }
-	}
-
-	public ClassicalBMachine getMainMachine() {
-		return null;
 	}
 
 	@Override

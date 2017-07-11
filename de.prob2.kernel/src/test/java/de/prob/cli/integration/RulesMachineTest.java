@@ -66,6 +66,8 @@ public class RulesMachineTest {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithWDError.rmch");
 		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getFirstError().getType());
 		System.out.println(rulesMachineRun.getRuleResults());
+		System.out.println(rulesMachineRun.getTotalNumberOfProBCliErrors());
+		assertTrue(rulesMachineRun.getTotalNumberOfProBCliErrors().intValue() > 0);
 	}
 
 	@Test

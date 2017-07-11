@@ -1,6 +1,7 @@
 package de.prob.model.brules;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import de.be4.classicalb.core.parser.ParsingBehaviour;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.rules.RulesProject;
+import de.prob.animator.command.GetTotalNumberOfErrorsCommand;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.exception.ProBError;
 import de.prob.statespace.State;
@@ -30,7 +32,7 @@ public class RulesMachineRun {
 	private RulesProject rulesProject;
 	private ExecuteRun executeRun;
 
-	private final ArrayList<Error> errors;
+	private final List<Error> errors;
 
 	private final File runnerFile;
 	private final Map<String, String> proBCorePreferences;
@@ -40,6 +42,8 @@ public class RulesMachineRun {
 	private int maxNumberOfReportedCounterExamples = 50;
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private BigInteger totalNumberOfProBCliErrors;
 
 	public RulesMachineRun(File runner) {
 		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
@@ -96,7 +100,7 @@ public class RulesMachineRun {
 
 			logger.info("Execute run finished. Time: {} ms", StopWatch.stop(PROB2_RUN_TIMER));
 		} catch (ProBError e) {
-			logger.error("ProBError: ", e.getMessage());
+			logger.error("ProBError: {}", e.getMessage());
 			if (executeRun.getExecuteModelCommand() != null) {
 				State finalState = executeRun.getExecuteModelCommand().getFinalState();
 				Collection<StateError> stateErrors = finalState.getStateErrors();
@@ -117,6 +121,13 @@ public class RulesMachineRun {
 			// storing all error messages
 			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
 			return;
+		} finally {
+			if (executeRun.getUsedStateSpace() != null) {
+				GetTotalNumberOfErrorsCommand totalNumberOfErrorsCommand = new GetTotalNumberOfErrorsCommand();
+				executeRun.getUsedStateSpace().execute(totalNumberOfErrorsCommand);
+				totalNumberOfProBCliErrors = totalNumberOfErrorsCommand.getTotalNumberOfErrors();
+			}
+
 		}
 		final String EXTRACT_RESULTS_TIMER = "extractResults";
 		StopWatch.start(EXTRACT_RESULTS_TIMER);
@@ -181,6 +192,19 @@ public class RulesMachineRun {
 
 	public File getMainMachineFile() {
 		return runnerFile;
+	}
+
+	/**
+	 * Returns the total number of errors recorded by a concrete ProB cli
+	 * instance. Note, if the ProB cli instance is reused for further
+	 * RulesMachineRuns, this number is NOT reseted. Can be {@code null} if
+	 * there is no state space available. Moreover, this number does not match
+	 * the size of the {@link RulesMachineRun#errors} list.
+	 * 
+	 * @return total number of ProB cli errors
+	 */
+	public BigInteger getTotalNumberOfProBCliErrors() {
+		return this.totalNumberOfProBCliErrors;
 	}
 
 	public Map<String, String> getInjectedConstantsValues() {
