@@ -1,5 +1,6 @@
 package de.prob.scripting
 
+import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.classicalb.ClassicalBMachine
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.translate.EventBModelTranslator
@@ -12,12 +13,13 @@ class LoadClosures {
 	def static Closure<Object> EMPTY = {StateSpace s -> }
 
 	def static Closure<Object> EVENTB =  {StateSpace s ->
+		def toSubscribe = new ArrayList<IEvalElement>()
 		def vars = new HashSet<String>()
 		def mt = new EventBModelTranslator(s.getModel(), s.getMainComponent())
 		mt.extractMachineHierarchy(s.getMainComponent(), s.getModel()).reverse().each {
 			it.getVariables().each {
 				if (!vars.contains(it.getName())) {
-					it.subscribe(s)
+					toSubscribe << it.formula
 				}
 				vars << it.getName()
 			}
@@ -26,11 +28,12 @@ class LoadClosures {
 		mt.extractContextHierarchy(s.getMainComponent(), s.getModel()).reverse().each {
 			it.getConstants().each {
 				if (!cs.contains(it.getName())) {
-					it.subscribe(s)
+					toSubscribe << it.formula
 				}
 				cs << it.getName()
 			}
 		}
+		s.subscribe(s, toSubscribe)
 	}
 
 	def static List<ClassicalBMachine> extractClassicalBHierarchy(ClassicalBModel model, String machineName) {
@@ -49,7 +52,7 @@ class LoadClosures {
 	def static Closure<Object> B = {StateSpace s ->
 		List<ClassicalBMachine> machines = extractClassicalBHierarchy(s.getModel(), s.getModel().getMainMachine().getName())
 		machines.each { ClassicalBMachine m ->
-			m.variables.each { it.subscribe(s) }
+			s.subscribe(s, m.variables.collect {it.formula})
 		}
 	}
 }
