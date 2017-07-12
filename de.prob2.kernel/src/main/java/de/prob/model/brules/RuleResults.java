@@ -42,7 +42,7 @@ public class RuleResults {
 				evalElements.add(counterExampleObject);
 			}
 		}
-		List<AbstractEvalResult> evalResults = state.evalFormulas(evalElements);
+		List<AbstractEvalResult> evalResults = state.eval(evalElements);
 		for (int i = 0; i < ruleList.size(); i++) {
 			int index = i * 3;
 			RuleOperation ruleOperation = ruleList.get(i);

@@ -1,8 +1,6 @@
 package de.prob.statespace
 
 import com.google.common.base.Objects
-
-import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.EvaluateFormulasCommand
 import de.prob.animator.command.EvaluateRegisteredFormulasCommand
 import de.prob.animator.command.ExploreStateCommand
@@ -13,8 +11,6 @@ import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.StateError
 import de.prob.model.representation.AbstractModel
 import de.prob.util.StringUtil
-
-
 /**A reference to the state object in the ProB core.
  *
  * Note: This class contains a reference to the StateSpace object to which this state
@@ -195,25 +191,6 @@ class State {
 	 * @return list of results calculated by ProB for a given formula
 	 */
 	def List<AbstractEvalResult> eval(List<IEvalElement> formulas) {
-		def cmds = formulas.findAll {
-			!values.containsKey(it)
-		}.collect { it.getCommand(this) }
-		if (!cmds.isEmpty()) {
-			stateSpace.execute(new ComposedCommand(cmds))
-		}
-		def results = cmds.collectEntries {
-			[
-				it.getEvalElement(),
-				it.getValue()
-			]
-		}
-
-		formulas.collect {
-			values.containsKey(it) ? values.get(it) : results.get(it)
-		}
-	}
-
-	def List<AbstractEvalResult> evalFormulas(List<IEvalElement> formulas) {
 		//currently no caching
 		def cmd = new EvaluateFormulasCommand(formulas, this.getId());
 		stateSpace.execute(cmd)
