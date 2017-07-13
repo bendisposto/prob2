@@ -102,16 +102,23 @@ public class RulesMachineRun {
 		} catch (ProBError e) {
 			logger.error("ProBError: {}", e.getMessage());
 			if (executeRun.getExecuteModelCommand() != null) {
-				State finalState = executeRun.getExecuteModelCommand().getFinalState();
-				Collection<StateError> stateErrors = finalState.getStateErrors();
-				for (StateError stateError : stateErrors) {
-					this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, stateError.getShortDescription(), e));
+				try {
+					State finalState = executeRun.getExecuteModelCommand().getFinalState();
+					// explores the final state and can throw a ProBError
+					Collection<StateError> stateErrors = finalState.getStateErrors();
+					for (StateError stateError : stateErrors) {
+						this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, stateError.getShortDescription(), e));
+					}
+				} catch (ProBError e2) {
+					// Enumeration errors
+					this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e2.getMessage(), e2));
+					return;
 				}
+
 			} else {
 				// static errors such as type errors or error while loading the
 				// state space
 				this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
-
 				// no final state is available and thus we can not create
 				// RuleResults
 				return;
