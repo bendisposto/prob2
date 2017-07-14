@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class GetDefaultPreferencesCommand extends AbstractCommand {
 
-	private static final String PROLOG_COMMAND_NAME = "list_eclipse_preferences";
+	private static final String PROLOG_COMMAND_NAME = "list_all_eclipse_preferences";
 	Logger logger = LoggerFactory.getLogger(GetDefaultPreferencesCommand.class);
 	private static final String PREFS_VARIABLE = "Prefs";
 	private List<ProBPreference> prefs;
@@ -43,11 +43,9 @@ public final class GetDefaultPreferencesCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 
-		ListPrologTerm p = BindingGenerator.getList(bindings
-				.get(PREFS_VARIABLE));
+		ListPrologTerm p = BindingGenerator.getList(bindings.get(PREFS_VARIABLE));
 		prefs = new ArrayList<ProBPreference>();
 		for (PrologTerm term : p) {
 			ProBPreference preference = verifyTerm(term);
@@ -57,7 +55,6 @@ public final class GetDefaultPreferencesCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(PREFS_VARIABLE)
-				.closeTerm();
+		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(PREFS_VARIABLE).closeTerm();
 	}
 }
