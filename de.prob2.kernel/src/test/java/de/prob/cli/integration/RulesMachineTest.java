@@ -3,6 +3,7 @@ package de.prob.cli.integration;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,8 @@ import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 import de.be4.classicalb.core.parser.rules.AbstractOperation;
 import de.be4.classicalb.core.parser.rules.RuleOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
+import de.prob.Main;
+import de.prob.MainConfiguration;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResults;
 import de.prob.model.brules.RulesMachineRun;
@@ -23,7 +26,9 @@ public class RulesMachineTest {
 	static final String dir = "src/test/resources/brules/";
 
 	@Test
-	public void testSimpleRulesMachine() {
+	public void testSimpleRulesMachine() throws IOException {
+		Main.getVersion();
+		new MainConfiguration();
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "SimpleRulesMachine.rmch");
 
 		RuleResults ruleResults = rulesMachineRun.getRuleResults();

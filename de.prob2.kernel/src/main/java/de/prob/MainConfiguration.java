@@ -26,8 +26,7 @@ import de.prob.annotations.Version;
 public class MainConfiguration extends AbstractModule {
 	private final Properties buildConstants;
 
-	private final Logger logger = LoggerFactory
-			.getLogger(MainConfiguration.class);
+	private final Logger logger = LoggerFactory.getLogger(MainConfiguration.class);
 
 	public MainConfiguration() {
 		buildConstants = loadBuildConstants();
@@ -36,10 +35,8 @@ public class MainConfiguration extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(CommandLineParser.class).to(PosixParser.class);
-		bind(String.class).annotatedWith(Version.class).toInstance(
-				buildConstants.getProperty("version", "0.0.0"));
-		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
-				.toInstance(Main.class.getClassLoader());
+		bind(String.class).annotatedWith(Version.class).toInstance(buildConstants.getProperty("version", "0.0.0"));
+		bind(ClassLoader.class).annotatedWith(Names.named("Classloader")).toInstance(Main.class.getClassLoader());
 
 		// TODO: Should this property be set here? Should it be set at all?
 		System.setProperty("PROB_LOGFILE", getProBLogfile());
@@ -81,19 +78,11 @@ public class MainConfiguration extends AbstractModule {
 	public final Options getCommandlineOptions() {
 		Options options = new Options();
 
-		Option maxCacheSize = OptionBuilder
-				.withArgName("maxSize")
-				.hasArg()
-				.withDescription(
-						"set the cache size for the states in the StateSpace")
-						.create("maxCacheSize");
+		Option maxCacheSize = OptionBuilder.withArgName("maxSize").hasArg()
+				.withDescription("set the cache size for the states in the StateSpace").create("maxCacheSize");
 
-		Option script = OptionBuilder
-				.withArgName("script/dir")
-				.hasArg()
-				.withDescription(
-						"run a Groovy script or all .groovy files from a directory")
-						.create("script");
+		Option script = OptionBuilder.withArgName("script/dir").hasArg()
+				.withDescription("run a Groovy script or all .groovy files from a directory").create("script");
 
 		// TODO: add modelchecking option
 		// Option modelcheck = new Option("mc", "modelcheck", false,
@@ -108,14 +97,12 @@ public class MainConfiguration extends AbstractModule {
 	}
 
 	private Properties loadBuildConstants() {
-		ClassLoader classLoader = MainModule.class.getClassLoader();
-		InputStream stream = classLoader
-				.getResourceAsStream("build.properties");
+		InputStream stream = Main.class.getResourceAsStream(Main.PROB2_BUILD_PROPERTIES_FILE);
 		Properties properties = new Properties();
 		try {
 			properties.load(stream);
 		} catch (IOException e) {
-			logger.debug("Could not load build.properties.", e);
+			logger.debug("Could not load prob2-build.properties.", e);
 		} finally {
 			try {
 				stream.close();

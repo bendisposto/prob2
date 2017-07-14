@@ -51,6 +51,8 @@ public class Main {
 	 */
 	public static final String PREFERENCE_FILE_NAME = "prob2preferences";
 
+	public static final String PROB2_BUILD_PROPERTIES_FILE = "/prob2-build.properties";
+
 	public synchronized static Injector getInjector() {
 		if (_INJECTOR == null) {
 			_INJECTOR = Guice.createInjector(Stage.PRODUCTION, new MainModule());
@@ -61,7 +63,8 @@ public class Main {
 	/**
 	 * Allows to customize the Injector. Handle with care!
 	 *
-	 * @param i the new injector to use
+	 * @param i
+	 *            the new injector to use
 	 */
 	public synchronized static void setInjector(final Injector i) {
 		_INJECTOR = i;
@@ -78,18 +81,21 @@ public class Main {
 	 * "production.xml" if the System property "PROB_LOG_CONFIG" is not defined.
 	 * Otherwise, the system property is used.
 	 */
-	public final static String LOG_CONFIG = System
-			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
-					.getProperty("PROB_LOG_CONFIG");
+	public final static String LOG_CONFIG = System.getProperty("PROB_LOG_CONFIG") == null ? "production.xml"
+			: System.getProperty("PROB_LOG_CONFIG");
 
 	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
 	 * should NOT be instantiated by hand.
 	 *
-	 * @param parser command-line parser
-	 * @param options command-line options
-	 * @param shell ProB shell
-	 * @param probdir the ProB home directory
+	 * @param parser
+	 *            command-line parser
+	 * @param options
+	 *            command-line options
+	 * @param shell
+	 *            ProB shell
+	 * @param probdir
+	 *            the ProB home directory
 	 */
 	@Inject
 	public Main(final CommandLineParser parser, final Options options, final Shell shell, @Home String probdir) {
@@ -141,10 +147,8 @@ public class Main {
 		return Installer.DEFAULT_HOME;
 	}
 
-	public static Map<String, String> getGlobalPreferences(
-			final Map<String, String> localPrefs) {
-		String preferenceFileName = Main.getProBDirectory()
-				+ PREFERENCE_FILE_NAME;
+	public static Map<String, String> getGlobalPreferences(final Map<String, String> localPrefs) {
+		String preferenceFileName = Main.getProBDirectory() + PREFERENCE_FILE_NAME;
 		FileHandler handler = new FileHandler();
 		Map<String, String> prefs = handler.getMapOfStrings(preferenceFileName);
 		if (prefs == null) {
@@ -156,16 +160,15 @@ public class Main {
 
 	public static String getVersion() throws IOException {
 		Properties p = new Properties();
-		p.load(Main.class.getResourceAsStream("/prob2-build.properties"));
+		p.load(Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE));
 		return p.getProperty("version");
 	}
 
 	public static String getGitSha() throws IOException {
 		Properties p = new Properties();
-		p.load(Main.class.getResourceAsStream("/prob2-build.properties"));
+		p.load(Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE));
 		return p.getProperty("git");
 	}
-
 
 	public static int getMaxCacheSize() {
 		return maxCacheSize;
@@ -175,7 +178,8 @@ public class Main {
 	 * Start the ProB 2.0 shell with argument -s. Run integration tests with
 	 * -test /path/to/testDir
 	 *
-	 * @param args command-line arguments
+	 * @param args
+	 *            command-line arguments
 	 */
 	public static void main(final String[] args) {
 
