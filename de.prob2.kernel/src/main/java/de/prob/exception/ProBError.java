@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ProBError extends RuntimeException {
+	private final String originalMessage;
 	private final List<String> errors;
 
 	private static String formatMessageAndErrors(final String message, final List<String> errors) {
@@ -35,6 +36,7 @@ public class ProBError extends RuntimeException {
 	public ProBError(final String message, final List<String> errors, final Throwable cause) {
 		super(formatMessageAndErrors(message, errors), cause);
 		
+		this.originalMessage = message;
 		this.errors = new ArrayList<>(errors);
 	}
 
@@ -56,6 +58,10 @@ public class ProBError extends RuntimeException {
 
 	public ProBError(final Throwable cause) {
 		this(cause.getMessage(), null, cause);
+	}
+
+	public String getOriginalMessage() {
+		return this.originalMessage;
 	}
 
 	public List<String> getErrors() {
