@@ -95,9 +95,10 @@ public class ClassicalBModel extends AbstractModel {
 
 	@Override
 	public IEvalElement parseFormula(final String formula) {
+		final String prefixedFormula = BParser.FORMULA_PREFIX + "\n" + formula;
 		try {
-			return new ClassicalB(bparser.parse(BParser.FORMULA_PREFIX + " "
-					+ formula, false, new NoContentProvider()));
+			//TODO replace by parseFormula(formula) when new parser is released
+			return new ClassicalB(bparser.parse(prefixedFormula, false, new NoContentProvider()));
 		} catch (BCompoundException e) {
 			throw new EvaluationException(e.getMessage());
 		}
