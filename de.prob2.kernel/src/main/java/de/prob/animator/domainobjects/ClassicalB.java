@@ -8,6 +8,8 @@ package de.prob.animator.domainobjects;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
+import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
+import de.be4.classicalb.core.parser.analysis.prolog.OffsetPositionPrinter;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.*;
 import de.be4.classicalb.core.parser.util.PrettyPrinter;
@@ -115,7 +117,11 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 		if (getKind().equals(ASSIGNMENT.toString())) {
 			throw new EvaluationException("Substitutions are currently unsupported for evaluation");
 		}
-		final ASTProlog prolog = new ASTProlog(pout, null);
+		//TODO use ASTProlog.printFormula(pout) when new parser is released
+		NodeIdAssignment na = new NodeIdAssignment();
+		ast.apply(na);
+		OffsetPositionPrinter pprinter = new OffsetPositionPrinter(na, -1, 0);
+		final ASTProlog prolog = new ASTProlog(pout, pprinter);
 		if (ast.getEOF() == null) {
 			ast.setEOF(new EOF());
 		}
