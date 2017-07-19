@@ -38,7 +38,8 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	/**
 	 * @param code
 	 *            will be parsed and the resulting {@link Start} ast saved
-	 * @throws EvaluationException if the code could not be parsed
+	 * @throws EvaluationException
+	 *             if the code could not be parsed
 	 */
 	public ClassicalB(final String code) {
 		this(code, FormulaExpand.truncate);
@@ -87,8 +88,13 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 */
 	@Override
 	public String getKind() {
-		return ast.getPParseUnit() instanceof AExpressionParseUnit ? EXPRESSION.toString()
-				: (ast.getPParseUnit() instanceof APredicateParseUnit ? PREDICATE.toString() : ASSIGNMENT.toString());
+		if (ast.getPParseUnit() instanceof AExpressionParseUnit) {
+			return EXPRESSION.toString();
+		} else if (ast.getPParseUnit() instanceof APredicateParseUnit) {
+			return PREDICATE.toString();
+		} else {
+			return ASSIGNMENT.toString();
+		}
 	}
 
 	/**
