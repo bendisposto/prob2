@@ -118,7 +118,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 			throw new EvaluationException("Substitutions are currently unsupported for evaluation");
 		}
 		if (ast.getEOF() == null) {
-			//ast.setEOF(new EOF());
+			ast.setEOF(new EOF());
 		}
 		// TODO use ASTProlog.printFormula(pout) when new parser is released
 		NodeIdAssignment na = new NodeIdAssignment();
