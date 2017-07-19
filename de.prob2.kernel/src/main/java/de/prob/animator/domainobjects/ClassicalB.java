@@ -117,14 +117,15 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 		if (getKind().equals(ASSIGNMENT.toString())) {
 			throw new EvaluationException("Substitutions are currently unsupported for evaluation");
 		}
-		//TODO use ASTProlog.printFormula(pout) when new parser is released
+		if (ast.getEOF() == null) {
+			//ast.setEOF(new EOF());
+		}
+		// TODO use ASTProlog.printFormula(pout) when new parser is released
 		NodeIdAssignment na = new NodeIdAssignment();
 		ast.apply(na);
 		OffsetPositionPrinter pprinter = new OffsetPositionPrinter(na, -1, 0);
 		final ASTProlog prolog = new ASTProlog(pout, pprinter);
-		if (ast.getEOF() == null) {
-			ast.setEOF(new EOF());
-		}
+
 		ast.apply(prolog);
 
 	}
