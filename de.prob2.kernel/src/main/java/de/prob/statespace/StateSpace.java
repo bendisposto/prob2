@@ -382,7 +382,7 @@ public class StateSpace implements IAnimator {
 					subscribedFormulas.add(formulaOfInterest);
 					success = true;
 				} else {
-					WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
+					WeakHashMap<Object, Object> subscribers = new WeakHashMap<>();
 					subscribers.put(subscriber, new WeakReference<Object>(subscriber));
 					formulaRegistry.put(formulaOfInterest, subscribers);
 					subscribeCmds.add(new RegisterFormulaCommand(formulaOfInterest));
