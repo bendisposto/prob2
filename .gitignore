@@ -15,3 +15,4 @@ ltl_graphdump.pl
 *.cljs#
 .nrepl-history
 local.*
+prob2-build.properties

@@ -1,8 +1,8 @@
-/** 
+/* 
  * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
  * Heinrich Heine Universitaet Duesseldorf
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
- * */
+ */
 
 package de.prob.formula;
 
@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import de.be4.classicalb.core.parser.node.*;
 
 import org.eventb.core.ast.AssociativeExpression;
 import org.eventb.core.ast.AssociativePredicate;
@@ -47,8 +49,6 @@ import org.eventb.core.ast.Type;
 import org.eventb.core.ast.UnaryExpression;
 import org.eventb.core.ast.UnaryPredicate;
 import org.eventb.core.ast.extension.IExpressionExtension;
-
-import de.be4.classicalb.core.parser.node.*;
 
 /**
  * This visitor on an Event-B AST generates an AST in ProB's format.
@@ -105,9 +105,6 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * Push an expression on the stack. The original (not translated) expression
 	 * is needed to check whether the expression should wrapped by a typeof(...)
 	 * operator.
-	 * 
-	 * @param original
-	 * @param translated
 	 */
 	private void pushExpression(Expression original, PExpression translated) {
 		final PExpression toPush;
@@ -125,8 +122,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * translation. This can be the e.g. case for {} or id
 	 * 
 	 * @see #EXTRA_TYPE_CONSTRUCTS
-	 * @param original
-	 * @return <code>true</code> if the
+	 * @return {@code true} if the
 	 */
 	private boolean shouldHaveExtraTypeInfo(Expression original) {
 		if (original instanceof ExtendedExpression) {
@@ -149,12 +145,12 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * Translate a Event-B type to a corresponding ProB AST.
 	 * 
 	 * This could theoretically directly be done by using
-	 * {@link Type#toExpression(org.eventb.core.ast.FormulaFactory)} and
+	 * {@link Type#toExpression()} and
 	 * translating that expression, but then we would need a formula factory.
 	 * 
 	 * @param type
-	 *            the type to translate, never <code>null</code>
-	 * @return the translated expression, never <code>null</code>
+	 *            the type to translate, never {@code null}
+	 * @return the translated expression, never {@code null}
 	 * @throws AssertionError
 	 *             if a type is encountered that cannot be translated
 	 */
@@ -589,7 +585,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	/**
 	 * If we have declarations of x and y with types S resp. T, add the type
 	 * information to the original predicate P. The result would be
-	 * <code>x:S & (y:T & P)</code>.
+	 * {@code x:S & (y:T & P)}.
 	 * 
 	 * If decls is empty, the original predicate is returned unmodified.
 	 * 
@@ -600,11 +596,11 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * modifications to the structure of the AST.
 	 * 
 	 * @param predicate
-	 *            the original predicate, <code>null</code> if no original
+	 *            the original predicate, {@code null} if no original
 	 *            predicate is used.
 	 * @param decls
-	 *            a list of declarations, never <code>null</code>
-	 * @return the original predicate plus type information, <code>null</code>
+	 *            a list of declarations, never {@code null}
+	 * @return the original predicate plus type information, {@code null}
 	 *         if no original predicate is given and decls is empty
 	 */
 	private PPredicate addTypesToPredicate(PPredicate predicate,
@@ -835,8 +831,6 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * 
 	 * Also there is another method to remove n elements at the same time into a
 	 * list.
-	 * 
-	 * @param <T>
 	 */
 	private static class LookupStack<T> {
 		private final List<T> elements = new ArrayList<T>();

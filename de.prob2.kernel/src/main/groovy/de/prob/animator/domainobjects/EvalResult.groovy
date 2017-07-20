@@ -79,12 +79,12 @@ public class EvalResult extends AbstractEvalResult {
 	}
 
 	/**
-	 * Translates the results from ProB into an IEvalResult. This is intended
+	 * Translates the results from ProB into an {@link AbstractEvalResult}. This is intended
 	 * mainly for internal use, for developers who are writing commands and want
-	 * to translate them into an {@link IEvalResult}.
+	 * to translate them into an {@link AbstractEvalResult}.
 	 *
 	 * @param pt PrologTerm
-	 * @return IEvalResult translation of pt
+	 * @return {@link AbstractEvalResult} translation of pt
 	 */
 	def static AbstractEvalResult getEvalResult(PrologTerm pt) {
 		if (pt instanceof ListPrologTerm) {

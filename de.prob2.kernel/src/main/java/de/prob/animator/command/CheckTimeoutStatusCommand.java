@@ -1,14 +1,14 @@
-/**
+/*
  * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
- * */
+ */
 
 package de.prob.animator.command;
 
 
 /**
- * Checks to see if a timeout has occured at a given state
+ * Checks to see if a timeout has occured at a given state.
  * 
  * @author joy
  * 

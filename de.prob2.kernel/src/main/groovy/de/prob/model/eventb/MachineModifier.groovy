@@ -16,7 +16,7 @@ import de.prob.model.representation.Variable
 /**
  * The {@link MachineModifier} provides an API to programmatically modify or
  * construct {@link EventBMachine}s. Basic elements can be added to the machine
- * via the methods beginning with 'add' (e.g. {@link #addInvariant(String)}).
+ * via methods like {@link MachineModifier#invariant(String)}.
  * <br>
  * Machines can also be constructed using JavaBuilder syntax which adds an element
  * and returns the {@link MachineModifier} object itself to allow the method calls

@@ -3,6 +3,9 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'application'
+apply plugin: 'antlr'
+//apply plugin: 'jacoco'
 
 project.group = 'de.hhu.stups'
 sourceCompatibility = 1.7
@@ -23,12 +26,23 @@ if (System.env.TRAVIS == 'true') {
   }
 
 
-
-def gradle_version = '3.0'
+def gradle_version = '4.0'
 
 // Remember to release the cli!
-project.version = '3.2.1'
-ext{ cli_version = '1.7.0-beta1-2' }
+project.version = '3.2.2'
+ext{ cli_version = '1.7.0' }
+
+def parser_version
+
+if (project.version.endsWith("-SNAPSHOT")) {
+	parser_version = '2.9.7-SNAPSHOT'
+}
+else {
+	parser_version = '2.9.6'
+}
+
+
+mainClassName = "de.prob.Main"
 
 
 repositories {
@@ -51,9 +65,10 @@ sourceSets.main.java.srcDirs = [
 	'src/main/generated'] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
 
-def parser_version = '2.9.2'
 
 dependencies {
+
+	compile 'com.google.code.findbugs:jsr305:3.0.2'
 
 	compile 'com.google.guava:guava:19.0'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
@@ -84,6 +99,10 @@ dependencies {
 	compile group: "de.hhu.stups", name: "eventbalg", version: parser_version, changing: true
 
 	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.0.8', changing: true
+
+	antlr "org.antlr:antlr4:4.5"
+	compile group: 'de.hhu.stups', name: 'ltl-dsl', version: '0.1.0'
+
 
 	// The following dependencies are needed for FMI
 	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
@@ -201,7 +220,7 @@ task createBuildConstants  {
 		def buildconstants_class = """
 version=${project.version}
 git=${getCheckedOutGitCommitHash()}"""
-		File f = file("src/main/resources/build.properties")
+		File f = file("src/main/resources/prob2-build.properties")
 		f.delete()
 		f <<  buildconstants_class
 	}
@@ -214,9 +233,10 @@ compileGroovy { dependsOn= [createBuildConstants]}
 test.doFirst { systemProperties['integrationtest'] = 'true' }
 
 test {
-    testLogging {
-        exceptionFormat = 'full'
-    }
+  exclude('de/prob/cli/integration')
+  testLogging {
+    exceptionFormat = 'full'
+  }
 }
 
 groovydoc {
@@ -239,7 +259,7 @@ def os_extension() {
 }
 
 // run integration tests after downloading fresh CLI from Nightly Build
-task integrationtests(dependsOn: ['downloadCLIs', 'tests']);
+task integrationtests(dependsOn: ['downloadCLIs', 'tests', 'cliIntegrationTests']);
 
 // run integration tests WITHOUT downloading fresh CLI from Nightly Build
 task tests(dependsOn: ['classes'], type:JavaExec){
@@ -248,9 +268,30 @@ task tests(dependsOn: ['classes'], type:JavaExec){
 	args = ['-script', 'groovyTests']
 }
 
+task cliIntegrationTests(type: Test, dependsOn: ['downloadCLIs', 'test']){
+  doFirst{ println("Running cli integration tests") }
+  scanForTestClasses = true
+  include('de/prob/cli/integration/**/*')
+}
+
 eclipse {
 	project { name = 'de.prob2.kernel' }
 }
+
+// type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
+/*
+jacocoTestReport {
+	doFirst{
+		classDirectories = files('build/classes/main')
+	}
+	reports {
+	  xml.enabled false
+	  csv.enabled false
+	  html.destination "${buildDir}/reports/jacocoHtml"
+	}
+}
+check.dependsOn jacocoTestReport
+*/
 
 task deploy(type: Copy, dependsOn: build) {
 	into "$buildDir/libs"

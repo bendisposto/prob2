@@ -1,32 +1,28 @@
-/**
+/*
  * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
- * */
+ */
 
 package de.prob.animator.domainobjects;
-
-import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
-import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
-import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
-import de.be4.classicalb.core.parser.node.APredicateParseUnit;
-import de.be4.classicalb.core.parser.node.EOF;
-import de.be4.classicalb.core.parser.node.Node;
-import de.be4.classicalb.core.parser.node.Start;
+import de.be4.classicalb.core.parser.node.*;
+import de.be4.classicalb.core.parser.util.PrettyPrinter;
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
-import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
 import de.prob.translator.TranslatingVisitor;
 import de.prob.translator.types.BObject;
+
+import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
+import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
+import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 /**
  * Representation of a ClassicalB formula.
@@ -43,6 +39,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 * @param code
 	 *            will be parsed and the resulting {@link Start} ast saved
 	 * @throws EvaluationException
+	 *             if the code could not be parsed
 	 */
 	public ClassicalB(final String code) {
 		this(code, FormulaExpand.truncate);
@@ -91,8 +88,13 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 */
 	@Override
 	public String getKind() {
-		return ast.getPParseUnit() instanceof AExpressionParseUnit ? EXPRESSION.toString()
-				: (ast.getPParseUnit() instanceof APredicateParseUnit ? PREDICATE.toString() : ASSIGNMENT.toString());
+		if (ast.getPParseUnit() instanceof AExpressionParseUnit) {
+			return EXPRESSION.toString();
+		} else if (ast.getPParseUnit() instanceof APredicateParseUnit) {
+			return PREDICATE.toString();
+		} else {
+			return ASSIGNMENT.toString();
+		}
 	}
 
 	/**
@@ -138,8 +140,8 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	@Override
-	public EvaluationCommand getCommand(final State stateId) {
-		return new EvaluateFormulaCommand(this, stateId.getId());
+	public EvaluationCommand getCommand(final State state) {
+		return new EvaluateFormulaCommand(this, state.getId());
 	}
 
 	@Override

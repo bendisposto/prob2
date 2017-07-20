@@ -9,12 +9,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Singleton;
 
 import de.prob.model.representation.AbstractElement;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class provides a registry of all currently running animations. It
@@ -52,7 +52,7 @@ public class AnimationSelector {
 	 * An {@link IAnimationChangeListener} can register itself via this method
 	 * when it wants to receive updates about any changes in the current state.
 	 * 
-	 * @param listener
+	 * @param listener the listener to regiseter
 	 */
 	public void registerAnimationChangeListener(
 			final IAnimationChangeListener listener) {
@@ -84,9 +84,9 @@ public class AnimationSelector {
 
 	/**
 	 * Changes the current trace to the specified {@link Trace} and notifies an
-	 * animation change ({@link AnimationSelector#notifyAnimationChange(Trace)})
+	 * animation change ({@link AnimationSelector#notifyModelChanged(StateSpace)}).
 	 * 
-	 * @param trace
+	 * @param trace the new current trace
 	 */
 	public void changeCurrentAnimation(final Trace trace) {
 		currentTrace = trace;
@@ -106,7 +106,7 @@ public class AnimationSelector {
 	/**
 	 * Adds the specified {@link Trace} trace to the registry, sets the current
 	 * trace to trace, and notifies an animation change (
-	 * {@link AnimationSelector#notifyAnimationChange(Trace)}). If a trace with
+	 * {@link AnimationSelector#notifyModelChanged(StateSpace)}). If a trace with
 	 * the same UUID is already being tracked, a {@link Trace#copy()} is made
 	 * and this is animated.
 	 * 
@@ -236,9 +236,10 @@ public class AnimationSelector {
 	}
 
 	/**
-	 * @param trace
-	 * @return the {@link AbstractElement} model that corresponds to the given
-	 *         {@link Trace}
+	 * Get the {@link AbstractElement} model that corresponds to the given {@link Trace}.
+	 *
+	 * @param trace the trace for which to get the model
+	 * @return the trace's model
 	 */
 	public AbstractElement getModel(final Trace trace) {
 		return trace.getModel();
@@ -251,7 +252,7 @@ public class AnimationSelector {
 
 	/**
 	 * notify all of the listeners using the current trace
-	 * {@link AnimationSelector#notifyAnimationChange(Trace)}
+	 * {@link AnimationSelector#notifyModelChanged(StateSpace)}
 	 */
 	public void refresh() {
 		notifyAnimationChange(currentTrace, true);
@@ -322,7 +323,7 @@ public class AnimationSelector {
 	 * {@link Trace}s available to animate, one of these is selected as the new
 	 * current trace. Otherwise, the current {@link Trace} is set to null.
 	 * 
-	 * @param trace
+	 * @param trace the trace to remove
 	 */
 	public void removeTrace(final Trace trace) {
 		remove(trace);

@@ -37,6 +37,7 @@ public abstract class AbstractElement {
 	 *
 	 * @param c
 	 *            {@link Class} T of the desired type of children
+	 * @param <T> the desired type of children
 	 * @return {@link Set} containing all the children of type T
 	 */
 	@SuppressWarnings("unchecked")

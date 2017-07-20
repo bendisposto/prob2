@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Singleton;
 
 import de.prob.model.representation.AbstractElement;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @deprecated Use AnimationSelector instead
@@ -32,7 +32,7 @@ public class Animations {
 	 * An {@link IAnimationChangeListener} can register itself via this method
 	 * when it wants to receive updates about any changes in the current state.
 	 * 
-	 * @param listener
+	 * @param listener the listener to register
 	 */
 	public void registerAnimationChangeListener(
 			final ITraceChangesListener listener) {
@@ -133,9 +133,10 @@ public class Animations {
 	}
 
 	/**
-	 * @param trace
-	 * @return the {@link AbstractElement} model that corresponds to the given
-	 *         {@link Trace}
+	 * Get the {@link AbstractElement} model that corresponds to the given {@link Trace}.
+	 * 
+	 * @param trace the trace for which to get the model
+	 * @return the trace's model
 	 */
 	public AbstractElement getModel(final Trace trace) {
 		return trace.getModel();
@@ -165,7 +166,7 @@ public class Animations {
 	 * {@link Trace}s available to animate, one of these is selected as the new
 	 * current trace. Otherwise, the current {@link Trace} is set to null.
 	 * 
-	 * @param trace
+	 * @param trace the trace to remove
 	 */
 	public void removeTrace(final Trace trace) {
 		traces.remove(trace.getUUID());

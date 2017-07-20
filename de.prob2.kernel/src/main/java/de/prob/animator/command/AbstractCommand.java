@@ -3,8 +3,6 @@ package de.prob.animator.command;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Joiner;
-
 import de.prob.animator.IPrologResult;
 import de.prob.animator.InterruptedResult;
 import de.prob.animator.NoResult;
@@ -59,7 +57,7 @@ public abstract class AbstractCommand {
 	 * This will be called if the Prolog query was successful and no error
 	 * messages were logged during the execution of the query. If the query was
 	 * not successful, or if there were errors
-	 * {@link AbstractCommand#processErrorResult(ISimplifiedROMap, String)} will
+	 * {@link AbstractCommand#processErrorResult(IPrologResult, List)} will
 	 * be called.
 	 * </p>
 	 * 
@@ -135,22 +133,14 @@ public abstract class AbstractCommand {
 	public void processErrorResult(final IPrologResult result,
 			final List<String> errormessages) {
 		if (result instanceof NoResult) {
-			String message = "Prolog said no.";
-			if (!errormessages.isEmpty()) {
-				message += " Error messages were: "
-						+ Joiner.on("\n").join(errormessages);
-			} else {
-				message += " No error messages were produced.";
-			}
-			throw new ProBError(message);
+			throw new ProBError("Prolog said no.", errormessages);
 		} else if (result instanceof InterruptedResult) {
 			interrupted = true;
 		} else if (result instanceof YesResult) {
 			processResult(((YesResult) result).getBindings());
-			throw new ProBError("ProB reported Errors: " + errormessages);
+			throw new ProBError("ProB reported Errors", errormessages);
 		} else {
-			throw new ProBError("Errors were: "
-					+ Joiner.on("\n").join(errormessages));
+			throw new ProBError("Errors were", errormessages);
 		}
 	}
 }

@@ -11,6 +11,7 @@ import de.prob.animator.IAnimator
 import de.prob.animator.command.GetVersionCommand
 import de.prob.cli.CliVersionNumber
 import de.prob.cli.ProBInstance
+import de.prob.exception.CliError
 import de.prob.exception.ProBError
 import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.prolog.output.PrologTermOutput
@@ -39,11 +40,11 @@ public class Api {
 	}
 
 	/**
-	 * A {@link FactoryProvider} and {@link Downloader} are injected into an api
+	 * A {@link FactoryProvider} and {@link Provider}{@code <}{@link IAnimator}{@code >} are injected into an api
 	 * object at startup
 	 *
 	 * @param modelFactoryProvider
-	 * @param downloader
+	 * @param animatorProvider
 	 */
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,final Provider<IAnimator> animatorProvider) {
@@ -97,10 +98,9 @@ public class Api {
 	}
 
 	/**
-	 * Loads a {@link ClassicalBModel} from the specified file path.
+	 * Loads a {@link StateSpace} from the given B file path.
 	 *
 	 * @param file
-	 * @return classicalBModel
 	 * @throws ModelTranslationError
 	 * @throws IOException
 	 */
@@ -137,24 +137,22 @@ public class Api {
 	}
 
 	/**
-	 * Loads a {@link CSPModel} from the given file. If the user does not have
+	 * Loads a {@link StateSpace} from the given CSP file. If the user does not have
 	 * the cspm parser installed, an Exception is thrown informing the user that
 	 * they need to install it.
 	 *
 	 * @param file
-	 * @return {@link CSPModel} that has been loaded from file
-	 * @throws Exception
 	 */
 	public StateSpace csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap())
-	throws Exception {
+	throws IOException, ModelTranslationError {
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
 		StateSpace s = null;
 		try {
 			def extracted = cspFactory.extract(file)
 			s = extracted.load(prefs)
 		} catch (ProBError error) {
-			throw new Exception(
-			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory");
+			throw new CliError(
+			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory", error);
 		}
 		return s;
 	}

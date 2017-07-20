@@ -26,8 +26,7 @@ class Shell {
 		this.ProBs = ProBs;
 	}
 
-	private void runScript(final String dir, final File script,
-			final boolean silent) throws Throwable {
+	private void runScript(final String dir, final File script, final boolean silent) throws Throwable {
 		if (script.isDirectory()) {
 			long time = System.currentTimeMillis();
 			File[] files = script.listFiles(new FilenameFilter() {
@@ -60,12 +59,17 @@ class Shell {
 			System.out.print(script.getName());
 		}
 		FileReader fr = new FileReader(script);
-		Object res = executor.eval(fr);
+		Object res = null;
+		try {
+			res = executor.eval(fr);
+		} catch (Throwable e) {
+			
+			System.err.println("\n"+e.getLocalizedMessage());
+		}
 		ProBs.shutdownAll();
 		if (!silent) {
 			double seconds = (System.currentTimeMillis() - time) / 1000.0;
-			System.out.println(" - " + res.toString() + " ("
-					+ String.format("%.4g", seconds) + " s)");
+			System.out.println(" - " + res.toString() + " (" + String.format("%.4g", seconds) + " s)");
 		}
 	}
 
@@ -73,8 +77,7 @@ class Shell {
 		runScript(file, true);
 	}
 
-	public void runScript(final File file, final boolean silent)
-			throws Throwable {
+	public void runScript(final File file, final boolean silent) throws Throwable {
 		runScript(file.getAbsolutePath(), file, silent);
 	}
 }

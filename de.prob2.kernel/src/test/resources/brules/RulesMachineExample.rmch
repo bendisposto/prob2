@@ -1,0 +1,100 @@
+RULES_MACHINE RulesMachineExample
+ABSTRACT_CONSTANTS
+  ACON
+CONSTANTS
+  CCON
+PROPERTIES
+  ACON = %x.(x : STRING | IF x = CCON THEN TRUE ELSE FALSE END)
+& CCON = "ABC"
+OPERATIONS
+
+//RULE_FAIL in loop
+  RULE RuleFailInLoop
+  BODY
+    FOR x IN 1..100
+    DO
+      IF x = 55
+      THEN
+        RULE_FAIL(STRING_FORMAT("Invalid value ~w", x))
+      END
+    END
+  END
+;
+// RULE_FORALL in loop
+RULE RuleForAllInLoop
+BODY
+  FOR x IN 1..100
+  DO
+    RULE_FORALL v
+    WHERE
+      v : x-5..x+5
+    EXPECT
+      v > 0
+    COUNTEREXAMPLE
+      STRING_FORMAT(
+        "Value ~w is not greater than zero"
+        , x
+      )
+    END//RULE_FORALL
+  END
+END
+;
+// RULE_ANY in loop
+RULE RuleAnyInLoop
+BODY
+  FOR x IN 1..100
+  DO
+    RULE_ANY v
+    WHERE
+      v : x-5..x+5
+      & v <= 0
+    COUNTEREXAMPLE
+      STRING_FORMAT(
+        "Value ~w is not greater than zero"
+        , x
+      )
+    END//RULE_FORALL
+  END
+END
+;
+COMPUTATION COMP_comp1
+BODY
+  DEFINE
+    V_Value1
+  TYPE
+    POW(INTEGER)
+  VALUE
+    2..10
+  END//DEFINE
+END//COMPUTATION
+;
+RULE RULE_BasedOnValue1
+BODY
+  RULE_FORALL x
+  WHERE
+    x : V_Value1 //dependency to COMPUTATION COMP_comp1 will be inferred and automatically injected
+  EXPECT
+    x > 2
+  COUNTEREXAMPLE
+    STRING_FORMAT(
+      "Value ~w is not greater than zero"
+      , x
+    )
+  END//RULE_FORALL
+END
+;
+RULE RULE_Errros
+BODY
+  RULE_FORALL x
+  WHERE
+    x : 1..140
+  EXPECT
+    1=2
+  COUNTEREXAMPLE
+    STRING_FORMAT(
+      "Value ~w"
+      , x
+    )
+  END//RULE_FORALL
+END
+END

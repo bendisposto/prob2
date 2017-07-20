@@ -1,0 +1,44 @@
+RULES_MACHINE Replaces
+
+OPERATIONS
+
+COMPUTATION COMP_comp1
+BODY
+  DEFINE
+    V_Value1
+  TYPE
+    INTEGER
+  DUMMY_VALUE 0
+  VALUE
+    10
+  END//DEFINE
+END//COMPUTATION
+;
+RULE RULE_BasedOnValue1
+BODY
+  RULE_FORALL x
+  WHERE
+    x : 1..V_Value1
+  EXPECT
+    x <= 10
+  COUNTEREXAMPLE
+    STRING_FORMAT(
+      "Value ~w is not greater than zero"
+      , x
+    )
+  END//RULE_FORALL
+END
+;
+COMPUTATION COMP_NewComp1
+REPLACES COMP_comp1
+BODY
+  DEFINE
+    V_Value1
+  TYPE
+    INTEGER
+  DUMMY_VALUE 0
+  VALUE
+    12
+  END//DEFINE
+END//COMPUTATION
+END

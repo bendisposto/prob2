@@ -4,10 +4,15 @@ package de.prob.model.classicalb;
 import spock.lang.Specification;
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.node.Start;
+import de.be4.classicalb.core.parser.util.PrettyPrinter
 
 
 public class PrettyPrintTest extends Specification {
-
+	/*
+	 * TODO 
+	 * If the prettyprinter inserts a whitespace, this test will fail.
+	 * Thus, we should convert this test to a junit test and move it to the parser.
+	 */
 	def "test pretty printing"() {
 		when:
 		Start parse = BParser.parse("#EXPRESSION" + a);
@@ -59,10 +64,9 @@ public class PrettyPrintTest extends Specification {
 							END'''
 		Start parse = BParser.parse(toParse);
 		PrettyPrinter prettyprinter = new PrettyPrinter();
-		def foo = parse.getPParseUnit().getMachineClauses().get(0);
+		def foo = parse.getPParseUnit().getMachineClauses().get(0).getSetDefinitions().get(0);
 		foo.apply(prettyprinter);
 		String prettyPrint = prettyprinter.getPrettyPrint();
-
 		then:
 		prettyPrint == "PID={PID1,PID2,PID3}"
 	}

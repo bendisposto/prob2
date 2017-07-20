@@ -22,7 +22,7 @@ public interface IEvalElement {
 	/**
 	 * Writes the formula to {@link IPrologTermOutput} pout
 	 * 
-	 * @param pout
+	 * @param pout the {@link IPrologTermOutput} to write to
 	 */
 	public abstract void printProlog(IPrologTermOutput pout);
 
@@ -39,7 +39,7 @@ public interface IEvalElement {
 
 	public IFormulaUUID getFormulaId();
 
-	public EvaluationCommand getCommand(State stateid);
+	public EvaluationCommand getCommand(State state);
 
 	public FormulaExpand expansion();
 }

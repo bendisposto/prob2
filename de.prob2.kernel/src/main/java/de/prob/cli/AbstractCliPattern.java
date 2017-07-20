@@ -1,6 +1,3 @@
-/**
- * 
- */
 package de.prob.cli;
 
 import java.util.regex.Matcher;
@@ -43,23 +40,17 @@ abstract class AbstractCliPattern<T> {
 	 * If the current line matches the pattern, this method is called with the
 	 * resulting {@link Matcher} object. An implementation of this method should
 	 * find a value that can be accessed via {@link #getValue()}.
-	 * 
-	 * @param matcher
 	 */
 	protected abstract void setValue(Matcher matcher);
 
 	/**
 	 * Returns the resulting value determined by the input line.
-	 * 
-	 * @return
 	 */
 	public abstract T getValue();
 
 	/**
 	 * This method is called if no line matched on this pattern and the start of
 	 * the command loop is reached.
-	 * 
-	 * @throws CliError
 	 */
 	public abstract void notifyNotFound();
 

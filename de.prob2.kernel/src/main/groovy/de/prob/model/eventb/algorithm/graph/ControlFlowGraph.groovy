@@ -56,7 +56,7 @@ class ControlFlowGraph {
 
 	/**
 	 * Calls {@link Block#ensureFinished()} to add end node if necessary.
-	 * Calls {@link #addNode(Object,Object)} to recursively build graph
+	 * Calls addNode to recursively build graph
 	 * @param algorithm for which a control flow graph is created
 	 * @return control flow graph for algorithm
 	 */

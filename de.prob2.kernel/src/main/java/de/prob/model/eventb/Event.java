@@ -1,12 +1,12 @@
 package de.prob.model.eventb;
 
-import com.github.krukow.clj_lang.PersistentHashMap;
-
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Action;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Guard;
 import de.prob.model.representation.ModelElementList;
+
+import com.github.krukow.clj_lang.PersistentHashMap;
 
 public class Event extends BEvent {
 
@@ -66,8 +66,6 @@ public class Event extends BEvent {
 	 * However, this is just a reference, and in order to retrieve the actual
 	 * refined events the parent machine needs to be passed in as an argument.
 	 *
-	 * @param parentMachine
-	 *            from which the refined event will be retrieved
 	 * @return the event that this event refines, if any. Otherwise null.
 	 */
 	public ModelElementList<Event> getRefines() {

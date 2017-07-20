@@ -1,6 +1,3 @@
-/**
- * 
- */
 package de.prob.animator.domainobjects;
 
 import de.prob.prolog.term.CompoundPrologTerm;

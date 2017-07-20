@@ -41,7 +41,7 @@ public interface IAnimator {
 	 * Kills the underlying probcli
 	 */
 	void kill();
-	
+
 	/**
 	 * Signals the {@link IAnimator} that a transaction is beginning. The
 	 * {@link IAnimator} can then set a flag indicating that it is busy because
@@ -68,4 +68,7 @@ public interface IAnimator {
 	 *         implementations should ensure that this id is unique.
 	 */
 	String getId();
+
+	long getTotalNumberOfErrors();
+
 }

@@ -49,6 +49,7 @@ public class LTLCheckingJob extends AbstractCommand {
 			ui.updateStats(jobId, System.currentTimeMillis() - time, res, null);
 		}
 		completed = !(res instanceof LTLNotYetFinished);
+		interrupted = interrupted || cmd.isInterrupted();
 
 		cmd = new LtlCheckingCommand(s, formula, MAX);
 	}

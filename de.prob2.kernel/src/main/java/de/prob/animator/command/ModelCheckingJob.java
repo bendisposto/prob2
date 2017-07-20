@@ -48,7 +48,8 @@ public class ModelCheckingJob extends AbstractCommand {
 		if (ui != null && res != null && stats != null) {
 			ui.updateStats(jobId, System.currentTimeMillis() - time, res, stats);
 		}
-		completed = !(res instanceof NotYetFinished) || res == null;
+		completed = !(res instanceof NotYetFinished);
+		interrupted = interrupted || cmd.isInterrupted();
 
 		options = options.recheckExisting(false);
 		cmd = new ModelCheckingStepCommand(TIMEOUT_MS, options);

@@ -34,7 +34,7 @@ public class ContextModifier extends AbstractModifier {
 	 * Adds the set and constants to the context, as well as the generated partition axiom.
 	 * @param setName of enumerated set to be added
 	 * @param elements contained in the specified set
-	 * @return the {@link EnumeratedSetBlock} generated when creating the set
+	 * @return the {@link ContextModifier} generated when creating the set
 	 */
 	def ContextModifier addEnumeratedSet(String setName, String... elements) throws ModelGenerationException {
 		ContextModifier cm = set(validate('setName', setName))

@@ -3,7 +3,7 @@ package de.prob.statespace;
 /**
  * A Class that implements this interface and registers itself in the
  * {@link AnimationSelector} will receive updates via the
- * {@link IAnimationChangeListener#traceChange(Trace)} method whenever anything
+ * {@link IAnimationChangeListener#traceChange(Trace, boolean)} method whenever anything
  * happens with the current animation.
  * 
  * @author joy
@@ -22,7 +22,7 @@ public interface IAnimationChangeListener {
 	 * case, the listener can inspect the animation selector object to view the
 	 * total current state of the object.
 	 * 
-	 * @param trace
+	 * @param currentTrace
 	 *            the current trace in the animations object
 	 * @param currentAnimationChanged
 	 *            whether or not the current animation has changed.

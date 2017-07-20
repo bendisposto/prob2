@@ -10,6 +10,9 @@ import de.prob.model.representation.DependencyGraph.ERefType;
 
 s = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
 assert s != null
+
+l = s.getTotalNumberOfErrors()
+
 m = s as EventBModel
 
 assert ERefType.SEES == m.getRelationship("lift0", "levels")
@@ -20,7 +23,14 @@ constants = levels.constants
 
 assert constants != null
 assert constants.size() == 6
-assert constants.collect { it.name } == ["L0", "L1", "L2", "L3", "down", "up"]
+assert constants.collect { it.name } == [
+	"L0",
+	"L1",
+	"L2",
+	"L3",
+	"down",
+	"up"
+]
 assert !constants.inject(false) { acc, val -> acc || val.isAbstract}
 
 axioms = levels.axioms
@@ -47,7 +57,12 @@ assert invariants.size() == 1
 events = lift0.events
 assert events != null
 assert events.size() == 4
-assert events.collect { it.name } == ["INITIALISATION", "up", "down", "randomCrazyJump"]
+assert events.collect { it.name } == [
+	"INITIALISATION",
+	"up",
+	"down",
+	"randomCrazyJump"
+]
 
 up = events.up
 assert up != null
@@ -65,5 +80,7 @@ variant = lift0.variant
 assert variant == null
 
 assert lift0.sees.contains(levels)
+
+assert l == s.getTotalNumberOfErrors()
 
 "When an EventB file is loaded (Lift example), the model elements are accessible."

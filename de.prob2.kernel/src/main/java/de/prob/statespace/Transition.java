@@ -7,13 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
+
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.Operation;
@@ -29,17 +27,20 @@ import de.prob.translator.Translator;
 import de.prob.translator.types.BObject;
 import de.prob.util.StringUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Stores the information for a given Operation. This includes operation id
+ * <p>Stores the information for a given Operation. This includes operation id
  * (id), operation name (name), the source state (src), and the destination
- * state (dest), as well as a list of parameters. </br></br> Note: This class
- * retains a reference to the StateSpace object to which it belongs. In order to
- * ensure that the garbage collector works correctly when cleaning up a
- * StateSpace object make sure that all OpInfo objects are correctly
- * dereferenced.
+ * state (dest), as well as a list of parameters.</p>
  * 
- * @author joy
+ * <p>Note: This class retains a reference to the {@link StateSpace} object to
+ * which it belongs. In order to ensure that the garbage collector works
+ * correctly when cleaning up a {@link StateSpace} object make sure that all
+ * {@link Transition} objects are correctly dereferenced.</p>
  * 
+ * @author joy 
  */
 public class Transition {
 	public final StateSpace stateSpace;
@@ -288,7 +289,7 @@ public class Transition {
 	 * takes place via the {@link GetOpFromId} command and the missing values
 	 * are set.
 	 * 
-	 * @return
+	 * @return {@code this}
 	 */
 	public Transition evaluate() {
 		return evaluate(FormulaExpand.truncate);
@@ -315,6 +316,7 @@ public class Transition {
 	}
 
 	/**
+	 * Check whether this transition has been evaluated.
 	 * @return whether or not the name, parameters, and return values have yet
 	 *         been retrieved from ProB
 	 */
@@ -331,7 +333,7 @@ public class Transition {
 	 * state.
 	 * 
 	 * @return A SHA-1 hash of the target state in String format.
-	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchAlgorithmException if no SHA-1 provider is found
 	 */
 	public String sha() throws NoSuchAlgorithmException {
 		evaluate();
@@ -373,7 +375,7 @@ public class Transition {
 	 *            String id of source node
 	 * @param destId
 	 *            String id of destination node
-	 * @return OpInfo representation of given information
+	 * @return {@link Transition} representation of given information
 	 */
 	public static Transition generateArtificialTransition(final StateSpace s,
 			final String transId, final String description, final String srcId,

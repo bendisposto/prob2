@@ -1,0 +1,47 @@
+RULES_MACHINE RulesMachineWithWDError
+OPERATIONS
+  RULE Rule1
+  RULEID RuleId1
+  BODY
+    skip
+  END
+  ;
+  RULE Rule2
+  RULEID RuleId1
+  BODY
+    VAR xx
+    IN
+      xx := {1|->2}(3)
+    END
+  END
+  ;
+  RULE Rule3
+  BODY
+    skip
+  END
+  ;
+  RULE Rule4
+  BODY
+    skip
+  END
+  ;
+  RULE Rule5
+  RULEID RuleId5
+  BODY
+    VAR xx
+    IN
+      xx := {1|->2}(3)
+    END
+  END
+  ;
+  RULE Rule6
+  DEPENDS_ON_RULE Rule5
+  BODY
+    skip
+  END
+  ;
+  RULE Rule7
+  BODY
+    skip
+  END
+END

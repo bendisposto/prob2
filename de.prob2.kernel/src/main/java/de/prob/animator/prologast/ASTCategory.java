@@ -11,8 +11,8 @@ public class ASTCategory extends PrologASTNode{
         super();
     }
 
-    ASTCategory(PrologASTNode left, List<PrologASTNode> right){
-        super(left, right);
+    ASTCategory(List<PrologASTNode> subnodes){
+        super(subnodes);
     }
 
     void setExpanded(boolean expanded){
@@ -40,6 +40,6 @@ public class ASTCategory extends PrologASTNode{
     }
 
     public String toString(){
-        return "[Category]\n"+this.name+((isExpanded())?("\n[expanded]"):"\n[]")+((isPropagated())?("\n[propagated]"):"\n[]");
+        return "\n[Category] : "+this.name+((isExpanded())?("\n[expanded]"):"\n[]")+((isPropagated())?("\n[propagated]"):"\n[]");
     }
 }

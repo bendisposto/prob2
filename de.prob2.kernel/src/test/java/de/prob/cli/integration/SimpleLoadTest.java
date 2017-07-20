@@ -1,4 +1,4 @@
-package de.prob.tla;
+package de.prob.cli.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,15 +15,15 @@ import de.prob.scripting.ModelTranslationError;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
-public class SimpleLoadTest {
+public class SimpleLoadTest  {
 
 	private Api api;
 
 	@Before
-	public void setup() {
+	public void setupClass() {
 		api = Main.getInjector().getInstance(Api.class);
 	}
-
+	
 	@Test
 	public void testLoadTLAFile() throws IOException, ModelTranslationError {
 		StateSpace s = api.tla_load("src" + File.separator + "test" + File.separator + "resources" + File.separator

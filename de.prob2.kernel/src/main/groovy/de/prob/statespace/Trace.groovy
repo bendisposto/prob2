@@ -226,7 +226,7 @@ public class Trace {
 	 *
 	 * @param method String method name called
 	 * @param params List of parameters
-	 * @return {@link Trace#execute(method, params)}
+	 * @return {@link Trace#execute(String, List)}
 	 * @deprecated use {@link Trace#execute}
 	 */
 	@Deprecated
@@ -242,8 +242,8 @@ public class Trace {
 	}
 
 	/**
-	 * Takes an event name and a list of String predicates and uses {@link StateId#findTransition(String, List)}
-	 * with the {@link Trace#currentState()}, the specified event name, and the conjunction of the parameters.
+	 * Takes an event name and a list of String predicates and uses {@link State#findTransition(String, List)}
+	 * with the {@link Trace#getCurrentState()}, the specified event name, and the conjunction of the parameters.
 	 * If the specified operation is invalid, a runtime exception will be thrown.
 	 *
 	 * @param event String event name
@@ -276,7 +276,7 @@ public class Trace {
 
 	/**
 	 * Tests to see if the event name plus the conjunction of the parameter strings produce a valid
-	 * operation on this state. Uses implementation in {@link StateSpace#isValidOperation(StateId, String, String)}
+	 * operation on this state. Uses implementation in {@link StateSpace#isValidOperation(State, String, String)}
 	 *
 	 * @param event Name of the event to be executed
 	 * @param predicates List of String predicates to be conjoined
@@ -356,13 +356,13 @@ public class Trace {
 	}
 
 	/**
-	 * Takes a {@link StateSpace} and a list of {@link OpInfo} operations through the {@link StateSpace}
+	 * Takes a {@link StateSpace} and a list of {@link Transition} operations through the {@link StateSpace}
 	 * and generates a {@link Trace} object from the information. The list of operations must be a valid
 	 * list of operations starting from the root state, and for which the information has already been
-	 * cached in the {@link StateSpace}. Otherwise, an assertion error will be thrown. Calls {@link Trace#addOps}
+	 * cached in the {@link StateSpace}. Otherwise, an assertion error will be thrown. Calls {@link Trace#addTransitions(List)}
 	 *
 	 * @param s {@link StateSpace} through which the Trace should be generated
-	 * @param ops List of {@link OpInfo} operations that should be executed in the Trace
+	 * @param ops List of {@link Transition} operations that should be executed in the Trace
 	 * @return {@link Trace} specified by list of operations
 	 */
 	def static Trace getTraceFromTransitions(StateSpace s, List<Transition> ops) {
@@ -377,7 +377,7 @@ public class Trace {
 	/**
 	 * Adds a list of operations to an existing trace.
 	 *
-	 * @param ops List of OpInfo objects that should be added to the current trace
+	 * @param ops List of {@link Transition} objects that should be added to the current trace
 	 * @return Trace with the ops added
 	 */
 	def Trace addTransitions(List<Transition> ops) {

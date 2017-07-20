@@ -1,0 +1,12 @@
+RULES_MACHINE RulesMachineWithTypeError
+OPERATIONS
+  RULE Rule1
+  RULEID RuleId1
+  BODY
+    VAR xx
+    IN
+      xx :=1;
+      xx:=TRUE
+    END
+  END
+END

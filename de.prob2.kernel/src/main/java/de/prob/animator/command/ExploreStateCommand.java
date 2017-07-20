@@ -1,8 +1,8 @@
-/**
+/*
  * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
- * */
+ */
 
 package de.prob.animator.command;
 
@@ -12,17 +12,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.AbstractEvalResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Transition;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the enabled operations, the state values, the initialization, the

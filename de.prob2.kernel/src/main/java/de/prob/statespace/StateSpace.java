@@ -27,8 +27,8 @@ import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckIfStateIdValidCommand;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluationCommand;
+import de.prob.animator.command.FindStateCommand;
 import de.prob.animator.command.FindTraceBetweenNodesCommand;
-import de.prob.animator.command.FindValidStateCommand;
 import de.prob.animator.command.FormulaTypecheckCommand;
 import de.prob.animator.command.GetCurrentPreferencesCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
@@ -107,21 +107,19 @@ public class StateSpace implements IAnimator {
 			if (cmd.isValidState()) {
 				return new State(key, stateSpace);
 			}
-			throw new IllegalArgumentException(key
-					+ " does not represent a valid state in the StateSpace");
+			throw new IllegalArgumentException(key + " does not represent a valid state in the StateSpace");
 		}
 
 	}
 
 	private AbstractModel model;
 	private AbstractElement mainComponent;
+	private volatile boolean killed;
 
 	@Inject
-	public StateSpace(final Provider<IAnimator> panimator,
-			@MaxCacheSize final int maxSize) {
+	public StateSpace(final Provider<IAnimator> panimator, @MaxCacheSize final int maxSize) {
 		animator = panimator.get();
-		states = CacheBuilder.newBuilder().maximumSize(maxSize)
-				.build(new StateCacheLoader(this));
+		states = CacheBuilder.newBuilder().maximumSize(maxSize).build(new StateCacheLoader(this));
 	}
 
 	/**
@@ -193,13 +191,14 @@ public class StateSpace implements IAnimator {
 	 * This method is implemented to provide access to the {@link State} objects
 	 * specified by an integer identifier. This maps to a groovy operator so
 	 * that in the console users can type variableOfTypeStateSpace[stateId] and
-	 * receive the corresponding StateId back. An IllegalArgumentException is
+	 * receive the corresponding State back. An IllegalArgumentException is
 	 * thrown if the specified id is unknown.
 	 *
-	 * @throws IllegalArgumentException
 	 * @param stateId
 	 *            of the state thate is to be found.
 	 * @return {@link State} for the specified id
+	 * @throws IllegalArgumentException
+	 *             if a state with the specified id doesn't exist
 	 */
 	public Object getAt(final int stateId) {
 		return getState(stateId);
@@ -265,17 +264,15 @@ public class StateSpace implements IAnimator {
 	 *            predicate
 	 * @return list of operations calculated by ProB
 	 */
-	public List<Transition> transitionFromPredicate(final State stateId,
-			final String name, final String predicate, final int nrOfSolutions)
-					throws IllegalArgumentException {
+	public List<Transition> transitionFromPredicate(final State stateId, final String name, final String predicate,
+			final int nrOfSolutions) throws IllegalArgumentException {
 		final IEvalElement pred = model.parseFormula(predicate);
-		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				this, stateId.getId(), name, pred, nrOfSolutions);
+		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), name,
+				pred, nrOfSolutions);
 		execute(command);
 		if (command.hasErrors()) {
-			throw new IllegalArgumentException("Executing operation " + name
-					+ " with predicate " + predicate + " produced errors: "
-					+ Joiner.on(", ").join(command.getErrors()));
+			throw new IllegalArgumentException("Executing operation " + name + " with predicate " + predicate
+					+ " produced errors: " + Joiner.on(", ").join(command.getErrors()));
 		}
 		return command.getNewTransitions();
 	}
@@ -293,11 +290,10 @@ public class StateSpace implements IAnimator {
 	 * @return true, if the operation is valid from the given state. False
 	 *         otherwise.
 	 */
-	public boolean isValidOperation(final State stateId, final String name,
-			final String predicate) {
+	public boolean isValidOperation(final State stateId, final String name, final String predicate) {
 		final ClassicalB pred = new ClassicalB(predicate);
-		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				this, stateId.getId(), name, pred, 1);
+		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), name, pred,
+				1);
 		execute(command);
 		return !command.hasErrors();
 	}
@@ -327,8 +323,7 @@ public class StateSpace implements IAnimator {
 	 *            to be evaluated
 	 * @return a list of {@link AbstractEvalResult}s
 	 */
-	public List<AbstractEvalResult> eval(final State state,
-			final List<IEvalElement> formulas) {
+	public List<AbstractEvalResult> eval(final State state, final List<IEvalElement> formulas) {
 		return state.eval(formulas);
 	}
 
@@ -372,8 +367,7 @@ public class StateSpace implements IAnimator {
 	 * @return whether or not the subscription was successful (will return true
 	 *         if at least one of the formulas was successfully subscribed)
 	 */
-	public boolean subscribe(final Object subscriber,
-			final List<IEvalElement> formulas) {
+	public boolean subscribe(final Object subscriber, final List<IEvalElement> formulas) {
 		boolean success = false;
 		List<AbstractCommand> subscribeCmds = new ArrayList<AbstractCommand>();
 		for (IEvalElement formulaOfInterest : formulas) {
@@ -389,11 +383,9 @@ public class StateSpace implements IAnimator {
 					success = true;
 				} else {
 					WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
-					subscribers.put(subscriber, new WeakReference<Object>(
-							subscriber));
+					subscribers.put(subscriber, new WeakReference<Object>(subscriber));
 					formulaRegistry.put(formulaOfInterest, subscribers);
-					subscribeCmds.add(new RegisterFormulaCommand(
-							formulaOfInterest));
+					subscribeCmds.add(new RegisterFormulaCommand(formulaOfInterest));
 					subscribedFormulas.add(formulaOfInterest);
 					success = true;
 				}
@@ -418,8 +410,7 @@ public class StateSpace implements IAnimator {
 	 * @return will return true if the subscription was not successful, false
 	 *         otherwise
 	 */
-	public boolean subscribe(final Object subscriber,
-			final IEvalElement formulaOfInterest) {
+	public boolean subscribe(final Object subscriber, final IEvalElement formulaOfInterest) {
 		if (formulaOfInterest instanceof CSP) {
 			logger.info(
 					"CSP formula {} not subscribed because CSP evaluation is not state based. Use eval method instead",
@@ -428,8 +419,7 @@ public class StateSpace implements IAnimator {
 		}
 
 		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			formulaRegistry.get(formulaOfInterest).put(subscriber,
-					new WeakReference<Object>(subscriber));
+			formulaRegistry.get(formulaOfInterest).put(subscriber, new WeakReference<Object>(subscriber));
 		} else {
 			execute(new RegisterFormulaCommand(formulaOfInterest));
 			WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
@@ -448,8 +438,7 @@ public class StateSpace implements IAnimator {
 	 * @return whether or not a subscriber is interested in this formula
 	 */
 	public boolean isSubscribed(final IEvalElement formula) {
-		return formulaRegistry.containsKey(formula)
-				&& !formulaRegistry.get(formula).isEmpty();
+		return formulaRegistry.containsKey(formula) && !formulaRegistry.get(formula).isEmpty();
 	}
 
 	/**
@@ -463,11 +452,9 @@ public class StateSpace implements IAnimator {
 	 * @return whether or not the unsubscription was successful (will return
 	 *         false if the formula was never subscribed to begin with)
 	 */
-	public boolean unsubscribe(final Object subscriber,
-			final IEvalElement formula) {
+	public boolean unsubscribe(final Object subscriber, final IEvalElement formula) {
 		if (formulaRegistry.containsKey(formula)) {
-			final WeakHashMap<Object, Object> subscribers = formulaRegistry
-					.get(formula);
+			final WeakHashMap<Object, Object> subscribers = formulaRegistry.get(formula);
 			subscribers.remove(subscriber);
 			if (subscribers.isEmpty()) {
 				subscribedFormulas.remove(formula);
@@ -578,11 +565,9 @@ public class StateSpace implements IAnimator {
 		sb.append("STATE: " + state + "\n\n");
 		sb.append("VALUES:\n");
 		Map<IEvalElement, AbstractEvalResult> currentState = state.getValues();
-		final Set<Entry<IEvalElement, AbstractEvalResult>> entrySet = currentState
-				.entrySet();
+		final Set<Entry<IEvalElement, AbstractEvalResult>> entrySet = currentState.entrySet();
 		for (final Entry<IEvalElement, AbstractEvalResult> entry : entrySet) {
-			sb.append("  " + entry.getKey().getCode() + " -> "
-					+ entry.getValue().toString() + "\n");
+			sb.append("  " + entry.getKey().getCode() + " -> " + entry.getValue().toString() + "\n");
 		}
 
 		return sb.toString();
@@ -617,8 +602,7 @@ public class StateSpace implements IAnimator {
 	 *         {@link Trace} object)
 	 */
 	public Trace getTrace(final String sourceId, final String destId) {
-		FindTraceBetweenNodesCommand cmd = new FindTraceBetweenNodesCommand(
-				this, sourceId, destId);
+		FindTraceBetweenNodesCommand cmd = new FindTraceBetweenNodesCommand(this, sourceId, destId);
 		execute(cmd);
 		Trace t = getTrace(cmd);
 		return t;
@@ -668,7 +652,7 @@ public class StateSpace implements IAnimator {
 	 * @return {@link Trace} containing a magic operation leading to the state.
 	 */
 	public Trace getTraceToState(final IEvalElement predicate) {
-		FindValidStateCommand cmd = new FindValidStateCommand(this, predicate);
+		FindStateCommand cmd = new FindStateCommand(this, predicate, true);
 		execute(cmd);
 		return getTrace(cmd);
 	}
@@ -680,15 +664,17 @@ public class StateSpace implements IAnimator {
 	 * StateSpace object always corresponds with exactly one model.
 	 *
 	 * @param model
+	 *            the new model
+	 * @param mainComponent
+	 *            the new main component
 	 */
-	public void setModel(final AbstractModel model,
-			final AbstractElement mainComponent) {
+	public void setModel(final AbstractModel model, final AbstractElement mainComponent) {
 		this.model = model;
 		this.mainComponent = mainComponent;
 	}
 
 	/**
-	 * Returns the specified model for the given StateSpace
+	 * Returns the specified model for the given StateSpace.
 	 *
 	 * @return the {@link AbstractModel} that represents the model for the given
 	 *         StateSpace instance
@@ -709,6 +695,7 @@ public class StateSpace implements IAnimator {
 	 * {@link Trace}, a new Trace object will be created and returned.
 	 *
 	 * @param clazz
+	 *            the class to convert to
 	 * @return the Model or Trace corresponding to the StateSpace instance
 	 */
 	public Object asType(final Class<?> clazz) {
@@ -721,22 +708,22 @@ public class StateSpace implements IAnimator {
 		if (clazz.getSimpleName().equals("Trace")) {
 			return new Trace(this);
 		}
-		throw new ClassCastException("An element of class " + clazz
-				+ " was not found");
+		throw new ClassCastException("An element of class " + clazz + " was not found");
 	}
 
 	/**
 	 * Takes a collection of transitions and retrieves any information that
 	 * needs to be retrieved (i.e. parameters, return values, etc.) if the
-	 * transitions have not yet been evaluated ({@link Transition#isEvaluated()}
-	 * ).
+	 * transitions have not yet been evaluated
+	 * ({@link Transition#isEvaluated()}).
 	 *
 	 * @param transitions
-	 *            to be evaluated
+	 *            the transitions to be evaluated
+	 * @param expansion
+	 *            how formulas should be expanded
 	 * @return a set containing all of the evaluated transitions
 	 */
-	public Set<Transition> evaluateTransitions(
-			final Collection<Transition> transitions,
+	public Set<Transition> evaluateTransitions(final Collection<Transition> transitions,
 			final FormulaExpand expansion) {
 		GetOpsFromIds cmd = new GetOpsFromIds(transitions, expansion);
 		execute(cmd);
@@ -756,8 +743,8 @@ public class StateSpace implements IAnimator {
 	 * @return a map of the formulas and their results for all of the specified
 	 *         states
 	 */
-	public Map<State, Map<IEvalElement, AbstractEvalResult>> evaluateForGivenStates(
-			final Collection<State> states, final List<IEvalElement> formulas) {
+	public Map<State, Map<IEvalElement, AbstractEvalResult>> evaluateForGivenStates(final Collection<State> states,
+			final List<IEvalElement> formulas) {
 		Map<State, Map<IEvalElement, AbstractEvalResult>> result = new HashMap<State, Map<IEvalElement, AbstractEvalResult>>();
 		List<EvaluationCommand> cmds = new ArrayList<EvaluationCommand>();
 
@@ -792,7 +779,17 @@ public class StateSpace implements IAnimator {
 
 	@Override
 	public void kill() {
+		killed = true;
 		animator.kill();
+	}
+
+	public boolean isKilled() {
+		return killed;
+	}
+
+	@Override
+	public long getTotalNumberOfErrors() {
+		return animator.getTotalNumberOfErrors();
 	}
 
 }
