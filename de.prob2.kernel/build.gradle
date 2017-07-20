@@ -29,8 +29,8 @@ if (System.env.TRAVIS == 'true') {
 def gradle_version = '4.0'
 
 // Remember to release the cli!
-project.version = '3.2.2-SNAPSHOT'
-ext{ cli_version = '1.7.0-beta1-2' }
+project.version = '3.2.2'
+ext{ cli_version = '1.7.0' }
 
 def parser_version
 
