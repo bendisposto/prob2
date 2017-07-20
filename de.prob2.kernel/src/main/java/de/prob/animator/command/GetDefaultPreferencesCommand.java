@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class GetDefaultPreferencesCommand extends AbstractCommand {
 
-	private static final String PROLOG_COMMAND_NAME = "list_all_eclipse_preferences";
+	private static final String PROLOG_COMMAND_NAME = "list_eclipse_preferences";
 	Logger logger = LoggerFactory.getLogger(GetDefaultPreferencesCommand.class);
 	private static final String PREFS_VARIABLE = "Prefs";
 	private List<ProBPreference> prefs;

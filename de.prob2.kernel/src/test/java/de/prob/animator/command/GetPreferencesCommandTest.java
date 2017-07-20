@@ -77,7 +77,7 @@ public class GetPreferencesCommandTest {
 		PrologTerm t = sentences.iterator().next();
 		assertNotNull(t);
 		assertTrue(t instanceof CompoundPrologTerm);
-		assertEquals("list_all_eclipse_preferences", t.getFunctor());
+		assertEquals("list_eclipse_preferences", t.getFunctor());
 		assertEquals(1, t.getArity());
 		PrologTerm argument = t.getArgument(1);
 		assertTrue(argument.isVariable());
