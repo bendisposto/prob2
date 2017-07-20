@@ -14,9 +14,9 @@ import de.prob.prolog.term.PrologTerm;
 public class PrologAST {
 	private List<PrologASTNode> astNodes;
 
-	public PrologAST(ListPrologTerm nodes) {
-		this.astNodes = buildAST(nodes);
-	}
+    public PrologAST(ListPrologTerm nodes){
+        this.astNodes = buildAST(nodes);
+    }
 
 	public List<PrologASTNode> getASTNodes() {
 		return astNodes;

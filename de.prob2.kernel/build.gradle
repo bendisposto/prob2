@@ -29,10 +29,10 @@ if (System.env.TRAVIS == 'true') {
 def gradle_version = '4.0'
 
 // IMPORTANT !!!
-// Remember to release the cli and 
+// Remember to release the cli and
 // change the version in ../sonar-project.properties
 project.version = '3.2.2-SNAPSHOT'
-ext{ cli_version = '1.7.0-beta1-2' }
+ext{ cli_version = '1.7.0' }
 // IMPORTANT !!!
 
 
