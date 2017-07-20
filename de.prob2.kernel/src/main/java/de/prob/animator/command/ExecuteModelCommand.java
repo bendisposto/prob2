@@ -22,7 +22,7 @@ public class ExecuteModelCommand extends AbstractCommand implements IStateSpaceM
 	private static final String TRANSITION_VARIABLE = "Transition";
 	private static final String RESULT_VARIABLE = "Result";
 	private static final String EXECUTED_STEPS_VARIABLE = "Steps";
-	private final List<Transition> resultTrace = new ArrayList<Transition>();
+	private final List<Transition> resultTrace = new ArrayList<>();
 	private final State startstate;
 	private final StateSpace statespace;
 	private int stepsExecuted;

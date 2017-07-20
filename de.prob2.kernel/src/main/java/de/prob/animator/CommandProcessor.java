@@ -54,10 +54,8 @@ class CommandProcessor {
 		} else if (topnode instanceof AInterruptedResult) {
 			return new InterruptedResult();
 		} else if (topnode instanceof AYesResult) {
-			Map<String, PrologTerm> binding = BindingGenerator
-					.createBinding(ast);
-			return new YesResult(new SimplifiedROMap<String, PrologTerm>(
-					binding));
+			Map<String, PrologTerm> binding = BindingGenerator.createBinding(ast);
+			return new YesResult(new SimplifiedROMap<String, PrologTerm>(binding));
 		} else if (topnode instanceof AExceptionResult) {
 			AExceptionResult r = (AExceptionResult) topnode;
 			String message = r.getString().getText();
@@ -68,11 +66,7 @@ class CommandProcessor {
 	}
 
 	private Start parseResult(final String input) {
-		if (input == null) {
-			return null;
-		} else {
-			return ProBResultParser.parse(input);
-		}
+		return ProBResultParser.parse(input);
 	}
 
 	public void configure(final ProBInstance cli) {
