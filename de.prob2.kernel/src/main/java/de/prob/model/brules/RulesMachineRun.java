@@ -86,10 +86,8 @@ public class RulesMachineRun {
 			logger.error("RULES_MACHINE has errors!");
 			return;
 		}
-
 		this.executeRun = rulesMachineRunner.createRulesMachineExecuteRun(this.rulesProject, runnerFile,
 				this.proBCorePreferences);
-
 		try {
 			final String PROB2_RUN_TIMER = "prob2Run";
 			StopWatch.start(PROB2_RUN_TIMER);
@@ -124,7 +122,7 @@ public class RulesMachineRun {
 				return;
 			}
 		} catch (Exception e) {
-			logger.error("Unexpected error occured: {}", e.getMessage());
+			logger.error("Unexpected error occured: {}", e.getMessage(), e);
 			// storing all error messages
 			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
 			return;

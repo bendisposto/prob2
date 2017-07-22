@@ -25,15 +25,18 @@ import de.prob.util.StopWatch;
  * 2) unsubscribes all formulas (reduces evaluation efforts) 
  * 3) run the execute command.
  * 
- * The final state of the probcli execute run is stored. Moreover, all errors which can
- * occur while loading a model are stored. Note, that RULES projects are not
- * parsed and checked by this class. This is done before entering this class.
+ * The final state of the probcli execute run is stored. Moreover, all errors
+ * which can occur while loading a model are stored. Note, that RULES projects
+ * are not parsed and checked by this class. This is done before entering this
+ * class.
  * 
  **/
 public class ExecuteRun {
 	private static StateSpace stateSpace;
 
 	private int maxNumberOfStatesToBeExecuted = Integer.MAX_VALUE;
+	private Integer timeout = null;
+	private boolean continueAfterErrors = false;
 	private final ExtractedModel<? extends AbstractModel> extractedModel;
 	private final Map<String, String> prefs;
 	private ExecuteModelCommand executeModelCommand;
@@ -97,7 +100,8 @@ public class ExecuteRun {
 	private void executeModel(final StateSpace stateSpace) {
 		final Trace t = new Trace(stateSpace);
 		this.rootState = t.getCurrentState();
-		executeModelCommand = new ExecuteModelCommand(stateSpace, rootState, maxNumberOfStatesToBeExecuted);
+		executeModelCommand = new ExecuteModelCommand(stateSpace, rootState, maxNumberOfStatesToBeExecuted,
+				continueAfterErrors, timeout);
 
 		stateSpace.execute(executeModelCommand);
 

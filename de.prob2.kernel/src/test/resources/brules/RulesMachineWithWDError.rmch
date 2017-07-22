@@ -1,13 +1,11 @@
 RULES_MACHINE RulesMachineWithWDError
 OPERATIONS
   RULE Rule1
-  RULEID RuleId1
   BODY
     skip
   END
   ;
   RULE Rule2
-  RULEID RuleId1
   BODY
     VAR xx
     IN
@@ -26,7 +24,6 @@ OPERATIONS
   END
   ;
   RULE Rule5
-  RULEID RuleId5
   BODY
     VAR xx
     IN
