@@ -16,3 +16,4 @@ ltl_graphdump.pl
 .nrepl-history
 local.*
 prob2-build.properties
+de.prob2.kernel/doc
