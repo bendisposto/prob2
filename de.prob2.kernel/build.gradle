@@ -5,7 +5,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'application'
 apply plugin: 'antlr'
-//apply plugin: 'jacoco'
+apply plugin: 'jacoco'
 
 project.group = 'de.hhu.stups'
 sourceCompatibility = 1.7
@@ -65,9 +65,9 @@ repositories {
 configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
 
 
-sourceSets.main.java.srcDirs = [
-	'src/main/generated'] // ie there's no stand-alone java source
-sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
+// in order to compile the mix of java and groovy in this project we compile all files using the groovy compiler
+sourceSets.main.groovy.srcDirs = ['src/main/groovy', 'src/main/java'] // i.e. include the 'java' dir as groovy source
+sourceSets.main.java.srcDirs = [] // i.e. there's no stand-alone java source
 
 
 dependencies {
@@ -141,7 +141,6 @@ def downloadUrlPath() {
 		return "https://www3.hhu.de/stups/downloads/prob/cli/nightly/"
 	}
 	else {
-
 		return "https://www3.hhu.de/stups/downloads/prob/cli/releases/" + cli_version + "/"
 	}
 }
@@ -241,6 +240,9 @@ test {
   testLogging {
     exceptionFormat = 'full'
   }
+	jacoco {
+		destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+	}
 }
 
 groovydoc {
@@ -266,48 +268,52 @@ def os_extension() {
 task integrationtests(dependsOn: ['downloadCLIs', 'tests', 'cliIntegrationTests']);
 
 // run integration tests WITHOUT downloading fresh CLI from Nightly Build
-task tests(dependsOn: ['classes'], type:JavaExec){
+task tests(type:JavaExec, dependsOn: ['classes']){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ['-script', 'groovyTests']
 }
+project.jacoco.applyTo(tests)
 
-task cliIntegrationTests(type: Test, dependsOn: ['downloadCLIs', 'test']){
+
+task cliIntegrationTests(type: Test, dependsOn: ['downloadCLIs','test']){
   doFirst{ println("Running cli integration tests") }
   scanForTestClasses = true
   include('de/prob/cli/integration/**/*')
+	jacoco {
+		destinationFile = file("$buildDir/jacoco/jacocoCliIntegrationTests.exec")
+	}
 }
+
+jacoco {
+    toolVersion = "0.7.9"
+}
+task codeCoverageReport(type:JacocoReport, dependsOn: ['test', 'tests', 'cliIntegrationTests']){
+	sourceDirectories = files([])
+	classDirectories = files('build/classes/groovy/main')
+	//onlyIf = {true}
+	reports {
+		xml.enabled false
+		csv.enabled false
+		html.destination new File("${buildDir}/jacocoHtml")
+	}
+	executionData(test, tests, cliIntegrationTests)
+}
+
+check.dependsOn codeCoverageReport
 
 eclipse {
 	project { name = 'de.prob2.kernel' }
 }
-
-// type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
-/*
-jacocoTestReport {
-	doFirst{
-		classDirectories = files('build/classes/main')
-	}
-	reports {
-	  xml.enabled false
-	  csv.enabled false
-	  html.destination "${buildDir}/reports/jacocoHtml"
-	}
-}
-check.dependsOn jacocoTestReport
-*/
+tasks.eclipse.dependsOn createBuildConstants
 
 task deploy(type: Copy, dependsOn: build) {
 	into "$buildDir/libs"
 	from configurations.runtime
 }
 
-
 javadoc { failOnError = false }
 
-
-
-tasks.eclipse.dependsOn createBuildConstants
 
 if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
 
