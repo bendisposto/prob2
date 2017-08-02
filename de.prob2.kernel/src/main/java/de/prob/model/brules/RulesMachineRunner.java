@@ -3,9 +3,7 @@ package de.prob.model.brules;
 import java.io.File;
 import java.util.Map;
 
-//import com.google.inject.Guice;
 import com.google.inject.Inject;
-//import com.google.inject.Injector;
 
 import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.Main;
