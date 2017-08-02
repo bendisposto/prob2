@@ -49,10 +49,6 @@ public class RulesMachineRun {
 		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
 	}
 
-	public RulesMachineRun(File runner, Map<String, String> prefs) {
-		this(runner, prefs, new HashMap<String, String>());
-	}
-
 	public RulesMachineRun(File runner, Map<String, String> prefs, Map<String, String> constantValuesToBeInjected) {
 		this.runnerFile = runner;
 		this.errors = new ArrayList<>();
@@ -78,10 +74,10 @@ public class RulesMachineRun {
 
 	public void start() {
 		logger.info("Starting rules machine run: {}", this.runnerFile.getAbsolutePath());
-		final String PARSER_TIMER = "parsing";
-		StopWatch.start(PARSER_TIMER);
+		final String parserTimer = "parsing";
+		StopWatch.start(parserTimer);
 		boolean hasParseErrors = parseAndTranslateRulesProject();
-		logger.info("Time to parse rules project: {} ms", StopWatch.stop(PARSER_TIMER));
+		logger.info("Time to parse rules project: {} ms", StopWatch.stop(parserTimer));
 		if (hasParseErrors) {
 			logger.error("RULES_MACHINE has errors!");
 			return;
@@ -89,14 +85,11 @@ public class RulesMachineRun {
 		this.executeRun = rulesMachineRunner.createRulesMachineExecuteRun(this.rulesProject, runnerFile,
 				this.proBCorePreferences);
 		try {
-			final String PROB2_RUN_TIMER = "prob2Run";
-			StopWatch.start(PROB2_RUN_TIMER);
+			final String prob2RunTimer = "prob2Run";
+			StopWatch.start(prob2RunTimer);
 			logger.info("Start execute ...");
-
-			// start
 			this.executeRun.start();
-
-			logger.info("Execute run finished. Time: {} ms", StopWatch.stop(PROB2_RUN_TIMER));
+			logger.info("Execute run finished. Time: {} ms", StopWatch.stop(prob2RunTimer));
 		} catch (ProBError e) {
 			logger.error("ProBError: {}", e.getMessage());
 			if (executeRun.getExecuteModelCommand() != null) {
@@ -112,7 +105,6 @@ public class RulesMachineRun {
 					this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e2.getMessage(), e2));
 					return;
 				}
-
 			} else {
 				// static errors such as type errors or error while loading the
 				// state space
@@ -134,11 +126,11 @@ public class RulesMachineRun {
 			}
 
 		}
-		final String EXTRACT_RESULTS_TIMER = "extractResults";
-		StopWatch.start(EXTRACT_RESULTS_TIMER);
+		final String extractResultsTimer = "extractResults";
+		StopWatch.start(extractResultsTimer);
 		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
-		logger.info("Time to extract results form final state: {}", StopWatch.stop(EXTRACT_RESULTS_TIMER));
+		logger.info("Time to extract results form final state: {}", StopWatch.stop(extractResultsTimer));
 	}
 
 	private boolean parseAndTranslateRulesProject() {
@@ -176,15 +168,16 @@ public class RulesMachineRun {
 	}
 
 	public Error getFirstError() {
-		return this.errors.get(0);
+		if (this.errors.isEmpty()) {
+			return null;
+		} else {
+			return this.errors.get(0);
+		}
+
 	}
 
 	public RulesProject getRulesProject() {
 		return this.rulesProject;
-	}
-
-	public RulesMachineRunner getRulesMachineRunner() {
-		return this.rulesMachineRunner;
 	}
 
 	public RuleResults getRuleResults() {
