@@ -1,7 +1,9 @@
 package de.prob.model.brules;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.be4.classicalb.core.parser.rules.*;
@@ -14,7 +16,7 @@ import de.prob.animator.domainobjects.WDError;
 import de.prob.translator.types.BObject;
 import de.prob.translator.types.Tuple;
 
-public class RuleResult implements Comparable<RuleResult> {
+public class RuleResult {
 	private final RuleOperation ruleOperation;
 	private final AbstractEvalResult evalResult;
 	private final int numberOfViolations;
@@ -26,6 +28,15 @@ public class RuleResult implements Comparable<RuleResult> {
 
 	public enum RESULT_ENUM {
 		FAIL, SUCCESS, NOT_CHECKED, DISABLED
+	}
+
+	final static Map<String, RESULT_ENUM> resultMapping = new HashMap<>();
+
+	static {
+		resultMapping.put(RulesTransformation.RULE_FAIL, RESULT_ENUM.FAIL);
+		resultMapping.put(RulesTransformation.RULE_SUCCESS, RESULT_ENUM.SUCCESS);
+		resultMapping.put(RulesTransformation.RULE_NOT_CHECKED, RESULT_ENUM.NOT_CHECKED);
+		resultMapping.put(RulesTransformation.RULE_DISABLED, RESULT_ENUM.DISABLED);
 	}
 
 	public RuleResult(RuleOperation rule, AbstractEvalResult result, AbstractEvalResult numberOfCounterExamples,
@@ -60,6 +71,7 @@ public class RuleResult implements Comparable<RuleResult> {
 		try {
 			translatedResult = evalCurrent.translate();
 		} catch (Exception e) {
+			/*- fall back solution if the result can not be parsed (e.g. {1,...,1000}) */
 			final String message = evalCurrent.getValue().replaceAll("\"", "");
 			counterExamples.add(new CounterExampleResult(1, message));
 			return;
@@ -159,37 +171,11 @@ public class RuleResult implements Comparable<RuleResult> {
 	}
 
 	public RESULT_ENUM getResultEnum() {
-		switch (this.getResultValue()) {
-		case RulesTransformation.RULE_FAIL:
-			return RESULT_ENUM.FAIL;
-		case RulesTransformation.RULE_SUCCESS:
-			return RESULT_ENUM.SUCCESS;
-		case RulesTransformation.RULE_NOT_CHECKED:
-			return RESULT_ENUM.NOT_CHECKED;
-		case RulesTransformation.RULE_DISABLED:
-			return RESULT_ENUM.DISABLED;
-		default:
-			throw new AssertionError();
-		}
+		return resultMapping.get(this.getResultValue());
 	}
 
 	public boolean hasFailed() {
 		return getResultEnum() == RESULT_ENUM.FAIL;
-	}
-
-	public int getCompareValue() {
-		switch (this.getResultEnum()) {
-		case FAIL:
-			return 0;
-		case NOT_CHECKED:
-			return 1;
-		case SUCCESS:
-			return 2;
-		case DISABLED:
-			return 3;
-		default:
-			throw new IllegalStateException();
-		}
 	}
 
 	public class CounterExampleResult {
@@ -209,7 +195,7 @@ public class RuleResult implements Comparable<RuleResult> {
 			return String.valueOf(errorType);
 		}
 
-		public Integer getErrorType() {
+		public int getErrorType() {
 			return this.errorType;
 		}
 
@@ -219,18 +205,4 @@ public class RuleResult implements Comparable<RuleResult> {
 		}
 	}
 
-	@Override
-	public int compareTo(RuleResult o) {
-		Integer a = this.getCompareValue();
-		Integer b = o.getCompareValue();
-		int compareTo = a.compareTo(b);
-		if (compareTo == 0) {
-			if (!this.hasRuleId() || !o.hasRuleId()) {
-				return compareTo;
-			} else {
-				return this.getRuleId().compareTo(o.getRuleId());
-			}
-		}
-		return compareTo;
-	}
 }
