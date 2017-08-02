@@ -24,7 +24,6 @@ public class ConsistencyChecker implements IModelCheckJob {
 	private final IModelCheckListener ui;
 	private final ModelCheckingJob job;
 	private final IEvalElement goal;
-	private final ModelCheckingOptions options;
 
 	/**
 	 * calls {@link #ConsistencyChecker(StateSpace, ModelCheckingOptions)} with
@@ -39,9 +38,8 @@ public class ConsistencyChecker implements IModelCheckJob {
 	}
 
 	/**
-	 * calls
-	 * {@link #ConsistencyChecker(StateSpace, ModelCheckingOptions)}
-	 * with null for UI
+	 * calls {@link #ConsistencyChecker(StateSpace, ModelCheckingOptions)} with
+	 * null for UI
 	 * 
 	 * @param s
 	 *            {@link StateSpace} in which to perform the consistency
@@ -49,13 +47,11 @@ public class ConsistencyChecker implements IModelCheckJob {
 	 * @param options
 	 *            {@link ModelCheckingOptions} specified by user
 	 */
-	public ConsistencyChecker(final StateSpace s,
-			final ModelCheckingOptions options) {
+	public ConsistencyChecker(final StateSpace s, final ModelCheckingOptions options) {
 		this(s, options, null);
 	}
 
-	public ConsistencyChecker(final StateSpace s,
-			final ModelCheckingOptions options, final IEvalElement goal) {
+	public ConsistencyChecker(final StateSpace s, final ModelCheckingOptions options, final IEvalElement goal) {
 		this(s, options, goal, null);
 	}
 
@@ -69,11 +65,9 @@ public class ConsistencyChecker implements IModelCheckJob {
 	 *            {@link IModelCheckListener} if the UI should be informed of
 	 *            updates. Otherwise, null.
 	 */
-	public ConsistencyChecker(final StateSpace s,
-			final ModelCheckingOptions options, final IEvalElement goal,
+	public ConsistencyChecker(final StateSpace s, final ModelCheckingOptions options, final IEvalElement goal,
 			final IModelCheckListener ui) {
 		this.s = s;
-		this.options = options;
 		this.goal = goal;
 		this.ui = ui;
 		jobId = ModelChecker.generateJobId();
@@ -92,13 +86,12 @@ public class ConsistencyChecker implements IModelCheckJob {
 				return new CheckError("Type error in specified goal.");
 			}
 		}
-		//When goal is undefined, isFinished will be executed anyways
+		// When goal is undefined, isFinished will be executed anyways
 
 		s.execute(job);
 		IModelCheckingResult result = job.getResult();
 		if (ui != null) {
-			ui.isFinished(jobId, System.currentTimeMillis() - time, result,
-					job.getStats());
+			ui.isFinished(jobId, System.currentTimeMillis() - time, result, job.getStats());
 		}
 		return result;
 	}
@@ -147,8 +140,7 @@ public class ConsistencyChecker implements IModelCheckJob {
 	 *            {@link ModelCheckingOptions} specified by the user
 	 * @return {@link ModelChecker} with consistency checking capabilities
 	 */
-	public static ModelChecker create(final StateSpace s,
-			final ModelCheckingOptions options) {
+	public static ModelChecker create(final StateSpace s, final ModelCheckingOptions options) {
 		return new ModelChecker(new ConsistencyChecker(s, options));
 	}
 
