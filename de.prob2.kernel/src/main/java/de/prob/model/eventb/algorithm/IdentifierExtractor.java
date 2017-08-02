@@ -12,7 +12,7 @@ public class IdentifierExtractor extends DepthFirstAdapter {
 	private final Set<String> identifiers;
 
 	public IdentifierExtractor() {
-		identifiers = new HashSet<String>();
+		identifiers = new HashSet<>();
 	}
 
 	public Set<String> getIdentifiers() {
@@ -25,7 +25,7 @@ public class IdentifierExtractor extends DepthFirstAdapter {
 	}
 
 	public static Set<String> union(final Node... assignments) {
-		Set<String> union = new HashSet<String>();
+		Set<String> union = new HashSet<>();
 		for (Node assignment : assignments) {
 			IdentifierExtractor v = new IdentifierExtractor();
 			assignment.apply(v);
@@ -40,7 +40,7 @@ public class IdentifierExtractor extends DepthFirstAdapter {
 		IdentifierExtractor v2 = new IdentifierExtractor();
 		assignment1.apply(v1);
 		assignment2.apply(v2);
-		Set<String> intersection = new HashSet<String>();
+		Set<String> intersection = new HashSet<>();
 		Set<String> union = union(assignment1, assignment2);
 		for (String id : union) {
 			if (v1.getIdentifiers().contains(id)
