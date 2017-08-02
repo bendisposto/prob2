@@ -1,17 +1,19 @@
-package de.prob.model.classicalb;
+package de.prob.model.classicalb
 
 import com.github.krukow.clj_lang.PersistentHashMap
+
 import com.google.inject.Inject
 
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.NoContentProvider
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.exceptions.BCompoundException
-import de.be4.classicalb.core.parser.node.Start
-import de.be4.classicalb.core.parser.node.TIdentifierLiteral
+import de.be4.classicalb.core.parser.node.*
+
 import de.prob.animator.command.LoadBProjectCommand
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvaluationException
+import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.AbstractModel
@@ -94,11 +96,11 @@ public class ClassicalBModel extends AbstractModel {
 	}
 
 	@Override
-	public IEvalElement parseFormula(final String formula) {
+	public IEvalElement parseFormula(final String formula, final FormulaExpand expand) {
 		final String prefixedFormula = BParser.FORMULA_PREFIX + "\n" + formula;
 		try {
 			//TODO replace by parseFormula(formula) when new parser is released
-			return new ClassicalB(bparser.parse(prefixedFormula, false, new NoContentProvider()));
+			return new ClassicalB(bparser.parse(prefixedFormula, false, new NoContentProvider()), expand);
 		} catch (BCompoundException e) {
 			throw new EvaluationException(e.getMessage());
 		}
