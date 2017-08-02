@@ -1,20 +1,22 @@
 package de.prob.model.representation;
 
-import groovy.util.Eval;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
+
 import com.google.common.base.Joiner;
 
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
+
+import groovy.util.Eval;
 
 public abstract class AbstractModel extends AbstractElement {
 
@@ -57,13 +59,24 @@ public abstract class AbstractModel extends AbstractElement {
 
 	/**
 	 * Will parse a formula including information specific to the model at hand.
-	 * Will throw a {@link RuntimeException} if parsing is not successful.
 	 *
-	 * @param formula
-	 *            to be parsed
+	 * @param formula to be parsed
+	 * @param expand the expansion behavior to use
 	 * @return a valid formula
+	 * @throws RuntimeException if parsing is not successful
 	 */
-	public abstract IEvalElement parseFormula(String formula);
+	public abstract IEvalElement parseFormula(String formula, FormulaExpand expand);
+	
+	/**
+	 * Will parse a formula including information specific to the model at hand.
+	 *
+	 * @param formula to be parsed
+	 * @return a valid formula
+	 * @throws RuntimeException if parsing is not successful
+	 */
+	public IEvalElement parseFormula(String formula) {
+		return this.parseFormula(formula, FormulaExpand.truncate);
+	}
 
 	/**
 	 * Will check the syntax of a formula to see if it is valid in the scope of

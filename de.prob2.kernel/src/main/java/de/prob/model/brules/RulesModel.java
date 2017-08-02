@@ -4,10 +4,13 @@ import java.io.File;
 import java.util.Map;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
+
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.rules.RulesProject;
+
 import de.prob.animator.command.LoadRulesProjectCommand;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
@@ -48,7 +51,7 @@ public class RulesModel extends AbstractModel {
 	}
 
 	@Override
-	public IEvalElement parseFormula(String formula) {
+	public IEvalElement parseFormula(String formula, FormulaExpand expand) {
 		throw new RuntimeException("Currently not supported");
 		//
 		// try {

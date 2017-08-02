@@ -1,11 +1,13 @@
-package de.prob.model.representation;
+package de.prob.model.representation
 
 import com.github.krukow.clj_lang.PersistentHashMap
+
 import com.google.inject.Inject
 
 import de.prob.animator.command.LoadCSPCommand
 import de.prob.animator.domainobjects.CSP
 import de.prob.animator.domainobjects.EvaluationException
+import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.prolog.output.PrologTermStringOutput
 import de.prob.scripting.StateSpaceProvider
@@ -41,7 +43,7 @@ public class CSPModel extends AbstractModel {
 	}
 
 	@Override
-	public IEvalElement parseFormula(final String formula) {
+	public IEvalElement parseFormula(final String formula, final FormulaExpand expand) {
 		return new CSP(formula, this);
 	}
 
