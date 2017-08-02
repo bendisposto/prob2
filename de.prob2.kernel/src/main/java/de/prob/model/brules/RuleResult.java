@@ -30,7 +30,7 @@ public class RuleResult {
 		FAIL, SUCCESS, NOT_CHECKED, DISABLED
 	}
 
-	static final Map<String, RESULT_ENUM> resultMapping = new HashMap<>();
+	final static Map<String, RESULT_ENUM> resultMapping = new HashMap<>();
 
 	static {
 		resultMapping.put(RulesTransformation.RULE_FAIL, RESULT_ENUM.FAIL);

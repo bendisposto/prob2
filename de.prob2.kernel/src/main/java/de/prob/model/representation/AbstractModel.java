@@ -75,7 +75,7 @@ public abstract class AbstractModel extends AbstractElement {
 	 * @throws RuntimeException if parsing is not successful
 	 */
 	public IEvalElement parseFormula(String formula) {
-		return this.parseFormula(formula, FormulaExpand.TRUNCATE);
+		return this.parseFormula(formula, FormulaExpand.truncate);
 	}
 
 	/**

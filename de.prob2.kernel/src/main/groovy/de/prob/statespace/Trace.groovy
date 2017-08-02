@@ -190,7 +190,7 @@ public class Trace {
 		if(current.getTransition() == null) {
 			return "";
 		}
-		return "${current.getIndex()} previous transitions. Last executed transition: ${current.getTransition().evaluate(FormulaExpand.TRUNCATE).getRep()}"
+		return "${current.getIndex()} previous transitions. Last executed transition: ${current.getTransition().evaluate(FormulaExpand.truncate).getRep()}"
 	}
 
 	def Trace randomAnimation(final int numOfSteps) {
@@ -314,7 +314,7 @@ public class Trace {
 		return stateSpace
 	}
 
-	def Set<Transition> getNextTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.TRUNCATE) {
+	def Set<Transition> getNextTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.truncate) {
 		return getCurrentState().getOutTransitions(evaluate, expansion)
 	}
 
@@ -347,7 +347,7 @@ public class Trace {
 		throw new ClassCastException("Not able to convert Trace object to ${className}")
 	}
 
-	def List<Transition> getTransitionList(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.TRUNCATE) {
+	def List<Transition> getTransitionList(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.truncate) {
 		List<Transition> ops = transitionList
 		if (evaluate) {
 			stateSpace.evaluateTransitions(ops, expansion)
