@@ -8,8 +8,6 @@ package de.prob.animator.domainobjects;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
-import de.be4.classicalb.core.parser.analysis.prolog.OffsetPositionPrinter;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.*;
 import de.be4.classicalb.core.parser.util.PrettyPrinter;
@@ -47,18 +45,20 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 		this(code, FormulaExpand.truncate);
 	}
 
-	public ClassicalB(final String code, final FormulaExpand expansion) {
-		Start ast;
+	public ClassicalB(final String formula, final FormulaExpand expansion) {
+		Start tempAst;
+		final BParser bParser = new BParser();
 		try {
-			ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
+
+			tempAst = bParser.parseFormula(formula);
 		} catch (BCompoundException e) {
 			try {
-				ast = BParser.parse(BParser.SUBSTITUTION_PREFIX + " " + code);
+				tempAst = bParser.parseSubstitution(formula);
 			} catch (BCompoundException f) {
 				throw new EvaluationException(f.getMessage(), f);
 			}
 		}
-		this.ast = ast;
+		this.ast = tempAst;
 		this.code = prettyprint(ast);
 		this.expansion = expansion;
 	}
@@ -120,14 +120,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 		if (ast.getEOF() == null) {
 			ast.setEOF(new EOF());
 		}
-		// TODO use ASTProlog.printFormula(pout) when new parser is released
-		NodeIdAssignment na = new NodeIdAssignment();
-		ast.apply(na);
-		OffsetPositionPrinter pprinter = new OffsetPositionPrinter(na, -1, 0);
-		final ASTProlog prolog = new ASTProlog(pout, pprinter);
-
-		ast.apply(prolog);
-
+		ASTProlog.printFormula(ast, pout);
 	}
 
 	private static String prettyprint(final Node predicate) {
