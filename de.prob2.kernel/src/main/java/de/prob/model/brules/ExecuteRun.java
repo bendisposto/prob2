@@ -19,11 +19,13 @@ import de.prob.statespace.Trace;
 import de.prob.util.StopWatch;
 
 /**
+ * This class performs the following actions:
  * 
- * This class performs the following actions: 
+ * <pre>
  * 1) loads an ExtractedModel 
  * 2) unsubscribes all formulas (reduces evaluation efforts) 
  * 3) run the execute command.
+ * </pre>
  * 
  * The final state of the probcli execute run is stored. Moreover, all errors
  * which can occur while loading a model are stored. Note, that RULES projects
@@ -52,17 +54,17 @@ public class ExecuteRun {
 
 	public void start() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
-		final String LOAD_STATESPACE_TIMER = "loadStateSpace";
-		StopWatch.start(LOAD_STATESPACE_TIMER);
-		StateSpace stateSpace = this.getOrCreateStateSpace();
-		logger.info("Time to load statespace: {} ms", StopWatch.stop(LOAD_STATESPACE_TIMER));
+		final String loadStateSpaceTimer = "loadStateSpace";
+		StopWatch.start(loadStateSpaceTimer);
+		StateSpace stateSpace2 = this.getOrCreateStateSpace();
+		logger.info("Time to load statespace: {} ms", StopWatch.stop(loadStateSpaceTimer));
 
-		unsubscribeAllFormulas(stateSpace);
+		unsubscribeAllFormulas(stateSpace2);
 
-		final String EXECUTE_TIMER = "executeTimer";
-		StopWatch.start(EXECUTE_TIMER);
-		executeModel(stateSpace);
-		logger.info("Time run execute command: {} ms", StopWatch.stop(EXECUTE_TIMER));
+		final String executeTimer = "executeTimer";
+		StopWatch.start(executeTimer);
+		executeModel(stateSpace2);
+		logger.info("Time run execute command: {} ms", StopWatch.stop(executeTimer));
 	}
 
 	private static void storeStateSpace(StateSpace stateSpace2) {
@@ -105,10 +107,6 @@ public class ExecuteRun {
 
 		stateSpace.execute(executeModelCommand);
 
-	}
-
-	public ExtractedModel<? extends AbstractModel> getExtractedModel() {
-		return this.extractedModel;
 	}
 
 	public Map<String, String> getPrefs() {
