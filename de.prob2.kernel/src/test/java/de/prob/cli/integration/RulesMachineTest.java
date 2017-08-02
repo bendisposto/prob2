@@ -3,7 +3,9 @@ package de.prob.cli.integration;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -14,12 +16,13 @@ import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 import de.be4.classicalb.core.parser.rules.AbstractOperation;
 import de.be4.classicalb.core.parser.rules.RuleOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
-import de.prob.Main;
-import de.prob.MainConfiguration;
 import de.prob.model.brules.RuleResult;
+import de.prob.model.brules.RuleResult.CounterExampleResult;
 import de.prob.model.brules.RuleResults;
+import de.prob.model.brules.RuleResults.ResultSummary;
 import de.prob.model.brules.RulesMachineRun;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
+import de.prob.model.brules.RulesMachineRunner;
 
 public class RulesMachineTest {
 
@@ -27,14 +30,22 @@ public class RulesMachineTest {
 
 	@Test
 	public void testSimpleRulesMachine() throws IOException {
-		Main.getVersion();
-		new MainConfiguration();
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "SimpleRulesMachine.rmch");
+		assertEquals(false, rulesMachineRun.hasError());
+		assertTrue(rulesMachineRun.getErrorList().isEmpty());
+		assertEquals(null, rulesMachineRun.getFirstError());
 
 		RuleResults ruleResults = rulesMachineRun.getRuleResults();
-		assertEquals(3, ruleResults.getRuleResultList().size());
+		ResultSummary summary = ruleResults.getSummary();
+		// summary is created only once
+		assertEquals(summary, ruleResults.getSummary());
 
-		assertEquals(SUCCESS, ruleResults.getRuleResult("Rule1").getResultEnum());
+		assertEquals(4, ruleResults.getRuleResultList().size());
+		RuleResult rule1Result = ruleResults.getRuleResult("Rule1");
+		assertEquals(SUCCESS, rule1Result.getResultEnum());
+		RuleOperation rule1Operation = rule1Result.getRuleOperation();
+		assertEquals("Rule1", rule1Operation.getName());
+		assertTrue("Should be empty", rule1Result.getNotCheckedDependencies().isEmpty());
 
 		RuleResult result2 = ruleResults.getRuleResult("Rule2");
 		assertEquals(FAIL, result2.getResultEnum());
@@ -43,6 +54,39 @@ public class RulesMachineTest {
 
 		assertEquals(NOT_CHECKED, ruleResults.getRuleResult("Rule3").getResultEnum());
 		assertEquals("Rule2", ruleResults.getRuleResult("Rule3").getFailedDependencies().get(0));
+	}
+
+	@Test
+	public void testCounterExample() {
+		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
+				"RULE foo BODY RULE_FAIL ERROR_TYPE 1 COUNTEREXAMPLE \"error\"END END");
+		assertEquals(null, rulesMachineRun.getFirstError());
+		RuleResult ruleResult = rulesMachineRun.getRuleResults().getRuleResult("foo");
+		List<CounterExampleResult> counterExamples = ruleResult.getCounterExamples();
+		assertEquals(1, counterExamples.size());
+		CounterExampleResult counterExample = counterExamples.get(0);
+		assertEquals(1, counterExample.getErrorType());
+	}
+
+	@Test
+	public void testEnumerationError() {
+		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
+				"RULE foo BODY RULE_FORALL x WHERE 1=1 EXPECT x = \"foo\" COUNTEREXAMPLE x END END");
+		assertTrue(null != rulesMachineRun.getFirstError());
+		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getFirstError().getType());
+		assertTrue(rulesMachineRun.getTotalNumberOfProBCliErrors().intValue() > 0);
+		assertTrue(rulesMachineRun.getErrorList().size() > 0);
+	}
+
+	@Test
+	public void testReuseStateSpace() throws IOException {
+		RulesMachineRunner.getInstance().setReuseStateSpace(true);
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithWDError.rmch");
+		BigInteger numberAfterFirstRun = rulesMachineRun.getTotalNumberOfProBCliErrors();
+		RulesMachineRun rulesMachineRun2 = startRulesMachineRun(dir + "RulesMachineWithWDError.rmch");
+		BigInteger numberAfterSecondRun = rulesMachineRun2.getTotalNumberOfProBCliErrors();
+		assertTrue(numberAfterSecondRun.intValue() > numberAfterFirstRun.intValue());
+		RulesMachineRunner.getInstance().setReuseStateSpace(false);
 	}
 
 	@Test
@@ -70,6 +114,7 @@ public class RulesMachineTest {
 	public void testRulesMachineWithWDError() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineWithWDError.rmch");
 		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getFirstError().getType());
+		// assertEquals(1, rulesMachineRun.getErrorList().size());
 		System.out.println(rulesMachineRun.getRuleResults());
 		System.out.println(rulesMachineRun.getTotalNumberOfProBCliErrors());
 		assertTrue(rulesMachineRun.getTotalNumberOfProBCliErrors().intValue() > 0);
@@ -96,6 +141,30 @@ public class RulesMachineTest {
 			checkRulesMachineRunForConsistency(rulesMachineRun);
 		}
 		return rulesMachineRun;
+	}
+
+	public static RulesMachineRun startRulesMachineRunWithOperations(String... operations) {
+		try {
+			File tempFile = File.createTempFile("TestMachine", ".rmch");
+			String filename = tempFile.getName();
+			StringBuilder sb = new StringBuilder();
+			sb.append("RULES_MACHINE ").append(filename.substring(0, filename.length() - 5)).append("\n");
+			sb.append("OPERATIONS\n");
+			for (int i = 0; i < operations.length; i++) {
+				sb.append(operations[i]);
+				if (i < operations.length - 1) {
+					sb.append(",\n");
+				}
+			}
+			sb.append("\nEND");
+			FileWriter fw = new FileWriter(tempFile);
+			fw.write(sb.toString());
+			fw.flush();
+			fw.close();
+			return startRulesMachineRun(tempFile.getCanonicalPath());
+		} catch (IOException e) {
+			throw new AssertionError(e);
+		}
 	}
 
 	public static void checkRulesMachineRunForConsistency(RulesMachineRun rulesMachineRun) {
