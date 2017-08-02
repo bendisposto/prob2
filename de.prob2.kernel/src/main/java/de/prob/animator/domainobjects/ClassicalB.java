@@ -44,7 +44,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 *             if the code could not be parsed
 	 */
 	public ClassicalB(final String code) {
-		this(code, FormulaExpand.truncate);
+		this(code, FormulaExpand.TRUNCATE);
 	}
 
 	public ClassicalB(final String code, final FormulaExpand expansion) {
@@ -69,7 +69,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 *            and saved
 	 */
 	public ClassicalB(final Start ast) {
-		this(ast, FormulaExpand.truncate);
+		this(ast, FormulaExpand.TRUNCATE);
 	}
 
 	public ClassicalB(final Start ast, final FormulaExpand expansion, String code) {

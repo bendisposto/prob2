@@ -125,8 +125,8 @@ public class Transition {
 	}
 
 	private void translateParamsAndRetVals() throws BCompoundException {
-		if (!evaluated || formulaExpansion != FormulaExpand.expand) {
-			evaluate(FormulaExpand.expand);
+		if (!evaluated || formulaExpansion != FormulaExpand.EXPAND) {
+			evaluate(FormulaExpand.EXPAND);
 		}
 		translatedParams = new ArrayList<BObject>();
 		for (String str : params) {
@@ -292,15 +292,15 @@ public class Transition {
 	 * @return {@code this}
 	 */
 	public Transition evaluate() {
-		return evaluate(FormulaExpand.truncate);
+		return evaluate(FormulaExpand.TRUNCATE);
 	}
 
 	public boolean canBeEvaluated(final FormulaExpand expansion) {
 		if (!evaluated) {
 			return true;
 		}
-		if (this.formulaExpansion == FormulaExpand.truncate
-				&& expansion == FormulaExpand.expand) {
+		if (this.formulaExpansion == FormulaExpand.TRUNCATE
+				&& expansion == FormulaExpand.EXPAND) {
 			return true;
 		}
 		return false;
@@ -325,7 +325,7 @@ public class Transition {
 	}
 
 	public boolean isTruncated() {
-		return formulaExpansion == FormulaExpand.truncate;
+		return formulaExpansion == FormulaExpand.TRUNCATE;
 	}
 
 	/**

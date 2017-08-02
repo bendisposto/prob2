@@ -57,7 +57,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types) {
-		this(code, types, FormulaExpand.truncate);
+		this(code, types, FormulaExpand.TRUNCATE);
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types,
