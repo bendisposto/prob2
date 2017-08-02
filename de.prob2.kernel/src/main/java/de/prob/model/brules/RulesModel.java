@@ -52,21 +52,12 @@ public class RulesModel extends AbstractModel {
 
 	@Override
 	public IEvalElement parseFormula(String formula, FormulaExpand expand) {
-		throw new RuntimeException("Currently not supported");
-		//
-		// try {
-		// return new ClassicalB(
-		// bparser.parse(BParser.FORMULA_PREFIX + " " + formula, false, new
-		// NoContentProvider()));
-		// } catch (BCompoundException e) {
-		// throw new EvaluationException(e.getMessage());
-		// }
+		throw new AssertionError("Currently not supported");
 	}
 
 	@Override
 	public boolean checkSyntax(String formula) {
-		throw new RuntimeException("Currently not supported");
-		// return false;
+		throw new AssertionError("Currently not supported");
 	}
 
 	@Override
