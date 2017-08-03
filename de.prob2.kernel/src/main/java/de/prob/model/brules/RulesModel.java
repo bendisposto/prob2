@@ -15,7 +15,6 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph;
-import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
@@ -43,7 +42,7 @@ public class RulesModel extends AbstractModel {
 
 	@Override
 	public AbstractElement getComponent(String name) {
-		return getChildrenOfType(Machine.class).getElement(name);
+		throw new AssertionError();
 	}
 
 	public RulesModel create(File file, RulesProject project) {
@@ -73,10 +72,6 @@ public class RulesModel extends AbstractModel {
 
 	public LoadRulesProjectCommand getLoadCommand() {
 		return new LoadRulesProjectCommand(project, modelFile);
-	}
-
-	public RulesProject getRulesProject() {
-		return this.project;
 	}
 
 }

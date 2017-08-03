@@ -38,10 +38,10 @@ public class RulesMachineRunner {
 	}
 
 	public ExecuteRun createRulesMachineExecuteRun(RulesProject rulesProject, File mainMachineFile,
-			Map<String, String> proBCorePreferences) {
+			Map<String, String> proBCorePreferences, boolean continueAfterErrors) {
 		ExtractedModel<RulesModel> extract;
 		extract = this.rulesFactory.extract(mainMachineFile, rulesProject);
-		return new ExecuteRun(extract, proBCorePreferences, this.reuseStateSpaceOfPreviousRun);
+		return new ExecuteRun(extract, proBCorePreferences, this.reuseStateSpaceOfPreviousRun, continueAfterErrors);
 	}
 
 	public void setReuseStateSpace(boolean b) {

@@ -38,7 +38,7 @@ public class ExecuteRun {
 
 	private int maxNumberOfStatesToBeExecuted = Integer.MAX_VALUE;
 	private Integer timeout = null;
-	private boolean continueAfterErrors = false;
+	private final boolean continueAfterErrors;
 	private final ExtractedModel<? extends AbstractModel> extractedModel;
 	private final Map<String, String> prefs;
 	private ExecuteModelCommand executeModelCommand;
@@ -46,8 +46,9 @@ public class ExecuteRun {
 	private final boolean reuseStateSpaceOfPreviousRun;
 
 	public ExecuteRun(final ExtractedModel<? extends AbstractModel> extractedModel, Map<String, String> prefs,
-			boolean reuseStateSpaceOfPreviousRun) {
+			boolean reuseStateSpaceOfPreviousRun, boolean continueAfterErrors) {
 		this.extractedModel = extractedModel;
+		this.continueAfterErrors = continueAfterErrors;
 		this.prefs = prefs;
 		this.reuseStateSpaceOfPreviousRun = reuseStateSpaceOfPreviousRun;
 	}
@@ -104,17 +105,7 @@ public class ExecuteRun {
 		this.rootState = t.getCurrentState();
 		executeModelCommand = new ExecuteModelCommand(stateSpace, rootState, maxNumberOfStatesToBeExecuted,
 				continueAfterErrors, timeout);
-
 		stateSpace.execute(executeModelCommand);
-
-	}
-
-	public Map<String, String> getPrefs() {
-		return prefs;
-	}
-
-	public int getNumberOfStatesExecuted() {
-		return executeModelCommand.getNumberofStatesExecuted();
 	}
 
 	public ExecuteModelCommand getExecuteModelCommand() {
