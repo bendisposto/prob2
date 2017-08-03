@@ -20,7 +20,7 @@ addons:
 sudo: false
 install: /bin/true
 script:
-- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean test sonarqube integrationtests --stacktrace
+- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean test integrationtests --stacktrace
 after_success:
 - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives
 env:
@@ -28,4 +28,4 @@ env:
   - GRADLE_OPTS="-Xms128m"
   - secure: DtyDUbGXZOZzuYWvCnL8eSaKpM6fQXQqnDBQzwD5OoBaCv6S3ijGHvNmie2tGTe5c93siiRU/doaJNH5PN6JN8Fbw+nxBJRIzKpqjVFmLPy2hCwPXum1BI4Nsf4vH4fZ4eENK1mFUDUR4MWrTAk9Vl05jIjEvsNlkrusBnVWFmg=
   - secure: CzvIhQI58TrL9egcS8Mv9JwxczwxhghuOR81EcD1H0lzt5U0bzNWYgRlBv2gntVg9Rv7O5eIOEcvc03lYRgIRbMfNsFDmJwne3CoCdYq7CpXyiQMWLo/C9NEzVIEKBZMIZ+/nx5MJsdG7fqjT/PzNJi43/jOtZSWbnWp8kNvbTM=
-  ##- secure: KSDgIgBK/aJmpKf2xCcvOJalVjvTBUv4xXtoQlThRSalk+7OgoktTbF0YDW8mPuLk7fhoqPC4FYu+f0aw+iiNEdBLxAfAWfiACcN0qkVAYgJKefBAThfLLuM89mR5crjaaXQCZbNql4XrPchx2m9GDR65imUfF2fTMjYPkwWieA=
+  - secure: KSDgIgBK/aJmpKf2xCcvOJalVjvTBUv4xXtoQlThRSalk+7OgoktTbF0YDW8mPuLk7fhoqPC4FYu+f0aw+iiNEdBLxAfAWfiACcN0qkVAYgJKefBAThfLLuM89mR5crjaaXQCZbNql4XrPchx2m9GDR65imUfF2fTMjYPkwWieA=
