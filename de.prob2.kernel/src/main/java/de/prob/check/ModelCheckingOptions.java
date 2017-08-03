@@ -11,19 +11,30 @@ public class ModelCheckingOptions {
 	private final EnumSet<Options> options;
 
 	public enum Options {
-		breadth_first_search("breadth first"), depth_first_search("depth first"), find_deadlocks("deadlock check"), find_invariant_violations(
-				"invariant check"), find_assertion_violations("assertion check"), inspect_existing_nodes(
-				"recheck existing states"), stop_at_full_coverage(
-				"stop at full coverage"), partial_order_reduction(
-				"partial order reduction"), partial_guard_evaluation(
-				"partial guard evaluation"), find_goal("search for goal");
+		breadth_first_search("breadth_first_search", "breadth first"),
+		depth_first_search("depth_first_search", "depth first"),
+		find_deadlocks("find_deadlocks", "deadlock check"),
+		find_invariant_violations("find_invariant_violations", "invariant check"),
+		find_assertion_violations("find_assertion_violations", "assertion check"),
+		inspect_existing_nodes("inspect_existing_nodes", "recheck existing states"),
+		stop_at_full_coverage("stop_at_full_coverage", "stop at full coverage"),
+		partial_order_reduction("partial_order_reduction", "partial order reduction"),
+		partial_guard_evaluation("partial_guard_evaluation", "partial guard evaluation"),
+		find_goal("find_goal", "search for goal"),
+		;
 
+		private final String prologName;
 		private final String description;
 
-		private Options(final String description) {
+		private Options(final String prologName, final String description) {
+			this.prologName = prologName;
 			this.description = description;
 		}
-
+		
+		public String getPrologName() {
+			return this.prologName;
+		}
+		
 		public String getDescription() {
 			return description;
 		}
