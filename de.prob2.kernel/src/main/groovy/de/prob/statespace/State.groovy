@@ -292,7 +292,7 @@ class State {
 	 * 		be evaluated. By default this is set to false.
 	 * @return the outgoing transitions from this state
 	 */
-	def List<Transition> getOutTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.truncate) {
+	def List<Transition> getOutTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.TRUNCATE) {
 		if (!explored) {
 			explore()
 		}

@@ -46,7 +46,7 @@ class CSP extends AbstractEvalElement {
 			this.target = ".exe"
 		}
 		this.procname = home+"lib"+File.separator+"cspmf" + target
-		this.expansion = FormulaExpand.truncate // this doesn't matter
+		this.expansion = FormulaExpand.TRUNCATE // this doesn't matter
 	}
 
 	public String getCode() {

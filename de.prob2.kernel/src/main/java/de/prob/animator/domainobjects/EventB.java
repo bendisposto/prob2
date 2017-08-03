@@ -1,25 +1,13 @@
 package de.prob.animator.domainobjects;
 
-import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
-import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.eventb.core.ast.Assignment;
-import org.eventb.core.ast.Expression;
-import org.eventb.core.ast.FormulaFactory;
-import org.eventb.core.ast.IParseResult;
-import org.eventb.core.ast.Predicate;
-import org.eventb.core.ast.extension.IFormulaExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.node.Node;
+import de.be4.classicalb.core.parser.node.*;
+
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.formula.TranslationVisitor;
@@ -30,6 +18,20 @@ import de.prob.statespace.State;
 import de.prob.translator.TranslatingVisitor;
 import de.prob.translator.types.BObject;
 import de.prob.unicode.UnicodeTranslator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.eventb.core.ast.Assignment;
+import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.IParseResult;
+import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.extension.IFormulaExtension;
+
+import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
+import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
+import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 /**
  * Representation of an Event-B formula
@@ -57,7 +59,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types) {
-		this(code, types, FormulaExpand.truncate);
+		this(code, types, FormulaExpand.TRUNCATE);
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types,

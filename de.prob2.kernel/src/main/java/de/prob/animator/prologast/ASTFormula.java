@@ -19,7 +19,7 @@ public class ASTFormula extends PrologASTNode{
     }
 
     public ProBEvalElement getFormula() {
-        return this.getFormula(FormulaExpand.truncate);
+        return this.getFormula(FormulaExpand.TRUNCATE);
     }
 
     public String toString(){
