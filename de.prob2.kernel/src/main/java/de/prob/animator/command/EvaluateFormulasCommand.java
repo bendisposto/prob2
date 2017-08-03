@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -16,6 +13,9 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the values of Classical-B Predicates and Expressions.
@@ -69,13 +69,13 @@ public class EvaluateFormulasCommand extends AbstractCommand {
 		if (evalElement instanceof ProBEvalElement) {
 			pout.openTerm("eval_typed");
 			evalElement.printProlog(pout);
-			pout.printAtom(evalElement.expansion().name());
+			pout.printAtom(evalElement.expansion().getPrologName());
 		} else {
 			pout.openTerm("eval");
 			evalElement.printProlog(pout);
 			pout.printAtom(evalElement.getKind());
 			pout.printAtom(evalElement.getCode());
-			pout.printAtom(evalElement.expansion().name());
+			pout.printAtom(evalElement.expansion().getPrologName());
 		}
 		pout.closeTerm();
 	}

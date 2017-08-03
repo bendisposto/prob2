@@ -31,7 +31,7 @@ public class GetOpFromId extends AbstractCommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME).printAtomOrNumber(op.getId())
-				.printAtom(expansion.name()).printVariable(PARAMETERS_VARIABLE)
+				.printAtom(expansion.getPrologName()).printVariable(PARAMETERS_VARIABLE)
 				.printVariable(RETURNVALUES_VARIABLE).closeTerm();
 	}
 

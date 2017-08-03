@@ -22,12 +22,12 @@ public class RegisterFormulaCommand extends AbstractCommand {
 		if (this.formula instanceof ProBEvalElement) {
 			pto.openTerm("eval_typed");
 			formula.printProlog(pto);
-			pto.printAtom(formula.expansion().name());
+			pto.printAtom(formula.expansion().getPrologName());
 		} else {
 			pto.openTerm("eval");
 			formula.printProlog(pto);
 			pto.printAtom(formula.getKind());
-			pto.printAtom(formula.expansion().name());
+			pto.printAtom(formula.expansion().getPrologName());
 		}
 		pto.closeTerm();
 		pto.closeTerm();
