@@ -1,3 +1,7 @@
+plugins {
+	id "org.sonarqube" version "2.5"
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
@@ -125,6 +129,19 @@ dependencies {
 
 	testCompile 'org.mockito:mockito-core:1.10.19'
 
+}
+
+sonarqube {
+	properties {
+		property("sonar.java.binaries", sourceSets.main.groovy.outputDir.path)
+		
+		property("sonar.projectKey", "prob2kernel")
+		property("sonar.projectName", "prob2kernel")
+		
+		property("sonar.exclusions", "de.prob2.kernel/gradle/wrapper/*,de.prob2.kernel/build/**/*,de.prob2.kernel/groovyTests/*")
+		
+		property("sonar.login", System.getenv("SONAR_TOKEN"))
+	}
 }
 
 def download(address,target) {
