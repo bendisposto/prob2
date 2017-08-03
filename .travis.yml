@@ -20,7 +20,7 @@ addons:
 sudo: false
 install: /bin/true
 script:
-- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean test integrationtests sonarqube --stacktrace
+- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean test sonarqube integrationtests --stacktrace
 after_success:
 - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives
 env:
