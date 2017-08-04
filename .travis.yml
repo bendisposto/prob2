@@ -11,6 +11,7 @@ branches:
   - develop
 addons:
   sonarcloud:
+    organization: default
     branches:
     - master
     - develop
@@ -19,8 +20,9 @@ install: /bin/true
 script:
 - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean test integrationtests codeCoverageReport --stacktrace
 after_success:
+- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives
 - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle sonarqube 
-- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle sonarqube uploadArchives
+
 env:
   global:
   - GRADLE_OPTS="-Xms128m"
