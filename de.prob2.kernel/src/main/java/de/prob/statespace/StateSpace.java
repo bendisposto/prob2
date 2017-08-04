@@ -469,7 +469,7 @@ public class StateSpace implements IAnimator {
 	 *         currently interested subscribers.
 	 */
 	public Set<IEvalElement> getSubscribedFormulas() {
-		List<IEvalElement> toRemove = new ArrayList<IEvalElement>();
+		List<IEvalElement> toRemove = new ArrayList<>();
 		for (IEvalElement e : subscribedFormulas) {
 			WeakHashMap<Object, Object> subscribers = formulaRegistry.get(e);
 			if (subscribers == null || subscribers.isEmpty()) {
@@ -477,7 +477,7 @@ public class StateSpace implements IAnimator {
 			}
 		}
 		subscribedFormulas.removeAll(toRemove);
-		return subscribedFormulas;
+		return new HashSet<>(subscribedFormulas);
 	}
 
 	/**
