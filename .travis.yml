@@ -20,7 +20,7 @@ script:
 - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean test integrationtests codeCoverageReport --stacktrace
 after_success:
 - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives
-- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle sonarqube 
+- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle sonarqube --info --stacktrace
 
 env:
   global:
