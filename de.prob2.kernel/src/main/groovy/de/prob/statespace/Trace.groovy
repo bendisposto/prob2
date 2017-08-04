@@ -203,6 +203,9 @@ public class Trace {
 		PersistentVector<Transition> transitionList = this.transitionList
 		for (int i = 0; i < numOfSteps; i++) {
 			List<Transition> ops = currentState.getOutTransitions()
+			if (ops.empty) {
+				break
+			}
 			Collections.shuffle(ops)
 			Transition op = ops.get(0)
 			current = new TraceElement(op, current)
