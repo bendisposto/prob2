@@ -139,7 +139,7 @@ sonarqube {
 		property("sonar.projectName", "prob2kernel")
 
 		property("sonar.exclusions", "de.prob2.kernel/gradle/wrapper/*,de.prob2.kernel/build/**/*,de.prob2.kernel/groovyTests/*")
-
+		property("sonar.jacoco.reportPaths", "de.prob2.kernel/build/jacoco/*")
 
 		property("sonar.organization", "prob2")
                 property("sonar.login", System.getenv("SONAR_TOKEN"))
