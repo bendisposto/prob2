@@ -38,12 +38,12 @@ import static java.io.File.separator;
 public class Main {
 
 	private static int maxCacheSize = 100;
-	private final static Logger logger = LoggerFactory.getLogger(Main.class);
+	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
 	private final Options options;
 	private final Shell shell;
 
-	private static Injector _INJECTOR = null;
+	private static Injector injector = null;
 
 	/**
 	 * Name of file in which the preferences are saved. Currently
@@ -53,11 +53,11 @@ public class Main {
 
 	public static final String PROB2_BUILD_PROPERTIES_FILE = "/prob2-build.properties";
 
-	public synchronized static Injector getInjector() {
-		if (_INJECTOR == null) {
-			_INJECTOR = Guice.createInjector(Stage.PRODUCTION, new MainModule());
+	public static synchronized Injector getInjector() {
+		if (injector == null) {
+			injector = Guice.createInjector(Stage.PRODUCTION, new MainModule());
 		}
-		return _INJECTOR;
+		return injector;
 	}
 
 	/**
@@ -66,22 +66,22 @@ public class Main {
 	 * @param i
 	 *            the new injector to use
 	 */
-	public synchronized static void setInjector(final Injector i) {
-		_INJECTOR = i;
+	public static synchronized  void setInjector(final Injector i) {
+		injector = i;
 	}
 
 	/**
 	 * String representing the ProB home directory. Calls method
 	 * {@link Main#getProBDirectory()}
 	 */
-	public final static String PROB_HOME = getProBDirectory();
+	public static final String PROB_HOME = getProBDirectory();
 
 	/**
 	 * String representing the log configuration file. This defaults to
 	 * "production.xml" if the System property "PROB_LOG_CONFIG" is not defined.
 	 * Otherwise, the system property is used.
 	 */
-	public final static String LOG_CONFIG = System.getProperty("PROB_LOG_CONFIG") == null ? "production.xml"
+	public static final String LOG_CONFIG = System.getProperty("PROB_LOG_CONFIG") == null ? "production.xml"
 			: System.getProperty("PROB_LOG_CONFIG");
 
 	/**
