@@ -2,7 +2,7 @@ package de.prob.animator.domainobjects;
 
 import java.util.List;
 
-import de.prob.util.StringUtil;
+import com.google.common.base.MoreObjects;
 
 public class DotNode {
 
@@ -37,7 +37,12 @@ public class DotNode {
 	
 	@Override
 	public String toString() {
-		return StringUtil.generateJsonString(this);
+		return MoreObjects.toStringHelper(this)
+			.add("id", id)
+			.add("labels", labels)
+			.add("count", count)
+			.add("color", color)
+			.toString();
 	}
 	
 }
