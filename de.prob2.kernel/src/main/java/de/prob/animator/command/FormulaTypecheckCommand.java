@@ -26,7 +26,7 @@ public class FormulaTypecheckCommand extends AbstractCommand {
 	@Override
 	public void writeCommand(IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME);
-		pto.printAtom(formula.getKind().toString());
+		pto.printAtom(formula.getKind().getPrologName());
 		formula.printProlog(pto);
 		pto.printVariable("_"); // we don't need the typed formula back and
 								// eliminating it decreases the size of the

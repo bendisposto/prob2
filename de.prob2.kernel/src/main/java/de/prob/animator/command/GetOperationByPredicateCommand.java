@@ -9,6 +9,7 @@ package de.prob.animator.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.prob.animator.domainobjects.EvalElementType;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -21,8 +22,6 @@ import de.prob.statespace.Transition;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 /**
  * Command to execute an event that has not been enumerated by ProB.
@@ -53,7 +52,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 		this.name = name;
 		this.nrOfSolutions = nrOfSolutions;
 		evalElement = predicate;
-		if (!evalElement.getKind().equals(PREDICATE.toString())) {
+		if (!EvalElementType.PREDICATE.equals(evalElement.getKind())) {
 			throw new IllegalArgumentException("Formula must be a predicate: "
 					+ predicate);
 		}

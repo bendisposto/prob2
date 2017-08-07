@@ -1,19 +1,18 @@
 package de.prob.animator.command;
 
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.prob.animator.domainobjects.EvalElementType;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.Transition;
 import de.prob.statespace.State;
+import de.prob.statespace.Transition;
 
 public class FilterStatesForPredicateCommand extends AbstractCommand {
 
@@ -26,7 +25,7 @@ public class FilterStatesForPredicateCommand extends AbstractCommand {
 
 	public FilterStatesForPredicateCommand(final IEvalElement predicate,
 			final Collection<State> ids) {
-		if (!predicate.getKind().equals(PREDICATE.toString())) {
+		if (!EvalElementType.PREDICATE.equals(predicate.getKind())) {
 			throw new IllegalArgumentException(
 					"Formula in GetStatesFromPredicate must be a predicate");
 		}
