@@ -11,7 +11,6 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.util.StringUtil;
 
 public class GetOpFromId extends AbstractCommand {
 
@@ -44,7 +43,7 @@ public class GetOpFromId extends AbstractCommand {
 			params = new ArrayList<String>();
 		}
 		for (PrologTerm p : plist) {
-			params.add(StringUtil.generateString(p.getFunctor()));
+			params.add(p.getFunctor().intern());
 		}
 
 		ListPrologTerm rlist = BindingGenerator.getList(bindings.get(RETURNVALUES_VARIABLE));
@@ -53,7 +52,7 @@ public class GetOpFromId extends AbstractCommand {
 			returnValues = new ArrayList<String>();
 		}
 		for (PrologTerm r : rlist) {
-			returnValues.add(StringUtil.generateString(r.getFunctor()));
+			returnValues.add(r.getFunctor().intern());
 		}
 
 		op.setInfo(expansion, params, returnValues);

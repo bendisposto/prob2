@@ -1,5 +1,4 @@
-package de.prob.animator.domainobjects;
-
+package de.prob.animator.domainobjects
 
 import com.google.common.base.Joiner
 
@@ -9,7 +8,6 @@ import de.prob.prolog.term.ListPrologTerm
 import de.prob.prolog.term.PrologTerm
 import de.prob.translator.Translator
 import de.prob.unicode.UnicodeTranslator
-import de.prob.util.StringUtil
 
 public class EvalResult extends AbstractEvalResult {
 
@@ -143,9 +141,7 @@ public class EvalResult extends AbstractEvalResult {
 			for (PrologTerm t : solutionList) {
 				CompoundPrologTerm cpt = BindingGenerator
 						.getCompoundTerm(t, 2);
-				solutions.put(
-						StringUtil.generateString(cpt.getArgument(1).getFunctor()),
-						StringUtil.generateString(cpt.getArgument(2).getFunctor()))
+				solutions[cpt.getArgument(1).functor.intern()] = cpt.getArgument(2).functor.intern()
 			}
 
 			def res = new EvalResult(value, solutions);
