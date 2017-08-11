@@ -139,7 +139,7 @@ sonarqube {
 		property("sonar.projectName", "prob2kernel")
 
 		property("sonar.exclusions", "de.prob2.kernel/gradle/wrapper/*,de.prob2.kernel/build/**/*,de.prob2.kernel/groovyTests/*")
-		property("sonar.jacoco.reportPaths", "de.prob2.kernel/build/jacoco/*")
+		property("sonar.jacoco.reportPaths", "de.prob2.kernel/build/jacoco/jacocoCliIntegrationTests.exec,de.prob2.kernel/build/jacoco/jacocoTest.exec,de.prob2.kernel/build/jacoco/tests.exec")
 
 		property("sonar.organization", "prob2")
                 property("sonar.login", System.getenv("SONAR_TOKEN"))
@@ -204,25 +204,23 @@ task downloadCLIs {
 
 task downloadCSPMFrontend {
 	doLast {
- 	def dir = 'src/main/resources/cli/'
-
-	['darwin-64',
-	 'linux-32',
-	 'linux-64',
-	 'windows',
-	].each { n ->
-   def libName = "cspmf"
-	 def target = dir + cspmfmapping(n) + "-cspmf"
-	 if (n=="windows") {
-		 target += ".exe"
-		 libName += ".exe"
-   }
-	 download('https://www3.hhu.de/stups/downloads/cspmf/'+n+'/'+libName,target)
-	 file(target).setExecutable(true)
- }
-}
-dependsOn downloadCLIs
-
+		def dir = 'src/main/resources/cli/'
+		['darwin-64',
+		 'linux-32',
+		 'linux-64',
+		 'windows',
+		].each { n ->
+	   def libName = "cspmf"
+		 def target = dir + cspmfmapping(n) + "-cspmf"
+		 if (n=="windows") {
+			 target += ".exe"
+			 libName += ".exe"
+	   }
+		 download('https://www3.hhu.de/stups/downloads/cspmf/'+n+'/'+libName,target)
+		 file(target).setExecutable(true)
+		}
+	}
+	dependsOn downloadCLIs
 }
 
 def getCheckedOutGitCommitHash() {
