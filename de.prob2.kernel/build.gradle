@@ -137,7 +137,7 @@ sonarqube {
 
 		property("sonar.projectKey", "prob2kernel")
 		property("sonar.projectName", "prob2kernel")
-
+		property("sonar.tests", "de.prob2.kernel/build/classes/java/test/,de.prob2.kernel/build/classes/groovy/test/")
 		property("sonar.exclusions", "de.prob2.kernel/gradle/wrapper/*,de.prob2.kernel/build/**/*,de.prob2.kernel/groovyTests/*")
 		property("sonar.jacoco.reportPaths", "de.prob2.kernel/build/jacocoHtml")
 		property("sonar.groovy.jacoco.reportPath", "de.prob2.kernel/build/jacoco/jacocoCliIntegrationTests.exec,de.prob2.kernel/build/jacoco/jacocoTest.exec,de.prob2.kernel/build/jacoco/tests.exec")
