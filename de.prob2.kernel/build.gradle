@@ -139,11 +139,11 @@ sonarqube {
 		property("sonar.projectName", "prob2kernel")
 
 		property("sonar.exclusions", "de.prob2.kernel/gradle/wrapper/*,de.prob2.kernel/build/**/*,de.prob2.kernel/groovyTests/*")
-		property("sonar.jacoco.reportPaths", "${buildDir}/jacocoHtml")
+		property("sonar.jacoco.reportPaths", "de.prob2.kernel/build/jacocoHtml")
 		property("sonar.groovy.jacoco.reportPath", "de.prob2.kernel/build/jacoco/jacocoCliIntegrationTests.exec,de.prob2.kernel/build/jacoco/jacocoTest.exec,de.prob2.kernel/build/jacoco/tests.exec")
-
+		property("sonar.jacoco.itReportPath", "de.prob2.kernel/build/jacoco/jacocoCliIntegrationTests.exec")
 		property("sonar.organization", "prob2")
-                property("sonar.login", System.getenv("SONAR_TOKEN"))
+		property("sonar.login", System.getenv("SONAR_TOKEN"))
 	}
 }
 
