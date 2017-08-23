@@ -34,7 +34,6 @@ def gradle_version = '4.0'
 
 // IMPORTANT !!!
 // Remember to release the cli and
-// change the version in ../sonar-project.properties
 project.version = '3.2.3-SNAPSHOT'
 ext{ cli_version = '1.7.0' }
 // IMPORTANT !!!
