@@ -29,11 +29,9 @@ public interface IEvalElement {
 	// public void typecheck();
 
 	/**
-	 * @return String with the kind of the formula. For B formulas, this needs
-	 *         to be either formula or expression. For other formula types, new
-	 *         kinds need to be defined to recognize the formula.
+	 * @return The kind of the formula. For B formulas, this needs to be either formula or expression. For other formula types, new kinds need to be defined to recognize the formula.
 	 */
-	public abstract String getKind();
+	public abstract EvalElementType getKind();
 
 	public String serialized();
 

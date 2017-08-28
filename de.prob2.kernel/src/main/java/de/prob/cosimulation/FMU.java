@@ -27,17 +27,17 @@ public class FMU {
 	private static final double TIMEOUT = 1000;
 
 	/** The modelIdentifier from modelDescription.xml. */
-	String _modelIdentifier;
+	String modelIdentifier;
 
 	/** The NativeLibrary that contains the functions. */
-	NativeLibrary _nativeLibrary;
+	NativeLibrary nativeLibrary;
 	private Pointer component;
 
 	private final FMIModelDescription modelDescription;
 
-	private final Map<String, FMIScalarVariable> variables = new HashMap<String, FMIScalarVariable>();
+	private final Map<String, FMIScalarVariable> variables = new HashMap<>();
 
-	private final Set<IFMUListener> listeners = new HashSet<IFMUListener>();
+	private final Set<IFMUListener> listeners = new HashSet<>();
 
 	public void registerListener(final IFMUListener listener) {
 		listeners.add(listener);
@@ -55,10 +55,10 @@ public class FMU {
 			variables.put(fmiScalarVariable.name, fmiScalarVariable);
 		}
 
-		_nativeLibrary = NativeLibrary.getInstance(sharedLibrary);
+		nativeLibrary = NativeLibrary.getInstance(sharedLibrary);
 
 		// The modelName may have spaces in it.
-		_modelIdentifier = modelDescription.modelIdentifier;
+		modelIdentifier = modelDescription.modelIdentifier;
 
 		// The URL of the fmu file.
 		String fmuLocation = new File(fmuFileName).toURI().toURL().toString();
@@ -74,15 +74,12 @@ public class FMU {
 		// Run the simulator without user interaction.
 		byte interactive = 0;
 		// Callbacks
-		FMICallbackFunctions.ByValue callbacks = new FMICallbackFunctions.ByValue(
-				new FMULibrary.FMULogger(), new FMULibrary.FMUAllocateMemory(),
-				new FMULibrary.FMUFreeMemory(),
-				new FMULibrary.FMUStepFinished());
+		FMICallbackFunctions.ByValue callbacks = new FMICallbackFunctions.ByValue(new FMULibrary.FMULogger(),
+				new FMULibrary.FMUAllocateMemory(), new FMULibrary.FMUFreeMemory(), new FMULibrary.FMUStepFinished());
 		// Logging tends to cause segfaults because of vararg callbacks.
 		byte loggingOn = (byte) 0;
 
-		component = instantiateFMU(fmuLocation, mimeType, timeout, visible,
-				interactive, callbacks, loggingOn);
+		component = instantiateFMU(fmuLocation, mimeType, timeout, visible, interactive, callbacks, loggingOn);
 
 		if (component.equals(Pointer.NULL)) {
 			throw new CantInstantiateFMUException("Could not instantiate model.");
@@ -90,14 +87,14 @@ public class FMU {
 	}
 
 	public String getFmiVersion() {
-		assert _nativeLibrary != null;
+		assert nativeLibrary != null;
 		Function function = getFunction("_fmiGetVersion");
 		return (String) function.invoke(String.class, new Object[0]);
 	}
 
 	public void initialize(final double startTime, final double endTime) {
-		invoke("_fmiInitializeSlave", new Object[] { component, startTime,
-				(byte) 1, endTime }, "Could not initialize slave: ");
+		invoke("_fmiInitializeSlave", new Object[] { component, startTime, (byte) 1, endTime },
+				"Could not initialize slave: ");
 	}
 
 	public boolean getBoolean(final String name) {
@@ -140,22 +137,20 @@ public class FMU {
 		fmiScalarVariable.setString(component, s);
 	}
 
-	public double doStep(final double time, final double delta_t) {
+	public double doStep(final double time, final double deltaT) {
 		Function doStep = getFunction("_fmiDoStep");
-		invoke(doStep, new Object[] { component, time, delta_t, (byte) 1 },
+		invoke(doStep, new Object[] { component, time, deltaT, (byte) 1 },
 				"Could not simulate, time was " + time + ": ");
 
 		for (IFMUListener l : listeners) {
 			l.trigger(variables);
 		}
-		return time + delta_t;
+		return time + deltaT;
 	}
 
 	public void terminate() {
-		invoke("_fmiTerminateSlave", new Object[] { component },
-				"Could not terminate slave: ");
-		invoke("_fmiFreeSlaveInstance", new Object[] { component },
-				"Could not dispose resources of slave: ");
+		invoke("_fmiTerminateSlave", new Object[] { component }, "Could not terminate slave: ");
+		invoke("_fmiFreeSlaveInstance", new Object[] { component }, "Could not dispose resources of slave: ");
 		component = null;
 	}
 
@@ -166,24 +161,19 @@ public class FMU {
 	}
 
 	public void reset() {
-		invoke("_fmiResetSlave", new Object[] { component },
-				"Could not reset slave: ");
+		invoke("_fmiResetSlave", new Object[] { component }, "Could not reset slave: ");
 	}
 
 	public FMIModelDescription getModelDescription() {
 		return modelDescription;
 	}
 
-	private Pointer instantiateFMU(final String fmuLocation,
-			final String mimeType, final double timeout, final byte visible,
-			final byte interactive,
-			final FMICallbackFunctions.ByValue callbacks, final byte loggingOn) {
+	private Pointer instantiateFMU(final String fmuLocation, final String mimeType, final double timeout,
+			final byte visible, final byte interactive, final FMICallbackFunctions.ByValue callbacks,
+			final byte loggingOn) {
 		Function instantiateSlave = getFunction("_fmiInstantiateSlave");
-		Pointer fmiComponent = (Pointer) instantiateSlave.invoke(Pointer.class,
-				new Object[] { _modelIdentifier, modelDescription.guid,
-						fmuLocation, mimeType, timeout, visible, interactive,
-						callbacks, loggingOn });
-		return fmiComponent;
+		return (Pointer) instantiateSlave.invoke(Pointer.class, new Object[] { modelIdentifier, modelDescription.guid,
+				fmuLocation, mimeType, timeout, visible, interactive, callbacks, loggingOn });
 	}
 
 	/**
@@ -198,7 +188,7 @@ public class FMU {
 	public Function getFunction(final String name) {
 		// This is syntactic sugar.
 		logger.debug("Getting the {} function.", name);
-		return _nativeLibrary.getFunction(_modelIdentifier + name);
+		return nativeLibrary.getFunction(modelIdentifier + name);
 	}
 
 	/**
@@ -214,8 +204,7 @@ public class FMU {
 	 *            message should end with ": " because the return value of the
 	 *            function will be printed after the error message.
 	 */
-	public void invoke(final String name, final Object[] arguments,
-			final String message) {
+	public void invoke(final String name, final Object[] arguments, final String message) {
 		Function function = getFunction(name);
 		invoke(function, arguments, message);
 	}
@@ -233,14 +222,12 @@ public class FMU {
 	 *            message should end with ": " because the return value of the
 	 *            function will be printed after the error message.
 	 */
-	public void invoke(final Function function, final Object[] arguments,
-			final String message) {
+	public void invoke(final Function function, final Object[] arguments, final String message) {
 		logger.debug("Invoking  {}", function.getName());
-		int fmiFlag = ((Integer) function.invoke(Integer.class, arguments))
-				.intValue();
+		int fmiFlag = ((Integer) function.invoke(Integer.class, arguments)).intValue();
 		if (fmiFlag > FMILibrary.FMIStatus.fmiWarning) {
 			logger.error("FMU invocation error. Flag: {}, Message: {}", fmiFlag, message);
-			throw new FMUInvocationException(message +" Flag:"+ fmiFlag);
+			throw new FMUInvocationException(message + " Flag:" + fmiFlag);
 		}
 	}
 

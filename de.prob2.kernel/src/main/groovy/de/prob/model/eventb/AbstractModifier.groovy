@@ -1,15 +1,13 @@
 package de.prob.model.eventb
 
-import org.codehaus.groovy.transform.tailrec.VariableReplacedListener.*
-import org.eventb.core.ast.extension.IFormulaExtension
+import de.be4.classicalb.core.parser.node.*
 
-import de.be4.classicalb.core.parser.node.AIdentifierExpression
 import de.prob.animator.domainobjects.EvalElementType
 import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.representation.AbstractElement
 
-
+import org.eventb.core.ast.extension.IFormulaExtension
 
 class AbstractModifier extends AbstractElement {
 
@@ -140,7 +138,7 @@ class AbstractModifier extends AbstractElement {
 	}
 
 	def EventB ensureType(EventB formula, EvalElementType expected) {
-		if (!formula.getKind().equals(expected.toString())) {
+		if (formula.kind != expected) {
 			throw new FormulaTypeException(formula, expected.name())
 		}
 		return formula

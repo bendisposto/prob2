@@ -50,7 +50,7 @@ public class EvaluateFormulaCommand extends EvaluationCommand {
 		} else {
 			pout.openTerm("eval");
 			evalElement.printProlog(pout);
-			pout.printAtom(evalElement.getKind());
+			pout.printAtom(evalElement.getKind().getPrologName());
 			pout.printAtom(evalElement.getCode());
 			pout.printAtom(evalElement.expansion().getPrologName());
 		}

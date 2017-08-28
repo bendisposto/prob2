@@ -59,7 +59,7 @@ public class ProBEvalElement extends AbstractEvalElement {
 	}
 	
 	@Override
-	public String getKind() {
+	public EvalElementType getKind() {
 		throw new UnsupportedOperationException("Should never be called on a ProBEvalElement");
 	}
 

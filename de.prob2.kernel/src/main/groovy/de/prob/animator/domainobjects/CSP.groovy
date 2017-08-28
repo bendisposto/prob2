@@ -110,13 +110,9 @@ class CSP extends AbstractEvalElement {
 		}
 	}
 
-	/**
-	 * @see de.prob.animator.domainobjects.IEvalElement#getKind()
-	 *
-	 * The kind for {@link CSP} formulas is "csp"
-	 */
-	public String getKind() {
-		return "csp";
+	@Override
+	public EvalElementType getKind() {
+		return EvalElementType.CSP
 	}
 
 	@Override

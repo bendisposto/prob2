@@ -1,10 +1,9 @@
 package de.prob.animator.command;
 
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import de.prob.animator.domainobjects.EvalElementType;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -22,7 +21,7 @@ public class GetStatesFromPredicate extends AbstractCommand {
 	private final List<String> ids = new ArrayList<String>();
 
 	public GetStatesFromPredicate(final IEvalElement e) {
-		if (!e.getKind().equals(PREDICATE.toString())) {
+		if (!EvalElementType.PREDICATE.equals(e.getKind())) {
 			throw new IllegalArgumentException(
 					"Formula in GetStatesFromPredicate must be a predicate");
 		}

@@ -1,19 +1,8 @@
 package de.prob;
 
-import static java.io.File.separator;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.OptionGroup;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -22,6 +11,17 @@ import com.google.inject.name.Names;
 import de.prob.annotations.Home;
 import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
+
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.io.File.separator;
 
 public class MainConfiguration extends AbstractModule {
 	private final Properties buildConstants;
@@ -73,26 +73,18 @@ public class MainConfiguration extends AbstractModule {
 	 * @return an {@link Option} object containing the available command line
 	 *         options for ProB 2.0
 	 */
-	@SuppressWarnings("static-access")
 	@Provides
 	public final Options getCommandlineOptions() {
 		Options options = new Options();
+		options.addOption(null, "maxCacheSize", true, "set the cache size for the states in the StateSpace");
 
-		Option maxCacheSize = OptionBuilder.withArgName("maxSize").hasArg()
-				.withDescription("set the cache size for the states in the StateSpace").create("maxCacheSize");
-
-		Option script = OptionBuilder.withArgName("script/dir").hasArg()
-				.withDescription("run a Groovy script or all .groovy files from a directory").create("script");
-
-		// TODO: add modelchecking option
-		// Option modelcheck = new Option("mc", "modelcheck", false,
-		// "start ProB model checking");
 		OptionGroup mode = new OptionGroup();
 		mode.setRequired(true);
-		// mode.addOption(modelcheck);
-		mode.addOption(script);
+		// TODO: add modelchecking option
+		// mode.addOption(new Option("mc", "modelcheck", false, "start ProB model checking"));
+		mode.addOption(new Option(null, "script", true, "run a Groovy script or all .groovy files from a directory"));
 		options.addOptionGroup(mode);
-		options.addOption(maxCacheSize);
+		
 		return options;
 	}
 

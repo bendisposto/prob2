@@ -25,7 +25,6 @@ import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.translator.Translator;
 import de.prob.translator.types.BObject;
-import de.prob.util.StringUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -397,8 +396,7 @@ public class Transition {
 	public static Transition createTransitionFromCompoundPrologTerm(
 			final StateSpace s, final CompoundPrologTerm cpt) {
 		String opId = Transition.getIdFromPrologTerm(cpt.getArgument(1));
-		String name = StringUtil.generateString(BindingGenerator
-				.getCompoundTerm(cpt.getArgument(2), 0).getFunctor());
+		String name = BindingGenerator.getCompoundTerm(cpt.getArgument(2), 0).getFunctor().intern();
 		String srcId = Transition.getIdFromPrologTerm(cpt.getArgument(3));
 		String destId = Transition.getIdFromPrologTerm(cpt.getArgument(4));
 		return new Transition(s, opId, name, s.addState(srcId),

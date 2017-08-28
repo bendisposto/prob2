@@ -1,7 +1,5 @@
 package de.prob.animator.domainobjects;
 
-import de.prob.util.StringUtil;
-
 /**
  * B formulas have either the type PREDICATE or EXPRESSION.
  * 
@@ -9,11 +7,19 @@ import de.prob.util.StringUtil;
  * 
  */
 public enum EvalElementType {
-	PREDICATE, EXPRESSION, ASSIGNMENT;
-
-	@Override
-	public String toString() {
-		return StringUtil.generateString("#" + super.toString());
+	PREDICATE("#PREDICATE"),
+	EXPRESSION("#EXPRESSION"),
+	ASSIGNMENT("#ASSIGNMENT"),
+	CSP("csp"),
+	;
+	
+	private final String prologName;
+	
+	private EvalElementType(final String prologName) {
+		this.prologName = prologName;
 	}
-
+	
+	public String getPrologName() {
+		return this.prologName;
+	}
 }

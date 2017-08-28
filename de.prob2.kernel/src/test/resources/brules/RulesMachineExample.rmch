@@ -13,11 +13,9 @@ OPERATIONS
   BODY
     FOR x IN 1..100
     DO
-      IF x = 55
-      THEN
-        RULE_FAIL
-        COUNTEREXAMPLE STRING_FORMAT("Invalid value ~w", x)
-        END
+      RULE_FAIL
+      WHEN x = 55
+      COUNTEREXAMPLE STRING_FORMAT("Invalid value ~w", x)
       END
     END
   END
