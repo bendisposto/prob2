@@ -9,7 +9,7 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
- * Gets a list of the errors from ProB
+ * Gets a list of redundant invariants and timeouts from ProB
  * 
  * @author joy
  * 
@@ -27,6 +27,7 @@ public class GetRedundantInvariantsCommand extends AbstractCommand {
 		redundant = PrologTerm.atomicStrings((ListPrologTerm) bindings.get(REDUNDANT_INVS));
 		timeout = PrologTerm.atomicStrings((ListPrologTerm) bindings.get(TIMEOUT));
 	}
+	
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
