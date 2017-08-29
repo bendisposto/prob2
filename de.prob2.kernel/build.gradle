@@ -42,10 +42,10 @@ ext{ cli_version = '1.7.0' }
 def parser_version
 
 if (project.version.endsWith("-SNAPSHOT")) {
-	parser_version = '2.9.7-SNAPSHOT'
+	parser_version = '2.9.8-SNAPSHOT'
 }
 else {
-	parser_version = '2.9.6'
+	parser_version = '2.9.7'
 }
 
 
@@ -135,7 +135,7 @@ sonarqube {
 		property("sonar.java.binaries", sourceSets.main.groovy.outputDir.path)
 		property("sonar.projectKey", "prob2kernel")
 		property("sonar.projectName", "prob2kernel")
-		property("sonar.exclusions", "de.prob2.kernel/gradle/wrapper/*,de.prob2.kernel/build/**/*,de.prob2.kernel/groovyTests/*")
+		property("sonar.exclusions", "de.prob2.kernel/gradle/wrapper/*,de.prob2.kernel/build/**/*,de.prob2.kernel/groovyIntegrationTests/*")
 		property("sonar.organization", "prob2")
 		property("sonar.login", System.getenv("SONAR_TOKEN"))
 	}
@@ -277,15 +277,15 @@ def os_extension() {
 }
 
 // run integration tests after downloading fresh CLI from Nightly Build
-task integrationtests(dependsOn: ['downloadCLIs', 'tests', 'cliIntegrationTests']);
+task allTests(dependsOn: ['downloadCLIs', 'test', 'groovyIntegrationTests', 'cliIntegrationTests']);
 
-// run integration tests WITHOUT downloading fresh CLI from Nightly Build
-task tests(type:JavaExec, dependsOn: ['classes']){
+// run groovy integration tests WITHOUT downloading fresh CLI from Nightly Build
+task groovyIntegrationTests(type:JavaExec, dependsOn: ['classes']){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ['-script', 'groovyTests']
 }
-project.jacoco.applyTo(tests)
+project.jacoco.applyTo(groovyIntegrationTests)
 
 
 task cliIntegrationTests(type: Test, dependsOn: ['downloadCLIs','test']){
@@ -300,7 +300,7 @@ task cliIntegrationTests(type: Test, dependsOn: ['downloadCLIs','test']){
 jacoco {
     toolVersion = "0.7.9"
 }
-task codeCoverageReport(type:JacocoReport, dependsOn: ['test', 'tests', 'cliIntegrationTests']){
+task codeCoverageReport(type:JacocoReport, dependsOn: ['allTests']){
 	sourceDirectories = files([])
 	classDirectories = files('build/classes/groovy/main')
 	//onlyIf = {true}
@@ -309,7 +309,7 @@ task codeCoverageReport(type:JacocoReport, dependsOn: ['test', 'tests', 'cliInte
 		csv.enabled false
 		html.destination new File("${buildDir}/jacocoHtml")
 	}
-	executionData(test, tests, cliIntegrationTests)
+	executionData(test, groovyIntegrationTests, cliIntegrationTests)
 }
 
 check.dependsOn codeCoverageReport
