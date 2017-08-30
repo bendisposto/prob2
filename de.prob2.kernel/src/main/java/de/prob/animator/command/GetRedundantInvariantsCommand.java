@@ -16,16 +16,16 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class GetRedundantInvariantsCommand extends AbstractCommand {
 	private static final String PROLOG_COMMAND_NAME = "prob2_redundant_invariants";
-	public static final String REDUNDANT_INVS = "Invariants";
-	public static final String TIMEOUT = "Timeouts";
+	public static final String REDUNDANT_INVS = "invariants";
+	public static final String TIMEOUT = "timeouts";
 
 	private List<String> redundant = Collections.emptyList();
 	private List<String> timeout = Collections.emptyList();
 
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
-		redundant = PrologTerm.atomicStrings((ListPrologTerm) bindings.get(REDUNDANT_INVS));
-		timeout = PrologTerm.atomicStrings((ListPrologTerm) bindings.get(TIMEOUT));
+		redundant = PrologTerm.atomicStrings((ListPrologTerm)bindings.get(REDUNDANT_INVS));
+		timeout = PrologTerm.atomicStrings((ListPrologTerm)bindings.get(TIMEOUT));
 	}
 	
 
