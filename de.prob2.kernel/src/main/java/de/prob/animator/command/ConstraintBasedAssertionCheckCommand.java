@@ -21,9 +21,9 @@ import de.prob.statespace.Transition;
 public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 		implements IStateSpaceModifier {
 
-	public static enum ResultType {
+	public enum ResultType {
 		INTERRUPTED, COUNTER_EXAMPLE, NO_COUNTER_EXAMPLE_FOUND, NO_COUNTER_EXAMPLE_EXISTS
-	};
+	}
 
 	private static final String COMMAND_NAME = "cbc_static_assertion_violation_checking";
 	private static final String RESULT_VARIABLE = "R";
@@ -32,7 +32,7 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 	private Transition counterExampleOperation;
 	private String counterExampleStateID;
 	private final StateSpace s;
-	private final List<Transition> newOps = new ArrayList<Transition>();
+	private final List<Transition> newOps = new ArrayList<>();
 
 	public ConstraintBasedAssertionCheckCommand(final StateSpace s) {
 		this.s = s;
@@ -60,7 +60,6 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		final ResultType result;
 		if (resultTerm.hasFunctor("interrupted", 0)) {
 			result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("no_counterexample_found", 0)) {
@@ -81,7 +80,6 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 		} else
 			throw new ProBError(
 					"unexpected result from deadlock check: " + resultTerm);
-		this.result = result;
 
 	}
 
