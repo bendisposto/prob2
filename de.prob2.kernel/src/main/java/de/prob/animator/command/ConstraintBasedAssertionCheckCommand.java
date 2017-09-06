@@ -60,7 +60,6 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		final ResultType result;
 		if (resultTerm.hasFunctor("interrupted", 0)) {
 			result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("no_counterexample_found", 0)) {
@@ -81,7 +80,6 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 		} else
 			throw new ProBError(
 					"unexpected result from deadlock check: " + resultTerm);
-		this.result = result;
 
 	}
 
