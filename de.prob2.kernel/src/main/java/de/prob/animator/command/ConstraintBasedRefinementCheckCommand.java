@@ -36,16 +36,17 @@ public class ConstraintBasedRefinementCheckCommand extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBError {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		
+		final ResultType result;
 		final ListPrologTerm resultStringTerm = (ListPrologTerm) bindings
 				.get(RESULT_STRINGS_VARIABLE);
 
 		StringBuilder strBuilder = new StringBuilder();
 		for (PrologTerm t : resultStringTerm) {
-			strBuilder.append(PrologTerm.atomicString(t));
-			strBuilder.append("\n");
+			resultsString += PrologTerm.atomicString(t) + "\n";
+			//strBuilder.append(PrologTerm.atomicString(t));
+			//strBuilder.append("\n");
 		}
-		resultsString = strBuilder.toString();
+		//resultsString = strBuilder.toString();
 		
 		if (resultTerm.hasFunctor("time_out", 0)) {
 			result = ResultType.INTERRUPTED;
@@ -55,8 +56,8 @@ public class ConstraintBasedRefinementCheckCommand extends AbstractCommand {
 		} else if (resultTerm.hasFunctor("false", 0)) { // Errors were found
 			result = ResultType.NO_VIOLATION_FOUND;
 		} else
-			throw new ProBError(
-					"unexpected result from refinement check: " + resultTerm);
+			throw new ProBError("unexpected result from refinement check: " + resultTerm);
+		this.result = result;
 	}
 	
 
