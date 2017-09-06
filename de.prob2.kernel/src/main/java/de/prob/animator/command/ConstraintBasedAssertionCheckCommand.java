@@ -21,9 +21,9 @@ import de.prob.statespace.Transition;
 public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 		implements IStateSpaceModifier {
 
-	public enum ResultType {
+	public static enum ResultType {
 		INTERRUPTED, COUNTER_EXAMPLE, NO_COUNTER_EXAMPLE_FOUND, NO_COUNTER_EXAMPLE_EXISTS
-	}
+	};
 
 	private static final String COMMAND_NAME = "cbc_static_assertion_violation_checking";
 	private static final String RESULT_VARIABLE = "R";

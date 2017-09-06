@@ -11,9 +11,9 @@ import de.prob.prolog.term.PrologTerm;
 
 public class ConstraintBasedRefinementCheckCommand extends AbstractCommand {
 
-	public enum ResultType {
+	public static enum ResultType {
 		VIOLATION_FOUND, NO_VIOLATION_FOUND, INTERRUPTED
-	}
+	};
 
 	private static final String COMMAND_NAME = "refinement_check";
 	private static final String RESULT_VARIABLE = "R";
@@ -40,14 +40,10 @@ public class ConstraintBasedRefinementCheckCommand extends AbstractCommand {
 		final ListPrologTerm resultStringTerm = (ListPrologTerm) bindings
 				.get(RESULT_STRINGS_VARIABLE);
 
-		StringBuilder strBuilder = new StringBuilder();
 		for (PrologTerm t : resultStringTerm) {
 			resultsString += PrologTerm.atomicString(t) + "\n";
-			//strBuilder.append(PrologTerm.atomicString(t));
-			//strBuilder.append("\n");
 		}
-		//resultsString = strBuilder.toString();
-		
+
 		if (resultTerm.hasFunctor("time_out", 0)) {
 			result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("true", 0)) { // Errors were found
