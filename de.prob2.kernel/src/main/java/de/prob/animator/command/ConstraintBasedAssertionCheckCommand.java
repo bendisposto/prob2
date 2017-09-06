@@ -32,7 +32,7 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 	private Transition counterExampleOperation;
 	private String counterExampleStateID;
 	private final StateSpace s;
-	private final List<Transition> newOps = new ArrayList<>();
+	private final List<Transition> newOps = new ArrayList<Transition>();
 
 	public ConstraintBasedAssertionCheckCommand(final StateSpace s) {
 		this.s = s;
