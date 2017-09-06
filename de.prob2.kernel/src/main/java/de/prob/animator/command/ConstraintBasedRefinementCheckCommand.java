@@ -11,9 +11,9 @@ import de.prob.prolog.term.PrologTerm;
 
 public class ConstraintBasedRefinementCheckCommand extends AbstractCommand {
 
-	public static enum ResultType {
+	public enum ResultType {
 		VIOLATION_FOUND, NO_VIOLATION_FOUND, INTERRUPTED
-	};
+	}
 
 	private static final String COMMAND_NAME = "refinement_check";
 	private static final String RESULT_VARIABLE = "R";
