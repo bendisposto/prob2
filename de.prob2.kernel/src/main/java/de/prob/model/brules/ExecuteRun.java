@@ -3,9 +3,6 @@ package de.prob.model.brules;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Provider;
 
 import de.prob.animator.command.ExecuteModelCommand;
@@ -17,6 +14,9 @@ import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.util.StopWatch;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class performs the following actions:
@@ -69,6 +69,9 @@ public class ExecuteRun {
 	}
 
 	private static void storeStateSpace(StateSpace stateSpace2) {
+		if (stateSpace != null) {
+			stateSpace.kill();
+		}
 		stateSpace = stateSpace2;
 	}
 

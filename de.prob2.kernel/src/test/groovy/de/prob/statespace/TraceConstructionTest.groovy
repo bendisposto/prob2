@@ -1,11 +1,12 @@
 package de.prob.statespace
 
-import spock.lang.Specification
 import de.prob.Main
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
 import de.prob.scripting.ClassicalBFactory
+
+import spock.lang.Specification
 
 class TraceConstructionTest extends Specification {
 
@@ -17,6 +18,9 @@ class TraceConstructionTest extends Specification {
 		s = factory.extract(path).load([:])
 	}
 
+	def cleanupSpec() {
+		s.kill()
+	}
 
 	def "can create Trace from StateSpace"() {
 		expect: new Trace(s) != null

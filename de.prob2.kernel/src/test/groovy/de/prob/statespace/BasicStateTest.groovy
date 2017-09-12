@@ -1,15 +1,14 @@
 package de.prob.statespace
 
-
-import static org.junit.Assert.*
-import static org.mockito.Mockito.*
-import spock.lang.Specification
 import de.prob.Main
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.StateError
 import de.prob.model.representation.CSPModel
 import de.prob.scripting.ClassicalBFactory
 
+import spock.lang.Specification
+
+import static org.mockito.Mockito.*
 
 class BasicStateTest extends Specification {
 
@@ -25,6 +24,10 @@ class BasicStateTest extends Specification {
 		root = s.getRoot()
 		firstState = root.$initialise_machine()
 		secondState = firstState.new("pp=PID1")
+	}
+
+	def cleanupSpec() {
+		s.kill()
 	}
 
 	def "toString is id"() {

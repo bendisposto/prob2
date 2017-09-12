@@ -1,14 +1,11 @@
 package de.prob.statespace
 
-
-import static org.junit.Assert.*
-import static org.mockito.Mockito.*
-import spock.lang.Specification
 import de.prob.Main
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.scripting.ClassicalBFactory
 
+import spock.lang.Specification
 
 class StateSpaceAnimationTest extends Specification {
 
@@ -22,6 +19,10 @@ class StateSpaceAnimationTest extends Specification {
 		s = factory.extract(path).load([:])
 		root = s.getRoot()
 		firstState = root.$initialise_machine()
+	}
+
+	def cleanupSpec() {
+		s.kill()
 	}
 
 

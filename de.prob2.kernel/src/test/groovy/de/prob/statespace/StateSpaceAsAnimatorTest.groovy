@@ -1,15 +1,12 @@
 package de.prob.statespace
 
-
-import static org.junit.Assert.*
-import static org.mockito.Mockito.*
-import spock.lang.Specification
 import de.prob.Main
 import de.prob.animator.command.CheckInitialisationStatusCommand
 import de.prob.animator.command.CheckInvariantStatusCommand
 import de.prob.animator.command.ExploreStateCommand
 import de.prob.scripting.ClassicalBFactory
 
+import spock.lang.Specification
 
 class StateSpaceAsAnimatorTest extends Specification {
 
@@ -23,6 +20,10 @@ class StateSpaceAsAnimatorTest extends Specification {
 		s = factory.extract(path).load([:])
 		root = s.getRoot()
 		firstState = root.$initialise_machine()
+	}
+
+	def cleanupSpec() {
+		s.kill()
 	}
 
 	def "sending an interrupt while the animator is not doing anything will not disturb further commands"() {
