@@ -3,6 +3,7 @@ package de.prob.cli;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -15,6 +16,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class PrologProcessProvider implements Provider<ProcessHandle> {
+	private static final List<Process> toDestroyOnShutdown = Collections.synchronizedList(new ArrayList<Process>());
+
+	static {
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			@Override
+			public void run() {
+				synchronized (toDestroyOnShutdown) {
+					for (final Process process : toDestroyOnShutdown) {
+						process.destroy();
+					}
+				}
+			}
+		}, "Prolog Process Destroyer"));
+	}
 
 	private final Logger logger = LoggerFactory
 			.getLogger(PrologProcessProvider.class);
@@ -62,17 +77,8 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 			logger.error("CLI Process is null. Cannot start Prolog part of ProB.");
 			return null;
 		}
-		setShutdownHook(prologProcess);
+		toDestroyOnShutdown.add(prologProcess);
 		return new ProcessHandle(prologProcess, debuggingKey);
-	}
-
-	private void setShutdownHook(final Process p) {
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			@Override
-			public void run() {
-				p.destroy();
-			}
-		}, "Prolog Process Destroyer"));
 	}
 
 	private List<String> makeCommand(final String executable) {
