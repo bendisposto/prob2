@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -20,12 +21,12 @@ public class GetRedundantInvariantsCommand extends AbstractCommand {
 	public static final String TIMEOUT = "Timeouts";
 
 	private List<String> redundant = Collections.emptyList();
-	private List<String> timeout = Collections.emptyList();
+	private String timeout;
 
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		redundant = PrologTerm.atomicStrings((ListPrologTerm) bindings.get(REDUNDANT_INVS));
-		timeout = PrologTerm.atomicStrings((ListPrologTerm) bindings.get(TIMEOUT));
+		timeout = PrologTerm.atomicString((CompoundPrologTerm) bindings.get(TIMEOUT));
 	}
 	
 
@@ -38,8 +39,9 @@ public class GetRedundantInvariantsCommand extends AbstractCommand {
 		return redundant;
 	}
 
-	public List<String> getRedundantInvariantsTimeout() {
+	public String getRedundantInvariantsTimeout() {
 		return timeout;
 	}
+	
 
 }
