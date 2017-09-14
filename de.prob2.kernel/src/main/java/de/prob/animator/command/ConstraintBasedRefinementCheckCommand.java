@@ -66,7 +66,7 @@ public class ConstraintBasedRefinementCheckCommand extends AbstractCommand imple
 		} else if (resultTerm.hasFunctor("true", 0)) { // Errors were found
 			result = ResultType.VIOLATION_FOUND;
 			// TODO extract message
-			ListPrologTerm ceTerm = (ListPrologTerm) resultTerm;
+			CompoundPrologTerm ceTerm = (CompoundPrologTerm) resultTerm;
 			extractCounterExample(ceTerm);
 		} else if (resultTerm.hasFunctor("false", 0)) { // Errors were not found
 			result = ResultType.NO_VIOLATION_FOUND;
@@ -75,9 +75,7 @@ public class ConstraintBasedRefinementCheckCommand extends AbstractCommand imple
 		this.result = result;
 	}
 	
-	private void extractCounterExample(final ListPrologTerm ceTerm) {
-		for (final PrologTerm t : ceTerm) {
-			final CompoundPrologTerm term = (CompoundPrologTerm) t;
+	private void extractCounterExample(final CompoundPrologTerm term) {
 			final String eventName = PrologTerm.atomicString(term
 					.getArgument(1));
 			final Transition step1 = Transition
@@ -95,7 +93,6 @@ public class ConstraintBasedRefinementCheckCommand extends AbstractCommand imple
 			newOps.add(step1);
 			newOps.add(step2);
 			counterExamples.add(ce);
-		}
 	}
 	
 
