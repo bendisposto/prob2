@@ -9,7 +9,9 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
 
 /**
@@ -19,7 +21,7 @@ import de.prob.statespace.Transition;
  * @author plagge
  */
 public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
-		implements IStateSpaceModifier {
+		implements IStateSpaceModifier, ITraceDescription {
 
 	public static enum ResultType {
 		INTERRUPTED, COUNTER_EXAMPLE, NO_COUNTER_EXAMPLE_FOUND, NO_COUNTER_EXAMPLE_EXISTS
@@ -74,7 +76,7 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 					.createTransitionFromCompoundPrologTerm(
 							s,
 							BindingGenerator.getCompoundTerm(
-									counterExampleTerm.getArgument(1), 4));
+									counterExampleTerm.getArgument(1), 8));
 			newOps.add(counterExampleOperation);
 			counterExampleStateID = counterExampleTerm.getArgument(2)
 					.toString();
@@ -87,5 +89,16 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 	@Override
 	public List<Transition> getNewTransitions() {
 		return newOps;
+	}
+	
+	@Override
+	public Trace getTrace(StateSpace s) {
+		if(counterExampleStateID != null && result == ResultType.COUNTER_EXAMPLE) {
+			Trace t = s.getTrace(counterExampleStateID);
+			if (t != null) {
+				return t;
+			}
+		}
+		return null;
 	}
 }
