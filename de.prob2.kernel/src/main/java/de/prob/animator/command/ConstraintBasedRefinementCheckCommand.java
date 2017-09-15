@@ -2,6 +2,7 @@ package de.prob.animator.command;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.prob.check.RefinementCheckCounterExample;
@@ -66,8 +67,9 @@ public class ConstraintBasedRefinementCheckCommand extends AbstractCommand imple
 		} else if (resultTerm.hasFunctor("true", 0)) { // Errors were found
 			result = ResultType.VIOLATION_FOUND;
 			// TODO extract message
-			CompoundPrologTerm ceTerm = (CompoundPrologTerm) resultTerm;
-			extractCounterExample(ceTerm);
+			ListPrologTerm ceTerm = (ListPrologTerm) resultTerm;
+			counterExamples.clear();
+			counterExamples.addAll(extractCounterExamples(ceTerm));
 		} else if (resultTerm.hasFunctor("false", 0)) { // Errors were not found
 			result = ResultType.NO_VIOLATION_FOUND;
 		} else
@@ -75,7 +77,11 @@ public class ConstraintBasedRefinementCheckCommand extends AbstractCommand imple
 		this.result = result;
 	}
 	
-	private void extractCounterExample(final CompoundPrologTerm term) {
+	private Collection<RefinementCheckCounterExample> extractCounterExamples(
+			final ListPrologTerm ceTerm) {
+		Collection<RefinementCheckCounterExample> counterExamples = new ArrayList<RefinementCheckCounterExample>();
+		for (final PrologTerm t : ceTerm) {
+			final CompoundPrologTerm term = (CompoundPrologTerm) t;
 			final String eventName = PrologTerm.atomicString(term
 					.getArgument(1));
 			final Transition step1 = Transition
@@ -90,10 +96,10 @@ public class ConstraintBasedRefinementCheckCommand extends AbstractCommand imple
 									term.getArgument(3), 4));
 			final RefinementCheckCounterExample ce = new RefinementCheckCounterExample(
 					eventName, step1, step2);
-			newOps.add(step1);
-			newOps.add(step2);
 			counterExamples.add(ce);
-	}
+		}
+		return counterExamples;
+}
 	
 
 	public String getResultsString() {
