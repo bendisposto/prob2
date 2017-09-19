@@ -7,7 +7,7 @@ branches:
   only:
   - master
   - develop
-  - testDevelopment
+  - groovyToJava
 sudo: false
 install: /bin/true
 script:
