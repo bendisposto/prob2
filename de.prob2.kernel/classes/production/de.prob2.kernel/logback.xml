@@ -1,0 +1,3 @@
+<configuration>
+	<include resource="production.xml" />
+</configuration>

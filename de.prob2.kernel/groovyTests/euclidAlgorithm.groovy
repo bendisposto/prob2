@@ -58,12 +58,7 @@ mm = new ModelModifier().make {
 
 m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
 
-mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "GCDNaiveTerm", "/tmp")
-
 m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 
-mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "GCDMergeTerm", "/tmp")
 
 "generate a model of a multiplication algorithm"

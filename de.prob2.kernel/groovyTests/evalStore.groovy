@@ -35,4 +35,4 @@ assert res.hasInterruptedOccurred() == false
 assert res.getResultingStoreId() == 2
 assert res.getNewIdentifiers() == ["x"]
 
-"Eval store MAY be working correctly, but NOBODY knows because who knows how the eval store works actually???"
+"Eval store may be working correctly."

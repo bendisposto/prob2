@@ -61,8 +61,4 @@ t = s as Trace
 
 t = t.randomAnimation(10)
 
-//mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "BowlOfCherries", dir)
-//d.deleteDir()
-
 "generate and animate a model"
