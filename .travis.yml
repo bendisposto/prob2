@@ -1,28 +1,29 @@
 language: groovy
-addons:
-  sonarqube: true
 jdk:
 - oraclejdk8
+before_install:
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg -d
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out pubring.gpg -d
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in gradle.properties.enc -out de.prob2.kernel/gradle.properties -d
 branches:
   only:
   - master
   - develop
-  - groovyToJava
+addons:
+  sonarcloud:
+    branches:
+    - master
+    - develop
 sudo: false
 install: /bin/true
 script:
-  - TERM=dumb gradle -b de.prob2.kernel/build.gradle clean test integrationtests --stacktrace
-  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
+- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean allTests --info --stacktrace
 after_success:
-- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg
-  -d
-- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out pubring.gpg
-  -d
-- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in gradle.properties.enc -out
-  de.prob2.kernel/gradle.properties -d
-- TERM=dumb gradle -b de.prob2.kernel/build.gradle uploadArchives
+- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives --info --stacktrace
+- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle sonarqube --info --stacktrace
+
 env:
   global:
   - GRADLE_OPTS="-Xms128m"
   - secure: DtyDUbGXZOZzuYWvCnL8eSaKpM6fQXQqnDBQzwD5OoBaCv6S3ijGHvNmie2tGTe5c93siiRU/doaJNH5PN6JN8Fbw+nxBJRIzKpqjVFmLPy2hCwPXum1BI4Nsf4vH4fZ4eENK1mFUDUR4MWrTAk9Vl05jIjEvsNlkrusBnVWFmg=
-  - secure: CzvIhQI58TrL9egcS8Mv9JwxczwxhghuOR81EcD1H0lzt5U0bzNWYgRlBv2gntVg9Rv7O5eIOEcvc03lYRgIRbMfNsFDmJwne3CoCdYq7CpXyiQMWLo/C9NEzVIEKBZMIZ+/nx5MJsdG7fqjT/PzNJi43/jOtZSWbnWp8kNvbTM=
+  - secure: dLFmLpS4eeRw5LWHau65MoBXL5G4/TK+cepaSQrF3h+x8AziCRUPrPaCpDpjtV/qZC4/R96AhbLUxAxC79GX1Vc105KWEh7AmZvM+1y2IwS9A0NYl14Alz07MwNlD97slQRVt2gTyn9AUfy0QTm6DNNPfb0+D/yfzdecYtIeOG8=
