@@ -9,6 +9,7 @@ branches:
   only:
   - master
   - develop
+  - groovyToJava
 addons:
   sonarcloud:
     branches:
