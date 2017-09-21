@@ -100,7 +100,7 @@ public class RulesMachineRun {
 					// explores the final state and can throw a ProBError
 					Collection<StateError> stateErrors = finalState.getStateErrors();
 					for (StateError stateError : stateErrors) {
-						this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, stateError.getShortDescription(), e));
+						this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, stateError.getLongDescription(), e));
 					}
 				} catch (ProBError e2) {
 					// Enumeration errors
