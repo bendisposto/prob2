@@ -34,18 +34,18 @@ def gradle_version = '4.0'
 
 // IMPORTANT !!!
 // Remember to release the cli and
-project.version = '3.2.3-SNAPSHOT'
-ext{ cli_version = '1.7.0' }
+project.version = '3.2.3'
+ext{ cli_version = '1.7.1-rc1' }
 // IMPORTANT !!!
 
 
 def parser_version
 
 if (project.version.endsWith("-SNAPSHOT")) {
-	parser_version = '2.9.8-SNAPSHOT'
+	parser_version = '2.9.9-SNAPSHOT'
 }
 else {
-	parser_version = '2.9.7'
+	parser_version = '2.9.8'
 }
 
 
