@@ -1,9 +1,5 @@
 package de.prob.statespace
 
-
-import static org.junit.Assert.*
-import static org.mockito.Mockito.*
-import spock.lang.Specification
 import de.prob.Main
 import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.animator.domainobjects.ClassicalB
@@ -11,6 +7,7 @@ import de.prob.animator.domainobjects.EvalResult
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.scripting.ClassicalBFactory
 
+import spock.lang.Specification
 
 class StateEvaluationTest extends Specification {
 
@@ -26,6 +23,10 @@ class StateEvaluationTest extends Specification {
 		root = s.getRoot()
 		firstState = root.$initialise_machine()
 		secondState = firstState.new("pp=PID1")
+	}
+
+	def cleanupSpec() {
+		s.kill()
 	}
 
 	def "it is possible to evaluate a string (will be parsed by model)"() {

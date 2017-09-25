@@ -3,9 +3,6 @@ package de.prob.model.brules;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Provider;
 
 import de.prob.animator.command.ExecuteModelCommand;
@@ -18,22 +15,30 @@ import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.util.StopWatch;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
+ * This class performs the following actions:
  * 
- * This class performs the following actions: 
+ * <pre>
  * 1) loads an ExtractedModel 
  * 2) unsubscribes all formulas (reduces evaluation efforts) 
  * 3) run the execute command.
+ * </pre>
  * 
- * The final state of the probcli execute run is stored. Moreover, all errors which can
- * occur while loading a model are stored. Note, that RULES projects are not
- * parsed and checked by this class. This is done before entering this class.
+ * The final state of the probcli execute run is stored. Moreover, all errors
+ * which can occur while loading a model are stored. Note, that RULES projects
+ * are not parsed and checked by this class. This is done before entering this
+ * class.
  * 
  **/
 public class ExecuteRun {
 	private static StateSpace stateSpace;
 
 	private int maxNumberOfStatesToBeExecuted = Integer.MAX_VALUE;
+	private Integer timeout = null;
+	private final boolean continueAfterErrors;
 	private final ExtractedModel<? extends AbstractModel> extractedModel;
 	private final Map<String, String> prefs;
 	private ExecuteModelCommand executeModelCommand;
@@ -41,28 +46,32 @@ public class ExecuteRun {
 	private final boolean reuseStateSpaceOfPreviousRun;
 
 	public ExecuteRun(final ExtractedModel<? extends AbstractModel> extractedModel, Map<String, String> prefs,
-			boolean reuseStateSpaceOfPreviousRun) {
+			boolean reuseStateSpaceOfPreviousRun, boolean continueAfterErrors) {
 		this.extractedModel = extractedModel;
+		this.continueAfterErrors = continueAfterErrors;
 		this.prefs = prefs;
 		this.reuseStateSpaceOfPreviousRun = reuseStateSpaceOfPreviousRun;
 	}
 
 	public void start() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
-		final String LOAD_STATESPACE_TIMER = "loadStateSpace";
-		StopWatch.start(LOAD_STATESPACE_TIMER);
-		StateSpace stateSpace = this.getOrCreateStateSpace();
-		logger.info("Time to load statespace: {} ms", StopWatch.stop(LOAD_STATESPACE_TIMER));
+		final String loadStateSpaceTimer = "loadStateSpace";
+		StopWatch.start(loadStateSpaceTimer);
+		StateSpace stateSpace2 = this.getOrCreateStateSpace();
+		logger.info("Time to load statespace: {} ms", StopWatch.stop(loadStateSpaceTimer));
 
-		unsubscribeAllFormulas(stateSpace);
+		unsubscribeAllFormulas(stateSpace2);
 
-		final String EXECUTE_TIMER = "executeTimer";
-		StopWatch.start(EXECUTE_TIMER);
-		executeModel(stateSpace);
-		logger.info("Time run execute command: {} ms", StopWatch.stop(EXECUTE_TIMER));
+		final String executeTimer = "executeTimer";
+		StopWatch.start(executeTimer);
+		executeModel(stateSpace2);
+		logger.info("Time run execute command: {} ms", StopWatch.stop(executeTimer));
 	}
 
 	private static void storeStateSpace(StateSpace stateSpace2) {
+		if (stateSpace != null) {
+			stateSpace.kill();
+		}
 		stateSpace = stateSpace2;
 	}
 
@@ -97,22 +106,9 @@ public class ExecuteRun {
 	private void executeModel(final StateSpace stateSpace) {
 		final Trace t = new Trace(stateSpace);
 		this.rootState = t.getCurrentState();
-		executeModelCommand = new ExecuteModelCommand(stateSpace, rootState, maxNumberOfStatesToBeExecuted);
-
+		executeModelCommand = new ExecuteModelCommand(stateSpace, rootState, maxNumberOfStatesToBeExecuted,
+				continueAfterErrors, timeout);
 		stateSpace.execute(executeModelCommand);
-
-	}
-
-	public ExtractedModel<? extends AbstractModel> getExtractedModel() {
-		return this.extractedModel;
-	}
-
-	public Map<String, String> getPrefs() {
-		return prefs;
-	}
-
-	public int getNumberOfStatesExecuted() {
-		return executeModelCommand.getNumberofStatesExecuted();
 	}
 
 	public ExecuteModelCommand getExecuteModelCommand() {

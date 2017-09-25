@@ -58,18 +58,16 @@ import org.eventb.core.ast.extension.IExpressionExtension;
 public class TranslationVisitor implements ISimpleVisitor {
 	private static final String UNCOVERED_PREDICATE = "Uncovered Predicate";
 
-	private static final int[] EXTRA_TYPE_CONSTRUCTS = new int[] {
-			Formula.EMPTYSET, Formula.KPRJ1_GEN, Formula.KPRJ2_GEN,
-			Formula.KID_GEN };
+	private static final int[] EXTRA_TYPE_CONSTRUCTS = new int[] { Formula.EMPTYSET, Formula.KPRJ1_GEN,
+			Formula.KPRJ2_GEN, Formula.KID_GEN };
 
-	private final LookupStack<PPredicate> predicates = new LookupStack<PPredicate>();
-	private final LookupStack<PExpression> expressions = new LookupStack<PExpression>();
-	private final LookupStack<PSubstitution> substitutions = new LookupStack<PSubstitution>();
-	private final LookupStack<String> boundVariables = new LookupStack<String>();
+	private final LookupStack<PPredicate> predicates = new LookupStack<>();
+	private final LookupStack<PExpression> expressions = new LookupStack<>();
+	private final LookupStack<PSubstitution> substitutions = new LookupStack<>();
+	private final LookupStack<String> boundVariables = new LookupStack<>();
 
 	@Override
-	public void visitAssociativeExpression(
-			final AssociativeExpression expression) {
+	public void visitAssociativeExpression(final AssociativeExpression expression) {
 		// BUNION, BINTER, BCOMP, FCOMP, OVR, PLUS, MUL
 		List<PExpression> exprs = getSubExpressions(expression.getChildren());
 		final PExpression result;
@@ -109,8 +107,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	private void pushExpression(Expression original, PExpression translated) {
 		final PExpression toPush;
 		if (original.getType() != null && shouldHaveExtraTypeInfo(original)) {
-			toPush = new ATypeofExpression(translated,
-					translateType(original.getType()));
+			toPush = new ATypeofExpression(translated, translateType(original.getType()));
 		} else {
 			toPush = translated;
 		}
@@ -145,8 +142,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * Translate a Event-B type to a corresponding ProB AST.
 	 * 
 	 * This could theoretically directly be done by using
-	 * {@link Type#toExpression()} and
-	 * translating that expression, but then we would need a formula factory.
+	 * {@link Type#toExpression()} and translating that expression, but then we
+	 * would need a formula factory.
 	 * 
 	 * @param type
 	 *            the type to translate, never {@code null}
@@ -169,66 +166,56 @@ public class TranslationVisitor implements ISimpleVisitor {
 		} else if (type instanceof ProductType) {
 			final Type a = ((ProductType) type).getLeft();
 			final Type b = ((ProductType) type).getRight();
-			result = new ACartesianProductExpression(translateType(a),
-					translateType(b));
+			result = new ACartesianProductExpression(translateType(a), translateType(b));
 		} else if (type instanceof ParametricType) {
 			final ParametricType pt = (ParametricType) type;
 			final IExpressionExtension ext = pt.getExprExtension();
 			final Type[] params = pt.getTypeParameters();
-			final List<PExpression> list = new ArrayList<PExpression>();
+			final List<PExpression> list = new ArrayList<>();
 			for (final Type param : params) {
 				list.add(translateType(param));
 			}
-			result = new AExtendedExprExpression(new TIdentifierLiteral(
-					ext.getSyntaxSymbol()), list,
-					Collections.<PPredicate> emptyList());
+			result = new AExtendedExprExpression(new TIdentifierLiteral(ext.getSyntaxSymbol()), list,
+					Collections.<PPredicate>emptyList());
 		} else {
 			throw new AssertionError(
-					"Don't know how to handle the Event-B type of class "
-							+ type.getClass().getCanonicalName());
+					"Don't know how to handle the Event-B type of class " + type.getClass().getCanonicalName());
 		}
 		return result;
 	}
 
 	private PExpression recurseFCOMP(final List<PExpression> list) {
-		final PExpression right = list.size() == 2 ? list.get(1)
-				: recurseFCOMP(list.subList(1, list.size()));
+		final PExpression right = list.size() == 2 ? list.get(1) : recurseFCOMP(list.subList(1, list.size()));
 		return new ACompositionExpression(list.get(0), right);
 	}
 
 	private PExpression recurseOVR(final List<PExpression> list) {
-		final PExpression right = list.size() == 2 ? list.get(1)
-				: recurseOVR(list.subList(1, list.size()));
+		final PExpression right = list.size() == 2 ? list.get(1) : recurseOVR(list.subList(1, list.size()));
 		return new AOverwriteExpression(list.get(0), right);
 	}
 
 	private PExpression recursePLUS(final List<PExpression> list) {
-		final PExpression right = list.size() == 2 ? list.get(1)
-				: recursePLUS(list.subList(1, list.size()));
+		final PExpression right = list.size() == 2 ? list.get(1) : recursePLUS(list.subList(1, list.size()));
 		return new AAddExpression(list.get(0), right);
 	}
 
 	private PExpression recurseMUL(final List<PExpression> list) {
-		final PExpression right = list.size() == 2 ? list.get(1)
-				: recurseMUL(list.subList(1, list.size()));
+		final PExpression right = list.size() == 2 ? list.get(1) : recurseMUL(list.subList(1, list.size()));
 		return new AMultiplicationExpression(list.get(0), right);
 	}
 
 	private PExpression recurseBUNION(final List<PExpression> list) {
-		final PExpression right = list.size() == 2 ? list.get(1)
-				: recurseBUNION(list.subList(1, list.size()));
+		final PExpression right = list.size() == 2 ? list.get(1) : recurseBUNION(list.subList(1, list.size()));
 		return new AUnionExpression(list.get(0), right);
 	}
 
 	private PExpression recurseBINTER(final List<PExpression> list) {
-		final PExpression right = list.size() == 2 ? list.get(1)
-				: recurseBINTER(list.subList(1, list.size()));
+		final PExpression right = list.size() == 2 ? list.get(1) : recurseBINTER(list.subList(1, list.size()));
 		return new AIntersectionExpression(list.get(0), right);
 	}
 
 	private PExpression recurseBCOMP(final List<PExpression> list) {
-		final PExpression right = list.size() == 2 ? list.get(1)
-				: recurseBCOMP(list.subList(1, list.size()));
+		final PExpression right = list.size() == 2 ? list.get(1) : recurseBCOMP(list.subList(1, list.size()));
 		return new ARingExpression(list.get(0), right);
 	}
 
@@ -253,20 +240,17 @@ public class TranslationVisitor implements ISimpleVisitor {
 	}
 
 	private PPredicate recurseOR(final List<PPredicate> list) {
-		final PPredicate right = list.size() == 2 ? list.get(1)
-				: recurseOR(list.subList(1, list.size()));
+		final PPredicate right = list.size() == 2 ? list.get(1) : recurseOR(list.subList(1, list.size()));
 		return new ADisjunctPredicate(list.get(0), right);
 	}
 
 	private PPredicate recurseAND(final List<PPredicate> list) {
-		final PPredicate right = list.size() == 2 ? list.get(1)
-				: recurseAND(list.subList(1, list.size()));
+		final PPredicate right = list.size() == 2 ? list.get(1) : recurseAND(list.subList(1, list.size()));
 		return new AConjunctPredicate(list.get(0), right);
 	}
 
 	private PPredicate recurseEQV(final List<PPredicate> list) {
-		final PPredicate right = list.size() == 2 ? list.get(1)
-				: recurseEQV(list.subList(1, list.size()));
+		final PPredicate right = list.size() == 2 ? list.get(1) : recurseEQV(list.subList(1, list.size()));
 		return new AEquivalencePredicate(list.get(0), right);
 	}
 
@@ -318,25 +302,21 @@ public class TranslationVisitor implements ISimpleVisitor {
 
 	@Override
 	public void visitBecomesEqualTo(final BecomesEqualTo assignment) {
-		final List<PExpression> lhs = getSubExpressions(assignment
-				.getAssignedIdentifiers());
-		final List<PExpression> rhs = getSubExpressions(assignment
-				.getExpressions());
+		final List<PExpression> lhs = getSubExpressions(assignment.getAssignedIdentifiers());
+		final List<PExpression> rhs = getSubExpressions(assignment.getExpressions());
 		substitutions.push(new AAssignSubstitution(lhs, rhs));
 	}
 
 	@Override
 	public void visitBecomesMemberOf(final BecomesMemberOf assignment) {
-		final List<PExpression> lhs = getSubExpressions(assignment
-				.getAssignedIdentifiers());
+		final List<PExpression> lhs = getSubExpressions(assignment.getAssignedIdentifiers());
 		final PExpression set = getExpression(assignment.getSet());
 		substitutions.push(new ABecomesElementOfSubstitution(lhs, set));
 	}
 
 	@Override
 	public void visitBecomesSuchThat(final BecomesSuchThat assignment) {
-		final List<PExpression> lhs = getSubExpressions(assignment
-				.getAssignedIdentifiers());
+		final List<PExpression> lhs = getSubExpressions(assignment.getAssignedIdentifiers());
 		final int originalBoundSize = boundVariables.size();
 		for (final FreeIdentifier id : assignment.getAssignedIdentifiers()) {
 			boundVariables.push(id.getName() + "'");
@@ -353,8 +333,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		final PExpression result;
 		switch (expression.getTag()) {
 		case Formula.MAPSTO:
-			result = new ACoupleExpression(Arrays.asList(new PExpression[] {
-					exL, exR }));
+			result = new ACoupleExpression(Arrays.asList((PExpression[]) new PExpression[] { exL, exR }));
 			break;
 		case Formula.REL:
 			result = new ARelationsExpression(exL, exR);
@@ -429,8 +408,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 			result = new APowerOfExpression(exL, exR);
 			break;
 		case Formula.FUNIMAGE:
-			result = new AFunctionExpression(exL,
-					Arrays.asList(new PExpression[] { exR }));
+			result = new AFunctionExpression(exL, Arrays.asList((PExpression[]) new PExpression[] { exR }));
 			break;
 		case Formula.RELIMAGE:
 			result = new AImageExpression(exL, exR);
@@ -474,28 +452,24 @@ public class TranslationVisitor implements ISimpleVisitor {
 
 	private AIdentifierExpression createIdentifierExpression(final String name) {
 		return new AIdentifierExpression(
-				Arrays.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
-						name) }));
+				Arrays.asList((TIdentifierLiteral[]) new TIdentifierLiteral[] { new TIdentifierLiteral(name) }));
 	}
 
 	@Override
 	public void visitBoundIdentifier(final BoundIdentifier identifierExpression) {
-		final String name = boundVariables.get(identifierExpression
-				.getBoundIndex());
+		final String name = boundVariables.get(identifierExpression.getBoundIndex());
 		pushExpression(identifierExpression, createIdentifierExpression(name));
 	}
 
 	@Override
 	public void visitFreeIdentifier(final FreeIdentifier identifierExpression) {
-		pushExpression(identifierExpression,
-				createIdentifierExpression(identifierExpression.getName()));
+		pushExpression(identifierExpression, createIdentifierExpression(identifierExpression.getName()));
 	}
 
 	@Override
 	public void visitIntegerLiteral(final IntegerLiteral expression) {
 		final String value = expression.getValue().toString();
-		pushExpression(expression, new AIntegerExpression(new TIntegerLiteral(
-				value)));
+		pushExpression(expression, new AIntegerExpression(new TIntegerLiteral(value)));
 	}
 
 	@Override
@@ -558,8 +532,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		final PPredicate result;
 		switch (predicate.getTag()) {
 		case Formula.EXISTS:
-			result = new AExistsPredicate(list,
-					addTypesToPredicate(pred, decls));
+			result = new AExistsPredicate(list, addTypesToPredicate(pred, decls));
 			break;
 		case Formula.FORALL:
 			final PPredicate left;
@@ -572,8 +545,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 				left = addTypesToPredicate(null, decls);
 				right = pred;
 			}
-			final PPredicate impl = new AImplicationPredicate(
-					left != null ? left : new ATruthPredicate(), right);
+			final PPredicate impl = new AImplicationPredicate(left != null ? left : new ATruthPredicate(), right);
 			result = new AForallPredicate(list, impl);
 			break;
 		default:
@@ -596,33 +568,30 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * modifications to the structure of the AST.
 	 * 
 	 * @param predicate
-	 *            the original predicate, {@code null} if no original
-	 *            predicate is used.
+	 *            the original predicate, {@code null} if no original predicate
+	 *            is used.
 	 * @param decls
 	 *            a list of declarations, never {@code null}
-	 * @return the original predicate plus type information, {@code null}
-	 *         if no original predicate is given and decls is empty
+	 * @return the original predicate plus type information, {@code null} if no
+	 *         original predicate is given and decls is empty
 	 */
-	private PPredicate addTypesToPredicate(PPredicate predicate,
-			BoundIdentDecl[] decls) {
+	private PPredicate addTypesToPredicate(PPredicate predicate, BoundIdentDecl[] decls) {
+		PPredicate tempPredicate = predicate;
 		for (int i = decls.length; i > 0; i--) {
 			final BoundIdentDecl decl = decls[i - 1];
 			final Type type = decl.getType();
 			// I've encountered null types. Maybe that was a bug but just to be
 			// sure (in most cases, missing type information won't hurt):
 			if (type != null) {
-				final PExpression expr = createIdentifierExpression(decl
-						.getName());
+				final PExpression expr = createIdentifierExpression(decl.getName());
 				// construct "expr:type"
-				final PPredicate member = new AMemberPredicate(expr,
-						translateType(type));
+				final PPredicate member = new AMemberPredicate(expr, translateType(type));
 				// and P := "expr:type & P", if no P is given (predicate is
 				// null), just "expr:type"
-				predicate = predicate == null ? member
-						: new AConjunctPredicate(member, predicate);
+				tempPredicate = tempPredicate == null ? member : new AConjunctPredicate(member, predicate);
 			}
 		}
-		return predicate;
+		return tempPredicate;
 	}
 
 	@Override
@@ -686,8 +655,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	public void visitSimplePredicate(final SimplePredicate predicate) {
 		final PPredicate result;
 		if (predicate.getTag() == Formula.KFINITE) {
-			result = new AFinitePredicate(
-					getExpression(predicate.getExpression()));
+			result = new AFinitePredicate(getExpression(predicate.getExpression()));
 		} else {
 			throw new AssertionError(UNCOVERED_PREDICATE);
 		}
@@ -763,11 +731,10 @@ public class TranslationVisitor implements ISimpleVisitor {
 	public void visitMultiplePredicate(final MultiplePredicate predicate) {
 		final PPredicate result;
 		if (predicate.getTag() == Formula.KPARTITION) {
-			final List<PExpression> expressions = getSubExpressions(predicate
-					.getChildren());
-			if (expressions.size() > 0) {
-				PExpression set = expressions.remove(0);
-				result = new APartitionPredicate(set, expressions);
+			final List<PExpression> exprs = getSubExpressions(predicate.getChildren());
+			if (!exprs.isEmpty()) {
+				PExpression set = exprs.remove(0);
+				result = new APartitionPredicate(set, exprs);
 			} else {
 				throw new AssertionError("to few arguments for PARTITION");
 			}
@@ -780,23 +747,17 @@ public class TranslationVisitor implements ISimpleVisitor {
 	@Override
 	public void visitExtendedExpression(final ExtendedExpression expression) {
 		final String symbol = expression.getExtension().getSyntaxSymbol();
-		List<PExpression> childExprs = getSubExpressions(expression
-				.getChildExpressions());
-		List<PPredicate> childPreds = getSubPredicates(expression
-				.getChildPredicates());
-		pushExpression(expression, new AExtendedExprExpression(
-				new TIdentifierLiteral(symbol), childExprs, childPreds));
+		List<PExpression> childExprs = getSubExpressions(expression.getChildExpressions());
+		List<PPredicate> childPreds = getSubPredicates(expression.getChildPredicates());
+		pushExpression(expression, new AExtendedExprExpression(new TIdentifierLiteral(symbol), childExprs, childPreds));
 	}
 
 	@Override
 	public void visitExtendedPredicate(final ExtendedPredicate predicate) {
 		final String symbol = predicate.getExtension().getSyntaxSymbol();
-		List<PExpression> childExprs = getSubExpressions(predicate
-				.getChildExpressions());
-		List<PPredicate> childPreds = getSubPredicates(predicate
-				.getChildPredicates());
-		predicates.push(new AExtendedPredPredicate(new TIdentifierLiteral(
-				symbol), childExprs, childPreds));
+		List<PExpression> childExprs = getSubExpressions(predicate.getChildExpressions());
+		List<PPredicate> childPreds = getSubPredicates(predicate.getChildPredicates());
+		predicates.push(new AExtendedPredPredicate(new TIdentifierLiteral(symbol), childExprs, childPreds));
 	}
 
 	private List<PExpression> getSubExpressions(final Formula<?>[] children) {
@@ -833,7 +794,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * list.
 	 */
 	private static class LookupStack<T> {
-		private final List<T> elements = new ArrayList<T>();
+		private final List<T> elements = new ArrayList<>();
 
 		public void push(final T elem) {
 			elements.add(elem);
@@ -861,7 +822,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 
 		List<T> removeLastElements(final int toRemove) {
 			final int targetSize = elements.size() - toRemove;
-			List<T> result = new ArrayList<T>(toRemove);
+			List<T> result = new ArrayList<>(toRemove);
 			for (int i = 0; i < toRemove; i++) {
 				result.add(elements.get(targetSize + i));
 			}
@@ -892,9 +853,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 
 	private void assertExactStacksize(final LookupStack<?> stack) {
 		if (stack.size() != 1) {
-			throw new AssertionError(
-					"Exactly one element on the stack expected, but were "
-							+ predicates.size());
+			throw new AssertionError("Exactly one element on the stack expected, but were " + predicates.size());
 
 		}
 	}

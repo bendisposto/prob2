@@ -1,15 +1,11 @@
 package de.prob.statespace
 
-
-import static org.junit.Assert.*
-import static org.mockito.Mockito.*
-import spock.lang.Specification
-
 import com.google.common.util.concurrent.UncheckedExecutionException
 
 import de.prob.Main
 import de.prob.scripting.ClassicalBFactory
 
+import spock.lang.Specification
 
 class StateSpaceCachingTest extends Specification {
 
@@ -19,6 +15,10 @@ class StateSpaceCachingTest extends Specification {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
+	}
+
+	def cleanupSpec() {
+		s.kill()
 	}
 
 	def setup() {
@@ -120,6 +120,9 @@ class StateSpaceCachingTest extends Specification {
 		sizes.inject(true) { result, i -> result && (i <= 5) }
 
 		cleanup:
+		if (s != null) {
+			s.kill()
+		}
 		Main.maxCacheSize = 100
 	}
 

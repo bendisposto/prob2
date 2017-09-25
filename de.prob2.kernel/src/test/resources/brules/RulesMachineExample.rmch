@@ -13,9 +13,9 @@ OPERATIONS
   BODY
     FOR x IN 1..100
     DO
-      IF x = 55
-      THEN
-        RULE_FAIL(STRING_FORMAT("Invalid value ~w", x))
+      RULE_FAIL
+      WHEN x = 55
+      COUNTEREXAMPLE STRING_FORMAT("Invalid value ~w", x)
       END
     END
   END
@@ -44,8 +44,8 @@ RULE RuleAnyInLoop
 BODY
   FOR x IN 1..100
   DO
-    RULE_ANY v
-    WHERE
+    RULE_FAIL v
+    WHEN
       v : x-5..x+5
       & v <= 0
     COUNTEREXAMPLE
@@ -53,7 +53,7 @@ BODY
         "Value ~w is not greater than zero"
         , x
       )
-    END//RULE_FORALL
+    END//RULE_FAIL
   END
 END
 ;

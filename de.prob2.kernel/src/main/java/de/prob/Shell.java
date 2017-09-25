@@ -48,23 +48,23 @@ class Shell {
 		}
 	}
 
-	private void runSingleScript(final String dir, final File script, final boolean silent) throws Throwable {
+	private void runSingleScript(final String dir, final File scriptFile, final boolean silent) throws Throwable {
 		long time = System.currentTimeMillis();
-		logger.debug("Runnning script: {}", script.getAbsolutePath());
+		logger.debug("Runnning script: {}", scriptFile.getAbsolutePath());
 		ScriptEngine executor = sep.get();
 		executor.put("dir", dir);
 		executor.put("inConsole", false);
 
 		if (!silent) {
-			System.out.print(script.getName());
+			System.out.print(scriptFile.getName());
 		}
-		FileReader fr = new FileReader(script);
 		Object res = null;
 		try {
+			FileReader fr = new FileReader(scriptFile);
 			res = executor.eval(fr);
 		} catch (Throwable e) {
-			
-			System.err.println("\n"+e.getLocalizedMessage());
+			System.err.println("\n" + e.getLocalizedMessage());
+			throw e;
 		}
 		ProBs.shutdownAll();
 		if (!silent) {

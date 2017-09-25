@@ -1,6 +1,5 @@
 package de.prob.statespace
 
-import spock.lang.Specification
 import de.prob.Main
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.ComputationNotCompletedResult
@@ -12,6 +11,8 @@ import de.prob.animator.domainobjects.WDError
 import de.prob.scripting.ClassicalBFactory
 import de.prob.scripting.EventBFactory
 
+import spock.lang.Specification
+
 class TraceEvaluationTest extends Specification {
 
 	static StateSpace s
@@ -21,6 +22,10 @@ class TraceEvaluationTest extends Specification {
 		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
 		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
+	}
+
+	def cleanupSpec() {
+		s.kill()
 	}
 
 	def setup() {
@@ -114,5 +119,10 @@ class TraceEvaluationTest extends Specification {
 		x.size() == 2
 		x[0].getSecond().getValue() == "L0"
 		x[1].getSecond().getValue() == "L1"
+
+		cleanup:
+		if (s != null) {
+			s.kill()
+		}
 	}
 }

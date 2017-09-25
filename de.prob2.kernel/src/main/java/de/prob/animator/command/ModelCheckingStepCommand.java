@@ -145,7 +145,7 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME).printNumber(time).openList();
 		for (ModelCheckingOptions.Options o : options.getPrologOptions()) {
-			pto.printAtom(o.name());
+			pto.printAtom(o.getPrologName());
 		}
 		pto.closeList().printVariable(RESULT_VARIABLE).printVariable(STATS_VARIABLE).closeTerm();
 	}

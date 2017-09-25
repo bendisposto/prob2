@@ -1,0 +1,10 @@
+MACHINE Counter
+VARIABLES
+  x
+INVARIANT
+  x : 1..100
+INITIALISATION
+  x := 1
+OPERATIONS
+  Inc = SELECT x < 100 THEN x := x + 1 END
+END

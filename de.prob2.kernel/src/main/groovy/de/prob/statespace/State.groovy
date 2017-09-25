@@ -1,6 +1,7 @@
 package de.prob.statespace
 
 import com.google.common.base.Objects
+
 import de.prob.animator.command.EvaluateFormulasCommand
 import de.prob.animator.command.EvaluateRegisteredFormulasCommand
 import de.prob.animator.command.ExploreStateCommand
@@ -10,7 +11,7 @@ import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.StateError
 import de.prob.model.representation.AbstractModel
-import de.prob.util.StringUtil
+
 /**A reference to the state object in the ProB core.
  *
  * Note: This class contains a reference to the StateSpace object to which this state
@@ -216,7 +217,7 @@ class State {
 			stateSpace.execute(cmd)
 			return cmd.getState()
 		}
-		return StringUtil.generateString("unknown")
+		return "unknown"
 	}
 
 
@@ -292,7 +293,7 @@ class State {
 	 * 		be evaluated. By default this is set to false.
 	 * @return the outgoing transitions from this state
 	 */
-	def List<Transition> getOutTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.truncate) {
+	def List<Transition> getOutTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.TRUNCATE) {
 		if (!explored) {
 			explore()
 		}

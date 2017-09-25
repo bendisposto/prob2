@@ -46,13 +46,13 @@ public class EvaluateFormulaCommand extends EvaluationCommand {
 		if (this.evalElement instanceof ProBEvalElement) {
 			pout.openTerm("eval_typed");
 			evalElement.printProlog(pout);
-			pout.printAtom(evalElement.expansion().name());
+			pout.printAtom(evalElement.expansion().getPrologName());
 		} else {
 			pout.openTerm("eval");
 			evalElement.printProlog(pout);
-			pout.printAtom(evalElement.getKind());
+			pout.printAtom(evalElement.getKind().getPrologName());
 			pout.printAtom(evalElement.getCode());
-			pout.printAtom(evalElement.expansion().name());
+			pout.printAtom(evalElement.expansion().getPrologName());
 		}
 		pout.closeTerm();
 

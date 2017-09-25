@@ -39,8 +39,4 @@ assert t.evalCurrent("s(1)").value == "5"
 t = t.$add("p = 9")
 assert t.evalCurrent("s(2)").value == "9"
 
-//mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "Example", "/tmp")
-//d.deleteDir()
-
 "it is possible to load or create and animate Event-B models that use the theory plugin"

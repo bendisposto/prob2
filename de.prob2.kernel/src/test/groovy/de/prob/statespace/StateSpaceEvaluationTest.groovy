@@ -1,9 +1,5 @@
 package de.prob.statespace
 
-
-import static org.junit.Assert.*
-import static org.mockito.Mockito.*
-import spock.lang.Specification
 import de.prob.Main
 import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.animator.domainobjects.CSP
@@ -12,6 +8,7 @@ import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.CSPModel
 import de.prob.scripting.ClassicalBFactory
 
+import spock.lang.Specification
 
 class StateSpaceEvaluationTest extends Specification {
 
@@ -25,6 +22,11 @@ class StateSpaceEvaluationTest extends Specification {
 		root = s.getRoot()
 		firstState = root.$initialise_machine()
 	}
+
+	def cleanupSpec() {
+		s.kill()
+	}
+
 	def setup() {
 		s.formulaRegistry.clear()
 		s.subscribedFormulas.clear()

@@ -72,10 +72,10 @@ import de.prob.model.representation.CSPModel;
 public class StateSpace implements IAnimator {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
-	private transient IAnimator animator;
+	private IAnimator animator;
 
-	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<IEvalElement, WeakHashMap<Object, Object>>();
-	private final Set<IEvalElement> subscribedFormulas = new HashSet<IEvalElement>();
+	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<>();
+	private final Set<IEvalElement> subscribedFormulas = new HashSet<>();
 
 	private final LoadingCache<String, State> states;
 
@@ -240,7 +240,7 @@ public class StateSpace implements IAnimator {
 		GetStatesFromPredicate cmd = new GetStatesFromPredicate(predicate);
 		execute(cmd);
 		List<String> ids = cmd.getIds();
-		List<State> sIds = new ArrayList<State>();
+		List<State> sIds = new ArrayList<>();
 		for (String s : ids) {
 			sIds.add(addState(s));
 		}
@@ -265,7 +265,7 @@ public class StateSpace implements IAnimator {
 	 * @return list of operations calculated by ProB
 	 */
 	public List<Transition> transitionFromPredicate(final State stateId, final String name, final String predicate,
-			final int nrOfSolutions) throws IllegalArgumentException {
+			final int nrOfSolutions) {
 		final IEvalElement pred = model.parseFormula(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), name,
 				pred, nrOfSolutions);
@@ -369,7 +369,7 @@ public class StateSpace implements IAnimator {
 	 */
 	public boolean subscribe(final Object subscriber, final List<IEvalElement> formulas) {
 		boolean success = false;
-		List<AbstractCommand> subscribeCmds = new ArrayList<AbstractCommand>();
+		List<AbstractCommand> subscribeCmds = new ArrayList<>();
 		for (IEvalElement formulaOfInterest : formulas) {
 			if (formulaOfInterest instanceof CSP) {
 				logger.info(
@@ -382,7 +382,7 @@ public class StateSpace implements IAnimator {
 					subscribedFormulas.add(formulaOfInterest);
 					success = true;
 				} else {
-					WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
+					WeakHashMap<Object, Object> subscribers = new WeakHashMap<>();
 					subscribers.put(subscriber, new WeakReference<Object>(subscriber));
 					formulaRegistry.put(formulaOfInterest, subscribers);
 					subscribeCmds.add(new RegisterFormulaCommand(formulaOfInterest));
@@ -422,7 +422,7 @@ public class StateSpace implements IAnimator {
 			formulaRegistry.get(formulaOfInterest).put(subscriber, new WeakReference<Object>(subscriber));
 		} else {
 			execute(new RegisterFormulaCommand(formulaOfInterest));
-			WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
+			WeakHashMap<Object, Object> subscribers = new WeakHashMap<>();
 			subscribers.put(subscriber, new WeakReference<Object>(subscriber));
 			formulaRegistry.put(formulaOfInterest, subscribers);
 		}
@@ -469,7 +469,7 @@ public class StateSpace implements IAnimator {
 	 *         currently interested subscribers.
 	 */
 	public Set<IEvalElement> getSubscribedFormulas() {
-		List<IEvalElement> toRemove = new ArrayList<IEvalElement>();
+		List<IEvalElement> toRemove = new ArrayList<>();
 		for (IEvalElement e : subscribedFormulas) {
 			WeakHashMap<Object, Object> subscribers = formulaRegistry.get(e);
 			if (subscribers == null || subscribers.isEmpty()) {
@@ -477,7 +477,7 @@ public class StateSpace implements IAnimator {
 			}
 		}
 		subscribedFormulas.removeAll(toRemove);
-		return subscribedFormulas;
+		return new HashSet<>(subscribedFormulas);
 	}
 
 	/**
@@ -587,8 +587,7 @@ public class StateSpace implements IAnimator {
 	public Trace getTrace(final String stateId) {
 		GetShortestTraceCommand cmd = new GetShortestTraceCommand(this, stateId);
 		execute(cmd);
-		Trace t = getTrace(cmd);
-		return t;
+		return getTrace(cmd);
 	}
 
 	/**
@@ -604,8 +603,7 @@ public class StateSpace implements IAnimator {
 	public Trace getTrace(final String sourceId, final String destId) {
 		FindTraceBetweenNodesCommand cmd = new FindTraceBetweenNodesCommand(this, sourceId, destId);
 		execute(cmd);
-		Trace t = getTrace(cmd);
-		return t;
+		return getTrace(cmd);
 	}
 
 	/**
@@ -699,13 +697,13 @@ public class StateSpace implements IAnimator {
 	 * @return the Model or Trace corresponding to the StateSpace instance
 	 */
 	public Object asType(final Class<?> clazz) {
-		if (clazz.getSimpleName().equals("AbstractModel")) {
+		if (clazz == AbstractModel.class) {
 			return model;
 		}
 		if (clazz.equals(model.getClass())) {
 			return model;
 		}
-		if (clazz.getSimpleName().equals("Trace")) {
+		if (clazz == Trace.class) {
 			return new Trace(this);
 		}
 		throw new ClassCastException("An element of class " + clazz + " was not found");
@@ -727,7 +725,7 @@ public class StateSpace implements IAnimator {
 			final FormulaExpand expansion) {
 		GetOpsFromIds cmd = new GetOpsFromIds(transitions, expansion);
 		execute(cmd);
-		return new LinkedHashSet<Transition>(transitions);
+		return new LinkedHashSet<>(transitions);
 	}
 
 	/**
@@ -745,12 +743,12 @@ public class StateSpace implements IAnimator {
 	 */
 	public Map<State, Map<IEvalElement, AbstractEvalResult>> evaluateForGivenStates(final Collection<State> states,
 			final List<IEvalElement> formulas) {
-		Map<State, Map<IEvalElement, AbstractEvalResult>> result = new HashMap<State, Map<IEvalElement, AbstractEvalResult>>();
-		List<EvaluationCommand> cmds = new ArrayList<EvaluationCommand>();
+		Map<State, Map<IEvalElement, AbstractEvalResult>> result = new HashMap<>();
+		List<EvaluationCommand> cmds = new ArrayList<>();
 
 		for (State stateId : states) {
 			if (stateId.isInitialised()) {
-				Map<IEvalElement, AbstractEvalResult> res = new HashMap<IEvalElement, AbstractEvalResult>();
+				Map<IEvalElement, AbstractEvalResult> res = new HashMap<>();
 				result.put(stateId, res);
 
 				// Check for cached values

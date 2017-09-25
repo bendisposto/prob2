@@ -5,15 +5,6 @@ import de.prob.model.eventb.algorithm.AlgorithmTranslator
 import de.prob.model.eventb.translate.*
 import de.prob.statespace.*
 
-/*
- * x≔ 10
-   while (x > 0)
-     x≔ x + 1
-     x ≔ x − 2
-     variant x
-   end
- */
-
 mm = new ModelModifier().make {
 	machine(name: "MyLoop") {
 		var "x", "x : NAT", "x := 10"
@@ -28,8 +19,5 @@ mm = new ModelModifier().make {
 
 
 m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
-
-mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "MyLoopProject", "/tmp")
 
 "it is possible to generate models to check the termination of loops"

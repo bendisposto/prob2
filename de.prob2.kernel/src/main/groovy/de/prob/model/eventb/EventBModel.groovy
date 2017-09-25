@@ -1,19 +1,21 @@
-package de.prob.model.eventb;
+package de.prob.model.eventb
 
 import com.github.krukow.clj_lang.PersistentHashMap
+
 import com.google.inject.Inject
 
 import de.prob.animator.command.LoadEventBProjectCommand
 import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.EventB
+import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.AbstractModel
 import de.prob.model.representation.DependencyGraph
+import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.model.representation.Machine
 import de.prob.model.representation.ModelElementList
-import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.scripting.StateSpaceProvider
 import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
@@ -44,8 +46,8 @@ public class EventBModel extends AbstractModel {
 	}
 
 	@Override
-	public IEvalElement parseFormula(final String formula) {
-		return new EventB(formula);
+	public IEvalElement parseFormula(final String formula, final FormulaExpand expand) {
+		return new EventB(formula, Collections.emptySet(), expand);
 	}
 
 	public EventBModel set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {

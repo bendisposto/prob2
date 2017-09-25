@@ -2,25 +2,24 @@ package de.prob.visualization;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
-
-
 
 /**
  * @deprecated This class will be removed unless you make a strong case for it!
  */
 public class Transformer {
-	public static final List<String> DEFAULT_STYLES = Arrays.asList(new String[] {
-			"fill", "font", "stroke", "stroke-dasharray", "stroke-width" });
+	public static final List<String> DEFAULT_STYLES = Collections.unmodifiableList(
+			Arrays.asList((String[]) new String[] { "fill", "font", "stroke", "stroke-dasharray", "stroke-width" }));
 
 	public final List<Attribute> attributes;
 	public final List<Style> styles;
 
 	public Transformer(final String selector) {
-		attributes = new ArrayList<Attribute>();
-		styles = new ArrayList<Style>();
+		attributes = new ArrayList<>();
+		styles = new ArrayList<>();
 	}
 
 	private Transformer attr(final String name, final String value) {

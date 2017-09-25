@@ -1,3 +1,7 @@
+plugins {
+	id "org.sonarqube" version "2.5"
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
@@ -5,7 +9,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'application'
 apply plugin: 'antlr'
-//apply plugin: 'jacoco'
+apply plugin: 'jacoco'
 
 project.group = 'de.hhu.stups'
 sourceCompatibility = 1.7
@@ -28,17 +32,20 @@ if (System.env.TRAVIS == 'true') {
 
 def gradle_version = '4.0'
 
-// Remember to release the cli!
-project.version = '3.2.2'
-ext{ cli_version = '1.7.0' }
+// IMPORTANT !!!
+// Remember to release the cli and
+project.version = '3.2.3'
+ext{ cli_version = '1.7.1-rc1' }
+// IMPORTANT !!!
+
 
 def parser_version
 
 if (project.version.endsWith("-SNAPSHOT")) {
-	parser_version = '2.9.7-SNAPSHOT'
+	parser_version = '2.9.9-SNAPSHOT'
 }
 else {
-	parser_version = '2.9.6'
+	parser_version = '2.9.8'
 }
 
 
@@ -61,9 +68,9 @@ repositories {
 configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
 
 
-sourceSets.main.java.srcDirs = [
-	'src/main/generated'] // ie there's no stand-alone java source
-sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
+// in order to compile the mix of java and groovy in this project we compile all files using the groovy compiler
+sourceSets.main.groovy.srcDirs = ['src/main/groovy', 'src/main/java'] // i.e. include the 'java' dir as groovy source
+sourceSets.main.java.srcDirs = [] // i.e. there's no stand-alone java source
 
 
 dependencies {
@@ -123,6 +130,17 @@ dependencies {
 
 }
 
+sonarqube {
+	properties {
+		property("sonar.java.binaries", sourceSets.main.groovy.outputDir.path)
+		property("sonar.projectKey", "prob2kernel")
+		property("sonar.projectName", "prob2kernel")
+		property("sonar.exclusions", "de.prob2.kernel/gradle/wrapper/*,de.prob2.kernel/build/**/*,de.prob2.kernel/groovyIntegrationTests/*")
+		property("sonar.organization", "prob2")
+		property("sonar.login", System.getenv("SONAR_TOKEN"))
+	}
+}
+
 def download(address,target) {
 	def file = new FileOutputStream(file(target).path)
 	def out = new BufferedOutputStream(file)
@@ -137,7 +155,6 @@ def downloadUrlPath() {
 		return "https://www3.hhu.de/stups/downloads/prob/cli/nightly/"
 	}
 	else {
-
 		return "https://www3.hhu.de/stups/downloads/prob/cli/releases/" + cli_version + "/"
 	}
 }
@@ -182,25 +199,23 @@ task downloadCLIs {
 
 task downloadCSPMFrontend {
 	doLast {
- 	def dir = 'src/main/resources/cli/'
-
-	['darwin-64',
-	 'linux-32',
-	 'linux-64',
-	 'windows',
-	].each { n ->
-   def libName = "cspmf"
-	 def target = dir + cspmfmapping(n) + "-cspmf"
-	 if (n=="windows") {
-		 target += ".exe"
-		 libName += ".exe"
-   }
-	 download('https://www3.hhu.de/stups/downloads/cspmf/'+n+'/'+libName,target)
-	 file(target).setExecutable(true)
- }
-}
-dependsOn downloadCLIs
-
+		def dir = 'src/main/resources/cli/'
+		['darwin-64',
+		 'linux-32',
+		 'linux-64',
+		 'windows',
+		].each { n ->
+	   def libName = "cspmf"
+		 def target = dir + cspmfmapping(n) + "-cspmf"
+		 if (n=="windows") {
+			 target += ".exe"
+			 libName += ".exe"
+	   }
+		 download('https://www3.hhu.de/stups/downloads/cspmf/'+n+'/'+libName,target)
+		 file(target).setExecutable(true)
+		}
+	}
+	dependsOn downloadCLIs
 }
 
 def getCheckedOutGitCommitHash() {
@@ -237,6 +252,9 @@ test {
   testLogging {
     exceptionFormat = 'full'
   }
+	jacoco {
+		destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+	}
 }
 
 groovydoc {
@@ -259,51 +277,55 @@ def os_extension() {
 }
 
 // run integration tests after downloading fresh CLI from Nightly Build
-task integrationtests(dependsOn: ['downloadCLIs', 'tests', 'cliIntegrationTests']);
+task allTests(dependsOn: ['downloadCLIs', 'test', 'groovyIntegrationTests', 'cliIntegrationTests']);
 
-// run integration tests WITHOUT downloading fresh CLI from Nightly Build
-task tests(dependsOn: ['classes'], type:JavaExec){
+// run groovy integration tests WITHOUT downloading fresh CLI from Nightly Build
+task groovyIntegrationTests(type:JavaExec, dependsOn: ['classes']){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ['-script', 'groovyTests']
 }
+project.jacoco.applyTo(groovyIntegrationTests)
 
-task cliIntegrationTests(type: Test, dependsOn: ['downloadCLIs', 'test']){
+
+task cliIntegrationTests(type: Test, dependsOn: ['downloadCLIs','test']){
   doFirst{ println("Running cli integration tests") }
   scanForTestClasses = true
   include('de/prob/cli/integration/**/*')
+	jacoco {
+		destinationFile = file("$buildDir/jacoco/jacocoCliIntegrationTests.exec")
+	}
 }
+
+jacoco {
+    toolVersion = "0.7.9"
+}
+task codeCoverageReport(type:JacocoReport, dependsOn: ['allTests']){
+	sourceDirectories = files([])
+	classDirectories = files('build/classes/groovy/main')
+	//onlyIf = {true}
+	reports {
+		xml.enabled false
+		csv.enabled false
+		html.destination new File("${buildDir}/jacocoHtml")
+	}
+	executionData(test, groovyIntegrationTests, cliIntegrationTests)
+}
+
+check.dependsOn codeCoverageReport
 
 eclipse {
 	project { name = 'de.prob2.kernel' }
 }
-
-// type 'gradle test jacocoTestReport' in order to run the jacoco code coverage analysis
-/*
-jacocoTestReport {
-	doFirst{
-		classDirectories = files('build/classes/main')
-	}
-	reports {
-	  xml.enabled false
-	  csv.enabled false
-	  html.destination "${buildDir}/reports/jacocoHtml"
-	}
-}
-check.dependsOn jacocoTestReport
-*/
+tasks.eclipse.dependsOn createBuildConstants
 
 task deploy(type: Copy, dependsOn: build) {
 	into "$buildDir/libs"
 	from configurations.runtime
 }
 
-
 javadoc { failOnError = false }
 
-
-
-tasks.eclipse.dependsOn createBuildConstants
 
 if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
 

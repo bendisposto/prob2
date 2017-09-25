@@ -28,9 +28,4 @@ m = new ModelModifier().make {
 }.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().mergeBranches(true)).run()
 
-
-//mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "Example", "/tmp")
-//d.deleteDir()
-
 "it is possible to load or create and animate Event-B models that use the theory plugin"

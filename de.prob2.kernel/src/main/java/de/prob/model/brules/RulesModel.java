@@ -4,15 +4,17 @@ import java.io.File;
 import java.util.Map;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
+
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.rules.RulesProject;
+
 import de.prob.animator.command.LoadRulesProjectCommand;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph;
-import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
@@ -40,7 +42,7 @@ public class RulesModel extends AbstractModel {
 
 	@Override
 	public AbstractElement getComponent(String name) {
-		return getChildrenOfType(Machine.class).getElement(name);
+		throw new AssertionError();
 	}
 
 	public RulesModel create(File file, RulesProject project) {
@@ -48,22 +50,13 @@ public class RulesModel extends AbstractModel {
 	}
 
 	@Override
-	public IEvalElement parseFormula(String formula) {
-		throw new RuntimeException("Currently not supported");
-		//
-		// try {
-		// return new ClassicalB(
-		// bparser.parse(BParser.FORMULA_PREFIX + " " + formula, false, new
-		// NoContentProvider()));
-		// } catch (BCompoundException e) {
-		// throw new EvaluationException(e.getMessage());
-		// }
+	public IEvalElement parseFormula(String formula, FormulaExpand expand) {
+		throw new AssertionError("Currently not supported");
 	}
 
 	@Override
 	public boolean checkSyntax(String formula) {
-		throw new RuntimeException("Currently not supported");
-		// return false;
+		throw new AssertionError("Currently not supported");
 	}
 
 	@Override
@@ -79,10 +72,6 @@ public class RulesModel extends AbstractModel {
 
 	public LoadRulesProjectCommand getLoadCommand() {
 		return new LoadRulesProjectCommand(project, modelFile);
-	}
-
-	public RulesProject getRulesProject() {
-		return this.project;
 	}
 
 }

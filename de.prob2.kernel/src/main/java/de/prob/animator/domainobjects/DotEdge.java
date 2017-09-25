@@ -1,7 +1,6 @@
 package de.prob.animator.domainobjects;
 
-import de.prob.util.StringUtil;
-
+import com.google.common.base.MoreObjects;
 
 public class DotEdge {
 
@@ -48,7 +47,14 @@ public class DotEdge {
 	
 	@Override
 	public String toString() {
-		return StringUtil.generateJsonString(this);
+		return MoreObjects.toStringHelper(this)
+			.add("id", id)
+			.add("source", source)
+			.add("target", target)
+			.add("label", label)
+			.add("style", style)
+			.add("color", color)
+			.toString();
 	}
 	
 }

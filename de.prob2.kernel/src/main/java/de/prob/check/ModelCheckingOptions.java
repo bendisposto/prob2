@@ -11,19 +11,30 @@ public class ModelCheckingOptions {
 	private final EnumSet<Options> options;
 
 	public enum Options {
-		breadth_first_search("breadth first"), depth_first_search("depth first"), find_deadlocks("deadlock check"), find_invariant_violations(
-				"invariant check"), find_assertion_violations("assertion check"), inspect_existing_nodes(
-				"recheck existing states"), stop_at_full_coverage(
-				"stop at full coverage"), partial_order_reduction(
-				"partial order reduction"), partial_guard_evaluation(
-				"partial guard evaluation"), find_goal("search for goal");
+		BREADTH_FIRST_SEARCH("breadth_first_search", "breadth first"),
+		DEPTH_FIRST_SEARCH("depth_first_search", "depth first"),
+		FIND_DEADLOCKS("find_deadlocks", "deadlock check"),
+		FIND_INVARIANT_VIOLATIONS("find_invariant_violations", "invariant check"),
+		FIND_ASSERTION_VIOLATIONS("find_assertion_violations", "assertion check"),
+		INSPECT_EXISTING_NODES("inspect_existing_nodes", "recheck existing states"),
+		STOP_AT_FULL_COVERAGE("stop_at_full_coverage", "stop at full coverage"),
+		PARTIAL_ORDER_REDUCTION("partial_order_reduction", "partial order reduction"),
+		PARTIAL_GUARD_EVALUATION("partial_guard_evaluation", "partial guard evaluation"),
+		FIND_GOAL("find_goal", "search for goal"),
+		;
 
+		private final String prologName;
 		private final String description;
 
-		private Options(final String description) {
+		private Options(final String prologName, final String description) {
+			this.prologName = prologName;
 			this.description = description;
 		}
-
+		
+		public String getPrologName() {
+			return this.prologName;
+		}
+		
 		public String getDescription() {
 			return description;
 		}
@@ -38,43 +49,43 @@ public class ModelCheckingOptions {
 	}
 
 	public ModelCheckingOptions breadthFirst(final boolean value) {
-		return changeOption(value, Options.breadth_first_search);
+		return changeOption(value, Options.BREADTH_FIRST_SEARCH);
 	}
 	
 	public ModelCheckingOptions depthFirst(final boolean value) {
-		return changeOption(value, Options.depth_first_search);
+		return changeOption(value, Options.DEPTH_FIRST_SEARCH);
 	}
 
 	public ModelCheckingOptions checkDeadlocks(final boolean value) {
-		return changeOption(value, Options.find_deadlocks);
+		return changeOption(value, Options.FIND_DEADLOCKS);
 	}
 
 	public ModelCheckingOptions checkInvariantViolations(final boolean value) {
-		return changeOption(value, Options.find_invariant_violations);
+		return changeOption(value, Options.FIND_INVARIANT_VIOLATIONS);
 	}
 
 	public ModelCheckingOptions checkAssertions(final boolean value) {
-		return changeOption(value, Options.find_assertion_violations);
+		return changeOption(value, Options.FIND_ASSERTION_VIOLATIONS);
 	}
 
 	public ModelCheckingOptions recheckExisting(final boolean value) {
-		return changeOption(value, Options.inspect_existing_nodes);
+		return changeOption(value, Options.INSPECT_EXISTING_NODES);
 	}
 
 	public ModelCheckingOptions stopAtFullCoverage(final boolean value) {
-		return changeOption(value, Options.stop_at_full_coverage);
+		return changeOption(value, Options.STOP_AT_FULL_COVERAGE);
 	}
 
 	public ModelCheckingOptions partialOrderReduction(final boolean value) {
-		return changeOption(value, Options.partial_order_reduction);
+		return changeOption(value, Options.PARTIAL_ORDER_REDUCTION);
 	}
 
 	public ModelCheckingOptions partialGuardEvaluation(final boolean value) {
-		return changeOption(value, Options.partial_guard_evaluation);
+		return changeOption(value, Options.PARTIAL_GUARD_EVALUATION);
 	}
 
 	public ModelCheckingOptions checkGoal(final boolean value) {
-		return changeOption(value, Options.find_goal);
+		return changeOption(value, Options.FIND_GOAL);
 	}
 
 	private ModelCheckingOptions changeOption(final boolean value,

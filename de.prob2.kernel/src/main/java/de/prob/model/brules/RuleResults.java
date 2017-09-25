@@ -97,7 +97,7 @@ public class RuleResults {
 				numberOfRulesDisabled++;
 				break;
 			default:
-				throw new IllegalStateException();
+				throw new AssertionError();
 			}
 		}
 		this.summary = new ResultSummary(numberOfRules, numberOfRulesFailed, numberOfRulesSucceeded,

@@ -7,10 +7,10 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import com.google.common.base.MoreObjects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.MoreObjects;
 
 public class ProBConnection {
 
@@ -61,7 +61,7 @@ public class ProBConnection {
 	}
 
 	public String send(final String term) throws IOException {
-		logger.info(term);
+		logger.debug(term);
 		if (shutingDown) {
 			final String message = "probcli is currently shutting down";
 			logger.error(message);
@@ -74,7 +74,7 @@ public class ProBConnection {
 			outputStream.flush();
 		}
 		String answer = getAnswer();
-		logger.info(answer);
+		logger.debug(answer);
 		return answer;
 	}
 

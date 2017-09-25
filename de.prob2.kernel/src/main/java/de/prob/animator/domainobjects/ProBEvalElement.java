@@ -28,7 +28,7 @@ public class ProBEvalElement extends AbstractEvalElement {
 	 * @param code see {@link #ProBEvalElement(PrologTerm, String, FormulaExpand)}
 	 */
 	public ProBEvalElement(final PrologTerm ast, final String code) {
-		this(ast, code, FormulaExpand.truncate);
+		this(ast, code, FormulaExpand.TRUNCATE);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class ProBEvalElement extends AbstractEvalElement {
 	}
 	
 	@Override
-	public String getKind() {
+	public EvalElementType getKind() {
 		throw new UnsupportedOperationException("Should never be called on a ProBEvalElement");
 	}
 

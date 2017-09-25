@@ -5,18 +5,17 @@ import static de.prob.model.eventb.Event.EventType.CONVERGENT
 import static de.prob.model.eventb.Event.EventType.ANTICIPATED
 
 // You can change the model you are testing here.
-/*TODO
-mm = new ModelModifier()
-mm.make {
+
+mm = new ModelModifier().make {
+
 	context(name: "cd") {
 		constant "d"
-		axioms "d : NAT", "d > 0"
+		axioms "d : NAT",
+				"d > 0"
 	}
 	
 	machine(name: "m0", sees: ["cd"]) {
-		var_block name: "n",
-		          invariant: "n : NAT",
-				  init: "n:=0"
+		var "n", "n : NAT", "n := 0"
 		invariant "n <= d"
 		theorem "n > 0 or n < d"
 		
@@ -31,20 +30,14 @@ mm.make {
 		}
 	}
 	
-	machine(name: "m1", refines: ["m0"], sees: ["cd"]) {
-		var_block name: "a",
-		          invariant: "a : NAT",
-				  init: "a := 0"
-		var_block name: "b",
-		          invariant: "b : NAT",
-				  init: "b := 0"
-		var_block name: "c",
-				  invariant: "c : NAT",
-				  init: "c := 0"
-		invariants gluing: "n=a+b+c",
+	machine(name: "m1", sees: ["cd"], refines: "m0") { // refines was the last parameter in other tests
+		var "a", "a : NAT", "a := 0"
+		var "b", "b : NAT", "b := 0"
+		var "c", "c : NAT", "c := 0"
+		invariants gluing: "n = a+b+c",
 		           oneway: "a=0 or c=0"
-		theorems  "a+b+c : NAT",
-		          "c > 0 or a > 0 or (a+b<d & c=0) or (0<b & a=0)" 
+		theorem "a+b+c : NAT"
+		theorem "c > 0 or a > 0 or (a+b<d & c=0) or (0<b & a=0)"
 		
 		variant "2*a+b"
 		
@@ -52,17 +45,17 @@ mm.make {
 			when "a+b<d", "c=0"
 			then "a:=a+1"
 		}
-		
+
 		refine(name:  "ML_in") {
 			when "c>0"
 			then "c:=c-1"
 		}
-		
+
 		event(name: "IL_in", type: CONVERGENT) {
 			when "a>0"
 			then "a:=a-1", "b:=b+1"
 		}
-				   
+
 		event(name: "IL_out", type: ANTICIPATED) { // just to check that anticipated works too
 			when "0<b","a=0"
 			then "b:=b-1", "c:=c+1"
@@ -70,17 +63,14 @@ mm.make {
 	}
 }
 
-m = mm.getModifiedModel()
+m = mm.getModel()
 s = m.load(m.getComponent("m1"))
 t = s as Trace
+
 
 assert m.m1.variant.getExpression().getCode() == "2*a+b"
 assert m.m1.events.IL_in.type == CONVERGENT
 assert m.m1.events.IL_out.type == ANTICIPATED
 t = t.randomAnimation(10)
 
-//mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "cars", "/tmp")
-//d.deleteDir()
-*/
-"testing convergent and anticipated events"
+"cars on a bridge model can be made and anticipated and convergent events work"

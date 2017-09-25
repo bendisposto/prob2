@@ -1,25 +1,13 @@
 package de.prob.animator.domainobjects;
 
-import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
-import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.eventb.core.ast.Assignment;
-import org.eventb.core.ast.Expression;
-import org.eventb.core.ast.FormulaFactory;
-import org.eventb.core.ast.IParseResult;
-import org.eventb.core.ast.Predicate;
-import org.eventb.core.ast.extension.IFormulaExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.node.Node;
+import de.be4.classicalb.core.parser.node.*;
+
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.formula.TranslationVisitor;
@@ -30,6 +18,16 @@ import de.prob.statespace.State;
 import de.prob.translator.TranslatingVisitor;
 import de.prob.translator.types.BObject;
 import de.prob.unicode.UnicodeTranslator;
+
+import org.eventb.core.ast.Assignment;
+import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.IParseResult;
+import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.extension.IFormulaExtension;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Representation of an Event-B formula
@@ -42,7 +40,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	Logger logger = LoggerFactory.getLogger(EventB.class);
 	private final FormulaUUID uuid = new FormulaUUID();
 
-	private String kind;
+	private EvalElementType kind;
 	private Node ast = null;
 
 	private final Set<IFormulaExtension> types;
@@ -57,7 +55,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types) {
-		this(code, types, FormulaExpand.truncate);
+		this(code, types, FormulaExpand.TRUNCATE);
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types,
@@ -69,7 +67,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 
 	public void ensureParsed() {
 		final String unicode = UnicodeTranslator.toUnicode(code);
-		kind = PREDICATE.toString();
+		kind = EvalElementType.PREDICATE;
 		IParseResult parseResult = FormulaFactory.getInstance(types)
 				.parsePredicate(unicode, null);
 		List<String> errors = new ArrayList<String>();
@@ -79,7 +77,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		} else {
 			errors.add("Parsing predicate failed because: "
 					+ parseResult.toString());
-			kind = EXPRESSION.toString();
+			kind = EvalElementType.EXPRESSION;
 			parseResult = FormulaFactory.getInstance(types).parseExpression(
 					unicode, null);
 			if (!parseResult.hasProblem()) {
@@ -87,7 +85,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 			} else {
 				errors.add("Parsing expression failed because: "
 						+ parseResult.toString());
-				kind = ASSIGNMENT.toString();
+				kind = EvalElementType.ASSIGNMENT;
 				parseResult = FormulaFactory.getInstance(types)
 						.parseAssignment(unicode, null);
 				if (!parseResult.hasProblem()) {
@@ -154,7 +152,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		if (ast == null) {
 			ensureParsed();
 		}
-		if (getKind().equals(ASSIGNMENT.toString())) {
+		if (EvalElementType.ASSIGNMENT.equals(getKind())) {
 			throw new EvaluationException(
 					"Assignments are currently unsupported for evaluation");
 		}
@@ -165,7 +163,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	@Override
-	public String getKind() {
+	public EvalElementType getKind() {
 		if (kind == null) {
 			ensureParsed();
 		}
@@ -211,24 +209,24 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		if (kind == null) {
 			ensureParsed();
 		}
-		if (kind.equals(PREDICATE.toString())) {
-			return FormulaFactory.getInstance(types).parsePredicate(
-					toUnicode(), null);
+		switch (kind) {
+			case PREDICATE:
+				return FormulaFactory.getInstance(types).parsePredicate(toUnicode(), null);
+			
+			case EXPRESSION:
+				return FormulaFactory.getInstance(types).parseExpression(toUnicode(), null);
+			
+			case ASSIGNMENT:
+				return FormulaFactory.getInstance(types).parseAssignment(toUnicode(), null);
+			
+			default:
+				throw new IllegalStateException("Unhandled kind: " + kind);
 		}
-		if (kind.equals(EXPRESSION.toString())) {
-			return FormulaFactory.getInstance(types).parseExpression(
-					toUnicode(), null);
-		}
-		if (kind.equals(ASSIGNMENT.toString())) {
-			return FormulaFactory.getInstance(types).parseAssignment(
-					toUnicode(), null);
-		}
-		return null;
 	}
 
 	@Override
 	public BObject translate() {
-		if (!getKind().equals(EXPRESSION.toString())) {
+		if (!EvalElementType.EXPRESSION.equals(getKind())) {
 			throw new IllegalArgumentException();
 		}
 		TranslatingVisitor v = new TranslatingVisitor();

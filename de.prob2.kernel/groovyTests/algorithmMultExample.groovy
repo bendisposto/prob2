@@ -32,8 +32,4 @@ mm = new ModelModifier().make {
 m = mm.getModel()
 m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
 
-//mtx = new ModelToXML()
-//d = mtx.writeToRodin(m, "Multiplication", "/tmp")
-//d.deleteDir()
-
 "generating a model from an algorithm"

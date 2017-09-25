@@ -6,13 +6,13 @@ s = api.b_load(dir+File.separator +"machines"+File.separator+"MultipleExample.mc
 t = (s as Trace).$initialise_machine()
 t = t.Crazy2("p1 = 5", "p2 = {2,4,6,8}")
 trans = t.getCurrentTransition()
-assert trans.evaluate(FormulaExpand.truncate).getRep() == "4,{(5|->#4:{2,...,8})},6 <-- Crazy2(5,#4:{2,...,8})"
-assert trans.evaluate(FormulaExpand.expand).getRep() == "4,{(5|->{2,4,6,8})},6 <-- Crazy2(5,{2,4,6,8})"
-assert trans.evaluate(FormulaExpand.truncate).getRep() == "4,{(5|->{2,4,6,8})},6 <-- Crazy2(5,{2,4,6,8})"
+assert trans.evaluate(FormulaExpand.TRUNCATE).getRep() == "4,{(5|->#4:{2,...,8})},6 <-- Crazy2(5,#4:{2,...,8})"
+assert trans.evaluate(FormulaExpand.EXPAND).getRep() == "4,{(5|->{2,4,6,8})},6 <-- Crazy2(5,{2,4,6,8})"
+assert trans.evaluate(FormulaExpand.TRUNCATE).getRep() == "4,{(5|->{2,4,6,8})},6 <-- Crazy2(5,{2,4,6,8})"
 
 truncated = new ClassicalB("{2,4,6,8,10}")
 assert t.evalCurrent(truncated).getValue() == "#5:{2,...,10}"
-expanded = new ClassicalB("{2,4,6,8,10}",FormulaExpand.expand)
+expanded = new ClassicalB("{2,4,6,8,10}",FormulaExpand.EXPAND)
 assert t.evalCurrent(expanded).getValue() == "{2,4,6,8,10}"
 
-"add a description of the test here"
+"Expanding and truncating a formila works correctly"

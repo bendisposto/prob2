@@ -22,21 +22,29 @@ public class ExecuteModelCommand extends AbstractCommand implements IStateSpaceM
 	private static final String TRANSITION_VARIABLE = "Transition";
 	private static final String RESULT_VARIABLE = "Result";
 	private static final String EXECUTED_STEPS_VARIABLE = "Steps";
-	private final List<Transition> resultTrace = new ArrayList<Transition>();
+	private static final String CONTINUE_AFTER_ERRORS = "continue_after_errors";
+	private static final String TIMEOUT = "timeout";
+
+	private final List<Transition> resultTrace = new ArrayList<>();
 	private final State startstate;
 	private final StateSpace statespace;
 	private int stepsExecuted;
 	private final int maxNrSteps;
 	private ExecuteModelResult result;
+	private final boolean continueAfterErrors;
+	private final Integer timeoutInMS;
 
 	public enum ExecuteModelResult {
-		MAXIMUM_NR_OF_STEPS_REACHED, DEADLOCK
+		MAXIMUM_NR_OF_STEPS_REACHED, DEADLOCK, ERROR, INTERNAL_ERROR, TIME_OUT
 	}
 
-	public ExecuteModelCommand(final StateSpace statespace, final State startstate, final int maxNrSteps) {
+	public ExecuteModelCommand(final StateSpace statespace, final State startstate, final int maxNrSteps,
+			final boolean continueAfterErrors, final Integer timeoutInMS) {
 		this.statespace = statespace;
 		this.startstate = startstate;
 		this.maxNrSteps = maxNrSteps;
+		this.continueAfterErrors = continueAfterErrors;
+		this.timeoutInMS = timeoutInMS;
 	}
 
 	@Override
@@ -44,6 +52,17 @@ public class ExecuteModelCommand extends AbstractCommand implements IStateSpaceM
 		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.printAtomOrNumber(this.startstate.getId());
 		pout.printAtomOrNumber(String.valueOf(maxNrSteps));
+		// options
+		pout.openList();
+		if (continueAfterErrors) {
+			pout.printAtom(CONTINUE_AFTER_ERRORS);
+		}
+		if (timeoutInMS != null) {
+			pout.openTerm(TIMEOUT);
+			pout.printNumber(timeoutInMS);
+			pout.closeTerm();
+		}
+		pout.closeList();
 		pout.printVariable(TRANSITION_VARIABLE);
 		pout.printVariable(EXECUTED_STEPS_VARIABLE);
 		pout.printVariable(RESULT_VARIABLE);
@@ -68,6 +87,15 @@ public class ExecuteModelCommand extends AbstractCommand implements IStateSpaceM
 			break;
 		case "deadlock":
 			this.result = ExecuteModelResult.DEADLOCK;
+			break;
+		case "error":
+			this.result = ExecuteModelResult.ERROR;
+			break;
+		case "internal_error":
+			this.result = ExecuteModelResult.INTERNAL_ERROR;
+			break;
+		case "time_out":
+			this.result = ExecuteModelResult.TIME_OUT;
 			break;
 		default:
 			throw new AssertionError("Unexpected result of execute command.");

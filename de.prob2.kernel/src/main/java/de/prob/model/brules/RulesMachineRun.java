@@ -45,12 +45,10 @@ public class RulesMachineRun {
 
 	private BigInteger totalNumberOfProBCliErrors;
 
+	private boolean continueAfterErrors = false;
+
 	public RulesMachineRun(File runner) {
 		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
-	}
-
-	public RulesMachineRun(File runner, Map<String, String> prefs) {
-		this(runner, prefs, new HashMap<String, String>());
 	}
 
 	public RulesMachineRun(File runner, Map<String, String> prefs, Map<String, String> constantValuesToBeInjected) {
@@ -72,33 +70,28 @@ public class RulesMachineRun {
 		this.maxNumberOfReportedCounterExamples = i;
 	}
 
-	public void setProBCorePreferences(Map<String, String> prefs) {
-		proBCorePreferences.putAll(prefs);
+	public void setContinueAfterErrors(boolean continueAfterErrors) {
+		this.continueAfterErrors = continueAfterErrors;
 	}
 
 	public void start() {
 		logger.info("Starting rules machine run: {}", this.runnerFile.getAbsolutePath());
-		final String PARSER_TIMER = "parsing";
-		StopWatch.start(PARSER_TIMER);
+		final String parserTimer = "parsing";
+		StopWatch.start(parserTimer);
 		boolean hasParseErrors = parseAndTranslateRulesProject();
-		logger.info("Time to parse rules project: {} ms", StopWatch.stop(PARSER_TIMER));
+		logger.info("Time to parse rules project: {} ms", StopWatch.stop(parserTimer));
 		if (hasParseErrors) {
 			logger.error("RULES_MACHINE has errors!");
 			return;
 		}
-
 		this.executeRun = rulesMachineRunner.createRulesMachineExecuteRun(this.rulesProject, runnerFile,
-				this.proBCorePreferences);
-
+				this.proBCorePreferences, continueAfterErrors);
 		try {
-			final String PROB2_RUN_TIMER = "prob2Run";
-			StopWatch.start(PROB2_RUN_TIMER);
+			final String prob2RunTimer = "prob2Run";
+			StopWatch.start(prob2RunTimer);
 			logger.info("Start execute ...");
-
-			// start
 			this.executeRun.start();
-
-			logger.info("Execute run finished. Time: {} ms", StopWatch.stop(PROB2_RUN_TIMER));
+			logger.info("Execute run finished. Time: {} ms", StopWatch.stop(prob2RunTimer));
 		} catch (ProBError e) {
 			logger.error("ProBError: {}", e.getMessage());
 			if (executeRun.getExecuteModelCommand() != null) {
@@ -107,24 +100,22 @@ public class RulesMachineRun {
 					// explores the final state and can throw a ProBError
 					Collection<StateError> stateErrors = finalState.getStateErrors();
 					for (StateError stateError : stateErrors) {
-						this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, stateError.getShortDescription(), e));
+						this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, stateError.getLongDescription(), e));
 					}
 				} catch (ProBError e2) {
 					// Enumeration errors
 					this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e2.getMessage(), e2));
 					return;
 				}
-
 			} else {
-				// static errors such as type errors or error while loading the
-				// state space
+				/*- static errors such as type errors or errors while loading the  state space */
 				this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
-				// no final state is available and thus we can not create
-				// RuleResults
+				/*- no final state is available and thus we can not create RuleResults */
 				return;
 			}
 		} catch (Exception e) {
-			logger.error("Unexpected error occured: {}", e.getMessage());
+			// TODO when is this exception thrown, is it possible?
+			logger.error("Unexpected error occured: {}", e.getMessage(), e);
 			// storing all error messages
 			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
 			return;
@@ -134,13 +125,12 @@ public class RulesMachineRun {
 				executeRun.getUsedStateSpace().execute(totalNumberOfErrorsCommand);
 				totalNumberOfProBCliErrors = totalNumberOfErrorsCommand.getTotalNumberOfErrors();
 			}
-
 		}
-		final String EXTRACT_RESULTS_TIMER = "extractResults";
-		StopWatch.start(EXTRACT_RESULTS_TIMER);
+		final String extractResultsTimer = "extractResults";
+		StopWatch.start(extractResultsTimer);
 		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
-		logger.info("Time to extract results form final state: {}", StopWatch.stop(EXTRACT_RESULTS_TIMER));
+		logger.info("Time to extract results form final state: {}", StopWatch.stop(extractResultsTimer));
 	}
 
 	private boolean parseAndTranslateRulesProject() {
@@ -177,16 +167,21 @@ public class RulesMachineRun {
 		return new ArrayList<>(this.errors);
 	}
 
+	/**
+	 * 
+	 * @return the first error found or {@code null} if no error has occurred
+	 */
 	public Error getFirstError() {
-		return this.errors.get(0);
+		if (this.errors.isEmpty()) {
+			return null;
+		} else {
+			return this.errors.get(0);
+		}
+
 	}
 
 	public RulesProject getRulesProject() {
 		return this.rulesProject;
-	}
-
-	public RulesMachineRunner getRulesMachineRunner() {
-		return this.rulesMachineRunner;
 	}
 
 	public RuleResults getRuleResults() {
@@ -197,25 +192,21 @@ public class RulesMachineRun {
 		return this.executeRun;
 	}
 
-	public File getMainMachineFile() {
+	public File getRunnerFile() {
 		return runnerFile;
 	}
 
 	/**
 	 * Returns the total number of errors recorded by a concrete ProB cli
 	 * instance. Note, if the ProB cli instance is reused for further
-	 * RulesMachineRuns, this number is NOT reseted. Can be {@code null} if
-	 * there is no state space available. Moreover, this number does not match
-	 * the size of the {@link RulesMachineRun#errors} list.
+	 * RulesMachineRuns, this number is NOT reset. Can be {@code null} if there
+	 * is no state space available. Moreover, this number does not match the
+	 * size of the {@link RulesMachineRun#errors} list.
 	 * 
 	 * @return total number of ProB cli errors
 	 */
 	public BigInteger getTotalNumberOfProBCliErrors() {
 		return this.totalNumberOfProBCliErrors;
-	}
-
-	public Map<String, String> getInjectedConstantsValues() {
-		return new HashMap<>(this.constantValuesToBeInjected);
 	}
 
 	public class Error {

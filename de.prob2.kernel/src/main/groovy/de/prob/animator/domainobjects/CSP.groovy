@@ -46,7 +46,7 @@ class CSP extends AbstractEvalElement {
 			this.target = ".exe"
 		}
 		this.procname = home+"lib"+File.separator+"cspmf" + target
-		this.expansion = FormulaExpand.truncate // this doesn't matter
+		this.expansion = FormulaExpand.TRUNCATE // this doesn't matter
 	}
 
 	public String getCode() {
@@ -110,13 +110,9 @@ class CSP extends AbstractEvalElement {
 		}
 	}
 
-	/**
-	 * @see de.prob.animator.domainobjects.IEvalElement#getKind()
-	 *
-	 * The kind for {@link CSP} formulas is "csp"
-	 */
-	public String getKind() {
-		return "csp";
+	@Override
+	public EvalElementType getKind() {
+		return EvalElementType.CSP
 	}
 
 	@Override

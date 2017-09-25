@@ -21,13 +21,13 @@ import de.prob.unicode.UnicodeTranslator
 class FormulaUtil {
 
 	def EventB substitute(EventB formula, Map<String, EventB> identifierMapping) {
-		if (formula.getKind() == EvalElementType.ASSIGNMENT.toString()) {
+		if (formula.kind == EvalElementType.ASSIGNMENT) {
 			return substituteAssignment(formula, identifierMapping)
 		}
 
 		FormulaFactory ff = FormulaFactory.getInstance(formula.getTypes())
 		Map<FreeIdentifier, Expression> substitutions = identifierMapping.collectEntries { k, EventB v ->
-			if (v.getKind() != EvalElementType.EXPRESSION.toString()) {
+			if (v.kind != EvalElementType.EXPRESSION) {
 				throw new IllegalArgumentException("$v is not an expression. substitutions only work with expressions")
 			}
 			def id = ff.makeFreeIdentifier(k, null)
@@ -40,7 +40,7 @@ class FormulaUtil {
 	}
 
 	def EventB substituteAssignment(EventB formula, Map<String, EventB> identifierMapping) {
-		assert formula.getKind() == EvalElementType.ASSIGNMENT.toString()
+		assert formula.kind == EvalElementType.ASSIGNMENT
 		Node ast = formula.getAst()
 		if (ast instanceof AAssignSubstitution) {
 			return substituteDeterministicAssignment(formula, identifierMapping)
@@ -86,7 +86,7 @@ class FormulaUtil {
 		assert split.length == 2
 
 		def primed = identifierMapping.findAll { String x, EventB v ->
-			v.getKind() == EvalElementType.EXPRESSION.toString() && v.getRodinParsedResult().getParsedExpression() instanceof FreeIdentifier
+			v.kind == EvalElementType.EXPRESSION && v.getRodinParsedResult().getParsedExpression() instanceof FreeIdentifier
 		}.collectEntries { String x, EventB v ->
 			[
 				x+"'",
@@ -111,20 +111,23 @@ class FormulaUtil {
 	}
 
 	def getRodinFormula(EventB formula) {
-		if (formula.getKind() == EvalElementType.EXPRESSION.toString()) {
-			return formula.getRodinParsedResult().getParsedExpression()
+		switch (formula.kind) {
+			case EvalElementType.EXPRESSION:
+				return formula.rodinParsedResult.parsedExpression
+			
+			case EvalElementType.ASSIGNMENT:
+				return formula.rodinParsedResult.parsedAssignment
+			
+			case EvalElementType.PREDICATE:
+				return formula.rodinParsedResult.parsedPredicate
+			
+			default:
+				throw new IllegalArgumentException("Unhandled kind: " + formula.kind)
 		}
-		if (formula.getKind() == EvalElementType.ASSIGNMENT.toString()) {
-			return formula.getRodinParsedResult().getParsedAssignment()
-		}
-		if (formula.getKind() == EvalElementType.PREDICATE.toString()) {
-			return formula.getRodinParsedResult().getParsedPredicate()
-		}
-		// shouldn't be possible
 	}
 
 	def FreeIdentifier getIdentifier(EventB formula) {
-		assert formula.getKind() == EvalElementType.EXPRESSION.toString()
+		assert formula.kind == EvalElementType.EXPRESSION
 		assert formula.getRodinParsedResult().getParsedExpression() instanceof FreeIdentifier
 		return formula.getRodinParsedResult().getParsedExpression()
 	}
@@ -213,7 +216,7 @@ class FormulaUtil {
 	}
 
 	def EventB predicateToBecomeSuchThat(EventB predicate, Set<String> lhsIdentifiers) {
-		if (predicate.getKind() != EvalElementType.PREDICATE.toString()) {
+		if (predicate.kind != EvalElementType.PREDICATE) {
 			throw new IllegalArgumentException("expected $predicate to be a predicate" )
 		}
 		Map<String, EventB> subMap = lhsIdentifiers.inject([:]) { acc, String id ->

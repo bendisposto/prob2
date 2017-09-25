@@ -14,9 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -24,6 +21,9 @@ import com.google.inject.Singleton;
 import de.prob.annotations.Home;
 import de.prob.exception.CliError;
 import de.prob.scripting.Installer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public final class ProBInstanceProvider implements Provider<ProBInstance> {
@@ -73,6 +73,20 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 			}
 		}
 	}
+	
+	/**
+	 * Return {@code process}'s exit code as an {@link Integer}, or {@code null} if it is still running.
+	 * 
+	 * @param process the process whose exit code to get
+	 * @return {@code process}'s exit code, or {@code null} if it is still running
+	 */
+	private static Integer getOptionalProcessExitCode(final Process process) {
+		try {
+			return process.exitValue();
+		} catch (final IllegalThreadStateException ignored) {
+			return null;
+		}
+	}
 
 	private ProBInstance startProlog() {
 		ProcessHandle processTuple = processProvider.get();
@@ -81,7 +95,20 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		final BufferedReader stream = new BufferedReader(new InputStreamReader(
 				process.getInputStream(), Charset.forName("utf8")));
 
-		Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> cliInformation = extractCliInformation(stream);
+		final Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> cliInformation;
+		try {
+			cliInformation = extractCliInformation(stream);
+		} catch (CliError e) {
+			// Check if the CLI exited while extracting the information.
+			final Integer exitCode = getOptionalProcessExitCode(process);
+			if (exitCode == null) {
+				// CLI didn't exit, just rethrow the error.
+				throw e;
+			} else {
+				// CLI exited, report the exit code.
+				throw new CliError("CLI exited with status " + exitCode + " while matching output patterns", e);
+			}
+		}
 
 		Integer port = ((PortPattern) cliInformation.get(PortPattern.class))
 				.getValue();

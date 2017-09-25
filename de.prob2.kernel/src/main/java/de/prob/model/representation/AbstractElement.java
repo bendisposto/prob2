@@ -45,7 +45,7 @@ public abstract class AbstractElement {
 			final Class<T> c) {
 		ModelElementList<? extends AbstractElement> list = children.get(c);
 		if (list == null) {
-			return new ModelElementList<T>();
+			return new ModelElementList<>();
 		}
 		return (ModelElementList<T>) list;
 	}
@@ -54,7 +54,7 @@ public abstract class AbstractElement {
 	protected <T extends AbstractElement, S extends T> ModelElementList<S> getChildrenAndCast(Class<T> key, Class<S> realType) {
 		ModelElementList<? extends AbstractElement> list = children.get(key);
 		if (list == null) {
-			return new ModelElementList<S>();
+			return new ModelElementList<>();
 		}
 		return (ModelElementList<S>) list;
 	}

@@ -12,6 +12,7 @@ import java.util.List;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvalElementType;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -26,8 +27,6 @@ import de.prob.statespace.Transition;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 /**
  * Command to execute an event that has not been enumerated by ProB.
@@ -63,7 +62,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 					"Must provide the same number of names and predicates.");
 		}
 		for (ClassicalB classicalB : predicate) {
-			if (!classicalB.getKind().equals(PREDICATE.toString())) {
+			if (!EvalElementType.PREDICATE.equals(classicalB.getKind())) {
 				throw new IllegalArgumentException(
 						"Formula must be a predicate: " + predicate);
 			}
