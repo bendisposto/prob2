@@ -99,6 +99,44 @@ def execTrace(t,c) {
   c()
 }
 
+
+EvalResult.getMetaClass().getProperty = {
+  name ->
+    if (name == "value") return delegate.getValue();
+    if (delegate.getSolutions().containsKey(name)) {
+           delegate.getSolution(name)
+    }
+    else {
+         delegate.getMetaClass().getProperties()[name]
+    }
+}
+
+TranslatedEvalResult.getMetaClass().getProperty = {
+  name ->
+    if (name == "value") return delegate.getValue();
+    if (delegate.getSolutions().containsKey(name)) {
+           delegate.getSolution(name)
+    }
+    else {
+         delegate.getMetaClass().getProperties()[name]
+    }
+}
+
+EvalResult.getMetaClass().asType = {
+  className -> if (className == Integer) {
+			return Integer.valueOf(value)
+		}
+		if (className == Double) {
+			return Double.valueOf(value)
+		}
+		if (className == String) {
+			return value
+		}
+		throw new ClassCastException("Not able to convert EvalResult object to ${className}")
+}
+
+
+
 def eval(script) {
 	engine.eval(script)
 }
