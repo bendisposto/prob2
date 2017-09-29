@@ -31,9 +31,13 @@ if (System.env.TRAVIS == 'true') {
 
 def gradle_version = '4.0'
 
+
+
 // IMPORTANT !!!
-// Remember to release the cli and
 project.version = '3.2.4-SNAPSHOT'
+// Remember to release the cli and
+//  - create a tag in the prob_prolog repository
+//  - enter this tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/cli_release/"
 ext{ cli_version = '1.7.1-rc1' }
 // IMPORTANT !!!
 
