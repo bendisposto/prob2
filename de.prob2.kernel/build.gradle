@@ -126,7 +126,7 @@ dependencies {
 	compile 'com.github.krukow:clj-ds:0.0.4'
 
 	// annotations to suppress findbugs warnings
-	compile 'findbugs:annotations:1.0.0'
+	compile group: 'com.google.code.findbugs', name: 'annotations', version: '3.0.1u2'
 
 	testCompile 'org.mockito:mockito-core:1.10.19'
 
