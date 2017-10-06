@@ -1,5 +1,5 @@
 plugins {
-	id "org.sonarqube" version "2.5"
+  id "org.sonarqube" version "2.5"
 }
 
 apply plugin: 'java'
@@ -16,17 +16,17 @@ targetCompatibility = 1.7
 
 
 if (System.env.TRAVIS == 'true') {
-	allprojects {
-	  tasks.withType(GroovyCompile) {
-		groovyOptions.fork = false
-	  }
-	  tasks.withType(Test) {
-		// containers (currently) have 2 dedicated cores and 4GB of memory
-		maxParallelForks = 2
-		minHeapSize = '128m'
-	  }
-	}
+  allprojects {
+    tasks.withType(GroovyCompile) {
+      groovyOptions.fork = false
+    }
+    tasks.withType(Test) {
+      // containers (currently) have 2 dedicated cores and 4GB of memory
+      maxParallelForks = 2
+      minHeapSize = '128m'
+    }
   }
+}
 
 
 def gradle_version = '4.0'
@@ -35,20 +35,21 @@ def gradle_version = '4.0'
 
 // IMPORTANT !!!
 project.version = '3.2.4-SNAPSHOT'
-// Remember to release the cli and
+// Remember to release the cli
 //  - create a tag in the prob_prolog repository
 //  - enter this tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/cli_release/"
-ext{ cli_version = '1.7.1-rc1' }
+//  - enter the same tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/crosscompile_release/"
+ext{ cli_version = '1.7.1-final' }
 // IMPORTANT !!!
 
 
 def parser_version
 
 if (project.version.endsWith("-SNAPSHOT")) {
-	parser_version = '2.9.9-SNAPSHOT'
+	parser_version = '2.9.10-SNAPSHOT'
 }
 else {
-	parser_version = '2.9.8'
+	parser_version = '2.9.9'
 }
 
 
