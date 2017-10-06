@@ -34,7 +34,7 @@ def gradle_version = '4.0'
 
 
 // IMPORTANT !!!
-project.version = '3.2.4'
+project.version = '3.2.5-SNAPSHOT'
 // Remember to release the cli
 //  - create a tag in the prob_prolog repository
 //  - enter this tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/cli_release/"
