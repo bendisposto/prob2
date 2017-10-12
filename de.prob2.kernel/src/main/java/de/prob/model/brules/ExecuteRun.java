@@ -34,8 +34,9 @@ import org.slf4j.LoggerFactory;
  * 
  **/
 public class ExecuteRun {
-	private static StateSpace stateSpace;
+	private static StateSpace staticStateSpace;
 
+	private StateSpace stateSpace;
 	private int maxNumberOfStatesToBeExecuted = Integer.MAX_VALUE;
 	private Integer timeout = null;
 	private final boolean continueAfterErrors;
@@ -57,43 +58,50 @@ public class ExecuteRun {
 		final Logger logger = LoggerFactory.getLogger(getClass());
 		final String loadStateSpaceTimer = "loadStateSpace";
 		StopWatch.start(loadStateSpaceTimer);
-		StateSpace stateSpace2 = this.getOrCreateStateSpace();
+		getOrCreateStateSpace();
 		logger.info("Time to load statespace: {} ms", StopWatch.stop(loadStateSpaceTimer));
 
-		unsubscribeAllFormulas(stateSpace2);
+		unsubscribeAllFormulas(this.stateSpace);
 
 		final String executeTimer = "executeTimer";
 		StopWatch.start(executeTimer);
-		executeModel(stateSpace2);
+		executeModel(this.stateSpace);
 		logger.info("Time run execute command: {} ms", StopWatch.stop(executeTimer));
 	}
 
-	private static void storeStateSpace(StateSpace stateSpace2) {
-		if (stateSpace != null) {
-			stateSpace.kill();
+	public void killStateSpace() {
+		if (staticStateSpace != null) {
+			staticStateSpace.kill();
 		}
-		stateSpace = stateSpace2;
 	}
 
-	private StateSpace getOrCreateStateSpace() {
-		if (stateSpace == null || stateSpace.isKilled() || !reuseStateSpaceOfPreviousRun) {
+	private void getOrCreateStateSpace() {
+		if (staticStateSpace == null || staticStateSpace.isKilled() || !reuseStateSpaceOfPreviousRun) {
 			/*
 			 * create a new state space if there is no previous one or if the
 			 * previous state space has been killed due to a ProBError
 			 */
-			storeStateSpace(this.extractedModel.load(this.prefs));
+			this.stateSpace = this.extractedModel.load(this.prefs);
+			setStaticStateSpace(stateSpace);
 		} else {
 			// reuse the previous state space
 			StateSpaceProvider ssProvider = new StateSpaceProvider(new Provider<StateSpace>() {
 				@Override
 				public StateSpace get() {
-					return stateSpace;
+					return staticStateSpace;
 				}
 			});
 			RulesModel model = (RulesModel) extractedModel.getModel();
 			ssProvider.loadFromCommand(model, null, prefs, model.getLoadCommand());
+			this.stateSpace = staticStateSpace;
 		}
-		return stateSpace;
+	}
+
+	private static void setStaticStateSpace(StateSpace stateSpace2) {
+		if (staticStateSpace != null) {
+			staticStateSpace.kill();
+		}
+		staticStateSpace = stateSpace2;
 	}
 
 	private void unsubscribeAllFormulas(StateSpace stateSpace) {
@@ -120,7 +128,7 @@ public class ExecuteRun {
 	}
 
 	public StateSpace getUsedStateSpace() {
-		return stateSpace;
+		return staticStateSpace;
 	}
 
 }

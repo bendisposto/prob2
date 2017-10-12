@@ -51,6 +51,10 @@ public class RulesMachineRun {
 		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
 	}
 
+	public void killStateSpace() {
+		this.executeRun.killStateSpace();
+	}
+
 	public RulesMachineRun(File runner, Map<String, String> prefs, Map<String, String> constantValuesToBeInjected) {
 		this.runnerFile = runner;
 		this.errors = new ArrayList<>();
@@ -131,6 +135,7 @@ public class RulesMachineRun {
 		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
 		logger.info("Time to extract results form final state: {}", StopWatch.stop(extractResultsTimer));
+
 	}
 
 	private boolean parseAndTranslateRulesProject() {
