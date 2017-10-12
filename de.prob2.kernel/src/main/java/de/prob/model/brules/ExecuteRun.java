@@ -69,12 +69,6 @@ public class ExecuteRun {
 		logger.info("Time run execute command: {} ms", StopWatch.stop(executeTimer));
 	}
 
-	public void killStateSpace() {
-		if (staticStateSpace != null) {
-			staticStateSpace.kill();
-		}
-	}
-
 	private void getOrCreateStateSpace() {
 		if (staticStateSpace == null || staticStateSpace.isKilled() || !reuseStateSpaceOfPreviousRun) {
 			/*
@@ -128,7 +122,7 @@ public class ExecuteRun {
 	}
 
 	public StateSpace getUsedStateSpace() {
-		return staticStateSpace;
+		return this.stateSpace;
 	}
 
 }

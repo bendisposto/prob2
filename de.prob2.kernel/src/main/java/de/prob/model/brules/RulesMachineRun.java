@@ -51,10 +51,6 @@ public class RulesMachineRun {
 		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
 	}
 
-	public void killStateSpace() {
-		this.executeRun.killStateSpace();
-	}
-
 	public RulesMachineRun(File runner, Map<String, String> prefs, Map<String, String> constantValuesToBeInjected) {
 		this.runnerFile = runner;
 		this.errors = new ArrayList<>();
