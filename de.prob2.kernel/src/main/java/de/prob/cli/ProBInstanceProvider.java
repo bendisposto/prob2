@@ -44,7 +44,6 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		this.home = home;
 		this.osInfo = osInfo;
 		new Installer(osInfo).ensureCLIsInstalled();
-
 		processCounter = new AtomicInteger();
 	}
 
