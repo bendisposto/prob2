@@ -2,8 +2,6 @@ package de.prob.statespace
 
 import de.prob.model.representation.AbstractModel
 
-
-
 class TraceConverter {
 	def static File save(Trace trace, String fileName) {
 		final StringBuilder sb = new StringBuilder();
