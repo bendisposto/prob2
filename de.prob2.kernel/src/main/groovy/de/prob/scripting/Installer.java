@@ -19,12 +19,10 @@ public class Installer {
 	}
 
 	public String ensureCLIsInstalled() {
-		try {
-			String s = System.getProperty("prob.home");
+		String s = System.getProperty("prob.home");
+		if(s != null) {
 			logger.info("prob.home is set. Not installing new CLI.");
 			return "-----";
-		} catch (NullPointerException e){
-
 		}
 
 		new FileHandler().defineUnzip();
