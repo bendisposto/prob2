@@ -19,16 +19,18 @@ public class Installer {
 	}
 
 	public String ensureCLIsInstalled() {
-		if (StringGroovyMethods.asBoolean(System.getProperty("prob.home"))) {
+		try {
+			String s = System.getProperty("prob.home");
 			logger.info("prob.home is set. Not installing new CLI.");
 			return "-----";
+		} catch (NullPointerException e){
+
 		}
 
 		new FileHandler().defineUnzip();
 
+		String dir = DEFAULT_HOME;
 		try {
-			DEFAULT_HOME = System.getProperty("user.home") + File.separator + ".prob" + File.separator + "prob2-" + Main.getVersion() + File.separator;
-			String dir = DEFAULT_HOME;
 			logger.info("Attempting to install CLI binaries");
 			final String os = osInfo.getDirName();
 			String zipName = "probcli_" + os + ".zip";
@@ -57,7 +59,7 @@ public class Installer {
 		return null;
 	}
 
-	public File getResource(String resource, String outFile) throws IOException {
+	public File getResource(String resource, String outFile) throws IOException{
 		InputStream is = getClass().getClassLoader().getResourceAsStream(resource);
 		File file = new File(outFile);
 		OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
@@ -90,7 +92,7 @@ public class Installer {
 		this.instances = instances;
 	}
 
-	public static String DEFAULT_HOME = "";
+	public static final String DEFAULT_HOME = System.getProperty("user.home") + File.separator + ".prob" + File.separator + "prob2-" + Main.getVersion() + File.separator;
 	private Logger logger = LoggerFactory.getLogger(Installer.class);
 	private OsSpecificInfo osInfo;
 	private ProBInstanceProvider instances;

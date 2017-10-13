@@ -158,10 +158,15 @@ public class Main {
 		return prefs;
 	}
 
-	public static String getVersion() throws IOException {
-		Properties p = new Properties();
-		p.load(Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE));
-		return p.getProperty("version");
+	public static String getVersion() {
+		try {
+			Properties p = new Properties();
+			p.load(Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE));
+			return p.getProperty("version");
+		} catch (IOException e){
+			//Should this happen?
+			return null;
+		}
 	}
 
 	public static String getGitSha() throws IOException {
