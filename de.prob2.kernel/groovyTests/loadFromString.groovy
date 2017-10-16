@@ -15,7 +15,7 @@ OPERATIONS
 END"""
 
 
-modelFactory = api.modelFactoryProvider.classical_b_factory
+modelFactory = api.modelFactoryProvider.classicalBFactory
 assert modelFactory != null 
 
 em = modelFactory.create(modelString)
