@@ -2,6 +2,8 @@ package de.prob.scripting;
 
 import com.google.inject.Inject;
 
+import de.prob.model.brules.RulesModelFactory;
+
 /**
  * Provides the user with access to the {@link ClassicalBFactory},
  * {@link CSPFactory}, and {@link EventBFactory} objects that are injected into
@@ -12,34 +14,40 @@ import com.google.inject.Inject;
  */
 public class FactoryProvider {
 
-	private final ClassicalBFactory classical_b_factory;
-	private final CSPFactory csp_factory;
-	private final EventBFactory eventb_factory;
-	private final TLAFactory tla_factory;
+	private final ClassicalBFactory classicalBFactory;
+	private final CSPFactory cspFactory;
+	private final EventBFactory eventBFactory;
+	private final TLAFactory tlaFactory;
+	private final RulesModelFactory bRulesFactory;
 
 	@Inject
-	public FactoryProvider(final ClassicalBFactory bfactory,
-			final CSPFactory csp_factory, final EventBFactory eventb_factory, final TLAFactory tla_factory) {
-		this.classical_b_factory = bfactory;
-		this.csp_factory = csp_factory;
-		this.eventb_factory = eventb_factory;
-		this.tla_factory = tla_factory;
+	public FactoryProvider(final ClassicalBFactory bfactory, final CSPFactory cspFactory,
+			final EventBFactory eventBFactory, final TLAFactory tlaFactory, final RulesModelFactory bRulesFactory) {
+		this.classicalBFactory = bfactory;
+		this.cspFactory = cspFactory;
+		this.eventBFactory = eventBFactory;
+		this.tlaFactory = tlaFactory;
+		this.bRulesFactory = bRulesFactory;
 	}
 
 	public ClassicalBFactory getClassicalBFactory() {
-		return classical_b_factory;
+		return classicalBFactory;
 	}
 
 	public EventBFactory getEventBFactory() {
-		return eventb_factory;
+		return eventBFactory;
 	}
 
 	public CSPFactory getCspFactory() {
-		return csp_factory;
+		return cspFactory;
 	}
-	
-	public TLAFactory getTLAFactory(){
-		return tla_factory;
+
+	public TLAFactory getTLAFactory() {
+		return tlaFactory;
+	}
+
+	public RulesModelFactory getBRulesFactory() {
+		return bRulesFactory;
 	}
 
 }

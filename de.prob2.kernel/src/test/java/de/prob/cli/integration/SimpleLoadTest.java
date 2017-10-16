@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class SimpleLoadTest  {
+public class SimpleLoadTest {
 
 	private Api api;
 
@@ -22,7 +22,7 @@ public class SimpleLoadTest  {
 	public void setupClass() {
 		api = Main.getInjector().getInstance(Api.class);
 	}
-	
+
 	@Test
 	public void testLoadTLAFile() throws IOException, ModelTranslationError {
 		StateSpace s = api.tla_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
@@ -63,6 +63,14 @@ public class SimpleLoadTest  {
 	public void testLoadTLAFileChoose() throws IOException, ModelTranslationError {
 		StateSpace s = api.tla_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
 				+ "tla" + File.separator + "Choose.tla");
+		assertNotNull(s);
+		s.kill();
+	}
+
+	@Test
+	public void testLoadBRulesFile() throws IOException, ModelTranslationError {
+		StateSpace s = api.brules_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
+				+ "brules" + File.separator + "SimpleRulesMachine.rmch");
 		assertNotNull(s);
 		s.kill();
 	}
