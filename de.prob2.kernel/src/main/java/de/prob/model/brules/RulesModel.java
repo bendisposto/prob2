@@ -73,6 +73,11 @@ public class RulesModel extends AbstractModel {
 	}
 
 	@Override
+	public <T extends AbstractElement> ModelElementList<T> getChildrenOfType(final Class<T> c) {
+		return new ModelElementList<>();
+	}
+
+	@Override
 	public FormalismType getFormalismType() {
 		return FormalismType.B;
 	}
