@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/bendisposto/prob2.svg?branch=develop)](https://travis-ci.org/bendisposto/prob2)
 [![SonarQube Tech Debt](https://img.shields.io/sonar/http/sonarqube.com/prob2kernel/tech_debt.svg?maxAge=2592000)](https://sonarqube.com/dashboard?id=prob2kernel)
 
-
 **IMPORTANT:** The layout of the repository has changed! The Eclipse/Rodin plugin was moved to a separate repository: http://github.com/bendisposto/prob2-plugin. This repository only contains the Kernel of ProB 2.0.
 
 The last version before the restructuring is tagged as preRestructure.
@@ -30,4 +29,16 @@ We assume, you have a fresh copy of Eclipse and an empty workspace at hand. We u
 3. cd into gitrepo/prob2/de.prob2.kernel, switch to the development branch (git checkout develop) and run `gradle eclipse`
 4. In Eclipse, import project from gitrepo/prob2/de.prob2.kernel  
 
-(c) 2012-2017 Jens Bendisposto et.al. , all rights reserved
+
+## License
+
+The ProB 2.0 source code is distributed under the [Eclipse Public License - v 2.0](LICENSE).
+
+ProB 2.0 comes with ABSOLUTELY NO WARRANTY OF ANY KIND ! This software is
+distributed in the hope that it will be useful but WITHOUT ANY WARRANTY.
+The author(s) do not accept responsibility to anyone for the consequences of
+using it or for whether it serves any particular purpose or works at all. No
+warranty is made about the software or its performance.
+
+
+(c) 2012-2017 Jens Bendisposto et.al., all rights reserved
