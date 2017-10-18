@@ -146,7 +146,7 @@ public class Api {
 	RulesProject rulesProject = new RulesProject();
 	ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
 	parsingBehaviour.setAddLineNumbers(true);
-	project.setParsingBehaviour(parsingBehaviour);
+	rulesProject.setParsingBehaviour(parsingBehaviour);
 	rulesProject.parseProject(new File(file));
 	rulesProject.checkAndTranslateProject();
 	if (rulesProject.hasErrors()) {
