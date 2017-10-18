@@ -9,6 +9,7 @@ import com.google.inject.Provider
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.be4.classicalb.core.parser.node.Start
 import de.be4.classicalb.core.parser.rules.RulesProject
+import de.be4.classicalb.core.parser.ParsingBehaviour
 import de.prob.animator.IAnimator
 import de.prob.animator.command.GetVersionCommand
 import de.prob.cli.CliVersionNumber
@@ -143,6 +144,9 @@ public class Api {
 			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, ModelTranslationError {
 	def bRulesFactory = modelFactoryProvider.getBRulesFactory();
 	RulesProject rulesProject = new RulesProject();
+	ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
+	parsingBehaviour.setAddLineNumbers(true);
+	project.setParsingBehaviour(parsingBehaviour);
 	rulesProject.parseProject(new File(file));
 	rulesProject.checkAndTranslateProject();
 	if (rulesProject.hasErrors()) {
