@@ -131,6 +131,7 @@ public class RulesMachineRun {
 		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
 		logger.info("Time to extract results form final state: {}", StopWatch.stop(extractResultsTimer));
+
 	}
 
 	private boolean parseAndTranslateRulesProject() {

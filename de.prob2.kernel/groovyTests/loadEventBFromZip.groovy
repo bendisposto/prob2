@@ -2,7 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-factory = api.modelFactoryProvider.eventb_factory
+factory = api.modelFactoryProvider.eventBFactory
 
 m = factory.extractModelFromZip(dir + File.separator + "machines" + File.separator + "Farmer.zip")
 s = m.load(m.MFarmer)

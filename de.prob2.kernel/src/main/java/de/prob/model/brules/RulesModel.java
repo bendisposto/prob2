@@ -7,9 +7,13 @@ import com.github.krukow.clj_lang.PersistentHashMap;
 
 import com.google.inject.Inject;
 
+import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.rules.RulesProject;
 
 import de.prob.animator.command.LoadRulesProjectCommand;
+import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
@@ -51,12 +55,26 @@ public class RulesModel extends AbstractModel {
 
 	@Override
 	public IEvalElement parseFormula(String formula, FormulaExpand expand) {
-		throw new AssertionError("Currently not supported");
+		try {
+			return new ClassicalB(new BParser().parseFormula(formula), expand);
+		} catch (BCompoundException e) {
+			throw new EvaluationException(e.getMessage(), e.getFirstException());
+		}
 	}
 
 	@Override
 	public boolean checkSyntax(String formula) {
-		throw new AssertionError("Currently not supported");
+		try {
+			parseFormula(formula);
+			return true;
+		} catch (EvaluationException e) {
+			return false;
+		}
+	}
+
+	@Override
+	public <T extends AbstractElement> ModelElementList<T> getChildrenOfType(final Class<T> c) {
+		return new ModelElementList<>();
 	}
 
 	@Override

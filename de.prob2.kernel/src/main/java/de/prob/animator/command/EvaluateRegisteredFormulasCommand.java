@@ -19,13 +19,13 @@ public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 	private static final String PROLOG_COMMAND_NAME = "evaluate_registered_formulas";
 	private static final String RESULTS_VARIABLE = "Results";
 	private final String stateId;
-	private final Map<IEvalElement, AbstractEvalResult> results = new HashMap<IEvalElement, AbstractEvalResult>();
+	private final Map<IEvalElement, AbstractEvalResult> results = new HashMap<>();
 	private final List<IEvalElement> formulas;
 
 	public EvaluateRegisteredFormulasCommand(final String stateId,
 			final Collection<IEvalElement> formulas) {
 		this.stateId = stateId;
-		this.formulas = new ArrayList<IEvalElement>(formulas);
+		this.formulas = new ArrayList<>(formulas);
 	}
 
 	@Override
