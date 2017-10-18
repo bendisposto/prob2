@@ -1,6 +1,7 @@
 package de.prob.scripting;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.google.inject.Inject;
