@@ -69,6 +69,7 @@ public class Installer {
 		OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
 		IOGroovyMethods.leftShift(os, is);
 		((BufferedOutputStream) os).close();
+		((InputStream) is).close();
 		return file;
 	}
 
