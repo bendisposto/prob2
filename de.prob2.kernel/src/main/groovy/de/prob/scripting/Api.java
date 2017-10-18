@@ -27,6 +27,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Api {
+	private Logger logger = LoggerFactory.getLogger(Api.class);
+	private final FactoryProvider modelFactoryProvider;
+	private final Provider<IAnimator> animatorProvider;
+	/**
+	 * This variable specifies whether the variables in the model are
+	 * registered by default when loading the model.
+	 */
+	private Boolean loadVariablesByDefault = true;
+	private LinkedHashMap globals = new LinkedHashMap();
+
 	@Override
 	public String toString() {
 		return "ProB Connector";
@@ -226,13 +236,5 @@ public class Api {
 		this.globals = globals;
 	}
 
-	private Logger logger = LoggerFactory.getLogger(Api.class);
-	private final FactoryProvider modelFactoryProvider;
-	private final Provider<IAnimator> animatorProvider;
-	/**
-	 * This variable specifies whether the variables in the model are
-	 * registered by default when loading the model.
-	 */
-	private Boolean loadVariablesByDefault = true;
-	private LinkedHashMap globals = new LinkedHashMap();
+
 }
