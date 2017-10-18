@@ -13,6 +13,12 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 
 public class Installer {
+
+	public static final String DEFAULT_HOME = System.getProperty("user.home") + File.separator + ".prob" + File.separator + "prob2-" + Main.getVersion() + File.separator;
+	private Logger logger = LoggerFactory.getLogger(Installer.class);
+	private OsSpecificInfo osInfo;
+	private ProBInstanceProvider instances;
+
 	public Installer(final OsSpecificInfo osInfo) {
 		this.osInfo = osInfo;
 		this.instances = instances;
@@ -58,11 +64,12 @@ public class Installer {
 	}
 
 	public File getResource(String resource, String outFile) throws IOException{
-		InputStream is = getClass().getClassLoader().getResourceAsStream(resource);
 		File file = new File(outFile);
+		InputStream is = getClass().getClassLoader().getResourceAsStream(resource);
 		OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
 		IOGroovyMethods.leftShift(os, is);
 		((BufferedOutputStream) os).close();
+		((InputStream) is).close();
 		return file;
 	}
 
@@ -90,8 +97,4 @@ public class Installer {
 		this.instances = instances;
 	}
 
-	public static final String DEFAULT_HOME = System.getProperty("user.home") + File.separator + ".prob" + File.separator + "prob2-" + Main.getVersion() + File.separator;
-	private Logger logger = LoggerFactory.getLogger(Installer.class);
-	private OsSpecificInfo osInfo;
-	private ProBInstanceProvider instances;
 }
