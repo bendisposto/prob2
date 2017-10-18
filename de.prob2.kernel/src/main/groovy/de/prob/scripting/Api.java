@@ -2,13 +2,18 @@ package de.prob.scripting;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import de.be4.classicalb.core.parser.ParsingBehaviour;
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
+import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.GetVersionCommand;
 import de.prob.cli.CliVersionNumber;
 import de.prob.cli.ProBInstance;
 import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
+import de.prob.model.brules.RulesModel;
+import de.prob.model.brules.RulesModelFactory;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.translate.EventBModelTranslator;
@@ -19,7 +24,7 @@ import groovy.lang.Closure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
@@ -27,16 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Api {
-	private Logger logger = LoggerFactory.getLogger(Api.class);
-	private final FactoryProvider modelFactoryProvider;
-	private final Provider<IAnimator> animatorProvider;
-	/**
-	 * This variable specifies whether the variables in the model are
-	 * registered by default when loading the model.
-	 */
-	private Boolean loadVariablesByDefault = true;
-	private LinkedHashMap globals = new LinkedHashMap();
-
 	@Override
 	public String toString() {
 		return "ProB Connector";
@@ -86,11 +81,11 @@ public class Api {
 		return s;
 	}
 
-	public StateSpace eventb_load(final String file) throws IOException, ModelTranslationError{
+	public StateSpace eventb_load(final String file) throws IOException, ModelTranslationError {
 		return eventb_load(file, Collections.<String, String>emptyMap());
 	}
 
-	public void eventb_save(final StateSpace s, final String path) throws IOException{
+	public void eventb_save(final StateSpace s, final String path) throws IOException, ModelTranslationError {
 		EventBModelTranslator translator = new EventBModelTranslator((EventBModel) s.getModel(), s.getMainComponent());
 
 		FileOutputStream fos = new FileOutputStream(path);
@@ -157,6 +152,28 @@ public class Api {
 
 	public StateSpace tla_load(final String file) throws IOException, ModelTranslationError {
 		return tla_load(file, Collections.<String, String>emptyMap());
+	}
+
+	public StateSpace brules_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+		RulesModelFactory bRulesFactory = modelFactoryProvider.getBRulesFactory();
+		RulesProject rulesProject = new RulesProject();
+		ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
+		parsingBehaviour.setAddLineNumbers(true);
+		rulesProject.setParsingBehaviour(parsingBehaviour);
+		rulesProject.parseProject(new File(file));
+		rulesProject.checkAndTranslateProject();
+		if (rulesProject.hasErrors()) {
+			BException bException = rulesProject.getBExceptionList().get(0);
+			throw new ModelTranslationError(bException.getMessage(), bException);
+		}
+
+		ExtractedModel<RulesModel> extracted = bRulesFactory.extract(new File(file), rulesProject);
+		StateSpace s = extracted.load(prefs);
+		return s;
+	}
+
+	public StateSpace brules_load(final String file) throws IOException, ModelTranslationError {
+		return brules_load(file, Collections.<String, String>emptyMap());
 	}
 
 	/**
@@ -236,5 +253,13 @@ public class Api {
 		this.globals = globals;
 	}
 
-
+	private Logger logger = LoggerFactory.getLogger(Api.class);
+	private final FactoryProvider modelFactoryProvider;
+	private final Provider<IAnimator> animatorProvider;
+	/**
+	 * This variable specifies whether the variables in the model are
+	 * registered by default when loading the model.
+	 */
+	private Boolean loadVariablesByDefault = true;
+	private LinkedHashMap globals = new LinkedHashMap();
 }

@@ -3,11 +3,11 @@ package de.prob.model.classicalb;
 import java.io.File;
 import java.io.IOException;
 
+import de.prob.scripting.Api;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.prob.Main;
-import de.prob.scripting.Api;
 import de.prob.scripting.ModelTranslationError;
 
 public class ParseErrorTest {
