@@ -7,7 +7,7 @@
 	
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>./prob_log.txt</file>
+		<file>./prob_test_log.txt</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
 			<fileNamePattern>ProB.test.log.%d{yyyy-MM-dd}.log</fileNamePattern>
