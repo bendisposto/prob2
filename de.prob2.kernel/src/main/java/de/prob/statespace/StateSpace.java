@@ -430,6 +430,32 @@ public class StateSpace implements IAnimator {
 	 * particular formula, then they can unsubscribe to that formula
 	 *
 	 * @param subscriber
+	 *            who is no longer interested in the formulas
+	 * @param formulas
+	 *            that are to be unsubscribed
+	 * @return whether or not the unsubscription was successful (will return
+	 *         false if none of the formulas were subscribed to begin with)
+	 */
+	public boolean unsubscribe(final Object subscriber, final List<IEvalElement> formulas) {
+		boolean success = false;
+		for (IEvalElement formula : formulas) {
+			if (formulaRegistry.containsKey(formula)) {
+				final WeakHashMap<Object, Object> subscribers = formulaRegistry.get(formula);
+				subscribers.remove(subscriber);
+				if (subscribers.isEmpty()) {
+					subscribedFormulas.remove(formula);
+				}
+				success = true;
+			}
+		}
+		return success;
+	}
+	
+	/**
+	 * If a subscribed class is no longer interested in the value of a
+	 * particular formula, then they can unsubscribe to that formula
+	 *
+	 * @param subscriber
 	 *            who is no longer interested in the formula
 	 * @param formula
 	 *            which is to be unsubscribed
@@ -437,15 +463,7 @@ public class StateSpace implements IAnimator {
 	 *         false if the formula was never subscribed to begin with)
 	 */
 	public boolean unsubscribe(final Object subscriber, final IEvalElement formula) {
-		if (formulaRegistry.containsKey(formula)) {
-			final WeakHashMap<Object, Object> subscribers = formulaRegistry.get(formula);
-			subscribers.remove(subscriber);
-			if (subscribers.isEmpty()) {
-				subscribedFormulas.remove(formula);
-			}
-			return true;
-		}
-		return false;
+		return this.unsubscribe(subscriber, Collections.singletonList(formula));
 	}
 
 	/**
