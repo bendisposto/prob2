@@ -5,7 +5,24 @@
 		</encoder>
 	</appender>
 	
-	<root level="INFO">
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>./prob_log.txt</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>ProB.test.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>%d %-4relative [%thread] %-5level %logger{35} Method:
+				%method Line: %line - %msg%n%ex{full}</pattern>
+		</encoder>
+	</appender>
+	
+	<root level="DEBUG">
+		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>
