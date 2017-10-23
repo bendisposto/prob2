@@ -3,6 +3,7 @@ package de.prob.statespace;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -12,13 +13,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -48,6 +47,9 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.CSPModel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -411,25 +413,7 @@ public class StateSpace implements IAnimator {
 	 *         otherwise
 	 */
 	public boolean subscribe(final Object subscriber, final IEvalElement formulaOfInterest) {
-		if (formulaOfInterest instanceof CSP) {
-			logger.info(
-					"CSP formula {} not subscribed because CSP evaluation is not state based. Use eval method instead",
-					formulaOfInterest.getCode());
-			return false;
-		}
-
-		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			formulaRegistry.get(formulaOfInterest).put(subscriber, new WeakReference<Object>(subscriber));
-		} else {
-			execute(new RegisterFormulaCommand(formulaOfInterest));
-			WeakHashMap<Object, Object> subscribers = new WeakHashMap<>();
-			subscribers.put(subscriber, new WeakReference<Object>(subscriber));
-			formulaRegistry.put(formulaOfInterest, subscribers);
-		}
-		if (!subscribedFormulas.contains(formulaOfInterest)) {
-			subscribedFormulas.add(formulaOfInterest);
-		}
-		return true;
+		return this.subscribe(subscriber, Collections.singletonList(formulaOfInterest));
 	}
 
 	/**
