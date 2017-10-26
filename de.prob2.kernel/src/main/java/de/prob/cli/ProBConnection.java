@@ -74,7 +74,7 @@ public class ProBConnection {
 			outputStream.flush();
 		}
 		String answer = getAnswer();
-		logger.debug(answer);
+		logger.trace(answer);
 		return answer;
 	}
 
