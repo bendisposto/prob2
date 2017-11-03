@@ -9,6 +9,7 @@ import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.util.List;
 
+
 public class Operation extends BEvent {
 	public Operation(final String name, final List<String> parameters, final List<String> output) {
 		this(name, parameters, output, PersistentHashMap.emptyMap());
