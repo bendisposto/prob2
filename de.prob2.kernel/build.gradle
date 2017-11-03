@@ -29,17 +29,17 @@ if (System.env.TRAVIS == 'true') {
 }
 
 
-def gradle_version = '4.0'
+def gradle_version = '4.2.1'
 
 
 
 // IMPORTANT !!!
-project.version = '3.2.4'
+project.version = '3.2.5'
 // Remember to release the cli
 //  - create a tag in the prob_prolog repository
 //  - enter this tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/cli_release/"
 //  - enter the same tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/crosscompile_release/"
-ext{ cli_version = '1.7.1-final' }
+ext{ cli_version = '1.7.2-beta1' }
 // IMPORTANT !!!
 
 
@@ -87,7 +87,7 @@ dependencies {
 	// Used for escaping HTML and Unicode symbols within Java strings
 	compile 'commons-lang:commons-lang:2.6'
 
-	compile 'org.codehaus.groovy:groovy-all:2.4.7' // Apache Licence 2.0
+	compile 'org.codehaus.groovy:groovy-all:2.4.12' // Apache Licence 2.0
 
 	compile 'com.google.inject:guice:4.0' // Apache Licence 2.0
 	compile 'org.slf4j:slf4j-api:1.7.21' // MIT

@@ -6,13 +6,17 @@ import org.slf4j.LoggerFactory
 import com.google.inject.Inject
 import com.google.inject.Provider
 
+import de.be4.classicalb.core.parser.exceptions.BException
 import de.be4.classicalb.core.parser.node.Start
+import de.be4.classicalb.core.parser.rules.RulesProject
+import de.be4.classicalb.core.parser.ParsingBehaviour
 import de.prob.animator.IAnimator
 import de.prob.animator.command.GetVersionCommand
 import de.prob.cli.CliVersionNumber
 import de.prob.cli.ProBInstance
 import de.prob.exception.CliError
 import de.prob.exception.ProBError
+import de.prob.model.brules.RulesModel
 import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.prolog.output.PrologTermOutput
 import de.prob.statespace.StateSpace
@@ -135,6 +139,24 @@ public class Api {
 		loadClosure(s)
 		return s
 	}
+	
+	public StateSpace brules_load(final String file,
+			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, ModelTranslationError {
+	def bRulesFactory = modelFactoryProvider.getBRulesFactory();
+	RulesProject rulesProject = new RulesProject();
+	ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
+	parsingBehaviour.setAddLineNumbers(true);
+	rulesProject.setParsingBehaviour(parsingBehaviour);
+	rulesProject.parseProject(new File(file));
+	rulesProject.checkAndTranslateProject();
+	if (rulesProject.hasErrors()) {
+		BException bException = rulesProject.getBExceptionList().get(0);
+		throw new ModelTranslationError(bException.getMessage(), bException)
+	}
+	ExtractedModel<RulesModel> extracted = bRulesFactory.extract(new File(file), rulesProject);
+	StateSpace s = extracted.load(prefs)
+	return s
+}
 
 	/**
 	 * Loads a {@link StateSpace} from the given CSP file. If the user does not have

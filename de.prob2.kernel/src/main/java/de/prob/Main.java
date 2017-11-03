@@ -1,9 +1,19 @@
 package de.prob;
 
+import static java.io.File.separator;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -12,19 +22,9 @@ import com.google.inject.Stage;
 
 import de.prob.annotations.Home;
 import de.prob.cli.ProBInstanceProvider;
+import de.prob.scripting.Api;
 import de.prob.scripting.FileHandler;
 import de.prob.scripting.Installer;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static java.io.File.separator;
 
 /**
  * The Main class initializes ProB 2.0. This class should NOT be instantiated
@@ -187,6 +187,8 @@ public class Main {
 			System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
 
 			Main main = getInjector().getInstance(Main.class);
+			Api api = getInjector().getInstance(Api.class);
+		    logger.info("probcli version: {}",api.getVersion().toString());
 
 			main.run(args);
 		} catch (Throwable e) {

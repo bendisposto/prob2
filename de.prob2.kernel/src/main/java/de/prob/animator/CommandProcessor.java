@@ -44,7 +44,9 @@ class CommandProcessor {
 		String result = cli.send(query);
 
 		final Start ast = parseResult(result);
-		return extractResult(ast);
+		IPrologResult extractResult = extractResult(ast);
+		logger.debug(extractResult.toString());
+		return extractResult;
 	}
 
 	private IPrologResult extractResult(final Start ast) {

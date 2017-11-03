@@ -1,4 +1,8 @@
 RULES_MACHINE SimpleRulesMachine
+CONSTANTS
+  con
+PROPERTIES
+  con = 1 
 OPERATIONS
 RULE Rule1
 RULEID RuleId1

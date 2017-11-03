@@ -54,7 +54,7 @@ public class TLAFactory implements ModelFactory<ClassicalBModel> {
 		} catch (BCompoundException e) {
 			throw new ModelTranslationError(e.getMessage(), e);
 		}
-		return new ExtractedModel<ClassicalBModel>(classicalBModel, classicalBModel.getMainMachine());
+		return new ExtractedModel<>(classicalBModel, classicalBModel.getMainMachine());
 	}
 
 	/**
