@@ -5,7 +5,6 @@ import com.google.common.base.Joiner;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.ModelElementList;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.util.List;
 

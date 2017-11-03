@@ -25,25 +25,31 @@ import java.util.Arrays;
  * @author joy
  */
 public class CSP extends AbstractEvalElement {
+
+	private FormulaUUID uuid = new FormulaUUID();
+	private String code;
+	private String fileName;
+	private String procname;
+
 	/**
 	 * When a new formula is entered, the entire model must be reparsed. For this reason,
 	 * a {@link CSPModel} is one of the necessary parameters.
 	 *
-	 * @param formula
-	 * @param model
+	 * @param formula string formula
+	 * @param model csp model
 	 */
 	public CSP(String formula, CSPModel model) {
 		this.code = formula;
-		this.home = Main.getProBDirectory();
 		this.fileName = model.getModelFile().getAbsolutePath();
 		OsInfoProvider osInfoProvider = Main.getInjector().getInstance(OsInfoProvider.class);
 		//TODO: die methode get( wird nicht erkannt
 		OsSpecificInfo osInfo = osInfoProvider.get();
+		String target = "";
 		if (osInfo.getDirName().equals("win32")) {
-			this.target = ".exe";
+			target = ".exe";
 		}
 
-		this.procname = home + "lib" + File.separator + "cspmf" + target;
+		this.procname = Main.getProBDirectory() + "lib" + File.separator + "cspmf" + target;
 		this.expansion = FormulaExpand.TRUNCATE;// this doesn't matter
 	}
 
@@ -63,7 +69,7 @@ public class CSP extends AbstractEvalElement {
 		 *  "cspmf translate --help" on the command line
 		 */
 		try {
-			Process process = ProcessGroovyMethods.execute(new ArrayList<String>(Arrays.asList(this.procname, "translate", "--expressionToPrologTerm=" + code, fileName)));
+			Process process = ProcessGroovyMethods.execute(new ArrayList<>(Arrays.asList(this.procname, "translate", "--expressionToPrologTerm=" + code, fileName)));
 			executeCmd(process, pout);
 		} catch (IOException e){
 			e.printStackTrace();
@@ -82,7 +88,7 @@ public class CSP extends AbstractEvalElement {
 		 *  "cspmf translate --help" on the command line
 		 */
 		try {
-			Process process = ProcessGroovyMethods.execute(new ArrayList<String>(Arrays.asList(this.procname, "translate", "--declarationToPrologTerm=" + code, fileName)));
+			Process process = ProcessGroovyMethods.execute(new ArrayList<>(Arrays.asList(this.procname, "translate", "--declarationToPrologTerm=" + code, fileName)));
 			executeCmd(process, pout);
 		} catch (IOException e){
 			e.printStackTrace();
@@ -143,11 +149,5 @@ public class CSP extends AbstractEvalElement {
 		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
 
-	private FormulaUUID uuid = new FormulaUUID();
-	private String code;
-	private String home;
-	private String fileName;
-	private Object osInfoProvider;
-	private String target = "";
-	private String procname;
+
 }

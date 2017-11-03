@@ -19,7 +19,7 @@ public class TranslatedEvalResult extends AbstractEvalResult {
 	 * @return Object representation of solution, or <code>null</code> if the solution does not exist
 	 */
 	public BObject getSolution(String name) {
-		return ((BObject) (solutions.get(name)));
+		return (solutions.get(name));
 	}
 
 	public String toString() {

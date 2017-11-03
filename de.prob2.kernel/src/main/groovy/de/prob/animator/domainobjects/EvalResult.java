@@ -24,10 +24,10 @@ public class EvalResult extends AbstractEvalResult {
 	private final static Map<String, String> EMPTY_MAP = Collections.emptyMap();
 	public final static EvalResult TRUE = new EvalResult("TRUE", EMPTY_MAP);
 	public final static EvalResult FALSE = new EvalResult("FALSE", EMPTY_MAP);
-	final static HashMap<String, EvalResult> formulaCache = new HashMap<>();
+	private final static HashMap<String, EvalResult> formulaCache = new HashMap<>();
 
-	final String value;
-	final Map<String, String> solutions;
+	private final String value;
+	private final Map<String, String> solutions;
 
 	// These fields are saved in this class to be able to later produce
 	// a TranslatedEvalResult from this class. However, they are otherwise
@@ -112,7 +112,7 @@ public class EvalResult extends AbstractEvalResult {
 			}
 
 			return new ComputationNotCompletedResult(code, Joiner.on(",").join(list));
-		} else if (pt.getFunctor().intern() == "result") {
+		} else if (pt.getFunctor().intern().equals("result")) {
 			/*
 			 * If the formula in question was a predicate, the result term will
 			 * have the following form: result(Value,Solutions) where Value is
@@ -133,13 +133,13 @@ public class EvalResult extends AbstractEvalResult {
 			PrologTerm v = pt.getArgument(1);
 			String value = v.getFunctor().intern();
 			ListPrologTerm solutionList = BindingGenerator.getList(pt.getArgument(2));
-			if (value == "TRUE" && solutionList.isEmpty()) {
+			if (value.equals("TRUE") && solutionList.isEmpty()) {
 				return TRUE;
 			}
-			if (value == "FALSE" && solutionList.isEmpty()) {
+			if (value.equals("FALSE") && solutionList.isEmpty()) {
 				return FALSE;
 			}
-			if (value != "TRUE" && value != "FALSE" && formulaCache.containsKey(value)) {
+			if (!value.equals("TRUE") && !value.equals("FALSE") && formulaCache.containsKey(value)) {
 				return formulaCache.get(value);
 			}
 
@@ -149,7 +149,7 @@ public class EvalResult extends AbstractEvalResult {
 				value = cpt.getArgument(1).getFunctor();
 			}
 
-			Map<String, String> solutions = solutionList.isEmpty() ? EMPTY_MAP : new HashMap<String, String>();
+			Map<String, String> solutions = solutionList.isEmpty() ? EMPTY_MAP : new HashMap<>();
 
 			for (PrologTerm t : solutionList) {
 				CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(t, 2);
@@ -157,18 +157,18 @@ public class EvalResult extends AbstractEvalResult {
 			}
 
 			EvalResult res = new EvalResult(value, solutions);
-			if (value != "TRUE" && value != "FALSE") {
+			if (!value.equals("TRUE") && !value.equals("FALSE")) {
 				formulaCache.put(value, res);
 			}
 			return res;
-		} else if (pt.getFunctor().intern() == "errors" && pt.getArgument(1).getFunctor().intern() == "NOT-WELL-DEFINED") {
+		} else if (pt.getFunctor().intern().equals("errors") && pt.getArgument(1).getFunctor().intern().equals("NOT-WELL-DEFINED")) {
 			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2));
 			return new WDError(arg2.stream().map(PrologTerm::getFunctor).collect(Collectors.toList()));
-		} else if (pt.getFunctor().intern() == "errors"
-				&& pt.getArgument(1).getFunctor().intern() == "IDENTIFIER(S) NOT YET INITIALISED; INITIALISE MACHINE FIRST") {
+		} else if (pt.getFunctor().intern().equals("errors")
+				&& pt.getArgument(1).getFunctor().intern().equals("IDENTIFIER(S) NOT YET INITIALISED; INITIALISE MACHINE FIRST")) {
 			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2));
 			return new IdentifierNotInitialised(arg2.stream().map(PrologTerm::getFunctor).collect(Collectors.toList()));
-		} else if (pt.getFunctor().intern() == "enum_warning") {
+		} else if (pt.getFunctor().intern().equals("enum_warning")) {
 			return new EnumerationWarning();
 		}
 		throw new IllegalArgumentException("Unknown result type " + pt.toString());
