@@ -45,7 +45,7 @@ final class ConsoleListener implements Runnable {
 		String line;
 		line = stream.readLine();
 		if (line != null) {
-			logger.debug(line);
+			logger.info(line);
 		}
 		return line;
 	}

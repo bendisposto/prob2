@@ -24,8 +24,8 @@ public class ConsoleListenerTest extends AbstractUnitTest {
 		assertEquals("foo", line1);
 		String line2 = listener.readAndLog();
 		assertEquals("bar", line2);
-		verify(logger).debug("foo");
-		verify(logger).debug("bar");
+		verify(logger).info("foo");
+		verify(logger).info("bar");
 	}
 
 	@Test
@@ -38,8 +38,8 @@ public class ConsoleListenerTest extends AbstractUnitTest {
 				logger);
 		when(proBInstance.isShuttingDown()).thenReturn(false, false, true);
 		listener.logLines();
-		verify(logger).debug("foo");
-		verify(logger).debug("bar");
+		verify(logger).info("foo");
+		verify(logger).info("bar");
 		verifyNoMoreInteractions(logger);
 	}
 
@@ -52,7 +52,7 @@ public class ConsoleListenerTest extends AbstractUnitTest {
 				logger);
 		String line = listener.readAndLog();
 		assertEquals("foo", line);
-		verify(logger).debug("foo");
+		verify(logger).info("foo");
 	}
 
 	@Test

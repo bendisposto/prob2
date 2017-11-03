@@ -6,7 +6,9 @@ de.prob2.kernel/groovyTests/Lift/lift0.eventb
 figwheel_server.log
 system.properties
 prob_log.txt
+prob_test_log.txt
 ProB.log.*
+ProB.test.log.*
 prob2preferences
 *-init.clj
 de.prob2/src/cljs/de/prob2/generated
