@@ -10,6 +10,7 @@ import org.junit.Test;
 import de.prob.Main;
 import de.prob.scripting.ModelTranslationError;
 
+
 public class ParseErrorTest {
 
 	private Api api;
