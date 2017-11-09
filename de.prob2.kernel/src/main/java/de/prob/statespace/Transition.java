@@ -14,7 +14,6 @@ import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.classicalb.Operation;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventParameter;
@@ -25,6 +24,7 @@ import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.translator.Translator;
 import de.prob.translator.types.BObject;
+import de.prob.model.classicalb.Operation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

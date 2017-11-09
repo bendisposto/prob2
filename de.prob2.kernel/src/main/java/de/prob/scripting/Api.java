@@ -19,6 +19,7 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.translate.EventBModelTranslator;
 import de.prob.model.representation.CSPModel;
 import de.prob.prolog.output.PrologTermOutput;
+import de.prob.scripting.LoadClosures;
 import de.prob.statespace.StateSpace;
 import groovy.lang.Closure;
 import org.slf4j.Logger;
