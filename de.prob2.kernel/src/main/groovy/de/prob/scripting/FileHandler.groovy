@@ -106,29 +106,6 @@ class FileHandler {
 		setFileText(fileName, writer.toJson(content))
 	}
 
-	def static defineUnzip() {
-		File.metaClass.unzip = { String dest ->
-			//in metaclass added methods, 'delegate' is the object on which
-			//the method is called. Here it's the file to unzip
-			def result = new ZipInputStream(new FileInputStream(delegate))
-			def destFile = new File(dest)
-			if(!destFile.exists()){
-				destFile.mkdir();
-			}
-			result.withStream{
-				def entry
-				while(entry = result.nextEntry){ // null is falsey in Groovy! 
-					if (entry.isDirectory()){
-						createDirectory(dest, entry)
-					}
-					else {
-						writeFile(result,dest, entry)
-					}
-				}
-			}
-		}
-	}
-
 	private static void createDirectory(String dest, java.util.zip.ZipEntry entry) {
 		new File(dest + File.separator + entry.name).mkdir()
 	}
@@ -146,12 +123,25 @@ class FileHandler {
 		}
 	}
 
-	def void extractZip(File zip, String targetDirPath) {
-		defineUnzip()
-		zip.unzip(targetDirPath)
+	static void extractZip(File zip, String targetDirPath) {
+		def destFile = new File(targetDirPath)
+		if(!destFile.exists()){
+			destFile.mkdir();
+		}
+		def inStream = new ZipInputStream(new FileInputStream(zip))
+		inStream.withStream {
+			def entry
+			while (entry = inStream.nextEntry) { // null is falsey in Groovy! 
+				if (entry.isDirectory()) {
+					createDirectory(dest, entry)
+				} else {
+					writeFile(inStream, dest, entry)
+				}
+			}
+		}
 	}
 
-	def void extractZip(String pathToZip, String targetDirPath) {
+	static void extractZip(String pathToZip, String targetDirPath) {
 		extractZip(new File(pathToZip), targetDirPath)
 	}
 }

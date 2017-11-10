@@ -30,14 +30,13 @@ public class Installer {
 			return;
 		}
 
-		final FileHandler fh = new FileHandler();
 		logger.info("Attempting to install CLI binaries");
 		try {
 			final String os = osInfo.getDirName();
 			final String zipName = "probcli_" + os + ".zip";
 			final File zip = new File(DEFAULT_HOME + zipName);
 			copyResourceToFile("cli/" + zipName, zip);
-			fh.extractZip(zip, DEFAULT_HOME);
+			FileHandler.extractZip(zip, DEFAULT_HOME);
 			zip.delete();
 
 			String outcspmf = DEFAULT_HOME + "lib" + File.separator + "cspmf";
@@ -46,7 +45,7 @@ public class Installer {
 				final String windowsLibsZipName = "win32".equals(os) ? "windowslib32.zip" : "windowslib64.zip";
 				final File windowsLibsZip = new File(DEFAULT_HOME + windowsLibsZipName);
 				copyResourceToFile("cli/" + windowsLibsZipName, windowsLibsZip);
-				fh.extractZip(windowsLibsZip, DEFAULT_HOME);
+				FileHandler.extractZip(windowsLibsZip, DEFAULT_HOME);
 				cspmfName = "windows-cspmf.exe";
 				outcspmf += ".exe";
 			}
