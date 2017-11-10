@@ -25,6 +25,7 @@ h2 = h2.add 0
 h2 = h2.add 3
 h2 = h2.add 9
 
+s.subscribe(m, m.scheduler.variables.collect{it.getFormula()})
 varsAt6 = s[6].explore().getValues()
 assert varsAt6[m.scheduler.variables.waiting.getFormula()].value == "{}"
 assert varsAt6[m.scheduler.variables.active.getFormula()].value == "{PID2}"

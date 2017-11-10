@@ -19,9 +19,7 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.translate.EventBModelTranslator;
 import de.prob.model.representation.CSPModel;
 import de.prob.prolog.output.PrologTermOutput;
-import de.prob.scripting.LoadClosures;
 import de.prob.statespace.StateSpace;
-import groovy.lang.Closure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,14 +49,6 @@ public class Api {
 		this.modelFactoryProvider = modelFactoryProvider;
 	}
 
-	public Closure getSubscribeClosure(Closure<Object> closure) {
-		if (loadVariablesByDefault) {
-			return ((Closure) (closure));
-		}
-
-		return LoadClosures.getEMPTY();
-	}
-
 	/**
 	 * Shutdown the specified {@link ProBInstance} object.
 	 *
@@ -70,7 +60,6 @@ public class Api {
 
 	public StateSpace eventb_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
 		String fileName = file;
-		Closure<Void> loadClosure = getSubscribeClosure(LoadClosures.getEVENTB());
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (fileName.endsWith(".eventb")) {
 			return factory.loadModelFromEventBFile(file, prefs);
@@ -78,7 +67,6 @@ public class Api {
 
 		ExtractedModel<EventBModel> extracted = factory.extract(fileName);
 		StateSpace s = extracted.load(prefs);
-		loadClosure.call(s);
 		return s;
 	}
 
@@ -111,10 +99,8 @@ public class Api {
 	 */
 	public StateSpace b_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
 		ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
-		Closure loadClosure = getSubscribeClosure(LoadClosures.getB());
 		ExtractedModel<ClassicalBModel> extracted = bFactory.extract(file);
 		StateSpace s = extracted.load(prefs);
-		loadClosure.call(s);
 		return s;
 	}
 
@@ -131,10 +117,8 @@ public class Api {
 
 	public StateSpace b_load(final Start ast, final Map<String, String> prefs) throws IOException, ModelTranslationError {
 		ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
-		Closure loadClosure = getSubscribeClosure(LoadClosures.getB());
 		ExtractedModel<ClassicalBModel> extracted = bFactory.create(ast);
 		StateSpace s = extracted.load(prefs);
-		loadClosure.call(s);
 		return s;
 	}
 
@@ -144,10 +128,8 @@ public class Api {
 
 	public StateSpace tla_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
-		Closure loadClosure = getSubscribeClosure(LoadClosures.getB());
 		ExtractedModel<ClassicalBModel> extracted = tlaFactory.extract(file);
 		StateSpace s = extracted.load(prefs);
-		loadClosure.call(s);
 		return s;
 	}
 
