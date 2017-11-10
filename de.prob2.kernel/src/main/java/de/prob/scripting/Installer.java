@@ -1,100 +1,71 @@
 package de.prob.scripting;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import de.prob.Main;
 import de.prob.cli.OsSpecificInfo;
-import de.prob.cli.ProBInstanceProvider;
-import groovy.lang.GString;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+
 import org.codehaus.groovy.runtime.IOGroovyMethods;
-import org.codehaus.groovy.runtime.StringGroovyMethods;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-
 public class Installer {
-
 	public static final String DEFAULT_HOME = System.getProperty("user.home") + File.separator + ".prob" + File.separator + "prob2-" + Main.getVersion() + File.separator;
-	private Logger logger = LoggerFactory.getLogger(Installer.class);
-	private OsSpecificInfo osInfo;
-	private ProBInstanceProvider instances;
+	private final Logger logger = LoggerFactory.getLogger(Installer.class);
+	private final OsSpecificInfo osInfo;
 
 	public Installer(final OsSpecificInfo osInfo) {
 		this.osInfo = osInfo;
-		this.instances = instances;
 	}
 
-	public String ensureCLIsInstalled() {
-		String s = System.getProperty("prob.home");
-		if(s != null) {
+	public void ensureCLIsInstalled() {
+		if (System.getProperty("prob.home") != null) {
 			logger.info("prob.home is set. Not installing new CLI.");
-			return "-----";
+			return;
 		}
 
-		new FileHandler().defineUnzip();
-
-		String dir = DEFAULT_HOME;
+		final FileHandler fh = new FileHandler();
+		logger.info("Attempting to install CLI binaries");
 		try {
-			logger.info("Attempting to install CLI binaries");
 			final String os = osInfo.getDirName();
-			String zipName = "probcli_" + os + ".zip";
-			String zipPath = dir + zipName;
-			File zip = getResource("cli/" + zipName, zipPath);
-			DefaultGroovyMethods.invokeMethod(zip, "unzip", new Object[]{dir});
-			new File(zipPath).delete();
+			final String zipName = "probcli_" + os + ".zip";
+			final File zip = new File(DEFAULT_HOME + zipName);
+			copyResourceToFile("cli/" + zipName, zip);
+			fh.extractZip(zip, DEFAULT_HOME);
+			zip.delete();
 
-			String outcspmf = dir + "lib" + File.separator + "cspmf";
-			String cspmf = os + "-cspmf";
+			String outcspmf = DEFAULT_HOME + "lib" + File.separator + "cspmf";
+			String cspmfName = os + "-cspmf";
 			if (os.startsWith("win")) {
-				String zipFile = os.equals("win32") ? "windowslib32.zip" : "windowslib64.zip";
-				zipPath = dir + zipFile;
-				zip = getResource("cli/" + zipFile, zipPath);
-				DefaultGroovyMethods.invokeMethod(zip, "unzip", new Object[]{dir});
-				cspmf = "windows-cspmf.exe";
+				final String windowsLibsZipName = "win32".equals(os) ? "windowslib32.zip" : "windowslib64.zip";
+				final File windowsLibsZip = new File(DEFAULT_HOME + windowsLibsZipName);
+				copyResourceToFile("cli/" + windowsLibsZipName, windowsLibsZip);
+				fh.extractZip(windowsLibsZip, DEFAULT_HOME);
+				cspmfName = "windows-cspmf.exe";
 				outcspmf += ".exe";
 			}
 
-			File f = getResource("cli/" + cspmf, outcspmf);
-			f.setExecutable(true);
+			final File cspmfFile = new File(outcspmf);
+			copyResourceToFile("cli/" + cspmfName, cspmfFile);
+			cspmfFile.setExecutable(true);
 			logger.info("CLI binaries successfully installed");
 		} catch (IOException e) {
-			logger.info("Exception " + String.valueOf(e) + " occurred when trying to access resources.");
+			logger.info("Exception occurred when trying to access resources.", e);
 		}
-		return null;
 	}
 
-	public File getResource(String resource, String outFile) throws IOException{
-		File file = new File(outFile);
-		InputStream is = getClass().getClassLoader().getResourceAsStream(resource);
-		OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
-		IOGroovyMethods.leftShift(os, is);
-		((BufferedOutputStream) os).close();
-		((InputStream) is).close();
-		return file;
+	public void copyResourceToFile(String resource, File outFile) throws IOException {
+		try (
+			final InputStream is = getClass().getClassLoader().getResourceAsStream(resource);
+			final OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
+		) {
+			IOGroovyMethods.leftShift(os, is);
+		}
 	}
-
-	public Logger getLogger() {
-		return logger;
-	}
-
-	public void setLogger(Logger logger) {
-		this.logger = logger;
-	}
-
-	public OsSpecificInfo getOsInfo() {
-		return osInfo;
-	}
-
-	public void setOsInfo(OsSpecificInfo osInfo) {
-		this.osInfo = osInfo;
-	}
-
-	public ProBInstanceProvider getInstances() {
-		return instances;
-	}
-
-	public void setInstances(ProBInstanceProvider instances) {
-		this.instances = instances;
-	}
-
 }
