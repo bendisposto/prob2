@@ -2,7 +2,6 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-api.loadVariablesByDefault = false
 s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 m = s as ClassicalBModel
 t = new Trace(s)
