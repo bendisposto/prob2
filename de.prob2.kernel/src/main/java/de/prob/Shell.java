@@ -44,7 +44,7 @@ class Shell {
 				}
 			}
 		} else {
-			runSingleScript(script.getParent(), script, silent);
+			runSingleScript(script.getAbsoluteFile().getParent(), script, silent);
 		}
 	}
 
