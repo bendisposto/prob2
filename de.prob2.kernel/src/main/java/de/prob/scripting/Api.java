@@ -1,11 +1,20 @@
 package de.prob.scripting;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+
 import de.be4.classicalb.core.parser.ParsingBehaviour;
 import de.be4.classicalb.core.parser.exceptions.BException;
-import de.be4.classicalb.core.parser.node.Start;
+import de.be4.classicalb.core.parser.node.*;
 import de.be4.classicalb.core.parser.rules.RulesProject;
+
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.GetVersionCommand;
 import de.prob.cli.CliVersionNumber;
@@ -20,15 +29,9 @@ import de.prob.model.eventb.translate.EventBModelTranslator;
 import de.prob.model.representation.CSPModel;
 import de.prob.prolog.output.PrologTermOutput;
 import de.prob.statespace.StateSpace;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class Api {
 	@Override
@@ -220,14 +223,6 @@ public class Api {
 		this.logger = logger;
 	}
 
-	public Boolean getLoadVariablesByDefault() {
-		return loadVariablesByDefault;
-	}
-
-	public void setLoadVariablesByDefault(Boolean loadVariablesByDefault) {
-		this.loadVariablesByDefault = loadVariablesByDefault;
-	}
-
 	public LinkedHashMap getGlobals() {
 		return globals;
 	}
@@ -239,10 +234,5 @@ public class Api {
 	private Logger logger = LoggerFactory.getLogger(Api.class);
 	private final FactoryProvider modelFactoryProvider;
 	private final Provider<IAnimator> animatorProvider;
-	/**
-	 * This variable specifies whether the variables in the model are
-	 * registered by default when loading the model.
-	 */
-	private Boolean loadVariablesByDefault = true;
 	private LinkedHashMap globals = new LinkedHashMap();
 }
