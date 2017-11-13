@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.Properties;
 
 import com.google.inject.Guice;
@@ -17,7 +16,6 @@ import com.google.inject.Stage;
 import de.prob.annotations.Home;
 import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.Api;
-import de.prob.scripting.FileHandler;
 import de.prob.scripting.Installer;
 
 import org.apache.commons.cli.CommandLine;
@@ -49,15 +47,6 @@ public class Main {
 	private final Shell shell;
 
 	private static Injector injector = null;
-
-	/**
-	 * Name of file in which the preferences are saved. Currently
-	 * "prob2preferences"
-	 * 
-	 * @deprecated
-	 */
-	@Deprecated
-	public static final String PREFERENCE_FILE_NAME = "prob2preferences";
 
 	private static final String PROB2_BUILD_PROPERTIES_FILE = "/prob2-build.properties";
 
@@ -168,18 +157,6 @@ public class Main {
 			return homedir + separator;
 		}
 		return Installer.DEFAULT_HOME;
-	}
-
-	@Deprecated
-	public static Map<String, String> getGlobalPreferences(final Map<String, String> localPrefs) {
-		String preferenceFileName = Main.getProBDirectory() + PREFERENCE_FILE_NAME;
-		FileHandler handler = new FileHandler();
-		Map<String, String> prefs = handler.getMapOfStrings(preferenceFileName);
-		if (prefs == null) {
-			return localPrefs;
-		}
-		prefs.putAll(localPrefs);
-		return prefs;
 	}
 
 	public static String getVersion() {
