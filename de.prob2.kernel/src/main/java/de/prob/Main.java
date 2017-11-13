@@ -53,7 +53,10 @@ public class Main {
 	/**
 	 * Name of file in which the preferences are saved. Currently
 	 * "prob2preferences"
+	 * 
+	 * @deprecated
 	 */
+	@Deprecated
 	public static final String PREFERENCE_FILE_NAME = "prob2preferences";
 
 	private static final String PROB2_BUILD_PROPERTIES_FILE = "/prob2-build.properties";
@@ -167,6 +170,7 @@ public class Main {
 		return Installer.DEFAULT_HOME;
 	}
 
+	@Deprecated
 	public static Map<String, String> getGlobalPreferences(final Map<String, String> localPrefs) {
 		String preferenceFileName = Main.getProBDirectory() + PREFERENCE_FILE_NAME;
 		FileHandler handler = new FileHandler();
