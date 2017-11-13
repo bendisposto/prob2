@@ -133,9 +133,9 @@ class FileHandler {
 			def entry
 			while (entry = inStream.nextEntry) { // null is falsey in Groovy! 
 				if (entry.isDirectory()) {
-					createDirectory(dest, entry)
+					createDirectory(targetDirPath, entry)
 				} else {
-					writeFile(inStream, dest, entry)
+					writeFile(inStream, targetDirPath, entry)
 				}
 			}
 		}
