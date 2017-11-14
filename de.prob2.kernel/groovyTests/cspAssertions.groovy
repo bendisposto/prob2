@@ -2,6 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 import de.prob.animator.command.*
 import de.prob.prolog.term.*
+import de.prob.model.representation.CSPModel
 
 // Groovy script example for checking CSP assertion:
 

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.prob.model.brules.RulesMachineRun;
@@ -13,6 +14,7 @@ import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.model.brules.RuleResult.RESULT_ENUM;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
 
+@Ignore
 public class RulesMachineErrorsTest {
 
 	@Test

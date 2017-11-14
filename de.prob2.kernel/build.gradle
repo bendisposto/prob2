@@ -11,8 +11,8 @@ apply plugin: 'application'
 apply plugin: 'jacoco'
 
 project.group = 'de.hhu.stups'
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 
 if (System.env.TRAVIS == 'true') {
@@ -34,12 +34,12 @@ def gradle_version = '4.2.1'
 
 
 // IMPORTANT !!!
-project.version = '3.2.6'
+project.version = '3.2.7'
 // Remember to release the cli
 //  - create a tag in the prob_prolog repository
 //  - enter this tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/cli_release/"
 //  - enter the same tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/crosscompile_release/"
-ext{ cli_version = '1.7.2-beta1' }
+ext{ cli_version = '1.7.2-beta4' }
 // IMPORTANT !!!
 
 

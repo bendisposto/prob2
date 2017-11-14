@@ -18,7 +18,7 @@ import de.prob.cli.ModuleCli.OsName;
  * 
  */
 @Singleton
-class OsInfoProvider implements Provider<OsSpecificInfo> {
+public class OsInfoProvider implements Provider<OsSpecificInfo> {
 
 	private final OsSpecificInfo osInfo;
 

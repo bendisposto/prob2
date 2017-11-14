@@ -1,19 +1,12 @@
 package de.prob;
 
-import static java.io.File.separator;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -23,8 +16,18 @@ import com.google.inject.Stage;
 import de.prob.annotations.Home;
 import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.Api;
-import de.prob.scripting.FileHandler;
 import de.prob.scripting.Installer;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.io.File.separator;
 
 /**
  * The Main class initializes ProB 2.0. This class should NOT be instantiated
@@ -45,13 +48,22 @@ public class Main {
 
 	private static Injector injector = null;
 
-	/**
-	 * Name of file in which the preferences are saved. Currently
-	 * "prob2preferences"
-	 */
-	public static final String PREFERENCE_FILE_NAME = "prob2preferences";
+	private static final String PROB2_BUILD_PROPERTIES_FILE = "/prob2-build.properties";
 
-	public static final String PROB2_BUILD_PROPERTIES_FILE = "/prob2-build.properties";
+	private static final Properties buildProperties;
+	static {
+		buildProperties = new Properties();
+		final InputStream is = Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE);
+		if (is == null) {
+			logger.error("Build properties not found, this should never happen!");
+		} else {
+			try (final Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+				buildProperties.load(r);
+			} catch (IOException e) {
+				logger.error("IOException while loading build properties, this should never happen!", e);
+			}
+		}
+	}
 
 	public static synchronized Injector getInjector() {
 		if (injector == null) {
@@ -147,27 +159,12 @@ public class Main {
 		return Installer.DEFAULT_HOME;
 	}
 
-	public static Map<String, String> getGlobalPreferences(final Map<String, String> localPrefs) {
-		String preferenceFileName = Main.getProBDirectory() + PREFERENCE_FILE_NAME;
-		FileHandler handler = new FileHandler();
-		Map<String, String> prefs = handler.getMapOfStrings(preferenceFileName);
-		if (prefs == null) {
-			return localPrefs;
-		}
-		prefs.putAll(localPrefs);
-		return prefs;
+	public static String getVersion() {
+		return buildProperties.getProperty("version");
 	}
 
-	public static String getVersion() throws IOException {
-		Properties p = new Properties();
-		p.load(Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE));
-		return p.getProperty("version");
-	}
-
-	public static String getGitSha() throws IOException {
-		Properties p = new Properties();
-		p.load(Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE));
-		return p.getProperty("git");
+	public static String getGitSha() {
+		return buildProperties.getProperty("git");
 	}
 
 	public static int getMaxCacheSize() {

@@ -1,4 +1,4 @@
-package de.prob.model.classicalb;
+package de.prob.model.classicalb
 
 import com.github.krukow.clj_lang.PersistentHashMap
 
@@ -11,13 +11,13 @@ import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Set
 import de.prob.model.representation.Variable
 
-public class ClassicalBMachine extends Machine {
+class ClassicalBMachine extends Machine {
 
-	public ClassicalBMachine(final String name) {
+	ClassicalBMachine(final String name) {
 		super(name, PersistentHashMap.emptyMap())
 	}
 
-	public ClassicalBMachine(final String name, children) {
+	ClassicalBMachine(final String name, children) {
 		super(name, children)
 	}
 
@@ -26,51 +26,51 @@ public class ClassicalBMachine extends Machine {
 		new ClassicalBMachine(name, children.assoc(T, kids.addElement(element)))
 	}
 
-	def ClassicalBMachine set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
+	ClassicalBMachine set(Class<? extends AbstractElement> clazz, ModelElementList<? extends AbstractElement> elements) {
 		new ClassicalBMachine(name, children.assoc(clazz, elements))
 	}
 
-	def ModelElementList<Parameter> getParameters() {
+	ModelElementList<Parameter> getParameters() {
 		getChildrenOfType(Parameter)
 	}
 
-	def ModelElementList<Set> getSets() {
+	ModelElementList<Set> getSets() {
 		getChildrenOfType(Set.class)
 	}
 
-	def ModelElementList<Constraint> getConstraints() {
+	ModelElementList<Constraint> getConstraints() {
 		getChildrenOfType(Constraint.class)
 	}
 
-	def ModelElementList<ClassicalBConstant> getConstants() {
+	ModelElementList<ClassicalBConstant> getConstants() {
 		getChildrenOfType(Constant.class)
 	}
 
-	def ModelElementList<Property> getProperties() {
+	ModelElementList<Property> getProperties() {
 		getChildrenOfType(Property.class)
 	}
 
-	def ModelElementList<ClassicalBVariable> getVariables() {
+	ModelElementList<ClassicalBVariable> getVariables() {
 		getChildrenOfType(Variable.class)
 	}
 
-	def ModelElementList<ClassicalBInvariant> getInvariants() {
+	ModelElementList<ClassicalBInvariant> getInvariants() {
 		getChildrenOfType(Invariant.class)
 	}
 
-	def ModelElementList<Assertion> getAssertions() {
+	ModelElementList<Assertion> getAssertions() {
 		getChildrenOfType(Assertion.class)
 	}
 
-	def ModelElementList<Operation> getOperations() {
+	ModelElementList<Operation> getOperations() {
 		getChildrenOfType(BEvent.class)
 	}
 
-	def ModelElementList<Operation> getEvents() {
+	ModelElementList<Operation> getEvents() {
 		getChildrenOfType(BEvent.class)
 	}
 
-	public Operation getOperation(String name) {
+	Operation getOperation(String name) {
 		getOperations().getElement(name)
 	}
 }

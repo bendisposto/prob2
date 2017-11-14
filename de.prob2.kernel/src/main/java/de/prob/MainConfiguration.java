@@ -1,9 +1,5 @@
 package de.prob;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
@@ -18,24 +14,15 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static java.io.File.separator;
 
 public class MainConfiguration extends AbstractModule {
-	private final Properties buildConstants;
-
-	private final Logger logger = LoggerFactory.getLogger(MainConfiguration.class);
-
-	public MainConfiguration() {
-		buildConstants = loadBuildConstants();
-	}
+	public MainConfiguration() {}
 
 	@Override
 	protected void configure() {
 		bind(CommandLineParser.class).to(PosixParser.class);
-		bind(String.class).annotatedWith(Version.class).toInstance(buildConstants.getProperty("version", "0.0.0"));
+		bind(String.class).annotatedWith(Version.class).toInstance(Main.getVersion());
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader")).toInstance(Main.class.getClassLoader());
 
 		// TODO: Should this property be set here? Should it be set at all?
@@ -86,22 +73,5 @@ public class MainConfiguration extends AbstractModule {
 		options.addOptionGroup(mode);
 		
 		return options;
-	}
-
-	private Properties loadBuildConstants() {
-		InputStream stream = Main.class.getResourceAsStream(Main.PROB2_BUILD_PROPERTIES_FILE);
-		Properties properties = new Properties();
-		try {
-			properties.load(stream);
-		} catch (IOException e) {
-			logger.debug("Could not load prob2-build.properties.", e);
-		} finally {
-			try {
-				stream.close();
-			} catch (IOException e) {
-				logger.debug("Could not close stream.", e);
-			}
-		}
-		return properties;
 	}
 }

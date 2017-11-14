@@ -2,19 +2,12 @@ package de.prob.model.representation;
 
 import com.github.krukow.clj_lang.PersistentHashMap
 import com.github.krukow.clj_lang.PersistentVector
-
-
-
 /**
  * @author joy
  *
  * @param <E>
  */
-/**
- * @author joy
- *
- * @param <E>
- */
+
 public class ModelElementList<E> implements List<E> {
 
 	//FIXME Maybe it is better to inherit from AbstractList and only override what we actually need

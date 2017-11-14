@@ -75,7 +75,7 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 
 	public EventBModel extractModelFromZip(final String zipfile) throws IOException {
 		final File tempdir = createTempDir()
-		new FileHandler().extractZip(zipfile,tempdir.getAbsolutePath())
+		FileHandler.extractZip(zipfile,tempdir.getAbsolutePath())
 
 		def pattern = Pattern.compile(".*.bcc\$|.*.bcm\$")
 		def modelFiles = []
