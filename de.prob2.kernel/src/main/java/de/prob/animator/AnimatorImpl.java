@@ -78,7 +78,7 @@ class AnimatorImpl implements IAnimator {
 							+ command.getClass().getSimpleName() + ". Message was: " + e.getMessage();
 					logger.error(message, e);
 					// FIXME kill all Clis?
-					if (!System.getProperty("dontexit").equals("true")) {
+					if (!"true".equals(System.getProperty("dontexit"))) {
 						System.exit(-1);
 					} else {
 						throw new CliError("exception during result handling", e);
