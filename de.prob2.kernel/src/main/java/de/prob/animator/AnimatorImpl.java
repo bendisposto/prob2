@@ -73,16 +73,9 @@ class AnimatorImpl implements IAnimator {
 				logger.trace("Execution successful, processing result");
 				try {
 					command.processResult(((YesResult) result).getBindings());
-				} catch (Exception e) {
-					String message = "Exception of type " + e.getClass() + " was thrown when executing "
-							+ command.getClass().getSimpleName() + ". Message was: " + e.getMessage();
-					logger.error(message, e);
-					// FIXME kill all Clis?
-					if (!"true".equals(System.getProperty("dontexit"))) {
-						System.exit(-1);
-					} else {
-						throw new CliError("exception during result handling", e);
-					}
+				} catch (RuntimeException e) {
+					this.kill();
+					throw new CliError("Exception while processing command result", e);
 				}
 			} else {
 				logger.trace("Execution unsuccessful, processing error");
