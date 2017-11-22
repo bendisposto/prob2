@@ -115,7 +115,7 @@ public class Trace {
 	def Trace addTransitionWith(String name, List<String> parameters) {
 		def op = getCurrentState().getOutTransitions(true).find { it.getName() == name && it.getParams() == parameters }
 		if (op == null) {
-			throw new IllegalArgumentException("Could find operation "+name+" with parameters "+parameters.toString());
+			throw new IllegalArgumentException("Could not find operation "+name+" with parameters "+parameters.toString());
 		}
 		return add(op);
 	}
