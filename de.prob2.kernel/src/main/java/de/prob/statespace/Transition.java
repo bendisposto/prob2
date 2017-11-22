@@ -182,9 +182,9 @@ public class Transition {
 		if (predicateString != null) {
 			return predicateString;
 		}
-		List<String> params = getParameterPredicates();
-		predicateString = params.isEmpty() ? "TRUE=TRUE" : Joiner.on(" & ")
-				.join(params);
+		List<String> paramPreds = getParameterPredicates();
+		predicateString = paramPreds.isEmpty() ? "TRUE=TRUE" : Joiner.on(" & ")
+				.join(paramPreds);
 		return predicateString;
 	}
 
@@ -197,25 +197,24 @@ public class Transition {
 			return Collections.emptyList();
 		}
 		evaluate();
-		List<String> predicates = new ArrayList<String>();
+		List<String> predicates = new ArrayList<>();
 		AbstractElement mainComponent = stateSpace.getMainComponent();
-		List<String> params = new ArrayList<String>();
+		List<String> paramNames = new ArrayList<>();
 		if (mainComponent instanceof ClassicalBMachine) {
 			Operation op = ((ClassicalBMachine) mainComponent)
 					.getOperation(getName());
-			params = op.getParameters();
+			paramNames = op.getParameters();
 		} else if (mainComponent instanceof EventBMachine) {
 			Event event = ((EventBMachine) mainComponent).getEvent(getName());
 			for (EventParameter eventParameter : event.getParameters()) {
-				params.add(eventParameter.getName());
+				paramNames.add(eventParameter.getName());
 			}
 		}
-		if (params.size() == this.params.size()) {
-			for (int i = 0; i < params.size(); i++) {
-				predicates.add(params.get(i) + " = " + this.params.get(i));
+		if (paramNames.size() == this.params.size()) {
+			for (int i = 0; i < paramNames.size(); i++) {
+				predicates.add(paramNames.get(i) + " = " + this.params.get(i));
 			}
 		}
-
 		return predicates;
 	}
 
