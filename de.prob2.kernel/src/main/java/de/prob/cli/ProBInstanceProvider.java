@@ -35,7 +35,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 	private final String home;
 	private final OsSpecificInfo osInfo;
 	private final AtomicInteger processCounter;
-	private final Set<WeakReference<ProBInstance>> processes = new HashSet<WeakReference<ProBInstance>>();
+	private final Set<WeakReference<ProBInstance>> processes = new HashSet<>();
 
 	@Inject
 	public ProBInstanceProvider(final PrologProcessProvider processProvider,

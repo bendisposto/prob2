@@ -12,7 +12,7 @@ final class ConsoleListener implements Runnable {
 	private final Logger logger;
 
 	ConsoleListener(ProBInstance cli, BufferedReader stream, Logger logger) {
-		this.cli = new WeakReference<ProBInstance>(cli);
+		this.cli = new WeakReference<>(cli);
 		this.stream = stream;
 		this.logger = logger;
 	}
