@@ -285,7 +285,7 @@ public class StateSpace implements IAnimator {
 		return command.getNewTransitions();
 	}
 
-	public List<Transition> transitionWithParameterValues(final State stateId, final String opName,
+	public List<Transition> getTransitionsBasedOnParameterValues(final State stateId, final String opName,
 			final List<String> parameterValues, final int nrOfSolutions) {
 		String predicate = "1 = 1";//default value
 		if (!opName.equals("$initialise_machine") && !opName.equals("$setup_constants")) {
