@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -30,6 +31,8 @@ import de.prob.animator.command.FindStateCommand;
 import de.prob.animator.command.FindTraceBetweenNodesCommand;
 import de.prob.animator.command.FormulaTypecheckCommand;
 import de.prob.animator.command.GetCurrentPreferencesCommand;
+import de.prob.animator.command.GetMachineOperationInfos;
+import de.prob.animator.command.GetMachineOperationInfos.OperationInfo;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;
@@ -79,6 +82,8 @@ public class StateSpace implements IAnimator {
 
 	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<>();
 	private final Set<IEvalElement> subscribedFormulas = new HashSet<>();
+
+	private Map<String, OperationInfo> machineOperationInfos;
 
 	private final LoadingCache<String, State> states;
 
@@ -257,7 +262,7 @@ public class StateSpace implements IAnimator {
 	 *
 	 * @param stateId
 	 *            {@link State} from which the operation should be found
-	 * @param name
+	 * @param opName
 	 *            name of the operation that should be executed
 	 * @param predicate
 	 *            an additional guard for the operation. This usually describes
@@ -267,14 +272,43 @@ public class StateSpace implements IAnimator {
 	 *            predicate
 	 * @return list of operations calculated by ProB
 	 */
-	public List<Transition> transitionFromPredicate(final State stateId, final String name, final String predicate,
+	public List<Transition> transitionFromPredicate(final State stateId, final String opName, final String predicate,
 			final int nrOfSolutions) {
 		final IEvalElement pred = model.parseFormula(predicate);
-		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), name,
+		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), opName,
 				pred, nrOfSolutions);
 		execute(command);
 		if (command.hasErrors()) {
-			throw new IllegalArgumentException("Executing operation " + name + " with predicate " + predicate
+			throw new IllegalArgumentException("Executing operation " + opName + " with predicate " + predicate
+					+ " produced errors: " + Joiner.on(", ").join(command.getErrors()));
+		}
+		return command.getNewTransitions();
+	}
+
+	public List<Transition> transitionWithParameterValues(final State stateId, final String opName,
+			final List<String> parameterValues, final int nrOfSolutions) {
+		String predicate = "1 = 1";//default value
+		if (!opName.equals("$initialise_machine") && !opName.equals("$setup_constants")) {
+			OperationInfo machineOperationInfo = getMachineOperationInfo(opName);
+			List<String> parameterNames = machineOperationInfo.getParameterNames();
+			StringBuilder sb = new StringBuilder();
+			if (parameterNames.size() > 0) {
+				for (int i = 0; i < parameterNames.size(); i++) {
+					sb.append(parameterNames.get(i)).append(" = ").append(parameterValues.get(i));
+					if (i < parameterNames.size() - 1) {
+						sb.append(" & ");
+					}
+				}
+				predicate = sb.toString();
+			}
+		}
+
+		final IEvalElement pred = model.parseFormula(predicate);
+		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), opName,
+				pred, nrOfSolutions);
+		execute(command);
+		if (command.hasErrors()) {
+			throw new IllegalArgumentException("Executing operation " + opName + " with predicate " + predicate
 					+ " produced errors: " + Joiner.on(", ").join(command.getErrors()));
 		}
 		return command.getNewTransitions();
@@ -454,7 +488,7 @@ public class StateSpace implements IAnimator {
 		execute(new ComposedCommand(unsubscribeCmds));
 		return success;
 	}
-	
+
 	/**
 	 * If a subscribed class is no longer interested in the value of a
 	 * particular formula, then they can unsubscribe to that formula
@@ -529,6 +563,16 @@ public class StateSpace implements IAnimator {
 	@Override
 	public String toString() {
 		return animator.getId();
+	}
+
+	public OperationInfo getMachineOperationInfo(String operationName) {
+		if (this.machineOperationInfos == null) {
+			GetMachineOperationInfos command = new GetMachineOperationInfos();
+			this.execute(command);
+			this.machineOperationInfos = command.getOperationInfos().stream()
+					.collect(Collectors.toMap(OperationInfo::getOperationName, i -> i));
+		}
+		return this.machineOperationInfos.get(operationName);
 	}
 
 	/**
