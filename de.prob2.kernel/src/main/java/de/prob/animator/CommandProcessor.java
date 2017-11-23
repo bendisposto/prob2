@@ -40,13 +40,18 @@ class CommandProcessor {
 			pto.printAtom("true");
 			query = pto.fullstop().toString();
 		}
-		logger.debug("SEND QUERY: {}", query);
+		logger.debug("SEND QUERY: {}", trimString(query, 200));
 		String result = cli.send(query);
 
 		final Start ast = parseResult(result);
 		IPrologResult extractResult = extractResult(ast);
-		logger.debug(extractResult.toString());
+		if (logger.isDebugEnabled())
+			logger.debug(trimString(extractResult.toString(), 200));
 		return extractResult;
+	}
+
+	private String trimString(String s, int maxLength) {
+		return s.length() > maxLength ? s.substring(0, maxLength) + " trimmed!" : s;
 	}
 
 	private IPrologResult extractResult(final Start ast) {

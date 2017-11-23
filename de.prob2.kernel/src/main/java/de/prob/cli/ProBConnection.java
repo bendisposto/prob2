@@ -60,8 +60,12 @@ public class ProBConnection {
 		// }
 	}
 
+	private String trimString(String s, int maxLength) {
+		return s.length() > maxLength ? s.substring(0, maxLength) + "... trimmed!" : s;
+	}
+	
 	public String send(final String term) throws IOException {
-		logger.debug(term);
+		logger.debug(trimString(term, 200));
 		if (shutingDown) {
 			final String message = "probcli is currently shutting down";
 			logger.error(message);
