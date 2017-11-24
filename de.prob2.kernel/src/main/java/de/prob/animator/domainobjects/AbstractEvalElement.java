@@ -12,14 +12,28 @@ import java.util.HashMap;
  *         this class.
  */
 public abstract class AbstractEvalElement implements IEvalElement {
-	protected String code;
-	protected FormulaExpand expansion;
+	private final String code;
+	private final FormulaExpand expansion;
+
+	protected AbstractEvalElement(final String code, final FormulaExpand expansion) {
+		this.code = code;
+		this.expansion = expansion;
+	}
+
+	protected AbstractEvalElement(final String code) {
+		this(code, FormulaExpand.TRUNCATE);
+	}
 
 	@Override
 	public String getCode() {
 		return code;
 	}
 
+	@Override
+	public String toString() {
+		return this.getCode();
+	}
+	
 	@Override
 	public FormulaExpand expansion() {
 		return expansion;

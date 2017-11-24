@@ -16,11 +16,11 @@ import util.ToolIO;
 
 public class TLA extends AbstractEvalElement implements IBEvalElement {
 
-	private ClassicalB classicalB;
-	private Start ast;
+	private final Start ast;
+	private final ClassicalB classicalB;
 
 	public TLA(String code) {
-		this.code = code;
+		super(code);
 		ast = fromTLA(code);
 		classicalB = new ClassicalB(ast);
 	}
@@ -48,7 +48,7 @@ public class TLA extends AbstractEvalElement implements IBEvalElement {
 
 	@Override
 	public String serialized() {
-		return "#TLA" + code;
+		return "#TLA" + getCode();
 	}
 
 	@Override

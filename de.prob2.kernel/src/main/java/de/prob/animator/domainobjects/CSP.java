@@ -33,9 +33,9 @@ import org.slf4j.LoggerFactory;
 public class CSP extends AbstractEvalElement {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSP.class);
 
-	private FormulaUUID uuid = new FormulaUUID();
-	private String fileName;
-	private String procname;
+	private final FormulaUUID uuid;
+	private final String fileName;
+	private final String procname;
 
 	/**
 	 * When a new formula is entered, the entire model must be reparsed. For this reason,
@@ -45,7 +45,9 @@ public class CSP extends AbstractEvalElement {
 	 * @param model csp model
 	 */
 	public CSP(String formula, CSPModel model) {
-		this.code = formula;
+		super(formula);
+		
+		this.uuid = new FormulaUUID();
 		this.fileName = model.getModelFile().getAbsolutePath();
 		OsInfoProvider osInfoProvider = Main.getInjector().getInstance(OsInfoProvider.class);
 		//TODO: die methode get( wird nicht erkannt
@@ -56,16 +58,15 @@ public class CSP extends AbstractEvalElement {
 		}
 
 		this.procname = Main.getProBDirectory() + "lib" + File.separator + "cspmf" + target;
-		this.expansion = FormulaExpand.TRUNCATE;// this doesn't matter
 	}
 
 	@Override
 	public void printProlog(IPrologTermOutput pout) {
-		callCSPMF(pout, "translate", "--expressionToPrologTerm=" + code, fileName);
+		callCSPMF(pout, "translate", "--expressionToPrologTerm=" + this.getCode(), fileName);
 	}
 
 	public void printPrologAssertion(IPrologTermOutput pout) {
-		callCSPMF(pout, "translate", "--declarationToPrologTerm=" + code, fileName);
+		callCSPMF(pout, "translate", "--declarationToPrologTerm=" + this.getCode(), fileName);
 	}
 
 	/* Calling the cspmf command:
@@ -107,11 +108,6 @@ public class CSP extends AbstractEvalElement {
 	@Override
 	public EvalElementType getKind() {
 		return EvalElementType.CSP;
-	}
-
-	@Override
-	public String toString() {
-		return code;
 	}
 
 	@Override

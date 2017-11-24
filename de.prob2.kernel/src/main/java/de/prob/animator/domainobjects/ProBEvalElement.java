@@ -19,7 +19,7 @@ import de.prob.statespace.State;
 public class ProBEvalElement extends AbstractEvalElement {
 
 	private final FormulaUUID uuid = new FormulaUUID();
-	private PrologTerm ast;
+	private final PrologTerm ast;
 
 	/**
 	 * Convenience Constructor that defaults to truncating the result values.
@@ -37,9 +37,8 @@ public class ProBEvalElement extends AbstractEvalElement {
 	 * @param expansion whether we want to get expanded or shortened values (e.g. for large sets)
 	 */
 	public ProBEvalElement(final PrologTerm ast, final String code, final FormulaExpand expansion) {
+		super(code, expansion);
 		this.ast = ast;
-		this.code = code;
-		this.expansion = expansion;
 	}
 
 	@Override
@@ -55,17 +54,12 @@ public class ProBEvalElement extends AbstractEvalElement {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.ast, this.code, this.expansion);
+		return Objects.hash(this.ast, this.getCode(), this.expansion());
 	}
 	
 	@Override
 	public EvalElementType getKind() {
 		throw new UnsupportedOperationException("Should never be called on a ProBEvalElement");
-	}
-
-	@Override
-	public String toString() {
-		return code;
 	}
 
 	@Override
