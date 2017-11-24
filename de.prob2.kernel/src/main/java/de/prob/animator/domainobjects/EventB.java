@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EventB extends AbstractEvalElement implements IBEvalElement {
 
-	Logger logger = LoggerFactory.getLogger(EventB.class);
+	private static final Logger logger = LoggerFactory.getLogger(EventB.class);
 	private final FormulaUUID uuid = new FormulaUUID();
 
 	private EvalElementType kind;
@@ -74,24 +74,21 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		if (!parseResult.hasProblem()) {
 			ast = preparePredicateAst(parseResult);
 		} else {
-			errors.add("Parsing predicate failed because: "
-					+ parseResult.toString());
+			errors.add("Parsing predicate failed because: " + parseResult);
 			kind = EvalElementType.EXPRESSION;
 			parseResult = FormulaFactory.getInstance(types).parseExpression(
 					unicode, null);
 			if (!parseResult.hasProblem()) {
 				ast = prepareExpressionAst(parseResult);
 			} else {
-				errors.add("Parsing expression failed because: "
-						+ parseResult.toString());
+				errors.add("Parsing expression failed because: " + parseResult);
 				kind = EvalElementType.ASSIGNMENT;
 				parseResult = FormulaFactory.getInstance(types)
 						.parseAssignment(unicode, null);
 				if (!parseResult.hasProblem()) {
 					ast = prepareAssignmentAst(parseResult);
 				} else {
-					errors.add("Parsing assignment failed because: "
-							+ parseResult.toString());
+					errors.add("Parsing assignment failed because: " + parseResult);
 				}
 			}
 		}
@@ -99,8 +96,8 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 			for (String string : errors) {
 				logger.error(string);
 			}
-			logger.error("Parsing of code failed. Ascii is: " + this.getCode());
-			logger.error("Parsing of code failed. Unicode is: " + unicode);
+			logger.error("Parsing of code failed. Ascii is: {}", this.getCode());
+			logger.error("Parsing of code failed. Unicode is: {}", unicode);
 			throw new EvaluationException("Was not able to parse code: " + this.getCode()
 					+ " See log for details.");
 		}
@@ -111,10 +108,9 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		final TranslationVisitor visitor = new TranslationVisitor();
 		try {
 			assign.accept(visitor);
-		} catch (Exception e) {
-			logger.error("Creation of ast failed for assignment " + this.getCode(), e);
-			throw new EvaluationException(
-					"Could not create AST for assignment " + assign.toString());
+		} catch (RuntimeException e) {
+			logger.error("Creation of ast failed for assignment {}", this.getCode(), e);
+			throw new EvaluationException("Could not create AST for assignment " + assign, e);
 		}
 		return visitor.getSubstitution();
 	}
@@ -124,13 +120,11 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		final TranslationVisitor visitor = new TranslationVisitor();
 		try {
 			expr.accept(visitor);
-		} catch (Exception e) {
-			logger.error("Creation of ast failed for expression " + this.getCode(), e);
-			throw new EvaluationException(
-					"Could not create AST for expression " + expr.toString());
+		} catch (RuntimeException e) {
+			logger.error("Creation of ast failed for expression {}", this.getCode(), e);
+			throw new EvaluationException("Could not create AST for expression " + expr, e);
 		}
-		final Node expression = visitor.getExpression();
-		return expression;
+		return visitor.getExpression();
 	}
 
 	private Node preparePredicateAst(final IParseResult parseResult) {
@@ -138,10 +132,9 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		final TranslationVisitor visitor = new TranslationVisitor();
 		try {
 			parsedPredicate.accept(visitor);
-		} catch (Exception e) {
-			logger.error("Creation of ast failed for expression " + this.getCode(), e);
-			throw new EvaluationException("Could not create AST for predicate "
-					+ parsedPredicate.toString());
+		} catch (RuntimeException e) {
+			logger.error("Creation of ast failed for expression {}", this.getCode(), e);
+			throw new EvaluationException("Could not create AST for predicate " + parsedPredicate, e);
 		}
 		return visitor.getPredicate();
 	}
@@ -221,7 +214,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	@Override
 	public BObject translate() {
 		if (!EvalElementType.EXPRESSION.equals(getKind())) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("EventB translation is only supported for expressions, not " + this.getKind());
 		}
 		TranslatingVisitor v = new TranslatingVisitor();
 		getAst().apply(v);
