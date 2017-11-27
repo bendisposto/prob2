@@ -32,32 +32,14 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 
 	private final Start ast;
 
-	/**
-	 * @param code
-	 *            will be parsed and the resulting {@link Start} ast saved
-	 * @throws EvaluationException
-	 *             if the code could not be parsed
-	 */
-	public ClassicalB(final String code) {
-		this(code, FormulaExpand.TRUNCATE);
+	public ClassicalB(final Start ast, final FormulaExpand expansion, final String code) {
+		super(code, expansion);
+
+		this.ast = ast;
 	}
 
-	public ClassicalB(final String formula, final FormulaExpand expansion) {
-		Start tempAst;
-		final BParser bParser = new BParser();
-		try {
-
-			tempAst = bParser.parseFormula(formula);
-		} catch (BCompoundException e) {
-			try {
-				tempAst = bParser.parseSubstitution(formula);
-			} catch (BCompoundException f) {
-				throw new EvaluationException(f.getMessage(), f);
-			}
-		}
-		this.ast = tempAst;
-		this.code = prettyprint(ast);
-		this.expansion = expansion;
+	public ClassicalB(final Start ast, final FormulaExpand expansion) {
+		this(ast, expansion, prettyprint(ast));
 	}
 
 	/**
@@ -69,14 +51,37 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 		this(ast, FormulaExpand.TRUNCATE);
 	}
 
-	public ClassicalB(final Start ast, final FormulaExpand expansion, String code) {
-		this.ast = ast;
-		this.expansion = expansion;
-		this.code = code;
+	public ClassicalB(final String formula, final FormulaExpand expansion) {
+		this(parse(formula), expansion);
 	}
 
-	public ClassicalB(final Start ast, final FormulaExpand expansion) {
-		this(ast, expansion, prettyprint(ast));
+	/**
+	 * @param code
+	 *            will be parsed and the resulting {@link Start} ast saved
+	 * @throws EvaluationException
+	 *             if the code could not be parsed
+	 */
+	public ClassicalB(final String code) {
+		this(code, FormulaExpand.TRUNCATE);
+	}
+
+	private static Start parse(final String formula) {
+		final BParser bParser = new BParser();
+		try {
+			return bParser.parseFormula(formula);
+		} catch (BCompoundException e) {
+			try {
+				return bParser.parseSubstitution(formula);
+			} catch (BCompoundException f) {
+				throw new EvaluationException(f.getMessage(), f);
+			}
+		}
+	}
+
+	private static String prettyprint(final Node predicate) {
+		final PrettyPrinter prettyPrinter = new PrettyPrinter();
+		predicate.apply(prettyPrinter);
+		return prettyPrinter.getPrettyPrint();
 	}
 
 	@Override
@@ -99,11 +104,6 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	@Override
-	public String toString() {
-		return code;
-	}
-
-	@Override
 	public void printProlog(final IPrologTermOutput pout) {
 		if (EvalElementType.ASSIGNMENT.equals(getKind())) {
 			throw new EvaluationException("Substitutions are currently unsupported for evaluation");
@@ -114,15 +114,9 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 		ASTProlog.printFormula(ast, pout);
 	}
 
-	private static String prettyprint(final Node predicate) {
-		final PrettyPrinter prettyPrinter = new PrettyPrinter();
-		predicate.apply(prettyPrinter);
-		return prettyPrinter.getPrettyPrint();
-	}
-
 	@Override
 	public String serialized() {
-		return "#ClassicalB:" + code;
+		return "#ClassicalB:" + this.getCode();
 	}
 
 	@Override

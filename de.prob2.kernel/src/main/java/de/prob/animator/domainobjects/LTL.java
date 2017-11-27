@@ -30,13 +30,13 @@ public class LTL extends AbstractEvalElement {
 	
 	public LTL(final String code, ProBParserBase languageSpecificParser)
 			throws LtlParseException {
-		this.code = code;
+		super(code);
 		generatedTerm = new de.be4.ltl.core.parser.LtlParser(languageSpecificParser)
 							.generatePrologTerm(code, "root");
 	}
 	
 	public LTL(final String code, ProBParserBase languageSpecificParser, LtlParser parser) {
-		this.code = code;
+		super(code);
 		generatedTerm = parser.generatePrologTerm("root", languageSpecificParser);
 	}
 		
