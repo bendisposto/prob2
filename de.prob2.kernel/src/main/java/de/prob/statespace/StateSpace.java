@@ -287,12 +287,17 @@ public class StateSpace implements IAnimator {
 
 	public List<Transition> getTransitionsBasedOnParameterValues(final State stateId, final String opName,
 			final List<String> parameterValues, final int nrOfSolutions) {
-		String predicate = "1 = 1";//default value
+		String predicate = "1 = 1";// default value
 		if (!opName.equals("$initialise_machine") && !opName.equals("$setup_constants")) {
 			OperationInfo machineOperationInfo = getMachineOperationInfo(opName);
 			List<String> parameterNames = machineOperationInfo.getParameterNames();
 			StringBuilder sb = new StringBuilder();
-			if (parameterNames.size() > 0) {
+			if (!parameterNames.isEmpty()) {
+				if (parameterNames.size() != parameterValues.size()) {
+					throw new IllegalArgumentException("Cannot execute operation " + opName
+							+ " because the number of parameters does not match the number of provied values: "
+							+ parameterNames.size() + " vs " + parameterValues.size());
+				}
 				for (int i = 0; i < parameterNames.size(); i++) {
 					sb.append(parameterNames.get(i)).append(" = ").append(parameterValues.get(i));
 					if (i < parameterNames.size() - 1) {
