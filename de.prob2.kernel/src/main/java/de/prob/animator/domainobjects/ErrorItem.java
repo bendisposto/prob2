@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import com.google.common.base.MoreObjects;
+import java.util.stream.Collectors;
 
 public final class ErrorItem {
 	public enum Type {
@@ -77,13 +76,20 @@ public final class ErrorItem {
 		
 		@Override
 		public String toString() {
-			return MoreObjects.toStringHelper(this)
-				.add("filename", this.getFilename())
-				.add("startLine", this.getStartLine())
-				.add("startColumn", this.getStartColumn())
-				.add("endLine", this.getEndLine())
-				.add("endColumn", this.getEndColumn())
-				.toString();
+			final StringBuilder sb = new StringBuilder(this.filename);
+			sb.append(':');
+			sb.append(this.getStartLine());
+			sb.append(':');
+			sb.append(this.getStartColumn());
+			
+			if (this.getStartLine() != this.getEndLine() || this.getStartColumn() != this.getEndColumn()) {
+				sb.append(" to ");
+				sb.append(this.getEndLine());
+				sb.append(':');
+				sb.append(this.getEndColumn());
+			}
+			
+			return sb.toString();
 		}
 	}
 	
@@ -137,10 +143,35 @@ public final class ErrorItem {
 	
 	@Override
 	public String toString() {
-		return MoreObjects.toStringHelper(this)
-			.add("message", this.getMessage())
-			.add("type", this.getType())
-			.add("locations", this.getLocations())
-			.toString();
+		final StringBuilder sb = new StringBuilder();
+		switch (this.getType()) {
+			case WARNING:
+				sb.append("Warning: ");
+				break;
+			
+			case ERROR:
+				sb.append("Error: ");
+				break;
+			
+			case INTERNAL_ERROR:
+				sb.append("Internal error: ");
+				break;
+			
+			default:
+				sb.append(this.getType());
+				sb.append(": ");
+		}
+		
+		sb.append(this.getMessage());
+		
+		if (!this.getLocations().isEmpty()) {
+			sb.append(
+				this.locations.stream()
+				.map(ErrorItem.Location::toString)
+				.collect(Collectors.joining("; ", " (", ")"))
+			);
+		}
+		
+		return sb.toString();
 	}
 }

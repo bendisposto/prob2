@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ProBError extends RuntimeException {
-	private final String originalMessage;
-	private final List<String> errors;
+import de.prob.animator.domainobjects.ErrorItem;
 
-	private static String formatMessageAndErrors(final String message, final List<String> errors) {
+public class ProBError extends RuntimeException {
+	private static final long serialVersionUID = 1L;
+
+	private final String originalMessage;
+	private final List<ErrorItem> errorItems;
+
+	private static String formatMessageAndErrors(final String message, final List<ErrorItem> errors) {
 		final StringBuilder out = new StringBuilder();
 		
 		if (message != null && !message.isEmpty()) {
@@ -23,7 +27,7 @@ public class ProBError extends RuntimeException {
 				out.append("ProB returned no error messages.");
 			} else {
 				out.append("ProB returned error messages:");
-				for (final String err : errors) {
+				for (final ErrorItem err : errors) {
 					out.append('\n');
 					out.append(err);
 				}
@@ -33,18 +37,18 @@ public class ProBError extends RuntimeException {
 		return out.toString();
 	}
 
-	public ProBError(final String message, final List<String> errors, final Throwable cause) {
+	public ProBError(final String message, final List<ErrorItem> errors, final Throwable cause) {
 		super(formatMessageAndErrors(message, errors), cause);
 		
 		this.originalMessage = message;
-		this.errors = new ArrayList<>(errors);
+		this.errorItems = new ArrayList<>(errors);
 	}
 
-	public ProBError(final String message, final List<String> errors) {
+	public ProBError(final String message, final List<ErrorItem> errors) {
 		this(message, errors, null);
 	}
 
-	public ProBError(final List<String> errors) {
+	public ProBError(final List<ErrorItem> errors) {
 		this(null, errors, null);
 	}
 
@@ -64,9 +68,7 @@ public class ProBError extends RuntimeException {
 		return this.originalMessage;
 	}
 
-	public List<String> getErrors() {
-		return Collections.unmodifiableList(this.errors);
+	public List<ErrorItem> getErrors() {
+		return Collections.unmodifiableList(this.errorItems);
 	}
-
-	private static final long serialVersionUID = 6643099683773925615L;
 }

@@ -1,19 +1,18 @@
 package de.prob.animator;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 
 import com.google.inject.Inject;
 
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.ComposedCommand;
-import de.prob.animator.command.GetErrorsCommand;
+import de.prob.animator.command.GetErrorItemsCommand;
 import de.prob.animator.command.GetTotalNumberOfErrorsCommand;
+import de.prob.animator.domainobjects.ErrorItem;
 import de.prob.cli.ProBInstance;
 import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
@@ -30,17 +29,17 @@ class AnimatorImpl implements IAnimator {
 	private final ProBInstance cli;
 	private final Logger logger = LoggerFactory.getLogger(AnimatorImpl.class);
 	private final CommandProcessor processor;
-	private final GetErrorsCommand getErrors;
+	private final GetErrorItemsCommand getErrorItems;
 	public static final boolean DEBUG = false;
 	private final AnimationSelector animations;
 	private boolean busy = false;
 
 	@Inject
 	public AnimatorImpl(@Nullable final ProBInstance cli, final CommandProcessor processor,
-			final GetErrorsCommand getErrors, final AnimationSelector animations) {
+			final GetErrorItemsCommand getErrorItems, final AnimationSelector animations) {
 		this.cli = cli;
 		this.processor = processor;
-		this.getErrors = getErrors;
+		this.getErrorItems = getErrorItems;
 		this.animations = animations;
 		processor.configure(cli);
 	}
@@ -67,9 +66,9 @@ class AnimatorImpl implements IAnimator {
 		logger.trace("Starting execution of {}", command);
 		do {
 			IPrologResult result = processor.sendCommand(command);
-			List<String> errormessages = getErrors();
+			final List<ErrorItem> errorItems = getErrorItems();
 
-			if (result instanceof YesResult && errormessages.isEmpty()) {
+			if (result instanceof YesResult && errorItems.isEmpty()) {
 				logger.trace("Execution successful, processing result");
 				try {
 					command.processResult(((YesResult) result).getBindings());
@@ -79,7 +78,7 @@ class AnimatorImpl implements IAnimator {
 				}
 			} else {
 				logger.trace("Execution unsuccessful, processing error");
-				command.processErrorResult(result, errormessages);
+				command.processErrorResult(result, errorItems);
 			}
 			logger.trace("Executed {} (completed: {}, interrupted: {})", command, command.isCompleted(), command.isInterrupted());
 			
@@ -95,22 +94,23 @@ class AnimatorImpl implements IAnimator {
 		}
 	}
 
-	private synchronized List<String> getErrors() {
-		IPrologResult errorresult = processor.sendCommand(getErrors);
+	private synchronized List<ErrorItem> getErrorItems() {
+		final IPrologResult errorresult = processor.sendCommand(getErrorItems);
 		if (errorresult instanceof NoResult || errorresult instanceof InterruptedResult) {
-			throw new ProBError("Get errors must be successful");
+			throw new ProBError("Error getter command failed: " + errorresult);
 		} else if (errorresult instanceof YesResult) {
-			getErrors.processResult(((YesResult) errorresult).getBindings());
-			List<String> errors = getErrors.getErrors();
-			if (errors.isEmpty())
-				return Collections.emptyList();
-			else {
-				String msg = Joiner.on('\n').join(errors);
-				logger.error("ProB raised exception(s):\n", msg);
-				return errors;
+			getErrorItems.processResult(((YesResult) errorresult).getBindings());
+			final List<ErrorItem> errors = getErrorItems.getErrors();
+			if (!errors.isEmpty()) {
+				logger.error("ProB raised exception(s):");
+				for (final ErrorItem error : errors) {
+					logger.error("{}", error);
+				}
 			}
+			return errors;
+		} else {
+			throw new ProBError("Unknown result type: " + errorresult.getClass());
 		}
-		throw new ProBError("Unknown result type");
 	}
 
 	@Override
