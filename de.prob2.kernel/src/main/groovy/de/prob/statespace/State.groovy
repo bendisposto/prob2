@@ -236,7 +236,10 @@ class State {
 	};
 
 
-
+	def boolean isExplored() {
+		return explored;
+	}
+	
 	def boolean isInitialised() {
 		if (!explored) {
 			explore()

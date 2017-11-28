@@ -18,7 +18,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings
  */
 public class Trace {
 
-	def static boolean exploreStateByDefault = true
+	def boolean exploreStateByDefault = true
 	def final TraceElement current
 	def final TraceElement head
 	def final StateSpace stateSpace
@@ -85,6 +85,7 @@ public class Trace {
 		def newHE = new TraceElement(op, current)
 		def transitionList = branchTransitionListIfNecessary(op)
 		Trace newTrace = new Trace(stateSpace, newHE, transitionList, this.UUID)
+		newTrace.setExploreStateByDefault(this.exploreStateByDefault);
 		if (exploreStateByDefault && !op.getDestination().isExplored()) {
 			op.getDestination().explore()
 		}

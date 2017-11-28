@@ -597,7 +597,7 @@ public class StateSpace implements IAnimator {
 			sb.append("\n");
 		}
 
-		if (!Trace.getExploreStateByDefault()) {
+		if (!state.isExplored()) {
 			sb.append("\n Possibly not all transitions shown. ProB does not explore states by default");
 		}
 		return sb.toString();

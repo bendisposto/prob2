@@ -26,14 +26,14 @@ class TraceAnimationTest extends Specification {
 
 	def "if we specify that states should not be automatically explored, the destination state remains unexplored"() {
 		when:
-		Trace.exploreStateByDefault = false
+		t.exploreStateByDefault = false
 		Trace t2 = t.add("0")
 
 		then:
 		!t2.getCurrentTransition().getDestination().isExplored()
 
 		cleanup:
-		Trace.exploreStateByDefault = true
+		t.exploreStateByDefault = true
 	}
 
 	def "you can add a transition via its integer id"() {
