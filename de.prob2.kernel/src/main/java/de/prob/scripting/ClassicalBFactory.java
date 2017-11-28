@@ -10,8 +10,10 @@ import com.google.inject.Provider;
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.CachingDefinitionFileProvider;
 import de.be4.classicalb.core.parser.IDefinitionFileProvider;
+import de.be4.classicalb.core.parser.ParsingBehaviour;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.ClassicalBModel;
 
@@ -46,7 +48,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 		RecursiveMachineLoader rml = parseAllMachines(ast, f.getParent(), f,
 				bparser.getContentProvider(), bparser);
 		classicalBModel = classicalBModel.create(ast, rml, f, bparser);
-		return new ExtractedModel<ClassicalBModel>(classicalBModel,
+		return new ExtractedModel<>(classicalBModel,
 				classicalBModel.getMainMachine());
 	}
 
@@ -59,7 +61,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 		final RecursiveMachineLoader rml = parseAllMachines(ast, ".", new File(
 				""), bparser.getContentProvider(), bparser);
 		classicalBModel = classicalBModel.create(ast, rml, new File("from_string"), bparser);
-		return new ExtractedModel<ClassicalBModel>(classicalBModel,
+		return new ExtractedModel<>(classicalBModel,
 				classicalBModel.getMainMachine());
 	}
 
@@ -72,7 +74,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 				new File(""), new CachingDefinitionFileProvider(), bparser);
 		classicalBModel = classicalBModel
 				.create(model, rml, new File("from_string"), bparser);
-		return new ExtractedModel<ClassicalBModel>(classicalBModel,
+		return new ExtractedModel<>(classicalBModel,
 				classicalBModel.getMainMachine());
 	}
 
@@ -97,10 +99,12 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 			final IDefinitionFileProvider contentProvider, final BParser bparser)
 					throws ModelTranslationError {
 		try {
+			ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
+			parsingBehaviour.setAddLineNumbers(true);
 			final RecursiveMachineLoader rml = new RecursiveMachineLoader(
-					directory, contentProvider);
+					directory, contentProvider, parsingBehaviour);
 
-			rml.loadAllMachines(f, ast, null, bparser.getDefinitions());
+			rml.loadAllMachines(f, ast, bparser.getSourcePositions(), bparser.getDefinitions());
 			logger.trace("Done parsing '{}'", f.getAbsolutePath());
 			return rml;
 		} catch (BCompoundException e) {
