@@ -92,4 +92,8 @@ public class RulesModel extends AbstractModel {
 		return new LoadRulesProjectCommand(project, modelFile);
 	}
 
+	public RulesProject getRulesProject() {
+		return this.project;
+	}
+
 }
