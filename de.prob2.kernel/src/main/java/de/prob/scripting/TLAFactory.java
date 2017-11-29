@@ -74,8 +74,7 @@ public class TLAFactory implements ModelFactory<ClassicalBModel> {
 	public RecursiveMachineLoader parseAllMachines(final Start ast, final File f, final BParser bparser)
 			throws BCompoundException {
 		final RecursiveMachineLoader rml = new RecursiveMachineLoader(f.getParent(), bparser.getContentProvider());
-
-		rml.loadAllMachines(f, ast, null, bparser.getDefinitions());
+		rml.loadAllMachines(f, ast, bparser.getDefinitions());
 
 		logger.trace("Done parsing '{}'", f.getAbsolutePath());
 		return rml;
