@@ -175,7 +175,7 @@ class State {
 	}
 
 	/**
-	 * Takes a formula and evaluateds it via the {@link State#eval(List)} method.
+	 * Takes a formula and evaluates it via the {@link State#eval(List)} method.
 	 * @param formula as IEvalElement
 	 * @return the {@link AbstractEvalResult} calculated by ProB
 	 */
@@ -186,7 +186,21 @@ class State {
 	def List<AbstractEvalResult> eval(IEvalElement... formulas) {
 		return eval(formulas as List)
 	}
-
+	
+	
+	def Map<IEvalElement, AbstractEvalResult> getVariableValues() {
+		def cmd = new EvaluateFormulasCommand(stateSpace.getLoadedMachine().getVariableEvalElements(), this.getId());
+		stateSpace.execute(cmd)
+		cmd.getResultMap()
+	}
+	
+	def Map<IEvalElement, AbstractEvalResult> getConstantValues() {
+		def cmd = new EvaluateFormulasCommand(stateSpace.getLoadedMachine().getConstantEvalElements(), this.getId());
+		stateSpace.execute(cmd)
+		cmd.getResultMap()
+	}
+	
+	
 	/**
 	 * @param formulas to be evaluated
 	 * @return list of results calculated by ProB for a given formula

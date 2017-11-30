@@ -10,7 +10,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -31,7 +30,6 @@ import de.prob.animator.command.FindStateCommand;
 import de.prob.animator.command.FindTraceBetweenNodesCommand;
 import de.prob.animator.command.FormulaTypecheckCommand;
 import de.prob.animator.command.GetCurrentPreferencesCommand;
-import de.prob.animator.command.GetMachineOperationInfos;
 import de.prob.animator.command.GetMachineOperationInfos.OperationInfo;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
@@ -83,7 +81,7 @@ public class StateSpace implements IAnimator {
 	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<>();
 	private final Set<IEvalElement> subscribedFormulas = new HashSet<>();
 
-	private Map<String, OperationInfo> machineOperationInfos;
+	private LoadedMachine loadedMachine;
 
 	private final LoadingCache<String, State> states;
 
@@ -289,7 +287,10 @@ public class StateSpace implements IAnimator {
 			final List<String> parameterValues, final int nrOfSolutions) {
 		String predicate = "1 = 1";// default value
 		if (!opName.equals("$initialise_machine") && !opName.equals("$setup_constants")) {
-			OperationInfo machineOperationInfo = getMachineOperationInfo(opName);
+			if (!getLoadedMachine().containsOperations(opName)) {
+				throw new IllegalArgumentException("Unknown operation '" + opName + "'");
+			}
+			OperationInfo machineOperationInfo = getLoadedMachine().getMachineOperationInfo(opName);
 			List<String> parameterNames = machineOperationInfo.getParameterNames();
 			StringBuilder sb = new StringBuilder();
 			if (!parameterNames.isEmpty()) {
@@ -570,14 +571,11 @@ public class StateSpace implements IAnimator {
 		return animator.getId();
 	}
 
-	public OperationInfo getMachineOperationInfo(String operationName) {
-		if (this.machineOperationInfos == null) {
-			GetMachineOperationInfos command = new GetMachineOperationInfos();
-			this.execute(command);
-			this.machineOperationInfos = command.getOperationInfos().stream()
-					.collect(Collectors.toMap(OperationInfo::getOperationName, i -> i));
+	public LoadedMachine getLoadedMachine() {
+		if(this.loadedMachine ==null) {
+			loadedMachine = new LoadedMachine(this);
 		}
-		return this.machineOperationInfos.get(operationName);
+		return this.loadedMachine;
 	}
 
 	/**

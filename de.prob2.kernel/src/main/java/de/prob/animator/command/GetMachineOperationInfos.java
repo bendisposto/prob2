@@ -11,6 +11,8 @@ import de.prob.prolog.term.PrologTerm;
 
 public class GetMachineOperationInfos extends AbstractCommand {
 
+
+
 	private static final String PROLOG_COMMAND_NAME = "get_machine_operation_infos";
 	private static final String RESULT_VARIABLE = "MachineOperationInfos";
 	private final List<OperationInfo> operationInfos = new ArrayList<>();
