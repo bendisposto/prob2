@@ -1,13 +1,21 @@
 package de.prob.model.eventb.algorithm.graph;
 
-import de.prob.model.eventb.algorithm.ast.*;
+import de.prob.model.eventb.algorithm.ast.AlgorithmASTVisitor;
+import de.prob.model.eventb.algorithm.ast.Assertion;
+import de.prob.model.eventb.algorithm.ast.Assignment;
+import de.prob.model.eventb.algorithm.ast.Call;
+import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.Return;
+import de.prob.model.eventb.algorithm.ast.Skip;
+import de.prob.model.eventb.algorithm.ast.While;
 import de.prob.model.representation.ModelElementList;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 public class VariantOrdering extends AlgorithmASTVisitor {
+	private ModelElementList<While> ordering = new ModelElementList<>();
+	
 	@Override
 	public Object traverse(While s) {
-		if (DefaultGroovyMethods.asBoolean(s.getVariant())) {
+		if (s.getVariant() != null) {
 			ordering = ordering.addElement(s);
 		}
 
@@ -56,6 +64,4 @@ public class VariantOrdering extends AlgorithmASTVisitor {
 	public void setOrdering(ModelElementList<While> ordering) {
 		this.ordering = ordering;
 	}
-
-	private ModelElementList<While> ordering = new ModelElementList<While>();
 }

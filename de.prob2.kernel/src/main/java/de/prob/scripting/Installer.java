@@ -10,8 +10,6 @@ import java.io.OutputStream;
 import de.prob.Main;
 import de.prob.cli.OsSpecificInfo;
 
-import org.codehaus.groovy.runtime.IOGroovyMethods;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +66,12 @@ public class Installer {
 			final InputStream is = getClass().getClassLoader().getResourceAsStream(resource);
 			final OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
 		) {
-			IOGroovyMethods.leftShift(os, is);
+			final byte[] buf = new byte[1024];
+			int count;
+			do {
+				count = is.read(buf, 0, buf.length);
+				os.write(buf, 0, count);
+			} while (count != -1);
 		}
 	}
 }
