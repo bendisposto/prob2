@@ -67,11 +67,13 @@ public class Installer {
 			final OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
 		) {
 			final byte[] buf = new byte[1024];
-			int count;
-			do {
-				count = is.read(buf, 0, buf.length);
+			while (true) {
+				final int count = is.read(buf, 0, buf.length);
+				if (count == -1) {
+					break;
+				}
 				os.write(buf, 0, count);
-			} while (count != -1);
+			}
 		}
 	}
 }
