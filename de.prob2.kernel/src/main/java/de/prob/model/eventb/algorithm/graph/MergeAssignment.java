@@ -1,17 +1,14 @@
 package de.prob.model.eventb.algorithm.graph;
 
-import de.prob.model.eventb.algorithm.ast.IAssignment;
-import de.prob.model.eventb.algorithm.ast.Statement;
-import groovy.lang.Closure;
-import groovy.lang.Reference;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-
 import java.util.HashSet;
 import java.util.Set;
 
+import de.prob.model.eventb.algorithm.ast.IAssignment;
+import de.prob.model.eventb.algorithm.ast.Statement;
+
 public class MergeAssignment implements IGraphTransformer {
 
-	private Set<Statement> visited = new HashSet<Statement>();
+	private final Set<Statement> visited = new HashSet<>();
 
 	@Override
 	public ControlFlowGraph transform(ControlFlowGraph graph) {
@@ -27,53 +24,30 @@ public class MergeAssignment implements IGraphTransformer {
 			return graph;
 		}
 
-		DefaultGroovyMethods.leftShift(visited, node);
-		final Reference<ControlFlowGraph> g = new Reference<ControlFlowGraph>(graph);
+		visited.add(node);
+		ControlFlowGraph g = graph;
 		if (node instanceof IAssignment) {
-			Set<Edge> inEdges = g.get().inEdges(node);
-			final Reference<Boolean> toMerge = new Reference<Boolean>(!inEdges.isEmpty());
-			DefaultGroovyMethods.each(inEdges, new Closure<Boolean>(this, this) {
-				public Boolean doCall(Edge e) {
-					return setGroovyRef(toMerge, toMerge.get() && (!e.getConditions().isEmpty() && e.getAssignment() == null));
-				}
-
-			});
-			if (toMerge.get()) {
-				Set<Edge> outE = g.get().outEdges(node);
-				assert outE.size() == 1;
-				final Edge oE = DefaultGroovyMethods.first(outE);
-				g.set(g.get().removeNode(node));
-				DefaultGroovyMethods.each(inEdges, new Closure<ControlFlowGraph>(this, this) {
-					public ControlFlowGraph doCall(Edge e) {
-						return setGroovyRef(g, g.get().addEdge(e.mergeAssignment(oE)));
-					}
-
-				});
-				return merge(g.get(), oE.getTo());
+			final Set<Edge> inEdges = g.inEdges(node);
+			boolean toMerge = !inEdges.isEmpty();
+			for (Edge inEdge : inEdges) {
+				toMerge = toMerge && !inEdge.getConditions().isEmpty() && inEdge.getAssignment() == null;
 			}
-
+			
+			if (toMerge) {
+				final Set<Edge> outE = g.outEdges(node);
+				assert outE.size() == 1;
+				final Edge oE = outE.stream().findFirst().orElseThrow(AssertionError::new);
+				g = g.removeNode(node);
+				for (Edge e : inEdges) {
+					g = g.addEdge(e.mergeAssignment(oE));
+				}
+				return merge(g, oE.getTo());
+			}
 		}
 
-
-		DefaultGroovyMethods.each(g.get().outEdges(node), new Closure<ControlFlowGraph>(this, this) {
-			public ControlFlowGraph doCall(Edge e) {
-				return setGroovyRef(g, merge(g.get(), e.getTo()));
-			}
-
-		});
-		return g.get();
-	}
-
-	public HashSet<Statement> getVisited() {
-		return (HashSet) visited;
-	}
-
-	public void setVisited(Set<Statement> visited) {
-		this.visited = visited;
-	}
-
-	private static <T> T setGroovyRef(Reference<T> ref, T newValue) {
-		ref.set(newValue);
-		return newValue;
+		for (Edge e : g.outEdges(node)) {
+			g = merge(g, e.getTo());
+		}
+		return g;
 	}
 }
