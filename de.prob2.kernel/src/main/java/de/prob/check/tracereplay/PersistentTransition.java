@@ -16,6 +16,7 @@ import de.prob.statespace.State;
 import de.prob.statespace.Transition;
 
 public class PersistentTransition {
+
 	private final String name;
 	private final Map<String, String> params = new LinkedHashMap<>();
 	private final Map<String, String> results = new LinkedHashMap<>();
@@ -23,13 +24,23 @@ public class PersistentTransition {
 	private List<String> preds = new ArrayList<>();
 
 	public PersistentTransition(Transition transition) {
+		this(transition, false);
+	}
+
+	public PersistentTransition(Transition transition, boolean storeDestinationState) {
 		this.name = transition.getName();
 		final LoadedMachine loadedMachine = transition.getStateSpace().getLoadedMachine();
 		final State destinationState = transition.getDestination();
 		if (name.equals("$setup_constants")) {
-			addValuesToDestState(destinationState.getConstantValues());
+			if (storeDestinationState) {
+				addValuesToDestState(destinationState.getConstantValues());
+			}
+
 		} else {
-			addValuesToDestState(destinationState.getVariableValues());
+			if (storeDestinationState) {
+				addValuesToDestState(destinationState.getVariableValues());
+			}
+
 			if (name.equals("$initialise_machine")) {
 
 			} else {
@@ -44,7 +55,6 @@ public class PersistentTransition {
 				}
 			}
 		}
-
 	}
 
 	private void addValuesToDestState(Map<IEvalElement, AbstractEvalResult> map) {

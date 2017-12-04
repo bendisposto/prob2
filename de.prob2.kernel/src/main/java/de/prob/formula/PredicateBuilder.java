@@ -16,13 +16,18 @@ public class PredicateBuilder {
 	}
 
 	public PredicateBuilder addList(List<String> predicates) {
-		this.predicates.addAll(predicates);
+		if (predicates != null) {
+			this.predicates.addAll(predicates);
+		}
+
 		return this;
 	}
 
 	public PredicateBuilder addMap(Map<String, String> map) {
-		for (Entry<String, String> entry : map.entrySet()) {
-			predicates.add(entry.getKey() + "=" + entry.getValue());
+		if (map != null) {
+			for (Entry<String, String> entry : map.entrySet()) {
+				predicates.add(entry.getKey() + "=" + entry.getValue());
+			}
 		}
 		return this;
 	}
