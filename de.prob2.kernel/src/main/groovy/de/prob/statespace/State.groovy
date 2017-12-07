@@ -189,16 +189,33 @@ class State {
 	
 	
 	def Map<IEvalElement, AbstractEvalResult> getVariableValues() {
-		def cmd = new EvaluateFormulasCommand(stateSpace.getLoadedMachine().getVariableEvalElements(), this.getId());
-		stateSpace.execute(cmd)
-		cmd.getResultMap()
+		return evalFormulas(stateSpace.getLoadedMachine().getVariableEvalElements());
 	}
 	
 	def Map<IEvalElement, AbstractEvalResult> getConstantValues() {
-		def cmd = new EvaluateFormulasCommand(stateSpace.getLoadedMachine().getConstantEvalElements(), this.getId());
-		stateSpace.execute(cmd)
-		cmd.getResultMap()
+		return evalFormulas(stateSpace.getLoadedMachine().getConstantEvalElements());
 	}
+	
+	def Map<IEvalElement, AbstractEvalResult> evalFormulas(List<IEvalElement> formulas) {
+		List<IEvalElement> notEvaluatedElements = new ArrayList();
+		for (IEvalElement element : formulas) {
+			if(!values.containsKey(element)) {
+				notEvaluatedElements.add(element);
+			}
+		}
+		if(!notEvaluatedElements.isEmpty()) {
+			def cmd = new EvaluateFormulasCommand(notEvaluatedElements, this.getId());
+			stateSpace.execute(cmd);
+			values.putAll(cmd.getResultMap());
+		}
+		
+		LinkedHashMap<IEvalElement, AbstractEvalResult> result = new LinkedHashMap();
+		for (IEvalElement element : formulas) {
+			result.put(element, values.get(element));
+		}
+		return result;
+	}
+	
 	
 	
 	/**
@@ -206,10 +223,7 @@ class State {
 	 * @return list of results calculated by ProB for a given formula
 	 */
 	def List<AbstractEvalResult> eval(List<IEvalElement> formulas) {
-		//currently no caching
-		def cmd = new EvaluateFormulasCommand(formulas, this.getId());
-		stateSpace.execute(cmd)
-		cmd.getValues()
+		return new ArrayList(evalFormulas(formulas).values());
 	}
 
 
