@@ -21,10 +21,10 @@ import de.prob.unicode.UnicodeTranslator;
 
 public class EvalResult extends AbstractEvalResult {
 
-	private final static Map<String, String> EMPTY_MAP = Collections.emptyMap();
-	public final static EvalResult TRUE = new EvalResult("TRUE", EMPTY_MAP);
-	public final static EvalResult FALSE = new EvalResult("FALSE", EMPTY_MAP);
-	private final static HashMap<String, EvalResult> formulaCache = new HashMap<>();
+	private static final  Map<String, String> EMPTY_MAP = Collections.emptyMap();
+	public static final  EvalResult TRUE = new EvalResult("TRUE", EMPTY_MAP);
+	public static final  EvalResult FALSE = new EvalResult("FALSE", EMPTY_MAP);
+	private static final  HashMap<String, EvalResult> formulaCache = new HashMap<>();
 
 	private final String value;
 	private final Map<String, String> solutions;
