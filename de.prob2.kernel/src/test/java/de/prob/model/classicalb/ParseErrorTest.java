@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.prob.Main;
+import de.prob.exception.ProBError;
 import de.prob.scripting.ModelTranslationError;
 
 
@@ -20,7 +21,7 @@ public class ParseErrorTest {
 		api = Main.getInjector().getInstance(Api.class);
 	}
 
-	@Test(expected = ModelTranslationError.class)
+	@Test(expected = ProBError.class)
 	public void testLoadBMachineWithParseError() throws IOException, ModelTranslationError {
 		api.b_load("src" + File.separator + "test" + File.separator + "resources" + File.separator + "b"
 				+ File.separator + "ParseError.mch");
