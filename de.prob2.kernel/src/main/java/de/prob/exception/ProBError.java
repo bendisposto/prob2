@@ -68,6 +68,6 @@ public class ProBError extends RuntimeException {
 	}
 
 	public List<ErrorItem> getErrors() {
-		return Collections.unmodifiableList(this.errorItems);
+		return this.errorItems == null ? null : Collections.unmodifiableList(this.errorItems);
 	}
 }
