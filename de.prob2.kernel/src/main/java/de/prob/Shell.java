@@ -6,13 +6,13 @@ import java.io.FilenameFilter;
 
 import javax.script.ScriptEngine;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 
 import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.ScriptEngineProvider;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class Shell {
 
@@ -26,7 +26,7 @@ class Shell {
 		this.ProBs = ProBs;
 	}
 
-	private void runScript(final String dir, final File script, final boolean silent) throws Throwable {
+	public void runScript(final File script, final boolean silent) throws Throwable {
 		if (script.isDirectory()) {
 			long time = System.currentTimeMillis();
 			File[] files = script.listFiles(new FilenameFilter() {
@@ -37,7 +37,7 @@ class Shell {
 			});
 			if (files != null) {
 				for (File file : files) {
-					runScript(script.getAbsolutePath(), file, silent);
+					runScript(file, silent);
 				}
 				if (!silent) {
 					System.out.println("TOTAL TIME: " + (System.currentTimeMillis() - time));
@@ -75,9 +75,5 @@ class Shell {
 
 	public void runScript(final File file) throws Throwable {
 		runScript(file, true);
-	}
-
-	public void runScript(final File file, final boolean silent) throws Throwable {
-		runScript(file.getAbsolutePath(), file, silent);
 	}
 }
