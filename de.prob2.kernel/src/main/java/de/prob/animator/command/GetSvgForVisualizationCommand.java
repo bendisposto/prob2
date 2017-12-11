@@ -21,7 +21,8 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 		EXPR_AS_GRAPH("expr_as_graph"), 
 		FORMULA_TREE("formula_tree"), 
 		TRANSITION_DIAGRAM("transition_diagram"), 
-		PREDICATE_DEPENDENCY("predicate_dependency");
+		PREDICATE_DEPENDENCY("predicate_dependency"),
+		STATE_SPACE("state_space");
 		
 		private String option;
 		
