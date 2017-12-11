@@ -72,8 +72,4 @@ class Shell {
 			System.out.println(" - " + res.toString() + " (" + String.format("%.4g", seconds) + " s)");
 		}
 	}
-
-	public void runScript(final File file) throws Throwable {
-		runScript(file, true);
-	}
 }
