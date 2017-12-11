@@ -40,7 +40,8 @@ class CommandProcessor {
 			pto.printAtom("true");
 			query = pto.fullstop().toString();
 		}
-		logger.debug("SEND QUERY: {}", trimString(query, 200));
+		if (logger.isDebugEnabled())
+			logger.debug("SEND QUERY: {}", trimString(query, 200));
 		String result = cli.send(query);
 
 		final Start ast = parseResult(result);
