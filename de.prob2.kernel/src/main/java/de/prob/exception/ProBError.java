@@ -14,14 +14,14 @@ public class ProBError extends RuntimeException {
 
 	private static String formatMessageAndErrors(final String message, final List<ErrorItem> errors) {
 		final StringBuilder out = new StringBuilder();
-		
+
 		if (message != null && !message.isEmpty()) {
 			out.append(message);
 			if (errors != null) {
 				out.append('\n');
 			}
 		}
-		
+
 		if (errors != null) {
 			if (errors.isEmpty()) {
 				out.append("ProB returned no error messages.");
@@ -33,15 +33,14 @@ public class ProBError extends RuntimeException {
 				}
 			}
 		}
-		
+
 		return out.toString();
 	}
 
 	public ProBError(final String message, final List<ErrorItem> errors, final Throwable cause) {
 		super(formatMessageAndErrors(message, errors), cause);
-		
 		this.originalMessage = message;
-		this.errorItems = new ArrayList<>(errors);
+		this.errorItems = errors == null ? Collections.emptyList() : new ArrayList<>(errors);
 	}
 
 	public ProBError(final String message, final List<ErrorItem> errors) {
