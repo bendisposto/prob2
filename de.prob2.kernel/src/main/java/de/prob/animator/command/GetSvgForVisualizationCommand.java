@@ -1,5 +1,7 @@
 package de.prob.animator.command;
 
+import java.io.File;
+
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -38,9 +40,12 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 	private static final String PROLOG_COMMAND_NAME = "call_dot_command_and_dot";
 	
 	private Option option;
+
+	private File file;
 	
-	public GetSvgForVisualizationCommand(Option option) {
+	public GetSvgForVisualizationCommand(Option option, File file) {
 		this.option = option;
+		this.file = file;
 	}
 	
 	@Override
@@ -49,7 +54,7 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 		pto.printAtom(option.getOption());
 		pto.emptyList();
 		pto.printAtom("svg");
-		pto.printAtom("./out.svg");
+		pto.printAtom(file.getAbsolutePath().toString());
 		pto.closeTerm();
 	}
 
