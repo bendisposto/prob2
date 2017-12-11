@@ -180,10 +180,11 @@ public class Main {
 		    logger.info("probcli version: {}",api.getVersion().toString());
 
 			main.run(args);
-		} catch (Throwable e) {
-			getInjector().getInstance(ProBInstanceProvider.class).shutdownAll();
+		} catch (Exception e) {
 			logger.error("Unhandled exception", e);
 			System.exit(-1);
+		} finally {
+			getInjector().getInstance(ProBInstanceProvider.class).shutdownAll();
 		}
 		System.exit(0);
 	}
