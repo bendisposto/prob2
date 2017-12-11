@@ -89,14 +89,6 @@ public class Main {
 	public static final String PROB_HOME = getProBDirectory();
 
 	/**
-	 * String representing the log configuration file. This defaults to
-	 * "production.xml" if the System property "PROB_LOG_CONFIG" is not defined.
-	 * Otherwise, the system property is used.
-	 */
-	public static final String LOG_CONFIG = System.getProperty("PROB_LOG_CONFIG") == null ? "production.xml"
-			: System.getProperty("PROB_LOG_CONFIG");
-
-	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
 	 * should NOT be instantiated by hand.
 	 *
@@ -181,8 +173,6 @@ public class Main {
 	public static void main(final String[] args) {
 
 		try {
-			System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
-
 			Main main = getInjector().getInstance(Main.class);
 			Api api = getInjector().getInstance(Api.class);
 		    logger.info("probcli version: {}",api.getVersion().toString());
