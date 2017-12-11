@@ -3,8 +3,10 @@ package de.prob;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.IOException;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import com.google.inject.Inject;
 
@@ -26,7 +28,7 @@ class Shell {
 		this.ProBs = ProBs;
 	}
 
-	public void runScript(final File script, final boolean silent) throws Throwable {
+	public void runScript(final File script, final boolean silent) throws IOException, ScriptException {
 		if (script.isDirectory()) {
 			long time = System.currentTimeMillis();
 			File[] files = script.listFiles(new FilenameFilter() {
@@ -48,7 +50,7 @@ class Shell {
 		}
 	}
 
-	private void runSingleScript(final String dir, final File scriptFile, final boolean silent) throws Throwable {
+	private void runSingleScript(final String dir, final File scriptFile, final boolean silent) throws IOException, ScriptException {
 		long time = System.currentTimeMillis();
 		logger.debug("Runnning script: {}", scriptFile.getAbsolutePath());
 		ScriptEngine executor = sep.get();
@@ -59,11 +61,15 @@ class Shell {
 			System.out.print(scriptFile.getName());
 		}
 		Object res = null;
-		try {
-			FileReader fr = new FileReader(scriptFile);
+		try (FileReader fr = new FileReader(scriptFile)) {
 			res = executor.eval(fr);
-		} catch (Throwable e) {
-			System.err.println("\n" + e.getLocalizedMessage());
+		} catch (IOException e) {
+			System.err.printf("Could not read script %s: %s%n", scriptFile, e);
+			logger.error("Could not read script", e);
+			throw e;
+		} catch (ScriptException e) {
+			System.err.printf("Exception thrown by script %s: %s%n", scriptFile, e);
+			logger.error("Exception thrown by script", e);
 			throw e;
 		}
 		ProBs.shutdownAll();

@@ -8,6 +8,8 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
+import javax.script.ScriptException;
+
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -110,7 +112,7 @@ public class Main {
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
-	private void run(final String[] args) throws Throwable {
+	private void run(final String[] args) throws IOException, ScriptException {
 
 		try {
 			CommandLine line = parser.parse(options, args);
