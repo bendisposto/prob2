@@ -40,7 +40,7 @@ public class ProBError extends RuntimeException {
 	public ProBError(final String message, final List<ErrorItem> errors, final Throwable cause) {
 		super(formatMessageAndErrors(message, errors), cause);
 		this.originalMessage = message;
-		this.errorItems = errors == null ? Collections.emptyList() : new ArrayList<>(errors);
+		this.errorItems = errors == null ? null : new ArrayList<>(errors);
 	}
 
 	public ProBError(final String message, final List<ErrorItem> errors) {
