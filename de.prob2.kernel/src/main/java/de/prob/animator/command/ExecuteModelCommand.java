@@ -38,10 +38,10 @@ public class ExecuteModelCommand extends AbstractCommand implements IStateSpaceM
 		MAXIMUM_NR_OF_STEPS_REACHED, DEADLOCK, ERROR, INTERNAL_ERROR, TIME_OUT
 	}
 
-	public ExecuteModelCommand(final StateSpace statespace, final State startstate, final int maxNrSteps,
+	public ExecuteModelCommand(final StateSpace statespace, final State startState, final int maxNrSteps,
 			final boolean continueAfterErrors, final Integer timeoutInMS) {
 		this.statespace = statespace;
-		this.startstate = startstate;
+		this.startstate = startState;
 		this.maxNrSteps = maxNrSteps;
 		this.continueAfterErrors = continueAfterErrors;
 		this.timeoutInMS = timeoutInMS;
@@ -113,7 +113,7 @@ public class ExecuteModelCommand extends AbstractCommand implements IStateSpaceM
 	}
 
 	@Override
-	public Trace getTrace(final StateSpace s) throws RuntimeException {
+	public Trace getTrace(final StateSpace s) {
 		Trace t = s.getTrace(startstate.getId());
 		return t.addTransitions(resultTrace);
 	}
