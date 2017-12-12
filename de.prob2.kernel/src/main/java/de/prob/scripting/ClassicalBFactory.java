@@ -104,27 +104,8 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 			logger.trace("Done parsing '{}'", f.getAbsolutePath());
 			return rml;
 		} catch (BCompoundException e) {
-			throw convertParserExceptionToProBException(e);
+			throw new ProBError(e);
 		}
-	}
-
-	private ProBError convertParserExceptionToProBException(BCompoundException e) {
-		List<ErrorItem> errorItems = new ArrayList<>();
-		for (BException bException : e.getBExceptions()) {
-			List<ErrorItem.Location> errorItemlocations = new ArrayList<>();
-			if (bException.getFilename() != null && bException.getCause() != null) {
-				List<de.be4.classicalb.core.parser.exceptions.BException.Location> parserlocations = bException
-						.getLocations();
-				for (de.be4.classicalb.core.parser.exceptions.BException.Location location : parserlocations) {
-					ErrorItem.Location loc = new Location(bException.getFilename(), location.getStartLine(),
-							location.getStartColumn(), location.getEndLine(), location.getEndColumn());
-					errorItemlocations.add(loc);
-				}
-			}
-			ErrorItem item = new ErrorItem(bException.getMessage(), ErrorItem.Type.ERROR, errorItemlocations);
-			errorItems.add(item);
-		}
-		throw new ProBError(errorItems);
 	}
 
 	/**
@@ -148,7 +129,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 			ast = bparser.parseFile(model, false);
 			return ast;
 		} catch (BCompoundException e) {
-			throw convertParserExceptionToProBException(e);
+			throw new ProBError(e);
 		}
 	}
 
@@ -159,7 +140,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 			ast = bparser.parse(model, false);
 			return ast;
 		} catch (BCompoundException e) {
-			throw convertParserExceptionToProBException(e);
+			throw new ProBError(e);
 		}
 	}
 
