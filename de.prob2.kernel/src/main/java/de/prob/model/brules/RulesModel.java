@@ -9,27 +9,20 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
-import de.be4.classicalb.core.parser.rules.AbstractOperation;
-import de.be4.classicalb.core.parser.rules.RuleOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
 
 import de.prob.animator.command.LoadRulesProjectCommand;
-import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.brules.RuleResult.RESULT_ENUM;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph;
 import de.prob.model.representation.ModelElementList;
 import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
-import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
-import de.prob.statespace.Trace;
 
 public class RulesModel extends AbstractModel {
 
@@ -102,5 +95,5 @@ public class RulesModel extends AbstractModel {
 	public RulesProject getRulesProject() {
 		return this.project;
 	}
-
+	
 }

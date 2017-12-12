@@ -38,7 +38,7 @@ public class RulesMachineRun {
 	private final Map<String, String> proBCorePreferences;
 	private final Map<String, String> constantValuesToBeInjected;
 
-	private RuleResults rulesResult;
+	private RuleResults ruleResults;
 	private int maxNumberOfReportedCounterExamples = 50;
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
@@ -128,7 +128,7 @@ public class RulesMachineRun {
 		}
 		final String extractResultsTimer = "extractResults";
 		StopWatch.start(extractResultsTimer);
-		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
+		this.ruleResults = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
 		logger.info("Time to extract results form final state: {}", StopWatch.stop(extractResultsTimer));
 
@@ -186,7 +186,7 @@ public class RulesMachineRun {
 	}
 
 	public RuleResults getRuleResults() {
-		return this.rulesResult;
+		return this.ruleResults;
 	}
 
 	public ExecuteRun getExecuteRun() {

@@ -16,6 +16,7 @@ import org.junit.Test;
 import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 
 import de.be4.classicalb.core.parser.rules.RuleOperation;
+import de.prob.model.brules.ComputationResults;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResult.CounterExample;
 import de.prob.model.brules.RuleResult.RESULT_ENUM;
@@ -23,6 +24,7 @@ import de.prob.model.brules.RuleResults;
 import de.prob.model.brules.RuleResults.ResultSummary;
 import de.prob.model.brules.RulesMachineRun;
 import de.prob.model.brules.RulesMachineRunner;
+import de.prob.statespace.State;
 
 public class RulesMachineTest {
 
@@ -57,12 +59,14 @@ public class RulesMachineTest {
 		assertEquals(NOT_CHECKED, ruleResults.getRuleResult("Rule3").getResultEnum());
 		assertEquals("Rule2", ruleResults.getRuleResult("Rule3").getFailedDependencies().get(0));
 	}
-	
+
 	@Test
 	public void testRulesMachineExample() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineExample.rmch");
 		assertEquals(false, rulesMachineRun.hasError());
-		System.out.println(rulesMachineRun.getRuleResults());
+		State finalState = rulesMachineRun.getExecuteRun().getExecuteModelCommand().getFinalState();
+		ComputationResults compResult = new ComputationResults(rulesMachineRun.getRulesProject(), finalState);
+		assertEquals(ComputationResults.RESULT.EXECUTED, compResult.getResult("COMP_comp1"));
 	}
 
 	@Test
@@ -131,7 +135,6 @@ public class RulesMachineTest {
 		rulesMachineRun.start();
 		assertEquals(12, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getCounterExamples().size());
 	}
-
 
 	@Test
 	public void testMachineWithFailingRule() {
