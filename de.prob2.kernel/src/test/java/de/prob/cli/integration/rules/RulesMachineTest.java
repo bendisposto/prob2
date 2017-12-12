@@ -11,22 +11,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
 
 import de.be4.classicalb.core.parser.rules.RuleOperation;
+import de.prob.Main;
 import de.prob.model.brules.ComputationResults;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResult.CounterExample;
 import de.prob.model.brules.RuleResult.RESULT_ENUM;
 import de.prob.model.brules.RuleResults;
 import de.prob.model.brules.RuleResults.ResultSummary;
+import de.prob.scripting.Api;
 import de.prob.model.brules.RulesMachineRun;
 import de.prob.model.brules.RulesMachineRunner;
+import de.prob.model.brules.RulesModel;
 import de.prob.statespace.State;
+import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 
 public class RulesMachineTest {
+
+	private Api api;
+
+	@Before
+	public void setupClass() {
+		api = Main.getInjector().getInstance(Api.class);
+	}
 
 	static final String dir = "src/test/resources/brules/";
 
@@ -67,6 +80,17 @@ public class RulesMachineTest {
 		State finalState = rulesMachineRun.getExecuteRun().getExecuteModelCommand().getFinalState();
 		ComputationResults compResult = new ComputationResults(rulesMachineRun.getRulesProject(), finalState);
 		assertEquals(ComputationResults.RESULT.EXECUTED, compResult.getResult("COMP_comp1"));
+	}
+
+	@Test
+	public void testExecuteOperation() throws IOException {
+		StateSpace s = api.brules_load(dir + "RulesMachineExample.rmch");
+		RulesModel model = (RulesModel) s.getModel();
+		Trace trace = new Trace(s);
+		trace = model.executeOperationAndDependencies(trace, "RULE_BasedOnValue1");
+		RuleResults ruleResults = new RuleResults(model.getRulesProject(), trace.getCurrentState(), 100);
+		System.out.println(ruleResults);
+		trace = model.executeOperationAndDependencies(trace, "RULE_BasedOnValue1");
 	}
 
 	@Test
