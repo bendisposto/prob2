@@ -22,25 +22,36 @@ public class RuleResults {
 	private ResultSummary summary;
 
 	public RuleResults(RulesProject project, State state, int maxNumberOfReportedCounterExamples) {
-		final Map<String, AbstractOperation> operationsMap = project.getOperationsMap();
+		this(getRuleOperations(project), state, maxNumberOfReportedCounterExamples);
+	}
+
+	private static Set<RuleOperation> getRuleOperations(RulesProject project) {
+		final Set<RuleOperation> result = new HashSet<>();
+		for (AbstractOperation operation : project.getOperationsMap().values()) {
+			if (operation instanceof RuleOperation) {
+				result.add((RuleOperation) operation);
+			}
+		}
+		return result;
+	}
+
+	public RuleResults(Set<RuleOperation> ruleOperations, State state, int maxNumberOfReportedCounterExamples) {
 		final ArrayList<RuleOperation> ruleList = new ArrayList<>();
 		final List<IEvalElement> evalElements = new ArrayList<>();
-		for (AbstractOperation operation : operationsMap.values()) {
-			if (operation instanceof RuleOperation) {
-				RuleOperation rule = (RuleOperation) operation;
-				ruleList.add(rule);
-				ClassicalB ruleObject = new ClassicalB(rule.getName());
-				evalElements.add(ruleObject);
-				// get number of counter examples
-				String numberOfCtsFormula = String.format("card(%s)", rule.getCounterExampleVariableName());
-				ClassicalB numberOfCtsFormulaObject = new ClassicalB(numberOfCtsFormula);
-				evalElements.add(numberOfCtsFormulaObject);
-				// get the (restricted) set of counter examples
-				String ctFormula = String.format("SORT(%s)[1..%s]", rule.getCounterExampleVariableName(),
-						maxNumberOfReportedCounterExamples);
-				ClassicalB counterExampleObject = new ClassicalB(ctFormula);
-				evalElements.add(counterExampleObject);
-			}
+		for (AbstractOperation operation : ruleOperations) {
+			RuleOperation rule = (RuleOperation) operation;
+			ruleList.add(rule);
+			ClassicalB ruleObject = new ClassicalB(rule.getName());
+			evalElements.add(ruleObject);
+			// get number of counter examples
+			String numberOfCtsFormula = String.format("card(%s)", rule.getCounterExampleVariableName());
+			ClassicalB numberOfCtsFormulaObject = new ClassicalB(numberOfCtsFormula);
+			evalElements.add(numberOfCtsFormulaObject);
+			// get the (restricted) set of counter examples
+			String ctFormula = String.format("SORT(%s)[1..%s]", rule.getCounterExampleVariableName(),
+					maxNumberOfReportedCounterExamples);
+			ClassicalB counterExampleObject = new ClassicalB(ctFormula);
+			evalElements.add(counterExampleObject);
 		}
 		List<AbstractEvalResult> evalResults = state.eval(evalElements);
 		for (int i = 0; i < ruleList.size(); i++) {
