@@ -2,6 +2,7 @@ package de.prob.animator.command;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -44,12 +45,12 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 
 	private File file;
 	
-	private ArrayList<String> formulas;
+	private List<String> formulas;
 	
-	public GetSvgForVisualizationCommand(Option option, File file, ArrayList<String> formulas) {
+	public GetSvgForVisualizationCommand(Option option, File file, List<String> formulas) {
 		this.option = option;
 		this.file = file;
-		this.formulas = formulas;
+		this.formulas = new ArrayList<>(formulas);
 	}
 	
 	@Override
