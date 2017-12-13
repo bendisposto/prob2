@@ -58,7 +58,7 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 		pto.printAtom(option.getOption());
 		pto.openList();
 		for(String formula : formulas) {
-			pto.printString(formula);
+			pto.printAtom(formula);
 		}
 		pto.closeList();
 		pto.printAtom("svg");
