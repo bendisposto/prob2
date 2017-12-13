@@ -1,6 +1,7 @@
 package de.prob.animator.command;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -43,16 +44,23 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 
 	private File file;
 	
-	public GetSvgForVisualizationCommand(Option option, File file) {
+	private ArrayList<String> formulas;
+	
+	public GetSvgForVisualizationCommand(Option option, File file, ArrayList<String> formulas) {
 		this.option = option;
 		this.file = file;
+		this.formulas = formulas;
 	}
 	
 	@Override
 	public void writeCommand(IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtom(option.getOption());
-		pto.emptyList();
+		pto.openList();
+		for(String formula : formulas) {
+			pto.printString(formula);
+		}
+		pto.closeList();
 		pto.printAtom("svg");
 		pto.printAtom(file.getAbsolutePath().toString());
 		pto.closeTerm();
@@ -60,7 +68,7 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 
 	@Override
 	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
-		
+				
 	}
 
 }
