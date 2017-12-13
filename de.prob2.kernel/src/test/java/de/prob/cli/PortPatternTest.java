@@ -1,12 +1,10 @@
 package de.prob.cli;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-import test.AbstractUnitTest;
+import static org.junit.Assert.*;
 
-public class PortPatternTest extends AbstractUnitTest {
+public class PortPatternTest {
 
 	@Test
 	public void testSuccess1() {

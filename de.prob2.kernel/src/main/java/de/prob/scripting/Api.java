@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.be4.classicalb.core.parser.ParsingBehaviour;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.*;
 import de.be4.classicalb.core.parser.rules.RulesProject;
@@ -40,8 +41,9 @@ public class Api {
 	}
 
 	/**
-	 * A {@link FactoryProvider} and {@link Provider}{@code <}{@link IAnimator}{@code >} are injected into an api
-	 * object at startup
+	 * A {@link FactoryProvider} and
+	 * {@link Provider}{@code <}{@link IAnimator}{@code >} are injected into an
+	 * api object at startup
 	 *
 	 * @param modelFactoryProvider
 	 * @param animatorProvider
@@ -61,7 +63,8 @@ public class Api {
 		x.shutdown();
 	}
 
-	public StateSpace eventb_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+	public StateSpace eventb_load(final String file, final Map<String, String> prefs)
+			throws IOException, ModelTranslationError {
 		String fileName = file;
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (fileName.endsWith(".eventb")) {
@@ -100,7 +103,8 @@ public class Api {
 	 * @throws ModelTranslationError
 	 * @throws IOException
 	 */
-	public StateSpace b_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+	public StateSpace b_load(final String file, final Map<String, String> prefs)
+			throws IOException, ModelTranslationError {
 		ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
 		ExtractedModel<ClassicalBModel> extracted = bFactory.extract(file);
 		StateSpace s = extracted.load(prefs);
@@ -118,7 +122,8 @@ public class Api {
 		return b_load(file, Collections.<String, String>emptyMap());
 	}
 
-	public StateSpace b_load(final Start ast, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+	public StateSpace b_load(final Start ast, final Map<String, String> prefs)
+			throws IOException, ModelTranslationError {
 		ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
 		ExtractedModel<ClassicalBModel> extracted = bFactory.create(ast);
 		StateSpace s = extracted.load(prefs);
@@ -129,7 +134,8 @@ public class Api {
 		return b_load(ast, Collections.<String, String>emptyMap());
 	}
 
-	public StateSpace tla_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+	public StateSpace tla_load(final String file, final Map<String, String> prefs)
+			throws IOException, ModelTranslationError {
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
 		ExtractedModel<ClassicalBModel> extracted = tlaFactory.extract(file);
 		StateSpace s = extracted.load(prefs);
@@ -140,7 +146,7 @@ public class Api {
 		return tla_load(file, Collections.<String, String>emptyMap());
 	}
 
-	public StateSpace brules_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+	public StateSpace brules_load(final String file, final Map<String, String> prefs) throws IOException {
 		RulesModelFactory bRulesFactory = modelFactoryProvider.getBRulesFactory();
 		RulesProject rulesProject = new RulesProject();
 		ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
@@ -149,8 +155,8 @@ public class Api {
 		rulesProject.parseProject(new File(file));
 		rulesProject.checkAndTranslateProject();
 		if (rulesProject.hasErrors()) {
-			BException bException = rulesProject.getBExceptionList().get(0);
-			throw new ModelTranslationError(bException.getMessage(), bException);
+			BCompoundException compound = new BCompoundException(rulesProject.getBExceptionList());
+			throw new ProBError(compound);
 		}
 
 		ExtractedModel<RulesModel> extracted = bRulesFactory.extract(new File(file), rulesProject);
@@ -158,34 +164,37 @@ public class Api {
 		return s;
 	}
 
-	public StateSpace brules_load(final String file) throws IOException, ModelTranslationError {
+	public StateSpace brules_load(final String file) throws IOException {
 		return brules_load(file, Collections.<String, String>emptyMap());
 	}
 
 	/**
-	 * Loads a {@link StateSpace} from the given CSP file. If the user does not have
-	 * the cspm parser installed, an Exception is thrown informing the user that
-	 * they need to install it.
+	 * Loads a {@link StateSpace} from the given CSP file. If the user does not
+	 * have the cspm parser installed, an Exception is thrown informing the user
+	 * that they need to install it.
 	 *
 	 * @param file
 	 */
-	public StateSpace csp_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+	public StateSpace csp_load(final String file, final Map<String, String> prefs)
+			throws IOException, ModelTranslationError {
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
 		StateSpace s = null;
 		try {
 			ExtractedModel<CSPModel> extracted = cspFactory.extract(file);
 			s = extracted.load(prefs);
 		} catch (ProBError error) {
-			throw new CliError("Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory", error);
+			throw new CliError(
+					"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory",
+					error);
 		}
 
 		return s;
 	}
 
 	/**
-	 * Loads a {@link StateSpace} from the given CSP file. If the user does not have
-	 * the cspm parser installed, an Exception is thrown informing the user that
-	 * they need to install it.
+	 * Loads a {@link StateSpace} from the given CSP file. If the user does not
+	 * have the cspm parser installed, an Exception is thrown informing the user
+	 * that they need to install it.
 	 *
 	 * @param file
 	 */
@@ -208,11 +217,14 @@ public class Api {
 
 	/**
 	 * @return Returns a String representation of the currently available
-	 * commands for the Api object. Intended to ease use in the Groovy
-	 * console.
+	 *         commands for the Api object. Intended to ease use in the Groovy
+	 *         console.
 	 */
 	public String help() {
-		return ("Api Commands: \n\n ClassicalBModel b_load(String PathToFile): load .mch files \n" + " CSPModel csp_load(String PathToFile): load .csp files \n" + " toFile(StateSpace s): save StateSpace\n" + " readFile(): reload saved StateSpace\n" + " shutdown(ProBInstance x): shutdown ProBInstance\n" + " help(): print out available commands");
+		return ("Api Commands: \n\n ClassicalBModel b_load(String PathToFile): load .mch files \n"
+				+ " CSPModel csp_load(String PathToFile): load .csp files \n"
+				+ " toFile(StateSpace s): save StateSpace\n" + " readFile(): reload saved StateSpace\n"
+				+ " shutdown(ProBInstance x): shutdown ProBInstance\n" + " help(): print out available commands");
 	}
 
 	public Logger getLogger() {

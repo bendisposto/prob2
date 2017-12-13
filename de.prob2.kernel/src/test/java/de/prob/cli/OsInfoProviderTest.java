@@ -1,15 +1,13 @@
 package de.prob.cli;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.junit.Test;
 
-import test.AbstractUnitTest;
+import static org.junit.Assert.*;
 
-public class OsInfoProviderTest extends AbstractUnitTest {
+public class OsInfoProviderTest {
 
 	static final HashMap<String, String> supported = new HashMap<String, String>();
 	static final String[] unsupported = { "OS/2", "Solaris	", "SunOS",

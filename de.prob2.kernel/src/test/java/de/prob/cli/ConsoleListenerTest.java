@@ -7,12 +7,10 @@ import org.junit.Test;
 
 import org.slf4j.Logger;
 
-import test.AbstractUnitTest;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public class ConsoleListenerTest extends AbstractUnitTest {
+public class ConsoleListenerTest {
 
 	@Test
 	public void testMultiLineRead() throws Exception {
