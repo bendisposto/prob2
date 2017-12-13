@@ -65,14 +65,6 @@ public class ProBError extends RuntimeException {
 		this(cause.getMessage(), null, cause);
 	}
 
-	public String getOriginalMessage() {
-		return this.originalMessage;
-	}
-
-	public List<ErrorItem> getErrors() {
-		return this.errorItems == null ? null : Collections.unmodifiableList(this.errorItems);
-	}
-
 	public ProBError(BCompoundException e) {
 		this(convertParserExceptionToErrorItems(e));
 	}
@@ -85,7 +77,7 @@ public class ProBError extends RuntimeException {
 				List<BException.Location> parserlocations = bException.getLocations();
 				for (BException.Location location : parserlocations) {
 					ErrorItem.Location loc = new ErrorItem.Location(bException.getFilename(), location.getStartLine(),
-							location.getStartColumn(), location.getEndLine(), location.getEndColumn());
+						location.getStartColumn(), location.getEndLine(), location.getEndColumn());
 					errorItemlocations.add(loc);
 				}
 			}
@@ -93,5 +85,13 @@ public class ProBError extends RuntimeException {
 			errorItems.add(item);
 		}
 		return errorItems;
+	}
+
+	public String getOriginalMessage() {
+		return this.originalMessage;
+	}
+
+	public List<ErrorItem> getErrors() {
+		return this.errorItems == null ? null : Collections.unmodifiableList(this.errorItems);
 	}
 }
