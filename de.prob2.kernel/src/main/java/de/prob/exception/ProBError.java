@@ -7,7 +7,6 @@ import java.util.List;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.domainobjects.ErrorItem;
-import de.prob.animator.domainobjects.ErrorItem.Location;
 
 public class ProBError extends RuntimeException {
 	private static final long serialVersionUID = 1L;
@@ -83,10 +82,9 @@ public class ProBError extends RuntimeException {
 		for (BException bException : e.getBExceptions()) {
 			List<ErrorItem.Location> errorItemlocations = new ArrayList<>();
 			if (bException.getFilename() != null && bException.getCause() != null) {
-				List<de.be4.classicalb.core.parser.exceptions.BException.Location> parserlocations = bException
-						.getLocations();
-				for (de.be4.classicalb.core.parser.exceptions.BException.Location location : parserlocations) {
-					ErrorItem.Location loc = new Location(bException.getFilename(), location.getStartLine(),
+				List<BException.Location> parserlocations = bException.getLocations();
+				for (BException.Location location : parserlocations) {
+					ErrorItem.Location loc = new ErrorItem.Location(bException.getFilename(), location.getStartLine(),
 							location.getStartColumn(), location.getEndLine(), location.getEndColumn());
 					errorItemlocations.add(loc);
 				}
