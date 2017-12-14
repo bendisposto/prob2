@@ -1,12 +1,9 @@
 package de.prob.model.brules;
 
 import java.util.Map;
-import java.util.Set;
 
-import com.google.inject.Provider;
 
 import de.prob.animator.command.ExecuteModelCommand;
-import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.ExtractedModel;
 import de.prob.scripting.StateSpaceProvider;
@@ -23,8 +20,7 @@ import org.slf4j.LoggerFactory;
  * 
  * <pre>
  * 1) loads an ExtractedModel 
- * 2) unsubscribes all formulas (reduces evaluation efforts) 
- * 3) run the execute command.
+ * 2) run the execute command.
  * </pre>
  * 
  * The final state of the probcli execute run is stored. Moreover, all errors
@@ -61,8 +57,6 @@ public class ExecuteRun {
 		getOrCreateStateSpace();
 		logger.info("Time to load statespace: {} ms", StopWatch.stop(loadStateSpaceTimer));
 
-		unsubscribeAllFormulas(this.stateSpace);
-
 		final String executeTimer = "executeTimer";
 		StopWatch.start(executeTimer);
 		executeModel(this.stateSpace);
@@ -79,12 +73,8 @@ public class ExecuteRun {
 			setStaticStateSpace(stateSpace);
 		} else {
 			// reuse the previous state space
-			StateSpaceProvider ssProvider = new StateSpaceProvider(new Provider<StateSpace>() {
-				@Override
-				public StateSpace get() {
-					return staticStateSpace;
-				}
-			});
+			StateSpaceProvider ssProvider = new StateSpaceProvider(()-> stateSpace);
+			
 			RulesModel model = (RulesModel) extractedModel.getModel();
 			ssProvider.loadFromCommand(model, null, prefs, model.getLoadCommand());
 			this.stateSpace = staticStateSpace;
@@ -96,13 +86,6 @@ public class ExecuteRun {
 			staticStateSpace.kill();
 		}
 		staticStateSpace = stateSpace2;
-	}
-
-	private void unsubscribeAllFormulas(StateSpace stateSpace) {
-		Set<IEvalElement> subscribedFormulas = stateSpace.getSubscribedFormulas();
-		for (IEvalElement iEvalElement : subscribedFormulas) {
-			stateSpace.unsubscribe(this, iEvalElement);
-		}
 	}
 
 	private void executeModel(final StateSpace stateSpace) {
