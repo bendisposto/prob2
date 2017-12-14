@@ -73,7 +73,7 @@ public class ExecuteRun {
 			setStaticStateSpace(stateSpace);
 		} else {
 			// reuse the previous state space
-			StateSpaceProvider ssProvider = new StateSpaceProvider(()-> stateSpace);
+			StateSpaceProvider ssProvider = new StateSpaceProvider(()-> staticStateSpace);
 			
 			RulesModel model = (RulesModel) extractedModel.getModel();
 			ssProvider.loadFromCommand(model, null, prefs, model.getLoadCommand());
