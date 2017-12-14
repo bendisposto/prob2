@@ -434,9 +434,7 @@ public class StateSpace implements IAnimator {
 				}
 			}
 		}
-		if(!subscribeCmds.isEmpty()) {
-			execute(new ComposedCommand(subscribeCmds));
-		}
+		execute(new ComposedCommand(subscribeCmds));
 		return success;
 	}
 
@@ -480,26 +478,20 @@ public class StateSpace implements IAnimator {
 	 *         false if none of the formulas were subscribed to begin with)
 	 */
 	public boolean unsubscribe(final Object subscriber, final List<IEvalElement> formulas) {
-		return this.unsubscribe(subscriber, formulas, false);
-	}
-	
-	public boolean unsubscribe(final Object subscriber, final List<IEvalElement> formulas, boolean unregister) {
 		boolean success = false;
 		final List<AbstractCommand> unsubscribeCmds = new ArrayList<>();
 		for (IEvalElement formula : formulas) {
 			if (formulaRegistry.containsKey(formula)) {
 				final WeakHashMap<Object, Object> subscribers = formulaRegistry.get(formula);
 				subscribers.remove(subscriber);
-				if (subscribers.isEmpty() && unregister) {
+				if (subscribers.isEmpty()) {
 					subscribedFormulas.remove(formula);
 					unsubscribeCmds.add(new UnregisterFormulaCommand(formula));
 				}
 				success = true;
 			}
 		}
-		if(!unsubscribeCmds.isEmpty()) {
-			execute(new ComposedCommand(unsubscribeCmds));	
-		}
+		execute(new ComposedCommand(unsubscribeCmds));
 		return success;
 	}
 
