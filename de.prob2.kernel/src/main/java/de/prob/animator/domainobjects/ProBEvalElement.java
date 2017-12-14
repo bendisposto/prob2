@@ -49,12 +49,13 @@ public class ProBEvalElement extends AbstractEvalElement {
 		final ProBEvalElement other = (ProBEvalElement)obj;
 		return Objects.equals(this.ast, other.ast)
 			&& Objects.equals(this.getCode(), other.getCode())
-			&& Objects.equals(this.expansion(), other.expansion());
+			&& Objects.equals(this.expansion(), other.expansion())
+			&& Objects.equals(this.uuid, other.uuid)	;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.ast, this.getCode(), this.expansion());
+		return Objects.hash(this.ast, this.getCode(), this.expansion(), this.uuid.getUUID());
 	}
 	
 	@Override
