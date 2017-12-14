@@ -434,7 +434,9 @@ public class StateSpace implements IAnimator {
 				}
 			}
 		}
-		execute(new ComposedCommand(subscribeCmds));
+		if (!subscribeCmds.isEmpty()) {
+			execute(new ComposedCommand(subscribeCmds));
+		}
 		return success;
 	}
 
@@ -477,21 +479,28 @@ public class StateSpace implements IAnimator {
 	 * @return whether or not the unsubscription was successful (will return
 	 *         false if none of the formulas were subscribed to begin with)
 	 */
+
 	public boolean unsubscribe(final Object subscriber, final List<IEvalElement> formulas) {
+		return this.unsubscribe(subscriber, formulas, false);
+	}
+
+	public boolean unsubscribe(final Object subscriber, final List<IEvalElement> formulas, boolean unregister) {
 		boolean success = false;
 		final List<AbstractCommand> unsubscribeCmds = new ArrayList<>();
 		for (IEvalElement formula : formulas) {
 			if (formulaRegistry.containsKey(formula)) {
 				final WeakHashMap<Object, Object> subscribers = formulaRegistry.get(formula);
 				subscribers.remove(subscriber);
-				if (subscribers.isEmpty()) {
+				if (subscribers.isEmpty() && unregister) {
 					subscribedFormulas.remove(formula);
 					unsubscribeCmds.add(new UnregisterFormulaCommand(formula));
 				}
 				success = true;
 			}
 		}
-		execute(new ComposedCommand(unsubscribeCmds));
+		if (!unsubscribeCmds.isEmpty()) {
+			execute(new ComposedCommand(unsubscribeCmds));
+		}
 		return success;
 	}
 
@@ -572,7 +581,7 @@ public class StateSpace implements IAnimator {
 	}
 
 	public LoadedMachine getLoadedMachine() {
-		if(this.loadedMachine ==null) {
+		if (this.loadedMachine == null) {
 			loadedMachine = new LoadedMachine(this);
 		}
 		return this.loadedMachine;
