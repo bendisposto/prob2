@@ -52,17 +52,4 @@ public class PrologAST {
 		}
 		return rightList;
 	}
-
-	/* For debugging only */
-	@SuppressWarnings("unused")
-	private void testRun() {
-		for (int i = 0; i < astNodes.size(); i++) {
-			PrologASTNode temp = astNodes.get(i);
-			System.out.println(astNodes.get(i).toString());
-			for (PrologASTNode n : temp.getSubnodes()) {
-				System.out.println(n.toString());
-			}
-		}
-	}
-
 }
