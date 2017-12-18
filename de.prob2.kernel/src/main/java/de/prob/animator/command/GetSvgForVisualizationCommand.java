@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -45,9 +46,9 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 
 	private File file;
 	
-	private List<String> formulas;
+	private List<IEvalElement> formulas;
 	
-	public GetSvgForVisualizationCommand(Option option, File file, List<String> formulas) {
+	public GetSvgForVisualizationCommand(Option option, File file, List<IEvalElement> formulas) {
 		this.option = option;
 		this.file = file;
 		this.formulas = new ArrayList<>(formulas);
@@ -58,8 +59,8 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtom(option.getOption());
 		pto.openList();
-		for(String formula : formulas) {
-			pto.printAtom(formula);
+		for (IEvalElement formula : formulas) {
+			formula.printProlog(pto);
 		}
 		pto.closeList();
 		pto.printAtom("svg");
