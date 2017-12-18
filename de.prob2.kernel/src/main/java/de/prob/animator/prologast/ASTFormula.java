@@ -10,24 +10,29 @@ import de.prob.animator.domainobjects.ProBEvalElement;
 import de.prob.prolog.term.PrologTerm;
 
 public final class ASTFormula extends PrologASTNode{
-	private final PrologTerm formulaTerm;
+	private final PrologTerm term;
+	private final String prettyPrint;
 
-	public ASTFormula(PrologTerm formulaTerm) {
+	public ASTFormula(PrologTerm term, String prettyPrint) {
 		super(Collections.emptyList());
 
-		Objects.requireNonNull(formulaTerm, "formulaTerm");
+		Objects.requireNonNull(term, "term");
+		Objects.requireNonNull(prettyPrint, "prettyPrint");
 
-		this.formulaTerm = formulaTerm;
+		this.term = term;
+		this.prettyPrint = prettyPrint;
 	}
 
-	public PrologTerm getFormulaTerm() {
-		return this.formulaTerm;
+	public PrologTerm getTerm() {
+		return this.term;
+	}
+
+	public String getPrettyPrint() {
+		return this.prettyPrint;
 	}
 
 	public ProBEvalElement getFormula(FormulaExpand expand) {
-		final PrologTerm term = this.getFormulaTerm().getArgument(1);
-		final String prettyPrint = this.getFormulaTerm().getArgument(2).getFunctor();
-		return new ProBEvalElement(term, prettyPrint, expand);
+		return new ProBEvalElement(this.getTerm(), this.getPrettyPrint(), expand);
 	}
 
 	public ProBEvalElement getFormula() {
@@ -37,7 +42,8 @@ public final class ASTFormula extends PrologASTNode{
 	@Override
 	public String toString(){
 		return MoreObjects.toStringHelper(this)
-			.add("formulaTerm", this.getFormulaTerm())
+			.add("term", this.getTerm())
+			.add("prettyPrint", this.getPrettyPrint())
 			.toString();
 	}
 }

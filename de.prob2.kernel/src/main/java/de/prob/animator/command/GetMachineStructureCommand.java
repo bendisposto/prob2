@@ -32,7 +32,9 @@ public class GetMachineStructureCommand extends AbstractCommand {
 
 	private static PrologASTNode makeASTNode(PrologTerm node) {
 		if ("formula".equals(node.getFunctor())) {
-			return new ASTFormula(node);
+			final PrologTerm term = node.getArgument(1);
+			final String prettyPrint = PrologTerm.atomicString(node.getArgument(2));
+			return new ASTFormula(term, prettyPrint);
 		} else if ("category".equals(node.getFunctor())) {
 			final String name = node.getArgument(1).getFunctor();
 			final List<String> infos = PrologTerm.atomicStrings((ListPrologTerm)node.getArgument(2));
