@@ -35,12 +35,11 @@ public class PrologAST {
 		if (node.getFunctor().equals("formula")) {
 			return new ASTFormula(node);
 		} else if (node.getFunctor().equals("category")) {
-			ASTCategory category = new ASTCategory();
-			category.setExpanded(node.getArgument(2).toString().contains("expanded"));
-			category.setPropagated(node.getArgument(2).toString().contains("propagated"));
-			category.setName(node.getArgument(1).getFunctor());
-			category.setSubnodes(makeSubnodes((BindingGenerator.getList(node.getArgument(3)))));
-			return category;
+			final List<PrologASTNode> subnodes = makeSubnodes(BindingGenerator.getList(node.getArgument(3)));
+			final String name = node.getArgument(1).getFunctor();
+			final boolean expanded = node.getArgument(2).toString().contains("expanded");
+			final boolean propagated = node.getArgument(2).toString().contains("propagated");
+			return new ASTCategory(subnodes, name, expanded, propagated);
 		}
 		return null;
 	}

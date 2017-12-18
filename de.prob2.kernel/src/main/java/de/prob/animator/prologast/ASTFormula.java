@@ -1,20 +1,30 @@
 package de.prob.animator.prologast;
 
+import java.util.Collections;
+import java.util.Objects;
+
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.ProBEvalElement;
 import de.prob.prolog.term.PrologTerm;
 
-public class ASTFormula extends PrologASTNode{
-	private final PrologTerm formula;
+public final class ASTFormula extends PrologASTNode{
+	private final PrologTerm formulaTerm;
 
-	ASTFormula(PrologTerm formula) {
-		super();
-		this.formula = formula;
+	ASTFormula(PrologTerm formulaTerm) {
+		super(Collections.emptyList());
+
+		Objects.requireNonNull(formulaTerm, "formulaTerm");
+
+		this.formulaTerm = formulaTerm;
+	}
+
+	public PrologTerm getFormulaTerm() {
+		return this.formulaTerm;
 	}
 
 	public ProBEvalElement getFormula(FormulaExpand expand) {
-		PrologTerm term = this.formula.getArgument(1);
-		String prettyPrint = this.formula.getArgument(2).getFunctor();
+		final PrologTerm term = this.getFormulaTerm().getArgument(1);
+		final String prettyPrint = this.getFormulaTerm().getArgument(2).getFunctor();
 		return new ProBEvalElement(term, prettyPrint, expand);
 	}
 
@@ -23,6 +33,6 @@ public class ASTFormula extends PrologASTNode{
 	}
 
 	public String toString(){
-		return "\n[Formula] : " + this.formula;
+		return "\n[Formula] : " + this.getFormulaTerm();
 	}
 }

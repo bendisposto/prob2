@@ -1,25 +1,20 @@
 package de.prob.animator.prologast;
 
 import java.util.List;
+import java.util.Objects;
 
-public class ASTCategory extends PrologASTNode{
-	private boolean expanded;
-	private boolean propagated;
-	private String name;
+public final class ASTCategory extends PrologASTNode{
+	private final String name;
+	private final boolean expanded;
+	private final boolean propagated;
 
-	ASTCategory(){
-		super();
-	}
-
-	ASTCategory(List<PrologASTNode> subnodes){
+	ASTCategory(List<PrologASTNode> subnodes, String name, boolean expanded, boolean propagated) {
 		super(subnodes);
-	}
-
-	void setExpanded(boolean expanded){
+		
+		Objects.requireNonNull(name, "name");
+		
+		this.name = name;
 		this.expanded = expanded;
-	}
-
-	void setPropagated(boolean propagated){
 		this.propagated = propagated;
 	}
 
@@ -29,10 +24,6 @@ public class ASTCategory extends PrologASTNode{
 
 	public boolean isPropagated(){
 		return propagated;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getName(){
