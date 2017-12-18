@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * PrologASTNode used to simplify the structure given by prolog
  */
@@ -21,7 +23,10 @@ public abstract class PrologASTNode {
 		return Collections.unmodifiableList(subnodes);
 	}
 
+	@Override
 	public String toString(){
-		return "\n[Node]";
+		return MoreObjects.toStringHelper(this)
+			.add("subnodes", this.getSubnodes())
+			.toString();
 	}
 }

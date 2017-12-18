@@ -3,6 +3,8 @@ package de.prob.animator.prologast;
 import java.util.Collections;
 import java.util.Objects;
 
+import com.google.common.base.MoreObjects;
+
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.ProBEvalElement;
 import de.prob.prolog.term.PrologTerm;
@@ -32,7 +34,10 @@ public final class ASTFormula extends PrologASTNode{
 		return this.getFormula(FormulaExpand.TRUNCATE);
 	}
 
+	@Override
 	public String toString(){
-		return "\n[Formula] : " + this.getFormulaTerm();
+		return MoreObjects.toStringHelper(this)
+			.add("formulaTerm", this.getFormulaTerm())
+			.toString();
 	}
 }

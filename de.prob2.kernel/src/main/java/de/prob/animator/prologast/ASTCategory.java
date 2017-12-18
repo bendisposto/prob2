@@ -3,6 +3,8 @@ package de.prob.animator.prologast;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.base.MoreObjects;
+
 public final class ASTCategory extends PrologASTNode{
 	private final String name;
 	private final boolean expanded;
@@ -30,7 +32,13 @@ public final class ASTCategory extends PrologASTNode{
 		return name;
 	}
 
+	@Override
 	public String toString(){
-		return "\n[Category] : "+this.name+((isExpanded())?("\n[expanded]"):"\n[]")+((isPropagated())?("\n[propagated]"):"\n[]");
+		return MoreObjects.toStringHelper(this)
+			.add("subnodes", this.getSubnodes())
+			.add("name", this.getName())
+			.add("expanded", this.isExpanded())
+			.add("propagated", this.isPropagated())
+			.toString();
 	}
 }
