@@ -12,7 +12,7 @@ import de.prob.prolog.term.PrologTerm;
 public final class ASTFormula extends PrologASTNode{
 	private final PrologTerm formulaTerm;
 
-	ASTFormula(PrologTerm formulaTerm) {
+	public ASTFormula(PrologTerm formulaTerm) {
 		super(Collections.emptyList());
 
 		Objects.requireNonNull(formulaTerm, "formulaTerm");

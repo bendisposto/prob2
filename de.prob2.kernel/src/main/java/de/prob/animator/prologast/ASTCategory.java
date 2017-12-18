@@ -10,7 +10,7 @@ public final class ASTCategory extends PrologASTNode{
 	private final boolean expanded;
 	private final boolean propagated;
 
-	ASTCategory(List<PrologASTNode> subnodes, String name, boolean expanded, boolean propagated) {
+	public ASTCategory(List<PrologASTNode> subnodes, String name, boolean expanded, boolean propagated) {
 		super(subnodes);
 		
 		Objects.requireNonNull(name, "name");
