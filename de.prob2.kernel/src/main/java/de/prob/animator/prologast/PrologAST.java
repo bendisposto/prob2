@@ -11,18 +11,10 @@ import de.prob.prolog.term.PrologTerm;
  * The left node is the category given by Prolog, the right node is a formula or
  * another category inside the root-category
  */
-public class PrologAST {
-	private List<PrologASTNode> astNodes;
+public final class PrologAST {
+	private PrologAST() {}
 
-	public PrologAST(ListPrologTerm nodes){
-		this.astNodes = buildAST(nodes);
-	}
-
-	public List<PrologASTNode> getASTNodes() {
-		return astNodes;
-	}
-
-	private List<PrologASTNode> buildAST(ListPrologTerm nodes) {
+	public static List<PrologASTNode> buildAST(ListPrologTerm nodes) {
 		List<PrologASTNode> categoryList = new ArrayList<>();
 		for (int i = 0; i < nodes.size(); i++) {
 			ASTCategory temp = (ASTCategory) makeASTNode(nodes.get(i));
@@ -31,7 +23,7 @@ public class PrologAST {
 		return categoryList;
 	}
 
-	private PrologASTNode makeASTNode(PrologTerm node) {
+	private static PrologASTNode makeASTNode(PrologTerm node) {
 		if (node.getFunctor().equals("formula")) {
 			return new ASTFormula(node);
 		} else if (node.getFunctor().equals("category")) {
@@ -44,7 +36,7 @@ public class PrologAST {
 		return null;
 	}
 
-	private List<PrologASTNode> makeSubnodes(ListPrologTerm subnodes) {
+	private static List<PrologASTNode> makeSubnodes(ListPrologTerm subnodes) {
 		List<PrologASTNode> rightList = new ArrayList<>();
 		for (PrologTerm m : subnodes) {
 			rightList.add(makeASTNode(m));

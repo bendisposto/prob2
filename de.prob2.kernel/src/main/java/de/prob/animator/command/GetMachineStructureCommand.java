@@ -25,7 +25,7 @@ public class GetMachineStructureCommand extends AbstractCommand {
 
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
-		this.rootNodes = new PrologAST(BindingGenerator.getList(bindings.get(FORMULAS))).getASTNodes();
+		this.rootNodes = PrologAST.buildAST(BindingGenerator.getList(bindings.get(FORMULAS)));
 	}
 
 	public List<PrologASTNode> getPrologASTList() {
