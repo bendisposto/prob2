@@ -1,5 +1,6 @@
 package de.prob.animator.command;
 
+import java.util.Collections;
 import java.util.List;
 
 import de.prob.animator.prologast.PrologAST;
@@ -7,14 +8,13 @@ import de.prob.animator.prologast.PrologASTNode;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class GetMachineStructureCommand extends AbstractCommand {
-
 	private static final String PROLOG_COMMAND_NAME = "get_machine_formulas";
 	private static final String FORMULAS = "Formulas";
-	ListPrologTerm nodes;
+
+	private List<PrologASTNode> rootNodes;
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
@@ -25,12 +25,10 @@ public class GetMachineStructureCommand extends AbstractCommand {
 
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
-		this.nodes = BindingGenerator.getList(bindings.get(FORMULAS));
+		this.rootNodes = new PrologAST(BindingGenerator.getList(bindings.get(FORMULAS))).getASTNodes();
 	}
 
-	public List<PrologASTNode> getPrologASTList(){
-		PrologAST tree = new PrologAST(this.nodes);
-		return tree.getASTNodes();
+	public List<PrologASTNode> getPrologASTList() {
+		return Collections.unmodifiableList(this.rootNodes);
 	}
-
 }
