@@ -34,6 +34,13 @@ public class RulesTestUtil {
 	}
 
 	public static RulesMachineRun startRulesMachineRunWithOperations(String... operations) {
+		File machineFile = createRulesMachineFileContainingOperations(operations);
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(machineFile.getAbsolutePath());
+		assertEquals(machineFile, rulesMachineRun.getRunnerFile());
+		return rulesMachineRun;
+	}
+
+	public static File createRulesMachineFileContainingOperations(String... operations) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("OPERATIONS\n");
 		for (int i = 0; i < operations.length; i++) {
@@ -42,10 +49,7 @@ public class RulesTestUtil {
 				sb.append(";\n");
 			}
 		}
-		File machineFile = createRulesMachineFile(sb.toString());
-		RulesMachineRun rulesMachineRun = startRulesMachineRun(machineFile.getAbsolutePath());
-		assertEquals(machineFile, rulesMachineRun.getRunnerFile());
-		return rulesMachineRun;
+		return createRulesMachineFile(sb.toString());
 	}
 
 	public static File createRulesMachineFile(String machineBody) {

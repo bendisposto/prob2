@@ -19,6 +19,7 @@ import de.prob.animator.command.GetTotalNumberOfErrorsCommand;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.exception.ProBError;
 import de.prob.statespace.State;
+import de.prob.statespace.StateSpace;
 import de.prob.util.StopWatch;
 
 public class RulesMachineRun {
@@ -41,11 +42,14 @@ public class RulesMachineRun {
 	private RuleResults ruleResults;
 	private int maxNumberOfReportedCounterExamples = 50;
 
-	final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final StopWatch stopWatch = new StopWatch();
 
 	private BigInteger totalNumberOfProBCliErrors;
 
 	private boolean continueAfterErrors = false;
+
+	private StateSpace stateSpace;
 
 	public RulesMachineRun(File runner) {
 		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
@@ -77,21 +81,21 @@ public class RulesMachineRun {
 	public void start() {
 		logger.info("Starting rules machine run: {}", this.runnerFile.getAbsolutePath());
 		final String parserTimer = "parsing";
-		StopWatch.start(parserTimer);
+		stopWatch.start(parserTimer);
 		boolean hasParseErrors = parseAndTranslateRulesProject();
-		logger.info("Time to parse rules project: {} ms", StopWatch.stop(parserTimer));
+		logger.info("Time to parse rules project: {} ms", stopWatch.stop(parserTimer));
 		if (hasParseErrors) {
 			logger.error("RULES_MACHINE has errors!");
 			return;
 		}
 		this.executeRun = rulesMachineRunner.createRulesMachineExecuteRun(this.rulesProject, runnerFile,
-				this.proBCorePreferences, continueAfterErrors);
+				this.proBCorePreferences, continueAfterErrors, this.getStateSpace());
 		try {
 			final String prob2RunTimer = "prob2Run";
-			StopWatch.start(prob2RunTimer);
+			stopWatch.start(prob2RunTimer);
 			logger.info("Start execute ...");
 			this.executeRun.start();
-			logger.info("Execute run finished. Time: {} ms", StopWatch.stop(prob2RunTimer));
+			logger.info("Execute run finished. Time: {} ms", stopWatch.stop(prob2RunTimer));
 		} catch (ProBError e) {
 			logger.error("ProBError: {}", e.getMessage());
 			if (executeRun.getExecuteModelCommand() != null) {
@@ -126,11 +130,12 @@ public class RulesMachineRun {
 				totalNumberOfProBCliErrors = totalNumberOfErrorsCommand.getTotalNumberOfErrors();
 			}
 		}
+		this.stateSpace = this.executeRun.getUsedStateSpace();
 		final String extractResultsTimer = "extractResults";
-		StopWatch.start(extractResultsTimer);
+		stopWatch.start(extractResultsTimer);
 		this.ruleResults = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
-		logger.info("Time to extract results form final state: {}", StopWatch.stop(extractResultsTimer));
+		logger.info("Time to extract results form final state: {}", stopWatch.stop(extractResultsTimer));
 
 	}
 
@@ -146,8 +151,7 @@ public class RulesMachineRun {
 		}
 
 		/*
-		 * parse errors and errors from semantic checks are stored in the
-		 * rulesProject
+		 * parse errors and errors from semantic checks are stored in the rulesProject
 		 */
 		rulesProject.checkAndTranslateProject();
 		if (rulesProject.hasErrors()) {
@@ -198,16 +202,24 @@ public class RulesMachineRun {
 	}
 
 	/**
-	 * Returns the total number of errors recorded by a concrete ProB cli
-	 * instance. Note, if the ProB cli instance is reused for further
-	 * RulesMachineRuns, this number is NOT reset. Can be {@code null} if there
-	 * is no state space available. Moreover, this number does not match the
-	 * size of the {@link RulesMachineRun#errors} list.
+	 * Returns the total number of errors recorded by a concrete ProB cli instance.
+	 * Note, if the ProB cli instance is reused for further RulesMachineRuns, this
+	 * number is NOT reset. Can be {@code null} if there is no state space
+	 * available. Moreover, this number does not match the size of the
+	 * {@link RulesMachineRun#errors} list.
 	 * 
 	 * @return total number of ProB cli errors
 	 */
 	public BigInteger getTotalNumberOfProBCliErrors() {
 		return this.totalNumberOfProBCliErrors;
+	}
+
+	public StateSpace getStateSpace() {
+		return stateSpace;
+	}
+
+	public void setStateSpace(StateSpace stateSpace) {
+		this.stateSpace = stateSpace;
 	}
 
 	public class Error {

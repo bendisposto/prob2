@@ -26,7 +26,6 @@ import de.prob.model.brules.RuleResults;
 import de.prob.model.brules.RuleResults.ResultSummary;
 import de.prob.scripting.Api;
 import de.prob.model.brules.RulesMachineRun;
-import de.prob.model.brules.RulesMachineRunner;
 import de.prob.model.brules.RulesModel;
 import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
@@ -107,17 +106,17 @@ public class RulesMachineTest {
 
 	@Test
 	public void testReuseStateSpace() throws IOException {
-		RulesMachineRunner.getInstance().setReuseStateSpace(true);
 		String ruleWithWDError = "RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END END";
-
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(ruleWithWDError);
 		BigInteger numberAfterFirstRun = rulesMachineRun.getTotalNumberOfProBCliErrors();
 
-		RulesMachineRun rulesMachineRun2 = startRulesMachineRunWithOperations(ruleWithWDError);
+		RulesMachineRun rulesMachineRun2 = new RulesMachineRun(
+				RulesTestUtil.createRulesMachineFileContainingOperations(ruleWithWDError).getAbsoluteFile());
+		rulesMachineRun2.setStateSpace(rulesMachineRun.getStateSpace());
+		rulesMachineRun2.start();
 		BigInteger numberAfterSecondRun = rulesMachineRun2.getTotalNumberOfProBCliErrors();
 
 		assertTrue(numberAfterSecondRun.intValue() > numberAfterFirstRun.intValue());
-		RulesMachineRunner.getInstance().setReuseStateSpace(false);
 	}
 
 	@Test
@@ -165,8 +164,7 @@ public class RulesMachineTest {
 		// @formatter:off
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
 				"RULE Rule1 RULEID id1 BODY RULE_FAIL COUNTEREXAMPLE \"foo\" END END",
-				"RULE Rule2 DEPENDS_ON_RULE Rule1 BODY skip END"
-		);
+				"RULE Rule2 DEPENDS_ON_RULE Rule1 BODY skip END");
 		System.out.println(rulesMachineRun.getFirstError());
 		// @formatter:on
 		assertTrue(!rulesMachineRun.hasError());
@@ -180,13 +178,9 @@ public class RulesMachineTest {
 	@Test
 	public void testMachineWithFailingRuleSequence() {
 		// @formatter:off
-		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
-				"RULE Rule1 ERROR_TYPES 3 BODY " + 
-			    " RULE_FAIL COUNTEREXAMPLE \"foo1\" END ;" +
-			    " RULE_FAIL ERROR_TYPE 2 COUNTEREXAMPLE \"foo2\" END ;" +
-			    " RULE_FAIL ERROR_TYPE 3 COUNTEREXAMPLE \"foo3\" END " +
-				" END"
-		);
+		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations("RULE Rule1 ERROR_TYPES 3 BODY "
+				+ " RULE_FAIL COUNTEREXAMPLE \"foo1\" END ;" + " RULE_FAIL ERROR_TYPE 2 COUNTEREXAMPLE \"foo2\" END ;"
+				+ " RULE_FAIL ERROR_TYPE 3 COUNTEREXAMPLE \"foo3\" END " + " END");
 		// ["foo1","foo2","foo3"] counterexample set is a sequence at random
 		// @formatter:on
 		assertTrue(rulesMachineRun.getRuleResults().getRuleResult("Rule1").hasFailed());

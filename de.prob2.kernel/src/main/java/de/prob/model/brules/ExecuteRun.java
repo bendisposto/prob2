@@ -2,7 +2,6 @@ package de.prob.model.brules;
 
 import java.util.Map;
 
-
 import de.prob.animator.command.ExecuteModelCommand;
 import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.ExtractedModel;
@@ -30,7 +29,6 @@ import org.slf4j.LoggerFactory;
  * 
  **/
 public class ExecuteRun {
-	private static StateSpace staticStateSpace;
 
 	private StateSpace stateSpace;
 	private int maxNumberOfStatesToBeExecuted = Integer.MAX_VALUE;
@@ -40,52 +38,41 @@ public class ExecuteRun {
 	private final Map<String, String> prefs;
 	private ExecuteModelCommand executeModelCommand;
 	private State rootState;
-	private final boolean reuseStateSpaceOfPreviousRun;
+	private final StopWatch stopWatch = new StopWatch();
 
 	public ExecuteRun(final ExtractedModel<? extends AbstractModel> extractedModel, Map<String, String> prefs,
-			boolean reuseStateSpaceOfPreviousRun, boolean continueAfterErrors) {
+			boolean continueAfterErrors, StateSpace stateSpace) {
 		this.extractedModel = extractedModel;
 		this.continueAfterErrors = continueAfterErrors;
 		this.prefs = prefs;
-		this.reuseStateSpaceOfPreviousRun = reuseStateSpaceOfPreviousRun;
+		this.stateSpace = stateSpace;
 	}
 
 	public void start() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
 		final String loadStateSpaceTimer = "loadStateSpace";
-		StopWatch.start(loadStateSpaceTimer);
+		stopWatch.start(loadStateSpaceTimer);
 		getOrCreateStateSpace();
-		logger.info("Time to load statespace: {} ms", StopWatch.stop(loadStateSpaceTimer));
+		logger.info("Time to load statespace: {} ms", stopWatch.stop(loadStateSpaceTimer));
 
 		final String executeTimer = "executeTimer";
-		StopWatch.start(executeTimer);
+		stopWatch.start(executeTimer);
 		executeModel(this.stateSpace);
-		logger.info("Time run execute command: {} ms", StopWatch.stop(executeTimer));
+		logger.info("Time run execute command: {} ms", stopWatch.stop(executeTimer));
 	}
 
 	private void getOrCreateStateSpace() {
-		if (staticStateSpace == null || staticStateSpace.isKilled() || !reuseStateSpaceOfPreviousRun) {
+		if (stateSpace == null || stateSpace.isKilled()) {
 			/*
-			 * create a new state space if there is no previous one or if the
-			 * previous state space has been killed due to a ProBError
+			 * create a new state space if there is no previous one or if the previous state
+			 * space has been killed due to a ProBError
 			 */
 			this.stateSpace = this.extractedModel.load(this.prefs);
-			setStaticStateSpace(stateSpace);
 		} else {
-			// reuse the previous state space
-			StateSpaceProvider ssProvider = new StateSpaceProvider(()-> staticStateSpace);
-			
+			StateSpaceProvider ssProvider = new StateSpaceProvider(() -> stateSpace);
 			RulesModel model = (RulesModel) extractedModel.getModel();
 			ssProvider.loadFromCommand(model, null, prefs, model.getLoadCommand());
-			this.stateSpace = staticStateSpace;
 		}
-	}
-
-	private static void setStaticStateSpace(StateSpace stateSpace2) {
-		if (staticStateSpace != null) {
-			staticStateSpace.kill();
-		}
-		staticStateSpace = stateSpace2;
 	}
 
 	private void executeModel(final StateSpace stateSpace) {

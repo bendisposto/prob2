@@ -4,24 +4,25 @@ import java.util.HashMap;
 
 public class StopWatch {
 
-	private static final HashMap<String, Long> startTime = new HashMap<>();
-	private static final HashMap<String, Long> runTime = new HashMap<>();
+	private final HashMap<String, Long> startTime = new HashMap<>();
+	private final HashMap<String, Long> runTime = new HashMap<>();
 
-	private StopWatch() {
+	public StopWatch() {
+		//
 	}
 
-	public static void start(String watch) {
+	public void start(String watch) {
 		startTime.put(watch, System.currentTimeMillis());
 		runTime.remove(watch);
 	}
 
-	public static long stop(String id) {
+	public long stop(String id) {
 		long time = System.currentTimeMillis() - startTime.remove(id);
 		runTime.put(id, time);
 		return time;
 	}
 
-	public static long getRunTime(String id) {
+	public long getRunTime(String id) {
 		if (runTime.containsKey(id)) {
 			return runTime.get(id);
 		} else if (startTime.containsKey(id)) {
@@ -30,7 +31,7 @@ public class StopWatch {
 		throw new RuntimeException("Unkown stop watch: " + id);
 	}
 
-	public static String getRunTimeAsString(String id) {
+	public String getRunTimeAsString(String id) {
 		long l = getRunTime(id);
 		return "RUNTIME " + id + ": " + l + " ms";
 	}
