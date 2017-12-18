@@ -1,7 +1,7 @@
 package de.prob.animator.prologast;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.ListPrologTerm;
@@ -15,11 +15,7 @@ public final class PrologAST {
 	private PrologAST() {}
 
 	public static List<PrologASTNode> buildAST(ListPrologTerm nodes) {
-		List<PrologASTNode> convertedNodes = new ArrayList<>();
-		for (PrologTerm node : nodes) {
-			convertedNodes.add(makeASTNode(node));
-		}
-		return convertedNodes;
+		return nodes.stream().map(PrologAST::makeASTNode).collect(Collectors.toList());
 	}
 
 	private static PrologASTNode makeASTNode(PrologTerm node) {
