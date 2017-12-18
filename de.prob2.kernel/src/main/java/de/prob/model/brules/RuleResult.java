@@ -110,7 +110,7 @@ public class RuleResult {
 	}
 
 	public List<String> getNotCheckedDependencies() {
-		return this.allFailedDependencies;
+		return this.allNotCheckedDependencies;
 	}
 
 	public List<CounterExample> getCounterExamples() {
