@@ -23,15 +23,17 @@ public final class PrologAST {
 	}
 
 	private static PrologASTNode makeASTNode(PrologTerm node) {
-		if (node.getFunctor().equals("formula")) {
+		if ("formula".equals(node.getFunctor())) {
 			return new ASTFormula(node);
-		} else if (node.getFunctor().equals("category")) {
-			final List<PrologASTNode> subnodes = buildAST(BindingGenerator.getList(node.getArgument(3)));
+		} else if ("category".equals(node.getFunctor())) {
 			final String name = node.getArgument(1).getFunctor();
-			final boolean expanded = node.getArgument(2).toString().contains("expanded");
-			final boolean propagated = node.getArgument(2).toString().contains("propagated");
+			final List<String> infos = PrologTerm.atomicStrings((ListPrologTerm)node.getArgument(2));
+			final List<PrologASTNode> subnodes = buildAST(BindingGenerator.getList(node.getArgument(3)));
+			final boolean expanded = infos.contains("expanded");
+			final boolean propagated = infos.contains("propagated");
 			return new ASTCategory(subnodes, name, expanded, propagated);
+		} else {
+			throw new AssertionError("Unknown node type: " + node.getFunctor());
 		}
-		return null;
 	}
 }
