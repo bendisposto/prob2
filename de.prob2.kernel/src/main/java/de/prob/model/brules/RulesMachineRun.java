@@ -43,7 +43,12 @@ public class RulesMachineRun {
 	private int maxNumberOfReportedCounterExamples = 50;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final StopWatch stopWatch = new StopWatch();
+
+	enum Timer {
+		PARSING, EXECUTE_RUN, EXTRACT_RESULTS
+	}
+
+	private final StopWatch<Timer> stopWatch = new StopWatch<>();
 
 	private BigInteger totalNumberOfProBCliErrors;
 
@@ -80,10 +85,9 @@ public class RulesMachineRun {
 
 	public void start() {
 		logger.info("Starting rules machine run: {}", this.runnerFile.getAbsolutePath());
-		final String parserTimer = "parsing";
-		stopWatch.start(parserTimer);
+		stopWatch.start(Timer.PARSING);
 		boolean hasParseErrors = parseAndTranslateRulesProject();
-		logger.info("Time to parse rules project: {} ms", stopWatch.stop(parserTimer));
+		logger.info("Time to parse rules project: {} ms", stopWatch.stop(Timer.PARSING));
 		if (hasParseErrors) {
 			logger.error("RULES_MACHINE has errors!");
 			return;
@@ -91,11 +95,10 @@ public class RulesMachineRun {
 		this.executeRun = rulesMachineRunner.createRulesMachineExecuteRun(this.rulesProject, runnerFile,
 				this.proBCorePreferences, continueAfterErrors, this.getStateSpace());
 		try {
-			final String prob2RunTimer = "prob2Run";
-			stopWatch.start(prob2RunTimer);
+			stopWatch.start(Timer.EXECUTE_RUN);
 			logger.info("Start execute ...");
 			this.executeRun.start();
-			logger.info("Execute run finished. Time: {} ms", stopWatch.stop(prob2RunTimer));
+			logger.info("Execute run finished. Time: {} ms", stopWatch.stop(Timer.EXECUTE_RUN));
 		} catch (ProBError e) {
 			logger.error("ProBError: {}", e.getMessage());
 			if (executeRun.getExecuteModelCommand() != null) {
@@ -118,7 +121,6 @@ public class RulesMachineRun {
 				return;
 			}
 		} catch (Exception e) {
-			// TODO when is this exception thrown, is it possible?
 			logger.error("Unexpected error occured: {}", e.getMessage(), e);
 			// storing all error messages
 			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
@@ -131,20 +133,19 @@ public class RulesMachineRun {
 			}
 		}
 		this.stateSpace = this.executeRun.getUsedStateSpace();
-		final String extractResultsTimer = "extractResults";
-		stopWatch.start(extractResultsTimer);
+		stopWatch.start(Timer.EXTRACT_RESULTS);
 		this.ruleResults = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
-		logger.info("Time to extract results form final state: {}", stopWatch.stop(extractResultsTimer));
+		logger.info("Time to extract results form final state: {}", stopWatch.stop(Timer.EXTRACT_RESULTS));
 
 	}
 
 	private boolean parseAndTranslateRulesProject() {
 		this.rulesProject = new RulesProject();
-		rulesProject.parseProject(runnerFile);
 		ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
 		parsingBehaviour.setAddLineNumbers(true);
 		rulesProject.setParsingBehaviour(parsingBehaviour);
+		rulesProject.parseProject(runnerFile);
 
 		for (Entry<String, String> pair : constantValuesToBeInjected.entrySet()) {
 			rulesProject.addConstantValue(pair.getKey(), pair.getValue());

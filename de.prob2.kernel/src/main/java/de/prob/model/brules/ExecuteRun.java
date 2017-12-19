@@ -38,7 +38,12 @@ public class ExecuteRun {
 	private final Map<String, String> prefs;
 	private ExecuteModelCommand executeModelCommand;
 	private State rootState;
-	private final StopWatch stopWatch = new StopWatch();
+
+	enum Timer {
+		LOAD_STATESPACE, EXECUTE_MODEL
+	}
+
+	private final StopWatch<Timer> stopWatch = new StopWatch<>();
 
 	public ExecuteRun(final ExtractedModel<? extends AbstractModel> extractedModel, Map<String, String> prefs,
 			boolean continueAfterErrors, StateSpace stateSpace) {
@@ -50,15 +55,13 @@ public class ExecuteRun {
 
 	public void start() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
-		final String loadStateSpaceTimer = "loadStateSpace";
-		stopWatch.start(loadStateSpaceTimer);
+		stopWatch.start(Timer.LOAD_STATESPACE);
 		getOrCreateStateSpace();
-		logger.info("Time to load statespace: {} ms", stopWatch.stop(loadStateSpaceTimer));
+		logger.info("Time to load statespace: {} ms", stopWatch.stop(Timer.LOAD_STATESPACE));
 
-		final String executeTimer = "executeTimer";
-		stopWatch.start(executeTimer);
+		stopWatch.start(Timer.EXECUTE_MODEL);
 		executeModel(this.stateSpace);
-		logger.info("Time run execute command: {} ms", stopWatch.stop(executeTimer));
+		logger.info("Time run execute command: {} ms", stopWatch.stop(Timer.EXECUTE_MODEL));
 	}
 
 	private void getOrCreateStateSpace() {

@@ -39,8 +39,7 @@ public class RulesMachineRunner {
 
 	public ExecuteRun createRulesMachineExecuteRun(RulesProject rulesProject, File mainMachineFile,
 			Map<String, String> proBCorePreferences, boolean continueAfterErrors, StateSpace stateSpace) {
-		ExtractedModel<RulesModel> extract;
-		extract = this.rulesFactory.extract(mainMachineFile, rulesProject);
+		ExtractedModel<RulesModel> extract = this.rulesFactory.extract(mainMachineFile, rulesProject);
 		return new ExecuteRun(extract, proBCorePreferences, continueAfterErrors, stateSpace);
 	}
 

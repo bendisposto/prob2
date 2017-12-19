@@ -2,8 +2,6 @@ package de.prob.scripting;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -14,10 +12,7 @@ import de.be4.classicalb.core.parser.IDefinitionFileProvider;
 import de.be4.classicalb.core.parser.ParsingBehaviour;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.animator.domainobjects.ErrorItem;
-import de.prob.animator.domainobjects.ErrorItem.Location;
 import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 
@@ -75,8 +70,8 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	}
 
 	/**
-	 * Given an {@link Start} ast, {@link File} f, and {@link BParser} bparser,
-	 * all machines are loaded.
+	 * Given an {@link Start} ast, {@link File} f, and {@link BParser} bparser, all
+	 * machines are loaded.
 	 *
 	 * @param ast
 	 *            {@link Start} representing the abstract syntax tree for the
@@ -115,8 +110,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	 *            {@link File} containing B machine
 	 * @param bparser
 	 *            {@link BParser} for parsing
-	 * @return {@link Start} AST after parsing model with {@link BParser}
-	 *         bparser
+	 * @return {@link Start} AST after parsing model with {@link BParser} bparser
 	 * @throws IOException
 	 *             if an I/O error occurred
 	 * @throws ProBError

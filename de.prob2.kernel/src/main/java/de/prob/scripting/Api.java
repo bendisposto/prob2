@@ -12,7 +12,6 @@ import com.google.inject.Provider;
 
 import de.be4.classicalb.core.parser.ParsingBehaviour;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.*;
 import de.be4.classicalb.core.parser.rules.RulesProject;
 
