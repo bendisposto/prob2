@@ -40,7 +40,7 @@ public class ExecuteRun {
 	private State rootState;
 
 	enum Timer {
-		LOAD_STATESPACE, EXECUTE_MODEL
+		LOAD_MODEL, EXECUTE_MODEL
 	}
 
 	private final StopWatch<Timer> stopWatch = new StopWatch<>();
@@ -55,9 +55,9 @@ public class ExecuteRun {
 
 	public void start() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
-		stopWatch.start(Timer.LOAD_STATESPACE);
+		stopWatch.start(Timer.LOAD_MODEL);
 		getOrCreateStateSpace();
-		logger.info("Time to load statespace: {} ms", stopWatch.stop(Timer.LOAD_STATESPACE));
+		logger.info("Time to load statespace: {} ms", stopWatch.stop(Timer.LOAD_MODEL));
 
 		stopWatch.start(Timer.EXECUTE_MODEL);
 		executeModel(this.stateSpace);

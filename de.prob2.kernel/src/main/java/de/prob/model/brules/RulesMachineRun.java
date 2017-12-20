@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.ParsingBehaviour;
 import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.rules.AbstractOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.animator.command.GetTotalNumberOfErrorsCommand;
 import de.prob.animator.domainobjects.StateError;
@@ -71,6 +72,8 @@ public class RulesMachineRun {
 		this.proBCorePreferences.put("TRY_FIND_ABORT", "TRUE");
 		this.proBCorePreferences.put("CLPFD", "FALSE");
 		this.proBCorePreferences.put("MAX_DISPLAY_SET", "-1");
+		//this.proBCorePreferences.put("DATA_VALIDATION", "TRUE");
+		
 
 		this.constantValuesToBeInjected = constantValuesToBeInjected;
 	}
@@ -132,6 +135,8 @@ public class RulesMachineRun {
 				totalNumberOfProBCliErrors = totalNumberOfErrorsCommand.getTotalNumberOfErrors();
 			}
 		}
+		
+		
 		this.stateSpace = this.executeRun.getUsedStateSpace();
 		stopWatch.start(Timer.EXTRACT_RESULTS);
 		this.ruleResults = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
