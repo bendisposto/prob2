@@ -1,6 +1,8 @@
 package de.prob.animator.prologast;
 
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
@@ -12,6 +14,7 @@ import de.prob.prolog.term.PrologTerm;
 public final class ASTFormula extends PrologASTNode{
 	private final PrologTerm term;
 	private final String prettyPrint;
+	private final Map<FormulaExpand, ProBEvalElement> formulas;
 
 	public ASTFormula(PrologTerm term, String prettyPrint) {
 		super(Collections.emptyList());
@@ -21,6 +24,7 @@ public final class ASTFormula extends PrologASTNode{
 
 		this.term = term;
 		this.prettyPrint = prettyPrint;
+		this.formulas = new EnumMap<>(FormulaExpand.class);
 	}
 
 	public PrologTerm getTerm() {
@@ -32,7 +36,7 @@ public final class ASTFormula extends PrologASTNode{
 	}
 
 	public ProBEvalElement getFormula(FormulaExpand expand) {
-		return new ProBEvalElement(this.getTerm(), this.getPrettyPrint(), expand);
+		return this.formulas.computeIfAbsent(expand, e -> new ProBEvalElement(this.getTerm(), this.getPrettyPrint(), e));
 	}
 
 	public ProBEvalElement getFormula() {

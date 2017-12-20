@@ -409,7 +409,7 @@ public class StateSpace implements IAnimator {
 	 * @return whether or not the subscription was successful (will return true
 	 *         if at least one of the formulas was successfully subscribed)
 	 */
-	public boolean subscribe(final Object subscriber, final List<IEvalElement> formulas) {
+	public boolean subscribe(final Object subscriber, final Collection<? extends IEvalElement> formulas) {
 		boolean success = false;
 		List<AbstractCommand> subscribeCmds = new ArrayList<>();
 		for (IEvalElement formulaOfInterest : formulas) {
@@ -477,11 +477,11 @@ public class StateSpace implements IAnimator {
 	 *         false if none of the formulas were subscribed to begin with)
 	 */
 
-	public boolean unsubscribe(final Object subscriber, final List<IEvalElement> formulas) {
+	public boolean unsubscribe(final Object subscriber, final Collection<? extends IEvalElement> formulas) {
 		return this.unsubscribe(subscriber, formulas, false);
 	}
 
-	public boolean unsubscribe(final Object subscriber, final List<IEvalElement> formulas, boolean unregister) {
+	public boolean unsubscribe(final Object subscriber, final Collection<? extends IEvalElement> formulas, boolean unregister) {
 		boolean success = false;
 		final List<AbstractCommand> unsubscribeCmds = new ArrayList<>();
 		for (IEvalElement formula : formulas) {
