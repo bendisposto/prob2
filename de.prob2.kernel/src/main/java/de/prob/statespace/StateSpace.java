@@ -522,7 +522,7 @@ public class StateSpace implements IAnimator {
 	public Set<IEvalElement> getSubscribedFormulas() {
 		HashSet<IEvalElement> result = new HashSet<>();
 		for (Entry<IEvalElement, WeakHashMap<Object, Object>> entry : formulaRegistry.entrySet()) {
-			if (entry.getValue().isEmpty()) {
+			if (!entry.getValue().isEmpty()) {
 				result.add(entry.getKey());
 			}
 		}
