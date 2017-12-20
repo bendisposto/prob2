@@ -79,7 +79,6 @@ public class StateSpace implements IAnimator {
 	private IAnimator animator;
 
 	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<>();
-	private final Set<IEvalElement> subscribedFormulas = new HashSet<>();
 
 	private LoadedMachine loadedMachine;
 
@@ -422,14 +421,12 @@ public class StateSpace implements IAnimator {
 				if (formulaRegistry.containsKey(formulaOfInterest)) {
 					formulaRegistry.get(formulaOfInterest).put(subscriber,
 							new WeakReference<Object>(formulaOfInterest));
-					subscribedFormulas.add(formulaOfInterest);
 					success = true;
 				} else {
 					WeakHashMap<Object, Object> subscribers = new WeakHashMap<>();
 					subscribers.put(subscriber, new WeakReference<Object>(subscriber));
 					formulaRegistry.put(formulaOfInterest, subscribers);
 					subscribeCmds.add(new RegisterFormulaCommand(formulaOfInterest));
-					subscribedFormulas.add(formulaOfInterest);
 					success = true;
 				}
 			}
@@ -492,7 +489,6 @@ public class StateSpace implements IAnimator {
 				final WeakHashMap<Object, Object> subscribers = formulaRegistry.get(formula);
 				subscribers.remove(subscriber);
 				if (subscribers.isEmpty() && unregister) {
-					subscribedFormulas.remove(formula);
 					unsubscribeCmds.add(new UnregisterFormulaCommand(formula));
 				}
 				success = true;
@@ -524,15 +520,13 @@ public class StateSpace implements IAnimator {
 	 *         currently interested subscribers.
 	 */
 	public Set<IEvalElement> getSubscribedFormulas() {
-		List<IEvalElement> toRemove = new ArrayList<>();
-		for (IEvalElement e : subscribedFormulas) {
-			WeakHashMap<Object, Object> subscribers = formulaRegistry.get(e);
-			if (subscribers == null || subscribers.isEmpty()) {
-				toRemove.add(e);
+		HashSet<IEvalElement> result = new HashSet<>();
+		for (Entry<IEvalElement, WeakHashMap<Object, Object>> entry : formulaRegistry.entrySet()) {
+			if (entry.getValue().isEmpty()) {
+				result.add(entry.getKey());
 			}
 		}
-		subscribedFormulas.removeAll(toRemove);
-		return new HashSet<>(subscribedFormulas);
+		return result;
 	}
 
 	/**
