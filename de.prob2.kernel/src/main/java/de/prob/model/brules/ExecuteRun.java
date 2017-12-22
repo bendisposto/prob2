@@ -57,7 +57,7 @@ public class ExecuteRun {
 		final Logger logger = LoggerFactory.getLogger(getClass());
 		stopWatch.start(Timer.LOAD_MODEL);
 		getOrCreateStateSpace();
-		logger.info("Time to load statespace: {} ms", stopWatch.stop(Timer.LOAD_MODEL));
+		logger.info("Time to load model: {} ms", stopWatch.stop(Timer.LOAD_MODEL));
 
 		stopWatch.start(Timer.EXECUTE_MODEL);
 		executeModel(this.stateSpace);

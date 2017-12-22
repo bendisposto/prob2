@@ -72,7 +72,6 @@ public class RulesMachineRun {
 		this.proBCorePreferences.put("CLPFD", "FALSE");
 		this.proBCorePreferences.put("MAX_DISPLAY_SET", "-1");
 		//this.proBCorePreferences.put("DATA_VALIDATION", "TRUE");
-		
 
 		this.constantValuesToBeInjected = constantValuesToBeInjected;
 	}
@@ -134,13 +133,12 @@ public class RulesMachineRun {
 				totalNumberOfProBCliErrors = totalNumberOfErrorsCommand.getTotalNumberOfErrors();
 			}
 		}
-		
-		
+
 		this.stateSpace = this.executeRun.getUsedStateSpace();
 		stopWatch.start(Timer.EXTRACT_RESULTS);
 		this.ruleResults = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
-		logger.info("Time to extract results form final state: {}", stopWatch.stop(Timer.EXTRACT_RESULTS));
+		logger.info("Time to extract results from final state: {}", stopWatch.stop(Timer.EXTRACT_RESULTS));
 
 	}
 
@@ -156,7 +154,8 @@ public class RulesMachineRun {
 		}
 
 		/*
-		 * parse errors and errors from semantic checks are stored in the rulesProject
+		 * parse errors and errors from semantic checks are stored in the
+		 * rulesProject
 		 */
 		rulesProject.checkAndTranslateProject();
 		if (rulesProject.hasErrors()) {
@@ -207,11 +206,11 @@ public class RulesMachineRun {
 	}
 
 	/**
-	 * Returns the total number of errors recorded by a concrete ProB cli instance.
-	 * Note, if the ProB cli instance is reused for further RulesMachineRuns, this
-	 * number is NOT reset. Can be {@code null} if there is no state space
-	 * available. Moreover, this number does not match the size of the
-	 * {@link RulesMachineRun#errors} list.
+	 * Returns the total number of errors recorded by a concrete ProB cli
+	 * instance. Note, if the ProB cli instance is reused for further
+	 * RulesMachineRuns, this number is NOT reset. Can be {@code null} if there
+	 * is no state space available. Moreover, this number does not match the
+	 * size of the {@link RulesMachineRun#errors} list.
 	 * 
 	 * @return total number of ProB cli errors
 	 */

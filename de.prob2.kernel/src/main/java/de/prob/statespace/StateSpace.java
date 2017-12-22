@@ -684,7 +684,7 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
-	 * This allows developers to programmatically descripe a Trace that should
+	 * This allows developers to programmatically describe a Trace that should
 	 * be created. {@link ITraceDescription#getTrace(StateSpace)} will then be
 	 * called in order to generate the correct Trace.
 	 *
