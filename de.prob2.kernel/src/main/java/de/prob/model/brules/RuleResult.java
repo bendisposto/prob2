@@ -1,9 +1,7 @@
 package de.prob.model.brules;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import de.be4.classicalb.core.parser.rules.*;
@@ -15,7 +13,7 @@ import de.prob.translator.types.Tuple;
 
 public class RuleResult {
 	private final RuleOperation ruleOperation;
-	private final AbstractEvalResult evalResult;
+	private final RuleState ruleState;
 	private final int numberOfViolations;
 	private final List<CounterExample> counterExamples = new ArrayList<>();
 
@@ -23,22 +21,10 @@ public class RuleResult {
 	private final ArrayList<String> allFailedDependencies = new ArrayList<>();
 	private final ArrayList<String> allNotCheckedDependencies = new ArrayList<>();
 
-	public enum RESULT_ENUM {
-		FAIL, SUCCESS, NOT_CHECKED, DISABLED
-	}
-
-	static final Map<String, RESULT_ENUM> resultMapping = new HashMap<>();
-	static {
-		resultMapping.put(RulesTransformation.RULE_FAIL, RESULT_ENUM.FAIL);
-		resultMapping.put(RulesTransformation.RULE_SUCCESS, RESULT_ENUM.SUCCESS);
-		resultMapping.put(RulesTransformation.RULE_NOT_CHECKED, RESULT_ENUM.NOT_CHECKED);
-		resultMapping.put(RulesTransformation.RULE_DISABLED, RESULT_ENUM.DISABLED);
-	}
-
 	public RuleResult(RuleOperation rule, AbstractEvalResult result, AbstractEvalResult numberOfCounterExamples,
 			AbstractEvalResult counterExampleResult) {
 		this.ruleOperation = rule;
-		this.evalResult = result;
+		this.ruleState = RuleState.valueOf(result);
 		this.numberOfViolations = Integer.parseInt(((EvalResult) numberOfCounterExamples).getValue());
 		transformCounterExamples(counterExampleResult);
 	}
@@ -121,12 +107,6 @@ public class RuleResult {
 		return this.ruleOperation.getName();
 	}
 
-	public String getResultValue() {
-		String res = evalResult.toString();
-		res = res.substring(1, res.length() - 1);
-		return res;
-	}
-
 	public boolean hasRuleId() {
 		return ruleOperation.getRuleIdString() != null;
 	}
@@ -139,7 +119,7 @@ public class RuleResult {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[OperationName: ").append(this.getRuleName());
-		sb.append(", Result: ").append(this.getResultValue());
+		sb.append(", Result: ").append(this.getRuleState());
 		if (this.getRuleId() != null) {
 			sb.append(", RuleID: " + this.getRuleId());
 		}
@@ -157,12 +137,12 @@ public class RuleResult {
 		return sb.toString();
 	}
 
-	public RESULT_ENUM getResultEnum() {
-		return resultMapping.get(this.getResultValue());
+	public RuleState getRuleState() {
+		return this.ruleState;
 	}
 
 	public boolean hasFailed() {
-		return getResultEnum() == RESULT_ENUM.FAIL;
+		return this.ruleState == RuleState.FAIL;
 	}
 
 	public class CounterExample {

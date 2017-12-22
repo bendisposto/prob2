@@ -40,7 +40,7 @@ public class ExecuteRun {
 	private State rootState;
 
 	enum Timer {
-		LOAD_MODEL, EXECUTE_MODEL
+		LOAD_MODEL, EXECUTE_MODEL, EXECUTE
 	}
 
 	private final StopWatch<Timer> stopWatch = new StopWatch<>();
@@ -61,14 +61,14 @@ public class ExecuteRun {
 
 		stopWatch.start(Timer.EXECUTE_MODEL);
 		executeModel(this.stateSpace);
-		logger.info("Time run execute command: {} ms", stopWatch.stop(Timer.EXECUTE_MODEL));
+		logger.info("Time to run execute command: {} ms", stopWatch.stop(Timer.EXECUTE_MODEL));
 	}
 
 	private void getOrCreateStateSpace() {
 		if (stateSpace == null || stateSpace.isKilled()) {
 			/*
-			 * create a new state space if there is no previous one or if the previous state
-			 * space has been killed due to a ProBError
+			 * create a new state space if there is no previous one or if the
+			 * previous state space has been killed due to a ProBError
 			 */
 			this.stateSpace = this.extractedModel.load(this.prefs);
 		} else {
@@ -79,9 +79,9 @@ public class ExecuteRun {
 	}
 
 	private void executeModel(final StateSpace stateSpace) {
-		final Trace t = new Trace(stateSpace);
+		Trace t = new Trace(stateSpace);
 		this.rootState = t.getCurrentState();
-		executeModelCommand = new ExecuteModelCommand(stateSpace, rootState, maxNumberOfStatesToBeExecuted,
+		executeModelCommand = new ExecuteModelCommand(stateSpace, t.getCurrentState(), maxNumberOfStatesToBeExecuted,
 				continueAfterErrors, timeout);
 		stateSpace.execute(executeModelCommand);
 	}

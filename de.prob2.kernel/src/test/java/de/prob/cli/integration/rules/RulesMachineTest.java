@@ -14,16 +14,16 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import static de.prob.model.brules.RuleResult.RESULT_ENUM.*;
+import static de.prob.model.brules.RuleState.*;
 
 import de.be4.classicalb.core.parser.rules.RuleOperation;
 import de.prob.Main;
 import de.prob.model.brules.ComputationResults;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResult.CounterExample;
-import de.prob.model.brules.RuleResult.RESULT_ENUM;
 import de.prob.model.brules.RuleResults;
 import de.prob.model.brules.RuleResults.ResultSummary;
+import de.prob.model.brules.RuleState;
 import de.prob.scripting.Api;
 import de.prob.model.brules.RulesMachineRun;
 import de.prob.model.brules.RulesModel;
@@ -57,18 +57,17 @@ public class RulesMachineTest {
 		assertEquals(4, ruleResults.getRuleResultList().size());
 
 		RuleResult rule1Result = ruleResults.getRuleResult("Rule1");
-		assertEquals(SUCCESS, rule1Result.getResultEnum());
-		assertFalse(rule1Result.hasFailed());
+		assertEquals(RuleState.SUCCESS, rule1Result.getRuleState());
 		RuleOperation rule1Operation = rule1Result.getRuleOperation();
 		assertEquals("Rule1", rule1Operation.getName());
 		assertTrue("Should be empty", rule1Result.getNotCheckedDependencies().isEmpty());
 
 		RuleResult result2 = ruleResults.getRuleResult("Rule2");
-		assertEquals(FAIL, result2.getResultEnum());
+		assertEquals(RuleState.FAIL, result2.getRuleState());
 		String message = result2.getCounterExamples().get(0).getMessage();
 		assertEquals("ERROR2", message);
 
-		assertEquals(NOT_CHECKED, ruleResults.getRuleResult("Rule3").getResultEnum());
+		assertEquals(NOT_CHECKED, ruleResults.getRuleResult("Rule3").getRuleState());
 		assertEquals("Rule2", ruleResults.getRuleResult("Rule3").getFailedDependencies().get(0));
 	}
 
@@ -170,8 +169,8 @@ public class RulesMachineTest {
 		assertTrue(!rulesMachineRun.hasError());
 		System.out.println(rulesMachineRun.getRuleResults());
 		assertTrue(rulesMachineRun.getRuleResults().getRuleResult("Rule1").hasFailed());
-		assertEquals(RESULT_ENUM.FAIL, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getResultEnum());
-		assertEquals(RESULT_ENUM.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule2").getResultEnum());
+		assertEquals(FAIL, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getRuleState());
+		assertEquals(NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule2").getRuleState());
 		assertEquals("Rule1", rulesMachineRun.getRuleResults().getRuleResult("Rule2").getFailedDependencies().get(0));
 	}
 

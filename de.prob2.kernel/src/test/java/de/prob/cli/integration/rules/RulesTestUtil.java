@@ -1,7 +1,5 @@
 package de.prob.cli.integration.rules;
 
-import static de.prob.model.brules.RuleResult.RESULT_ENUM.FAIL;
-import static de.prob.model.brules.RuleResult.RESULT_ENUM.NOT_CHECKED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -16,6 +14,7 @@ import de.be4.classicalb.core.parser.rules.RuleOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResults;
+import de.prob.model.brules.RuleState;
 import de.prob.model.brules.RulesMachineRun;
 
 public class RulesTestUtil {
@@ -82,12 +81,12 @@ public class RulesTestUtil {
 				assertTrue(String.format("Rule operation '%s' is not contained in the result map.", ruleName),
 						ruleResultMap.containsKey(ruleName));
 				RuleResult ruleResult = ruleResultMap.get(ruleName);
-				if (ruleResult.getResultEnum() == FAIL) {
+				if (ruleResult.getRuleState() == RuleState.FAIL) {
 					assertTrue(String.format("No violation found but rule failed: '%s'", ruleName),
 							ruleResult.getNumberOfViolations() > 0);
 				}
 
-				if (ruleResult.getResultEnum() == NOT_CHECKED) {
+				if (ruleResult.getRuleState() == RuleState.NOT_CHECKED) {
 					List<String> notCheckedCauses = ruleResult.getFailedDependencies();
 					assertTrue(String.format("There is no cause why rule '%s' is not checked.", ruleName),
 							!notCheckedCauses.isEmpty());

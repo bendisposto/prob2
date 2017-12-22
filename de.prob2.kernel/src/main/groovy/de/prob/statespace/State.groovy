@@ -217,7 +217,6 @@ class State {
 	}
 	
 	
-	
 	/**
 	 * @param formulas to be evaluated
 	 * @return list of results calculated by ProB for a given formula
@@ -362,6 +361,6 @@ class State {
 			stateSpace.execute(cmd)
 			values.putAll(cmd.getResults())
 		}
-		values
+		return new HashMap(values);
 	}
 }

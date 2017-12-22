@@ -12,7 +12,6 @@ import de.be4.classicalb.core.parser.rules.*;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.brules.RuleResult.RESULT_ENUM;
 import de.prob.statespace.State;
 
 public class RuleResults {
@@ -73,10 +72,10 @@ public class RuleResults {
 		final Set<String> allNotCheckedRules = new HashSet<>();
 		final Set<RuleResult> allNotCheckedRulesObjects = new HashSet<>();
 		for (RuleResult ruleResult : ruleResultsMap.values()) {
-			RESULT_ENUM result = ruleResult.getResultEnum();
-			if (result == RESULT_ENUM.FAIL) {
+			RuleState result = ruleResult.getRuleState();
+			if (result == RuleState.FAIL) {
 				allFailingRules.add(ruleResult.getRuleName());
-			} else if (result == RESULT_ENUM.NOT_CHECKED) {
+			} else if (result == RuleState.NOT_CHECKED) {
 				allNotCheckedRules.add(ruleResult.getRuleName());
 				allNotCheckedRulesObjects.add(ruleResult);
 			}
@@ -93,7 +92,7 @@ public class RuleResults {
 		int numberOfRulesNotChecked = 0;
 		int numberOfRulesDisabled = 0;
 		for (RuleResult ruleResult : ruleResultsMap.values()) {
-			RESULT_ENUM resultEnum = ruleResult.getResultEnum();
+			RuleState resultEnum = ruleResult.getRuleState();
 			switch (resultEnum) {
 			case FAIL:
 				numberOfRulesFailed++;

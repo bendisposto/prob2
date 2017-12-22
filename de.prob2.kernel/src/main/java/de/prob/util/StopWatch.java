@@ -4,12 +4,8 @@ import java.util.HashMap;
 
 public class StopWatch<E extends Enum<E>> {
 
-	private HashMap<E, Long> startTime = new HashMap<>();
+	private final HashMap<E, Long> startTime = new HashMap<>();
 	private final HashMap<E, Long> runTime = new HashMap<>();
-
-	public StopWatch() {
-		//
-	}
 
 	public void start(E watch) {
 		startTime.put(watch, System.currentTimeMillis());
@@ -34,6 +30,10 @@ public class StopWatch<E extends Enum<E>> {
 	public String getRunTimeAsString(E id) {
 		long l = getRunTime(id);
 		return "RUNTIME " + id + ": " + l + " ms";
+	}
+	
+	public void printTime(E id) {
+		System.out.println(getRunTimeAsString(id));
 	}
 
 }
