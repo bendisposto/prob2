@@ -33,7 +33,14 @@ public class GetMachineStructureCommand extends AbstractCommand {
 	private static PrologASTNode makeASTNode(PrologTerm node) {
 		if ("formula".equals(node.getFunctor())) {
 			final PrologTerm term = node.getArgument(1);
-			final String prettyPrint = PrologTerm.atomicString(node.getArgument(2));
+			final PrologTerm prettyPrintTerm = node.getArgument(2);
+			// FIXME Are integers supposed to be allowed as pretty prints?
+			// Currently, the CLI uses integers as pretty prints in a few cases, such as animation functions.
+			// It's not clear if this is the intended behavior, or if they should have been converted to atoms in the Prolog code.
+			if (!prettyPrintTerm.isAtom() && !prettyPrintTerm.isNumber()) {
+				throw new IllegalArgumentException("Formula pretty print must be an atom or number: " + prettyPrintTerm);
+			}
+			final String prettyPrint = prettyPrintTerm.getFunctor();
 			return new ASTFormula(term, prettyPrint);
 		} else if ("category".equals(node.getFunctor())) {
 			final String name = node.getArgument(1).getFunctor();
