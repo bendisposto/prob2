@@ -13,7 +13,7 @@ import de.prob.statespace.State;
 
 public class GetSvgForVisualizationCommand extends AbstractCommand {
 		
-	private static final String PROLOG_COMMAND_NAME = "call_dot_command_and_dot";
+	private static final String PROLOG_COMMAND_NAME = "call_dot_command_and_dot_in_state";
 	
 	private File file;
 	
