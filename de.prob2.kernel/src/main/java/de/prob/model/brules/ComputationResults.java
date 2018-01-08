@@ -18,7 +18,6 @@ import de.prob.statespace.State;
 
 public class ComputationResults {
 
-	
 	private HashMap<String, ComputationState> results = new HashMap<>();
 
 	public ComputationResults(RulesProject project, State state) {
@@ -48,14 +47,8 @@ public class ComputationResults {
 			ComputationOperation comp = compList.get(i);
 			AbstractEvalResult abstractEvalResult = evalResults.get(i);
 			EvalResult evalResult = (EvalResult) abstractEvalResult;
-			this.results.put(comp.getName(), convertStringToEnum(evalResult));
+			this.results.put(comp.getName(), ComputationState.valueOf(evalResult));
 		}
-	}
-
-	private ComputationState convertStringToEnum(EvalResult evalResult) {
-		String res = evalResult.toString();
-		res = res.substring(1, res.length() - 1);
-		return ComputationState.valueOf(res);
 	}
 
 	public Map<String, ComputationState> getResults() {
