@@ -83,7 +83,7 @@ BODY
   END//RULE_FORALL
 END
 ;
-RULE RULE_Errros
+RULE RULE_WithViolations
 BODY
   RULE_FORALL x
   WHERE
@@ -96,5 +96,11 @@ BODY
       , x
     )
   END//RULE_FORALL
+END
+;
+RULE RULE_BasedOnRuleWithViolations
+DEPENDS_ON_RULE RULE_WithViolations
+BODY
+  skip
 END
 END

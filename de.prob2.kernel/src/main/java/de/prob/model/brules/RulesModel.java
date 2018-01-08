@@ -1,11 +1,8 @@
 package de.prob.model.brules;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
 import com.google.inject.Inject;
@@ -13,27 +10,19 @@ import com.google.inject.Inject;
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.rules.AbstractOperation;
-import de.be4.classicalb.core.parser.rules.ComputationOperation;
-import de.be4.classicalb.core.parser.rules.FunctionOperation;
-import de.be4.classicalb.core.parser.rules.RuleOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.animator.command.LoadRulesProjectCommand;
-import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.exception.ProBError;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph;
 import de.prob.model.representation.ModelElementList;
 import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
-import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
-import de.prob.statespace.Trace;
-import de.prob.statespace.Transition;
 
 public class RulesModel extends AbstractModel {
 
@@ -118,66 +107,4 @@ public class RulesModel extends AbstractModel {
 			return evalElement;
 		}
 	}
-
-	public Map<AbstractOperation, OperationState> evalOperations(State state, List<AbstractOperation> operations) {
-		ArrayList<IEvalElement> formulas = new ArrayList<>();
-		for (AbstractOperation abstractOperation : operations) {
-			if (abstractOperation instanceof ComputationOperation || abstractOperation instanceof RuleOperation) {
-				formulas.add(getEvalElement(abstractOperation));
-			}
-		}
-		state.getStateSpace().subscribe(this, formulas);
-		Map<IEvalElement, AbstractEvalResult> values = state.getValues();
-		final Map<AbstractOperation, OperationState> states = new HashMap<>();
-		for (AbstractOperation op : operations) {
-			if (op instanceof RuleOperation) {
-				states.put(op, RuleState.valueOf(values.get(getEvalElement(op))));
-			} else if (op instanceof ComputationOperation) {
-				states.put(op, ComputationState.valueOf(values.get(getEvalElement(op))));
-			}
-		}
-		return states;
-	}
-
-	public Trace executeOperationAndDependencies(final Trace trace, String opName) {
-		if (!project.getOperationsMap().containsKey(opName)) {
-			throw new IllegalArgumentException("Unknown operation name: " + opName);
-		}
-		AbstractOperation abstractOperation = project.getOperationsMap().get(opName);
-		if (abstractOperation instanceof FunctionOperation) {
-			throw new IllegalArgumentException("Function operations are not supported: " + opName);
-		}
-
-		Trace t = trace;
-		t.setExploreStateByDefault(false);
-
-		while (!t.getCurrentState().isInitialised()) {
-			t = t.anyOperation(null);
-		}
-		List<AbstractOperation> executionOrder = abstractOperation.getSortedListOfTransitiveDependencies();
-		executionOrder.add(abstractOperation);
-		executionOrder = executionOrder.stream().filter(op -> !(op instanceof FunctionOperation))
-				.collect(Collectors.toList());
-		Map<AbstractOperation, OperationState> opStates = evalOperations(t.getCurrentState(), executionOrder);
-
-		List<AbstractOperation> operationsToBeExecuted = new ArrayList<>();
-		for (AbstractOperation dep : executionOrder) {
-			OperationState operationState = opStates.get(dep);
-			if (operationState.isNotExecuted() && !operationState.isDisabled()) {
-				operationsToBeExecuted.add(dep);
-			}
-		}
-		for (AbstractOperation op : operationsToBeExecuted) {
-			try {
-				t.setExploreStateByDefault(false);
-				List<Transition> transitions = t.getStateSpace()
-						.getTransitionsBasedOnParameterValues(t.getCurrentState(), op.getName(), new ArrayList<>(), 1);
-				t = t.add(transitions.get(0));
-			} catch (ProBError | IllegalArgumentException e) {
-				break;
-			}
-		}
-		return t;
-	}
-
 }

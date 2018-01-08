@@ -27,10 +27,8 @@ public class RulesMachineRunner {
 	public static RulesMachineRunner getInstance() {
 		if (rulesMachineRunner == null) {
 			rulesMachineRunner = Main.getInjector().getInstance(RulesMachineRunner.class);
-			return rulesMachineRunner;
-		} else {
-			return rulesMachineRunner;
 		}
+		return rulesMachineRunner;
 	}
 
 	public CliVersionNumber getVersion() {
