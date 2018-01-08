@@ -4,52 +4,28 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.prob.animator.domainobjects.DotCommandItem;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.State;
 
 public class GetSvgForVisualizationCommand extends AbstractCommand {
-	
-	public enum Option {
-		DFA_MERGE("dfa_merge"), 
-		STATE_AS_GRAPH("state_as_graph"), 
-		INVARIANT("invariant"), 
-		PROPERTIES("properties"), 
-		ASSERTIONS("assertions"), 
-		DEADLOCK("deadlock"), 
-		GOAL("goal"), 
-		LAST_ERROR("last_error"), 
-		ENABLE_GRAPH("enable_graph"), 
-		DEPENDENCE_GRAPH("dependence_graph"),
-		DEFINITIONS("definitions"),
-		EXPR_AS_GRAPH("expr_as_graph"), 
-		FORMULA_TREE("formula_tree"), 
-		TRANSITION_DIAGRAM("transition_diagram"), 
-		PREDICATE_DEPENDENCY("predicate_dependency"),
-		STATE_SPACE("state_space");
 		
-		private String option;
-		
-		private Option(String option) {
-			this.option = option;
-		}
-		
-		public String getOption() {
-			return option;
-		}
-	}
-	
 	private static final String PROLOG_COMMAND_NAME = "call_dot_command_and_dot";
 	
-	private Option option;
-
 	private File file;
 	
 	private List<IEvalElement> formulas;
 	
-	public GetSvgForVisualizationCommand(Option option, File file, List<IEvalElement> formulas) {
-		this.option = option;
+	private DotCommandItem item;
+	
+	private final State id;
+	
+	public GetSvgForVisualizationCommand(final State id, DotCommandItem item, File file, List<IEvalElement> formulas) {
+		this.id = id;
+		this.item = item;
 		this.file = file;
 		this.formulas = new ArrayList<>(formulas);
 	}
@@ -57,7 +33,8 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 	@Override
 	public void writeCommand(IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME);
-		pto.printAtom(option.getOption());
+		pto.printAtomOrNumber(id.getId());
+		pto.printAtom(item.getCommand());
 		pto.openList();
 		for (IEvalElement formula : formulas) {
 			formula.printProlog(pto);
@@ -70,7 +47,7 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 
 	@Override
 	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
-				
+		
 	}
-
+	
 }
