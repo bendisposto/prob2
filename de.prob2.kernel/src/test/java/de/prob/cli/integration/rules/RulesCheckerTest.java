@@ -35,7 +35,7 @@ public class RulesCheckerTest {
 		Trace trace = new Trace(s);
 		RulesChecker rulesChecker = new RulesChecker(trace);
 		rulesChecker.init();
-		rulesChecker.checkAllRules();
+		rulesChecker.executeAllOperations();
 		for (Entry<AbstractOperation, OperationState> entry : rulesChecker.getOperationStates().entrySet()) {
 			OperationState state = entry.getValue();
 			if (entry.getKey().getName().equals("RULE_BasedOnRuleWithViolations")) {

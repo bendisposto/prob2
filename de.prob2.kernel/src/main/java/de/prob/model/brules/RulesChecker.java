@@ -74,7 +74,7 @@ public class RulesChecker {
 		}
 	}
 
-	public void checkAllRules() {
+	public void executeAllOperations() {
 		init();
 		// determine all operations that can be executed in this state
 		Set<AbstractOperation> executableOperations = getExecutableOperations();
