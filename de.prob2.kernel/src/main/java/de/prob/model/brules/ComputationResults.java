@@ -10,7 +10,6 @@ import java.util.Set;
 import de.be4.classicalb.core.parser.rules.AbstractOperation;
 import de.be4.classicalb.core.parser.rules.ComputationOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
-import de.be4.classicalb.core.parser.rules.RulesTransformation;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalResult;
@@ -19,19 +18,8 @@ import de.prob.statespace.State;
 
 public class ComputationResults {
 
-	public enum RESULT {
-		EXECUTED, DISABLED, NOT_EXECUTED
-
-	}
-
-	private static final Map<String, RESULT> resultMapping = new HashMap<>();
-	static {
-		resultMapping.put(RulesTransformation.COMPUTATION_EXECUTED, RESULT.EXECUTED);
-		resultMapping.put(RulesTransformation.COMPUTATION_DISABLED, RESULT.DISABLED);
-		resultMapping.put(RulesTransformation.COMPUTATION_NOT_EXECUTED, RESULT.NOT_EXECUTED);
-	}
-
-	private HashMap<String, RESULT> results = new HashMap<>();
+	
+	private HashMap<String, ComputationState> results = new HashMap<>();
 
 	public ComputationResults(RulesProject project, State state) {
 		this(extractComputationOperations(project), state);
@@ -64,21 +52,21 @@ public class ComputationResults {
 		}
 	}
 
-	private RESULT convertStringToEnum(EvalResult evalResult) {
+	private ComputationState convertStringToEnum(EvalResult evalResult) {
 		String res = evalResult.toString();
 		res = res.substring(1, res.length() - 1);
-		return RESULT.valueOf(res);
+		return ComputationState.valueOf(res);
 	}
 
-	public Map<String, RESULT> getResults() {
+	public Map<String, ComputationState> getResults() {
 		return new HashMap<>(this.results);
 	}
 
-	public RESULT getResult(String compName) {
+	public ComputationState getResult(String compName) {
 		return results.get(compName);
 	}
 
-	public RESULT getResult(ComputationOperation comp) {
+	public ComputationState getResult(ComputationOperation comp) {
 		return results.get(comp.getName());
 	}
 
