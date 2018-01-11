@@ -2,7 +2,7 @@ package de.prob.util;
 
 import java.util.HashMap;
 
-public class StopWatch<E extends Enum<E>> {
+public class StopWatch<E extends Object> {
 
 	private final HashMap<E, Long> startTime = new HashMap<>();
 	private final HashMap<E, Long> runTime = new HashMap<>();
