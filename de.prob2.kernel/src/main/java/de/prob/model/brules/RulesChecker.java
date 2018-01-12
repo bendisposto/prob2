@@ -17,7 +17,6 @@ import de.be4.classicalb.core.parser.rules.RuleOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.exception.ProBError;
 import de.prob.statespace.State;
 import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
@@ -64,7 +63,7 @@ public class RulesChecker {
 
 	public void init() {
 		if (!init) {
-			// init machine
+			// initialize machine
 			while (!trace.getCurrentState().isInitialised()) {
 				trace = trace.anyOperation(null);
 			}
@@ -102,17 +101,11 @@ public class RulesChecker {
 			OperationState value = eval.getValue();
 			if (value.isNotExecuted() && !value.isDisabled()) {
 				boolean canBeExecuted = true;
+				// check that all dependencies are executed and have not failed
+				// in case of rules
 				for (AbstractOperation pred : predecessors.get(op)) {
 					OperationState predState = operationStates.get(pred);
-					if (predState.isExecuted()) {
-						if (predState instanceof RuleState) {
-							RuleState ruleState = (RuleState) predState;
-							if (ruleState == RuleState.FAIL) {
-								canBeExecuted = false;
-								break;
-							}
-						}
-					} else {
+					if (predState.isNotExecuted() || predState == RuleState.FAIL) {
 						canBeExecuted = false;
 						break;
 					}
