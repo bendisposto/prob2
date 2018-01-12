@@ -87,16 +87,12 @@ public class RulesChecker {
 	}
 
 	private OperationState executeOperation(AbstractOperation op) {
-		try {
-			List<Transition> transitions = trace.getStateSpace()
-					.getTransitionsBasedOnParameterValues(trace.getCurrentState(), op.getName(), new ArrayList<>(), 1);
-			trace = trace.add(transitions.get(0));
-			OperationState opState = evalOperation(trace.getCurrentState(), op);
-			this.operationStates.put(op, opState);
-			return opState;
-		} catch (ProBError | IllegalArgumentException e) {
-			throw new RuntimeException(e);
-		}
+		List<Transition> transitions = trace.getStateSpace()
+				.getTransitionsBasedOnParameterValues(trace.getCurrentState(), op.getName(), new ArrayList<>(), 1);
+		trace = trace.add(transitions.get(0));
+		OperationState opState = evalOperation(trace.getCurrentState(), op);
+		this.operationStates.put(op, opState);
+		return opState;
 	}
 
 	private Set<AbstractOperation> getExecutableOperations() {
