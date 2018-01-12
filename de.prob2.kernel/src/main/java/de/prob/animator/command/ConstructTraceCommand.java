@@ -46,9 +46,9 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 	private final State stateId;
 	private final List<String> name;
 	private final StateSpace stateSpace;
-	private final List<Transition> resultTrace = new ArrayList<Transition>();
-	private final List<String> errors = new ArrayList<String>();
-	private List<Integer> executionNumber = new ArrayList<Integer>();
+	private final List<Transition> resultTrace = new ArrayList<>();
+	private final List<String> errors = new ArrayList<>();
+	private List<Integer> executionNumber = new ArrayList<>();
 
 	public ConstructTraceCommand(final StateSpace s, final State stateId,
 			final List<String> name, final List<ClassicalB> predicate,
@@ -134,8 +134,8 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 			resultTrace.add(operation);
 		}
 
-		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS_VARIABLE));
-		for (PrologTerm prologTerm : errors) {
+		ListPrologTerm reportedErrors = BindingGenerator.getList(bindings.get(ERRORS_VARIABLE));
+		for (PrologTerm prologTerm : reportedErrors) {
 			this.errors.add(prologTerm.getFunctor());
 		}
 	}
@@ -150,7 +150,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public Trace getTrace(final StateSpace s) throws RuntimeException {
+	public Trace getTrace(final StateSpace s) {
 		Trace t = s.getTrace(stateId.getId());
 		return t.addTransitions(resultTrace);
 	}
