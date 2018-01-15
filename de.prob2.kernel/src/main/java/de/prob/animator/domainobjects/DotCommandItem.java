@@ -10,11 +10,14 @@ public class DotCommandItem {
 	
 	private final int arity;
 	
-	public DotCommandItem(String command, String name, String description, int arity) {
+	private final boolean available;
+	
+	public DotCommandItem(String command, String name, String description, int arity, boolean available) {
 		this.command = command;
 		this.name = name;
 		this.description = description;
 		this.arity = arity;
+		this.available = available;
 	}
 	
 	public String getCommand() {
@@ -31,6 +34,10 @@ public class DotCommandItem {
 	
 	public int getArity() {
 		return arity;
+	}
+	
+	public boolean isAvailable() {
+		return available;
 	}
 	
 	@Override

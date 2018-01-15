@@ -41,7 +41,7 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 		}
 		pto.closeList();
 		pto.printAtom("svg");
-		pto.printAtom(file.getAbsolutePath().toString());
+		pto.printString(file.getAbsolutePath().toString());
 		pto.closeTerm();
 	}
 

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import de.prob.animator.domainobjects.DotCommandItem;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
@@ -43,8 +44,9 @@ public class GetAllDotCommands extends AbstractCommand {
 		final String command = PrologTerm.atomicString(commandTerm.getArgument(1));
 		final String name = PrologTerm.atomicString(commandTerm.getArgument(2));
 		final String description = PrologTerm.atomicString(commandTerm.getArgument(3));
-		final int arity = Integer.parseInt(PrologTerm.atomicString(commandTerm.getArgument(4)));
-		return new DotCommandItem(command, name, description, arity);
+		final int arity = ((IntegerPrologTerm) commandTerm.getArgument(4)).getValue().intValue();
+		final String available = PrologTerm.atomicString(commandTerm.getArgument(6));
+		return new DotCommandItem(command, name, description, arity, "available".equals(available)? true : false);
 	}
 	
 	public List<DotCommandItem> getCommands() {
