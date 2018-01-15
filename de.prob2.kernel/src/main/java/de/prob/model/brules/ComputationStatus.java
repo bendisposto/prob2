@@ -6,25 +6,25 @@ import java.util.Map;
 import de.be4.classicalb.core.parser.rules.RulesTransformation;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 
-public enum ComputationState implements OperationState {
+public enum ComputationStatus implements OperationStatus {
 
 	EXECUTED(RulesTransformation.COMPUTATION_EXECUTED), DISABLED(
 			RulesTransformation.COMPUTATION_DISABLED), NOT_EXECUTED(RulesTransformation.COMPUTATION_NOT_EXECUTED);
 
 	private final String bValue;
 
-	private static Map<String, ComputationState> mapping = new HashMap<>();
+	private static Map<String, ComputationStatus> mapping = new HashMap<>();
 	static {
-		for (ComputationState compState : ComputationState.values()) {
+		for (ComputationStatus compState : ComputationStatus.values()) {
 			mapping.put(compState.bValue, compState);
 		}
 	}
 
-	ComputationState(String value) {
+	ComputationStatus(String value) {
 		this.bValue = value;
 	}
 
-	public static ComputationState valueOf(AbstractEvalResult evalResult) {
+	public static ComputationStatus valueOf(AbstractEvalResult evalResult) {
 		String key = evalResult.toString();
 		key = key.substring(1, key.length() - 1);
 		if (mapping.containsKey(key)) {

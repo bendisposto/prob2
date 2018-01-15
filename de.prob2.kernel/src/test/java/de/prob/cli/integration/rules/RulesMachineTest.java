@@ -13,16 +13,16 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import static de.prob.model.brules.RuleState.*;
+import static de.prob.model.brules.RuleStatus.*;
 
 import de.be4.classicalb.core.parser.rules.RuleOperation;
-import de.prob.model.brules.ComputationResults;
-import de.prob.model.brules.ComputationState;
+import de.prob.model.brules.ComputationStatues;
+import de.prob.model.brules.ComputationStatus;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResult.CounterExample;
 import de.prob.model.brules.RuleResults;
 import de.prob.model.brules.RuleResults.ResultSummary;
-import de.prob.model.brules.RuleState;
+import de.prob.model.brules.RuleStatus;
 import de.prob.model.brules.RulesMachineRun;
 import de.prob.statespace.State;
 
@@ -45,13 +45,13 @@ public class RulesMachineTest {
 		assertEquals(4, ruleResults.getRuleResultList().size());
 
 		RuleResult rule1Result = ruleResults.getRuleResult("Rule1");
-		assertEquals(RuleState.SUCCESS, rule1Result.getRuleState());
+		assertEquals(RuleStatus.SUCCESS, rule1Result.getRuleState());
 		RuleOperation rule1Operation = rule1Result.getRuleOperation();
 		assertEquals("Rule1", rule1Operation.getName());
 		assertTrue("Should be empty", rule1Result.getNotCheckedDependencies().isEmpty());
 
 		RuleResult result2 = ruleResults.getRuleResult("Rule2");
-		assertEquals(RuleState.FAIL, result2.getRuleState());
+		assertEquals(RuleStatus.FAIL, result2.getRuleState());
 		String message = result2.getCounterExamples().get(0).getMessage();
 		assertEquals("ERROR2", message);
 
@@ -64,8 +64,8 @@ public class RulesMachineTest {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineExample.rmch");
 		assertEquals(false, rulesMachineRun.hasError());
 		State finalState = rulesMachineRun.getExecuteRun().getExecuteModelCommand().getFinalState();
-		ComputationResults compResult = new ComputationResults(rulesMachineRun.getRulesProject(), finalState);
-		assertEquals(ComputationState.EXECUTED, compResult.getResult("COMP_comp1"));
+		ComputationStatues compResult = new ComputationStatues(rulesMachineRun.getRulesProject(), finalState);
+		assertEquals(ComputationStatus.EXECUTED, compResult.getResult("COMP_comp1"));
 	}
 
 	@Test

@@ -14,7 +14,7 @@ import de.be4.classicalb.core.parser.rules.RuleOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResults;
-import de.prob.model.brules.RuleState;
+import de.prob.model.brules.RuleStatus;
 import de.prob.model.brules.RulesMachineRun;
 
 public class RulesTestUtil {
@@ -81,12 +81,12 @@ public class RulesTestUtil {
 				assertTrue(String.format("Rule operation '%s' is not contained in the result map.", ruleName),
 						ruleResultMap.containsKey(ruleName));
 				RuleResult ruleResult = ruleResultMap.get(ruleName);
-				if (ruleResult.getRuleState() == RuleState.FAIL) {
+				if (ruleResult.getRuleState() == RuleStatus.FAIL) {
 					assertTrue(String.format("No violation found but rule failed: '%s'", ruleName),
 							ruleResult.getNumberOfViolations() > 0);
 				}
 
-				if (ruleResult.getRuleState() == RuleState.NOT_CHECKED) {
+				if (ruleResult.getRuleState() == RuleStatus.NOT_CHECKED) {
 					List<String> notCheckedCauses = ruleResult.getFailedDependencies();
 					assertTrue(String.format("There is no cause why rule '%s' is not checked.", ruleName),
 							!notCheckedCauses.isEmpty());

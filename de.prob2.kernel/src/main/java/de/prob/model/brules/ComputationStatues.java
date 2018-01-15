@@ -16,11 +16,11 @@ import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.State;
 
-public class ComputationResults {
+public class ComputationStatues {
 
-	private HashMap<String, ComputationState> results = new HashMap<>();
+	private HashMap<String, ComputationStatus> computationStatues = new HashMap<>();
 
-	public ComputationResults(RulesProject project, State state) {
+	public ComputationStatues(RulesProject project, State state) {
 		this(extractComputationOperations(project), state);
 	}
 
@@ -34,7 +34,7 @@ public class ComputationResults {
 		return comps;
 	}
 
-	public ComputationResults(Set<ComputationOperation> computations, State state) {
+	public ComputationStatues(Set<ComputationOperation> computations, State state) {
 		final ArrayList<ComputationOperation> compList = new ArrayList<>();
 		final List<IEvalElement> evalElements = new ArrayList<>();
 		for (ComputationOperation comp : computations) {
@@ -47,25 +47,25 @@ public class ComputationResults {
 			ComputationOperation comp = compList.get(i);
 			AbstractEvalResult abstractEvalResult = evalResults.get(i);
 			EvalResult evalResult = (EvalResult) abstractEvalResult;
-			this.results.put(comp.getName(), ComputationState.valueOf(evalResult));
+			this.computationStatues.put(comp.getName(), ComputationStatus.valueOf(evalResult));
 		}
 	}
 
-	public Map<String, ComputationState> getResults() {
-		return new HashMap<>(this.results);
+	public Map<String, ComputationStatus> getResults() {
+		return new HashMap<>(this.computationStatues);
 	}
 
-	public ComputationState getResult(String compName) {
-		return results.get(compName);
+	public ComputationStatus getResult(String compName) {
+		return computationStatues.get(compName);
 	}
 
-	public ComputationState getResult(ComputationOperation comp) {
-		return results.get(comp.getName());
+	public ComputationStatus getResult(ComputationOperation comp) {
+		return computationStatues.get(comp.getName());
 	}
 
 	@Override
 	public String toString() {
-		return results.toString();
+		return computationStatues.toString();
 	}
 
 }

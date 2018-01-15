@@ -6,24 +6,24 @@ import java.util.Map;
 import de.be4.classicalb.core.parser.rules.RulesTransformation;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 
-public enum RuleState implements OperationState {
+public enum RuleStatus implements OperationStatus {
 	FAIL(RulesTransformation.RULE_FAIL), SUCCESS(RulesTransformation.RULE_SUCCESS), NOT_CHECKED(
 			RulesTransformation.RULE_NOT_CHECKED), DISABLED(RulesTransformation.RULE_DISABLED);
 
 	private final String bValue;
 
-	RuleState(String bValue) {
+	RuleStatus(String bValue) {
 		this.bValue = bValue;
 	}
 
-	private static final Map<String, RuleState> mapping = new HashMap<>();
+	private static final Map<String, RuleStatus> mapping = new HashMap<>();
 	static {
-		for (RuleState compState : RuleState.values()) {
+		for (RuleStatus compState : RuleStatus.values()) {
 			mapping.put(compState.bValue, compState);
 		}
 	}
 
-	public static RuleState valueOf(AbstractEvalResult evalResult) {
+	public static RuleStatus valueOf(AbstractEvalResult evalResult) {
 		String res = evalResult.toString();
 		res = res.substring(1, res.length() - 1);
 		if (mapping.containsKey(res)) {
@@ -46,7 +46,7 @@ public enum RuleState implements OperationState {
 
 	@Override
 	public boolean isDisabled() {
-		return this == RuleState.DISABLED;
+		return this == RuleStatus.DISABLED;
 	}
 
 }

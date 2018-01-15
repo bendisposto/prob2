@@ -13,7 +13,7 @@ import de.prob.translator.types.Tuple;
 
 public class RuleResult {
 	private final RuleOperation ruleOperation;
-	private final RuleState ruleState;
+	private final RuleStatus ruleStatus;
 	private final int numberOfViolations;
 	private final List<CounterExample> counterExamples = new ArrayList<>();
 
@@ -24,7 +24,7 @@ public class RuleResult {
 	public RuleResult(RuleOperation rule, AbstractEvalResult result, AbstractEvalResult numberOfCounterExamples,
 			AbstractEvalResult counterExampleResult) {
 		this.ruleOperation = rule;
-		this.ruleState = RuleState.valueOf(result);
+		this.ruleStatus = RuleStatus.valueOf(result);
 		this.numberOfViolations = Integer.parseInt(((EvalResult) numberOfCounterExamples).getValue());
 		transformCounterExamples(counterExampleResult);
 	}
@@ -137,12 +137,12 @@ public class RuleResult {
 		return sb.toString();
 	}
 
-	public RuleState getRuleState() {
-		return this.ruleState;
+	public RuleStatus getRuleState() {
+		return this.ruleStatus;
 	}
 
 	public boolean hasFailed() {
-		return this.ruleState == RuleState.FAIL;
+		return this.ruleStatus == RuleStatus.FAIL;
 	}
 
 	public class CounterExample {

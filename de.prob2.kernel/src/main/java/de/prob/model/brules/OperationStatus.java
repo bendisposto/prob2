@@ -1,6 +1,6 @@
 package de.prob.model.brules;
 
-public interface OperationState {
+public interface OperationStatus {
 
 	boolean isExecuted();
 

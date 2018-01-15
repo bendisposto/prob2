@@ -72,10 +72,10 @@ public class RuleResults {
 		final Set<String> allNotCheckedRules = new HashSet<>();
 		final Set<RuleResult> allNotCheckedRulesObjects = new HashSet<>();
 		for (RuleResult ruleResult : ruleResultsMap.values()) {
-			RuleState result = ruleResult.getRuleState();
-			if (result == RuleState.FAIL) {
+			RuleStatus result = ruleResult.getRuleState();
+			if (result == RuleStatus.FAIL) {
 				allFailingRules.add(ruleResult.getRuleName());
-			} else if (result == RuleState.NOT_CHECKED) {
+			} else if (result == RuleStatus.NOT_CHECKED) {
 				allNotCheckedRules.add(ruleResult.getRuleName());
 				allNotCheckedRulesObjects.add(ruleResult);
 			}
@@ -92,7 +92,7 @@ public class RuleResults {
 		int numberOfRulesNotChecked = 0;
 		int numberOfRulesDisabled = 0;
 		for (RuleResult ruleResult : ruleResultsMap.values()) {
-			RuleState resultEnum = ruleResult.getRuleState();
+			RuleStatus resultEnum = ruleResult.getRuleState();
 			switch (resultEnum) {
 			case FAIL:
 				numberOfRulesFailed++;

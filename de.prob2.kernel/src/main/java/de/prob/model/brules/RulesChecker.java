@@ -31,7 +31,7 @@ public class RulesChecker {
 	private final HashMap<AbstractOperation, Set<AbstractOperation>> predecessors = new HashMap<>();
 	private final HashMap<AbstractOperation, Set<AbstractOperation>> successors = new HashMap<>();
 
-	private Map<AbstractOperation, OperationState> operationStates;
+	private Map<AbstractOperation, OperationStatus> operationStatuses;
 
 	public RulesChecker(Trace trace) {
 		this.trace = trace;
@@ -69,7 +69,7 @@ public class RulesChecker {
 			}
 
 			// extract current state of all operations
-			this.operationStates = evalOperations(trace.getCurrentState(), rulesProject.getOperationsMap().values());
+			this.operationStatuses = evalOperations(trace.getCurrentState(), rulesProject.getOperationsMap().values());
 		}
 	}
 
@@ -85,27 +85,27 @@ public class RulesChecker {
 		}
 	}
 
-	private OperationState executeOperation(AbstractOperation op) {
+	private OperationStatus executeOperation(AbstractOperation op) {
 		List<Transition> transitions = trace.getStateSpace()
 				.getTransitionsBasedOnParameterValues(trace.getCurrentState(), op.getName(), new ArrayList<>(), 1);
 		trace = trace.add(transitions.get(0));
-		OperationState opState = evalOperation(trace.getCurrentState(), op);
-		this.operationStates.put(op, opState);
+		OperationStatus opState = evalOperation(trace.getCurrentState(), op);
+		this.operationStatuses.put(op, opState);
 		return opState;
 	}
 
 	private Set<AbstractOperation> getExecutableOperations() {
 		final Set<AbstractOperation> todo = new HashSet<>();
-		for (Entry<AbstractOperation, OperationState> eval : operationStates.entrySet()) {
+		for (Entry<AbstractOperation, OperationStatus> eval : operationStatuses.entrySet()) {
 			AbstractOperation op = eval.getKey();
-			OperationState value = eval.getValue();
+			OperationStatus value = eval.getValue();
 			if (value.isNotExecuted() && !value.isDisabled()) {
 				boolean canBeExecuted = true;
 				// check that all dependencies are executed and have not failed
 				// in case of rules
 				for (AbstractOperation pred : predecessors.get(op)) {
-					OperationState predState = operationStates.get(pred);
-					if (predState.isNotExecuted() || predState == RuleState.FAIL) {
+					OperationStatus predState = operationStatuses.get(pred);
+					if (predState.isNotExecuted() || predState == RuleStatus.FAIL) {
 						canBeExecuted = false;
 						break;
 					}
@@ -130,36 +130,36 @@ public class RulesChecker {
 
 		List<AbstractOperation> operationsToBeExecuted = new ArrayList<>();
 		for (AbstractOperation dep : executionOrder) {
-			OperationState operationState = operationStates.get(dep);
+			OperationStatus operationStatus = operationStatuses.get(dep);
 
-			if (operationState.isDisabled()) {
+			if (operationStatus.isDisabled()) {
 				return false;
 			}
-			if (dep != goalOperation && operationState == RuleState.FAIL) {
+			if (dep != goalOperation && operationStatus == RuleStatus.FAIL) {
 				return false;
 			}
 
-			if (operationState.isNotExecuted()) {
+			if (operationStatus.isNotExecuted()) {
 				operationsToBeExecuted.add(dep);
 			}
 		}
 		for (AbstractOperation op : operationsToBeExecuted) {
-			OperationState opState = executeOperation(op);
-			if (op != goalOperation && opState == RuleState.FAIL) {
+			OperationStatus opState = executeOperation(op);
+			if (op != goalOperation && opState == RuleStatus.FAIL) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public OperationState evalOperation(State state, AbstractOperation operation) {
+	public OperationStatus evalOperation(State state, AbstractOperation operation) {
 		Set<AbstractOperation> set = new HashSet<>();
 		set.add(operation);
-		Map<AbstractOperation, OperationState> evalOperations = evalOperations(state, set);
+		Map<AbstractOperation, OperationStatus> evalOperations = evalOperations(state, set);
 		return evalOperations.get(operation);
 	}
 
-	public Map<AbstractOperation, OperationState> evalOperations(State state,
+	public Map<AbstractOperation, OperationStatus> evalOperations(State state,
 			Collection<AbstractOperation> operations) {
 		ArrayList<IEvalElement> formulas = new ArrayList<>();
 		for (AbstractOperation abstractOperation : operations) {
@@ -169,12 +169,12 @@ public class RulesChecker {
 		}
 		state.getStateSpace().subscribe(this, formulas);
 		Map<IEvalElement, AbstractEvalResult> values = state.getValues();
-		final Map<AbstractOperation, OperationState> states = new HashMap<>();
+		final Map<AbstractOperation, OperationStatus> states = new HashMap<>();
 		for (AbstractOperation op : operations) {
 			if (op instanceof RuleOperation) {
-				states.put(op, RuleState.valueOf(values.get(rulesModel.getEvalElement(op))));
+				states.put(op, RuleStatus.valueOf(values.get(rulesModel.getEvalElement(op))));
 			} else if (op instanceof ComputationOperation) {
-				states.put(op, ComputationState.valueOf(values.get(rulesModel.getEvalElement(op))));
+				states.put(op, ComputationStatus.valueOf(values.get(rulesModel.getEvalElement(op))));
 			}
 		}
 		return states;
@@ -190,16 +190,16 @@ public class RulesChecker {
 		return this.trace;
 	}
 
-	public Map<AbstractOperation, OperationState> getOperationStates() {
-		return new HashMap<>(this.operationStates);
+	public Map<AbstractOperation, OperationStatus> getOperationStates() {
+		return new HashMap<>(this.operationStatuses);
 	}
 
-	public OperationState getOperationState(String opName) {
+	public OperationStatus getOperationState(String opName) {
 		checkThatOperationExists(opName);
 		checkThatOperationIsNotAFunctionOperation(opName);
 		init();
 		AbstractOperation abstractOperation = rulesProject.getOperationsMap().get(opName);
-		return this.operationStates.get(abstractOperation);
+		return this.operationStatuses.get(abstractOperation);
 	}
 
 	private void checkThatOperationExists(String opName) {

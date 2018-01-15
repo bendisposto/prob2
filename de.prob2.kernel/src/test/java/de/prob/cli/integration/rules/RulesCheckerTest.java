@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import de.be4.classicalb.core.parser.rules.AbstractOperation;
 import de.prob.Main;
-import de.prob.model.brules.OperationState;
-import de.prob.model.brules.RuleState;
+import de.prob.model.brules.OperationStatus;
+import de.prob.model.brules.RuleStatus;
 import de.prob.model.brules.RulesChecker;
 import de.prob.scripting.Api;
 import de.prob.statespace.StateSpace;
@@ -36,10 +36,10 @@ public class RulesCheckerTest {
 		RulesChecker rulesChecker = new RulesChecker(trace);
 		rulesChecker.init();
 		rulesChecker.executeAllOperations();
-		for (Entry<AbstractOperation, OperationState> entry : rulesChecker.getOperationStates().entrySet()) {
-			OperationState state = entry.getValue();
+		for (Entry<AbstractOperation, OperationStatus> entry : rulesChecker.getOperationStates().entrySet()) {
+			OperationStatus state = entry.getValue();
 			if (entry.getKey().getName().equals("RULE_BasedOnRuleWithViolations")) {
-				assertEquals(RuleState.NOT_CHECKED, state);
+				assertEquals(RuleStatus.NOT_CHECKED, state);
 			} else {
 				assertTrue(state.isExecuted());
 			}
@@ -52,12 +52,12 @@ public class RulesCheckerTest {
 		RulesChecker checker = new RulesChecker(new Trace(s));
 		boolean possible = checker.executeOperationAndDependencies("RULE_BasedOnValue1");
 		assertEquals(true, possible);
-		assertEquals(RuleState.FAIL, checker.getOperationState("RULE_BasedOnValue1"));
-		assertEquals(RuleState.NOT_CHECKED, checker.getOperationState("RULE_WithViolations"));
+		assertEquals(RuleStatus.FAIL, checker.getOperationState("RULE_BasedOnValue1"));
+		assertEquals(RuleStatus.NOT_CHECKED, checker.getOperationState("RULE_WithViolations"));
 		checker.executeOperationAndDependencies("RULE_WithViolations");
-		assertEquals(RuleState.FAIL, checker.getOperationState("RULE_WithViolations"));
+		assertEquals(RuleStatus.FAIL, checker.getOperationState("RULE_WithViolations"));
 		boolean possible2 = checker.executeOperationAndDependencies("RULE_BasedOnRuleWithViolations");
 		assertEquals(false, possible2);
-		assertEquals(RuleState.NOT_CHECKED, checker.getOperationState("RULE_BasedOnRuleWithViolations"));
+		assertEquals(RuleStatus.NOT_CHECKED, checker.getOperationState("RULE_BasedOnRuleWithViolations"));
 	}
 }

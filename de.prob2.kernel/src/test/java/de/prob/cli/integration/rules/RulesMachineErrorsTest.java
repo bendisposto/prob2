@@ -8,7 +8,7 @@ import java.io.File;
 
 import org.junit.Test;
 
-import de.prob.model.brules.RuleState;
+import de.prob.model.brules.RuleStatus;
 import de.prob.model.brules.RulesMachineRun;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
@@ -39,7 +39,7 @@ public class RulesMachineErrorsTest {
 		rulesMachineRun.setContinueAfterErrors(true);
 		rulesMachineRun.start();
 		assertTrue(rulesMachineRun.getTotalNumberOfProBCliErrors().intValue() >= 2);
-		assertEquals(RuleState.SUCCESS, rulesMachineRun.getRuleResults().getRuleResult("Rule3").getRuleState());
+		assertEquals(RuleStatus.SUCCESS, rulesMachineRun.getRuleResults().getRuleResult("Rule3").getRuleState());
 	}
 
 	@Test
@@ -71,10 +71,10 @@ public class RulesMachineErrorsTest {
 		System.out.println(rulesMachineRun.getRuleResults());
 
 		// Rule1 is not checked because of the WD Error
-		assertEquals(RuleState.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getRuleState());
+		assertEquals(RuleStatus.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getRuleState());
 
 		// Rule2 is not checked because of the dependency to Rule1
-		assertEquals(RuleState.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule2").getRuleState());
+		assertEquals(RuleStatus.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule2").getRuleState());
 	}
 
 	@Test
