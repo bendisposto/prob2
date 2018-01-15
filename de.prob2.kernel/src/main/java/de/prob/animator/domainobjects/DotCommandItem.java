@@ -10,9 +10,9 @@ public class DotCommandItem {
 	
 	private final int arity;
 	
-	private final boolean available;
+	private final String available;
 	
-	public DotCommandItem(String command, String name, String description, int arity, boolean available) {
+	public DotCommandItem(String command, String name, String description, int arity, String available) {
 		this.command = command;
 		this.name = name;
 		this.description = description;
@@ -36,8 +36,12 @@ public class DotCommandItem {
 		return arity;
 	}
 	
-	public boolean isAvailable() {
+	public String getAvailable() {
 		return available;
+	}
+	
+	public boolean isAvailable() {
+		return "available".equals(available);
 	}
 	
 	@Override

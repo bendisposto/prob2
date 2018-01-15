@@ -46,7 +46,7 @@ public class GetAllDotCommands extends AbstractCommand {
 		final String description = PrologTerm.atomicString(commandTerm.getArgument(3));
 		final int arity = ((IntegerPrologTerm) commandTerm.getArgument(4)).getValue().intValue();
 		final String available = PrologTerm.atomicString(commandTerm.getArgument(6));
-		return new DotCommandItem(command, name, description, arity, "available".equals(available)? true : false);
+		return new DotCommandItem(command, name, description, arity, available);
 	}
 	
 	public List<DotCommandItem> getCommands() {
