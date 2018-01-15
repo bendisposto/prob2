@@ -67,11 +67,8 @@ public class ProBConnection {
 	public String send(final String term) throws IOException {
 		logger.debug(trimString(term, 200));
 		if (shutingDown) {
-			final String message = "probcli is currently shutting down";
-			logger.error(message);
-			throw new IllegalStateException(
-					"ProB has been shut down. It does not accept messages. Received: "
-							+ term);
+			logger.error("Cannot send terms while probcli is shutting down: {}", term);
+			throw new IOException("ProB has been shut down. It does not accept messages.");
 		}
 		if (isStreamReady()) {
 			outputStream.println(term);
