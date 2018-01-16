@@ -16,11 +16,11 @@ import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.State;
 
-public class ComputationStatues {
+public class ComputationStatuses {
 
-	private HashMap<String, ComputationStatus> computationStatues = new HashMap<>();
+	private HashMap<String, ComputationStatus> statuses = new HashMap<>();
 
-	public ComputationStatues(RulesProject project, State state) {
+	public ComputationStatuses(RulesProject project, State state) {
 		this(extractComputationOperations(project), state);
 	}
 
@@ -34,7 +34,7 @@ public class ComputationStatues {
 		return comps;
 	}
 
-	public ComputationStatues(Set<ComputationOperation> computations, State state) {
+	public ComputationStatuses(Set<ComputationOperation> computations, State state) {
 		final ArrayList<ComputationOperation> compList = new ArrayList<>();
 		final List<IEvalElement> evalElements = new ArrayList<>();
 		for (ComputationOperation comp : computations) {
@@ -47,25 +47,25 @@ public class ComputationStatues {
 			ComputationOperation comp = compList.get(i);
 			AbstractEvalResult abstractEvalResult = evalResults.get(i);
 			EvalResult evalResult = (EvalResult) abstractEvalResult;
-			this.computationStatues.put(comp.getName(), ComputationStatus.valueOf(evalResult));
+			this.statuses.put(comp.getName(), ComputationStatus.valueOf(evalResult));
 		}
 	}
 
 	public Map<String, ComputationStatus> getResults() {
-		return new HashMap<>(this.computationStatues);
+		return new HashMap<>(this.statuses);
 	}
 
 	public ComputationStatus getResult(String compName) {
-		return computationStatues.get(compName);
+		return statuses.get(compName);
 	}
 
 	public ComputationStatus getResult(ComputationOperation comp) {
-		return computationStatues.get(comp.getName());
+		return statuses.get(comp.getName());
 	}
 
 	@Override
 	public String toString() {
-		return computationStatues.toString();
+		return statuses.toString();
 	}
 
 }

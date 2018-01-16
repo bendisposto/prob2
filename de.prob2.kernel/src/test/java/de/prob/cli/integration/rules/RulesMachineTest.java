@@ -16,7 +16,7 @@ import org.junit.Test;
 import static de.prob.model.brules.RuleStatus.*;
 
 import de.be4.classicalb.core.parser.rules.RuleOperation;
-import de.prob.model.brules.ComputationStatues;
+import de.prob.model.brules.ComputationStatuses;
 import de.prob.model.brules.ComputationStatus;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResult.CounterExample;
@@ -64,7 +64,7 @@ public class RulesMachineTest {
 		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineExample.rmch");
 		assertEquals(false, rulesMachineRun.hasError());
 		State finalState = rulesMachineRun.getExecuteRun().getExecuteModelCommand().getFinalState();
-		ComputationStatues compResult = new ComputationStatues(rulesMachineRun.getRulesProject(), finalState);
+		ComputationStatuses compResult = new ComputationStatuses(rulesMachineRun.getRulesProject(), finalState);
 		assertEquals(ComputationStatus.EXECUTED, compResult.getResult("COMP_comp1"));
 	}
 
