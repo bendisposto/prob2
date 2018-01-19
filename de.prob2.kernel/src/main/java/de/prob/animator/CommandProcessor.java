@@ -2,9 +2,6 @@ package de.prob.animator;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
 import de.prob.cli.ProBInstance;
@@ -19,6 +16,9 @@ import de.prob.parser.BindingGenerator;
 import de.prob.parser.ProBResultParser;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class CommandProcessor {
 
@@ -51,8 +51,9 @@ class CommandProcessor {
 		return extractResult;
 	}
 
-	private String trimString(String s, int maxLength) {
-		return s.length() > maxLength ? s.substring(0, maxLength) + " trimmed!" : s;
+	private static String trimString(String s, int maxLength) {
+		final String stripped = s.replaceAll("[\\r\\n]+$", "");
+		return stripped.length() > maxLength ? stripped.substring(0, maxLength) + " trimmed!" : stripped;
 	}
 
 	private IPrologResult extractResult(final Start ast) {

@@ -60,8 +60,9 @@ public class ProBConnection {
 		// }
 	}
 
-	private String trimString(String s, int maxLength) {
-		return s.length() > maxLength ? s.substring(0, maxLength) + "... trimmed!" : s;
+	private static String trimString(String s, int maxLength) {
+		final String stripped = s.replaceAll("[\\r\\n]+$", "");
+		return stripped.length() > maxLength ? stripped.substring(0, maxLength) + " trimmed!" : stripped;
 	}
 	
 	public String send(final String term) throws IOException {
