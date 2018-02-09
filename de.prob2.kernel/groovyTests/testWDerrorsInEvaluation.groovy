@@ -8,14 +8,14 @@ t = t.$initialise_machine()
 
 // expression
 wderror = t.evalCurrent("2 / 0")
-assert wderror instanceof EvaluationErrorResult
-assert wderror.getResult() == "NOT-WELL-DEFINED"
-assert wderror.getErrors()[0] == "division by zero 2/0\n\n"
+assert wderror instanceof WDError
+assert wderror.errors.size == 1
+assert wderror.errors[0].contains("division by zero")
 
 // predicate
 wderror = t.evalCurrent("3 / 0 = 1")
-assert wderror instanceof EvaluationErrorResult
-assert wderror.getResult() == "NOT-WELL-DEFINED"
-assert wderror.getErrors()[0] == "division by zero 3/0\n\n"
+assert wderror instanceof WDError
+assert wderror.errors.size == 1
+assert wderror.errors[0].contains("division by zero")
 
 "Evaluation errors can be caught and handled simply"
