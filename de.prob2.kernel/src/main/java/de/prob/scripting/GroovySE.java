@@ -12,12 +12,11 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.io.CharStreams;
 
 public class GroovySE implements ScriptEngine {
 
@@ -31,17 +30,18 @@ public class GroovySE implements ScriptEngine {
 		return varcount++;
 	}
 
-	private static final String[] IMPORTS = new String[] {
-			"import de.prob.statespace.*;",
-			"import de.prob.model.representation.*;",
-			"import de.prob.model.classicalb.*;",
-			"import de.prob.model.eventb.*;",
-			"import de.prob.animator.domainobjects.*;",
-			"import de.prob.animator.command.*;",
-			"import de.prob.visualization.*;", "import de.prob.check.*;",
-			"import de.prob.bmotion.*;", "\n " };
-
-	private static final String IMPORTS_STATEMENT = Joiner.on("\n").join(IMPORTS);
+	private static final String IMPORTS =
+		"import de.prob.animator.command.*;"
+		+ "import de.prob.animator.domainobjects.*;"
+		+ "import de.prob.bmotion.*;"
+		+ "import de.prob.check.*;"
+		+ "import de.prob.model.classicalb.*;"
+		+ "import de.prob.model.eventb.*;"
+		+ "import de.prob.model.representation.*;"
+		+ "import de.prob.statespace.*;"
+		+ "import de.prob.visualization.*;"
+		+ '\n'
+	;
 
 	public GroovySE(final ScriptEngine engine) {
 		groovy = engine;
@@ -60,7 +60,7 @@ public class GroovySE implements ScriptEngine {
 			logger.error("Error reading from initscript.");
 		}
 		try {
-			groovy.eval(IMPORTS_STATEMENT + "\n" + initscript);
+			groovy.eval(IMPORTS + initscript);
 		} catch (ScriptException e) {
 			logger.error("Error initializing groovy", e);
 		} // run init script
@@ -73,7 +73,7 @@ public class GroovySE implements ScriptEngine {
 		if (groovy.get("__console") == null) {
 			groovy.put("__console", buff);
 		}
-		Object result = groovy.eval(IMPORTS_STATEMENT + "\n" + script, context);
+		Object result = groovy.eval(IMPORTS + script, context);
 		if (result == null) {
 			return "null";
 		}
