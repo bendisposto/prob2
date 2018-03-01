@@ -9,6 +9,8 @@ import java.net.Socket;
 
 import com.google.common.base.MoreObjects;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,13 +62,10 @@ public class ProBConnection {
 		// }
 	}
 
-	private static String trimString(String s, int maxLength) {
-		final String stripped = s.replaceAll("[\\r\\n]+$", "");
-		return stripped.length() > maxLength ? stripped.substring(0, maxLength) + " trimmed!" : stripped;
-	}
-	
 	public String send(final String term) throws IOException {
-		logger.debug(trimString(term, 200));
+		if (logger.isDebugEnabled()) {
+			logger.debug(StringUtils.chomp(StringUtils.abbreviate(term, 200)));
+		}
 		if (shutingDown) {
 			logger.error("Cannot send terms while probcli is shutting down: {}", term);
 			throw new IOException("ProB has been shut down. It does not accept messages.");

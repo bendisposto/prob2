@@ -17,6 +17,8 @@ import de.prob.parser.ProBResultParser;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,20 +42,17 @@ class CommandProcessor {
 			pto.printAtom("true");
 			query = pto.fullstop().toString();
 		}
-		if (logger.isDebugEnabled())
-			logger.debug("SEND QUERY: {}", trimString(query, 200));
+		if (logger.isDebugEnabled()) {
+			logger.debug(StringUtils.chomp(StringUtils.abbreviate(query, 200)));
+		}
 		String result = cli.send(query);
 
 		final Start ast = parseResult(result);
 		IPrologResult extractResult = extractResult(ast);
-		if (logger.isDebugEnabled())
-			logger.debug(trimString(extractResult.toString(), 200));
+		if (logger.isDebugEnabled()) {
+			logger.debug(StringUtils.chomp(StringUtils.abbreviate(extractResult.toString(), 200)));
+		}
 		return extractResult;
-	}
-
-	private static String trimString(String s, int maxLength) {
-		final String stripped = s.replaceAll("[\\r\\n]+$", "");
-		return stripped.length() > maxLength ? stripped.substring(0, maxLength) + " trimmed!" : stripped;
 	}
 
 	private IPrologResult extractResult(final Start ast) {
