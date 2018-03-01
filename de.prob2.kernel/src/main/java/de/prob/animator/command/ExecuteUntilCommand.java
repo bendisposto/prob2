@@ -29,14 +29,13 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	private static final String PROLOG_COMMAND_NAME = "generate_trace_until_condition_fulfilled";
 	private static final String TRACE_VARIABLE = "Trace";
 	private static final String RESULT_VARIABLE = "Result";
-	private final List<Transition> resultTrace = new ArrayList<Transition>();
+	private final List<Transition> resultTrace = new ArrayList<>();
 	private final State startstate;
 	private final LTL condition;
 	private final StateSpace statespace;
 	private PrologTerm result;
 
-	public ExecuteUntilCommand(final StateSpace statespace,
-			final State startstate, final LTL condition) {
+	public ExecuteUntilCommand(final StateSpace statespace, final State startstate, final LTL condition) {
 		this.statespace = statespace;
 		this.startstate = startstate;
 		this.condition = condition;
@@ -53,10 +52,8 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		ListPrologTerm trace = BindingGenerator.getList(bindings
-				.get(TRACE_VARIABLE));
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		ListPrologTerm trace = BindingGenerator.getList(bindings.get(TRACE_VARIABLE));
 
 		result = bindings.get(RESULT_VARIABLE);
 
@@ -78,7 +75,7 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public Trace getTrace(final StateSpace s) throws RuntimeException {
+	public Trace getTrace(final StateSpace s) {
 		Trace t = s.getTrace(startstate.getId());
 		return t.addTransitions(resultTrace);
 	}

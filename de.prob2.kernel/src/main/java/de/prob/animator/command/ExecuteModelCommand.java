@@ -80,8 +80,7 @@ public class ExecuteModelCommand extends AbstractCommand implements IStateSpaceM
 		BigInteger bigInt = intPrologTerm.getValue();
 		stepsExecuted = bigInt.intValue();
 
-		final String result = bindings.get(RESULT_VARIABLE).getFunctor();
-		switch (result) {
+		switch (bindings.get(RESULT_VARIABLE).getFunctor()) {
 		case "maximum_nr_of_steps_reached":
 			this.result = ExecuteModelResult.MAXIMUM_NR_OF_STEPS_REACHED;
 			break;

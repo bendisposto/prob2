@@ -21,13 +21,12 @@ public class FindValidStateCommand extends AbstractCommand implements IStateSpac
 
 	private FindStateCommand cmd;
 
-	public static enum ResultType {
+	public enum ResultType {
 		STATE_FOUND, NO_STATE_FOUND, INTERRUPTED, ERROR
 	}
 
 	/**
-	 * @param predicate
-	 *            is a parsed predicate or <code>null</code>
+	 * @param predicate is a parsed predicate or {@code null}
 	 * @see ProBParserBase#parsePredicate(IPrologTermOutput, String, boolean)
 	 */
 	public FindValidStateCommand(final StateSpace s, final IEvalElement predicate) {

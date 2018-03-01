@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
@@ -19,6 +16,9 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Calculates the values of Classical-B Predicates and Expressions.
  * 
@@ -26,10 +26,9 @@ import de.prob.prolog.term.PrologTerm;
  * 
  */
 public class CbcSolveCommand extends AbstractCommand {
-
 	public enum Solvers {
 		PROB, KODKOD, SMT_SUPPORTED_INTERPRETER, Z3
-	};
+	}
 
 	private static final String PROLOG_COMMAND_NAME = "cbc_solve";
 
@@ -46,7 +45,7 @@ public class CbcSolveCommand extends AbstractCommand {
 	private static final String IDENTIFIER_LIST = "IdList";
 	private final IEvalElement evalElement;
 	private AbstractEvalResult result;
-	private final List<String> freeVariables = new ArrayList<String>();
+	private final List<String> freeVariables = new ArrayList<>();
 
 	private Solvers solver;
 
@@ -92,7 +91,7 @@ public class CbcSolveCommand extends AbstractCommand {
 				return;
 			}
 
-			Map<String, String> solutions = new HashMap<String, String>();
+			Map<String, String> solutions = new HashMap<>();
 
 			for (PrologTerm b : solutionBindings) {
 				CompoundPrologTerm t = (CompoundPrologTerm) b;

@@ -123,8 +123,7 @@ public final class ExploreStateCommand extends AbstractCommand implements
 
 	@Override
 	public List<AbstractCommand> getSubcommands() {
-		List<AbstractCommand> subcommands = allCommands.getSubcommands();
-		return subcommands;
+		return allCommands.getSubcommands();
 	}
 
 	@Override

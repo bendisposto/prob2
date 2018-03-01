@@ -12,15 +12,11 @@ import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
 
 public class GetSvgForVisualizationCommand extends AbstractCommand {
-		
 	private static final String PROLOG_COMMAND_NAME = "call_dot_command_and_dot_in_state";
 	
-	private File file;
-	
-	private List<IEvalElement> formulas;
-	
-	private DotCommandItem item;
-	
+	private final File file; 
+	private final List<IEvalElement> formulas; 
+	private final DotCommandItem item;
 	private final State id;
 	
 	public GetSvgForVisualizationCommand(final State id, DotCommandItem item, File file, List<IEvalElement> formulas) {
@@ -41,7 +37,7 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 		}
 		pto.closeList();
 		pto.printAtom("svg");
-		pto.printAtom(file.getAbsolutePath().toString());
+		pto.printAtom(file.getAbsolutePath());
 		pto.closeTerm();
 	}
 
@@ -49,5 +45,4 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
 		
 	}
-	
 }

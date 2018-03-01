@@ -3,9 +3,6 @@ package de.prob.animator.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.animator.domainobjects.CSP;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -42,16 +39,12 @@ import de.prob.prolog.term.PrologTerm;
  */
 
 public class CSPAssertionsCommand extends AbstractCommand {
-
 	private static final String PROLOG_COMMAND_NAME = "check_csp_assertions";
-
-	Logger logger = LoggerFactory.getLogger(CSPAssertionsCommand.class);
-
 	private static final String RESULT_VARIABLE = "Results";
 	private static final String RESULT_TRACES_VARIABLE = "ResultTraces";
 	private final List<CSP> evalElements;
-	private final List<String> results = new ArrayList<String>();
-	private final List<ListPrologTerm> resultTraces = new ArrayList<ListPrologTerm>();
+	private final List<String> results = new ArrayList<>();
+	private final List<ListPrologTerm> resultTraces = new ArrayList<>();
 
 	public CSPAssertionsCommand(final List<CSP> evalElements) {
 		this.evalElements = evalElements;
@@ -68,14 +61,13 @@ public class CSPAssertionsCommand extends AbstractCommand {
 				.getList(bindings.get(RESULT_TRACES_VARIABLE));
 
 		for (PrologTerm term : prologTermResults) {
-			if (term instanceof PrologTerm) {
+			if (term != null) {
 				results.add(term.getFunctor());
 			}
 		}
 
 		for (PrologTerm term : prologTermResultTraces) {
 			if (term instanceof ListPrologTerm) {
-				// System.out.println("-------------> " +term.toString());
 				resultTraces.add(BindingGenerator.getList(term));
 			}
 		}
@@ -98,7 +90,6 @@ public class CSPAssertionsCommand extends AbstractCommand {
 		pout.openList();
 
 		// print parsed expressions/predicates
-		// System.out.println("------------>" + evalElements.toString());
 		for (CSP term : evalElements) {
 			term.printPrologAssertion(pout);
 		}
@@ -107,5 +98,4 @@ public class CSPAssertionsCommand extends AbstractCommand {
 		pout.printVariable(RESULT_TRACES_VARIABLE);
 		pout.closeTerm();
 	}
-
 }

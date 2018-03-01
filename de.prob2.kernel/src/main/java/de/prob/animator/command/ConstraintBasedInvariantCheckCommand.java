@@ -32,9 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 		implements IStateSpaceModifier {
-
-	Logger logger = LoggerFactory
-			.getLogger(ConstraintBasedInvariantCheckCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConstraintBasedInvariantCheckCommand.class);
 
 	private static final String PROLOG_COMMAND_NAME = "prob2_invariant_check";
 	private static final String RESULT_VARIABLE = "R";
@@ -42,22 +40,21 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 	private final Collection<String> events;
 
 	private IModelCheckingResult result;
-	private final List<InvariantCheckCounterExample> counterexamples = new ArrayList<InvariantCheckCounterExample>();
-	private final List<Transition> newTransitions = new ArrayList<Transition>();
+	private final List<InvariantCheckCounterExample> counterexamples = new ArrayList<>();
+	private final List<Transition> newTransitions = new ArrayList<>();
 
 	private final StateSpace s;
 
 	/**
 	 * @param events
 	 *            is a collection of names of that events that should be
-	 *            checked. May be <code>null</code>. In that case, all events
+	 *            checked. May be {@code null}. In that case, all events
 	 *            are checked.
 	 */
-	public ConstraintBasedInvariantCheckCommand(final StateSpace s,
-			final Collection<String> events) {
+	public ConstraintBasedInvariantCheckCommand(final StateSpace s, final Collection<String> events) {
 		this.s = s;
 		this.events = events == null ? null : Collections
-				.unmodifiableCollection(new ArrayList<String>(events));
+				.unmodifiableCollection(new ArrayList<>(events));
 	}
 
 	public Collection<String> getEvents() {
@@ -101,8 +98,7 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 					"No Invariant violation was found")
 					: new CBCInvariantViolationFound(counterexamples);
 		} else {
-			String msg = "unexpected result from invariant check: "
-					+ resultTerm;
+			String msg = "unexpected result from invariant check: " + resultTerm;
 			logger.error(msg);
 			throw new ProBError(msg);
 		}
@@ -110,23 +106,16 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 
 	private List<InvariantCheckCounterExample> extractExamples(
 			final ListPrologTerm ceTerm) {
-		List<InvariantCheckCounterExample> examples = new ArrayList<InvariantCheckCounterExample>();
+		List<InvariantCheckCounterExample> examples = new ArrayList<>();
 		for (final PrologTerm t : ceTerm) {
 			final CompoundPrologTerm term = (CompoundPrologTerm) t;
 			final String eventName = PrologTerm.atomicString(term
 					.getArgument(1));
-			final Transition step1 = Transition
-					.createTransitionFromCompoundPrologTerm(
-							s,
-							BindingGenerator.getCompoundTerm(
-									term.getArgument(2), 4));
-			final Transition step2 = Transition
-					.createTransitionFromCompoundPrologTerm(
-							s,
-							BindingGenerator.getCompoundTerm(
-									term.getArgument(3), 4));
-			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(
-					eventName, step1, step2);
+			final Transition step1 = Transition.createTransitionFromCompoundPrologTerm(
+				s, BindingGenerator.getCompoundTerm(term.getArgument(2), 4));
+			final Transition step2 = Transition.createTransitionFromCompoundPrologTerm(
+				s, BindingGenerator.getCompoundTerm(term.getArgument(3), 4));
+			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(eventName, step1, step2);
 			newTransitions.add(step1);
 			newTransitions.add(step2);
 			examples.add(ce);

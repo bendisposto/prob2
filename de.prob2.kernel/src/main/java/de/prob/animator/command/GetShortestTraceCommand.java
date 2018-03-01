@@ -3,9 +3,6 @@ package de.prob.animator.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -16,16 +13,18 @@ import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GetShortestTraceCommand extends AbstractCommand implements
 		ITraceDescription, IStateSpaceModifier {
+	private static final Logger logger = LoggerFactory.getLogger(GetShortestTraceCommand.class);
 
 	private static final String PROLOG_COMMAND_NAME = "find_trace_to_node";
-
-	Logger logger = LoggerFactory.getLogger(GetShortestTraceCommand.class);
-
 	private static final String TRACE = "Trace";
+
 	private final String stateId;
-	private final List<Transition> transitions = new ArrayList<Transition>();
+	private final List<Transition> transitions = new ArrayList<>();
 	private boolean tracefound;
 
 	private final StateSpace s;
@@ -44,15 +43,13 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		PrologTerm trace = bindings.get(TRACE);
 		if (trace instanceof ListPrologTerm) {
 			tracefound = true;
 			for (PrologTerm term : (ListPrologTerm) trace) {
-				transitions.add(Transition
-						.createTransitionFromCompoundPrologTerm(s,
-								(CompoundPrologTerm) term));
+				transitions.add(Transition.createTransitionFromCompoundPrologTerm(
+					s, (CompoundPrologTerm) term));
 			}
 		} else {
 			tracefound = false;
@@ -69,7 +66,7 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public Trace getTrace(final StateSpace s) throws RuntimeException {
+	public Trace getTrace(final StateSpace s) {
 		if (!tracefound) {
 			String msg = "No trace was found";
 			logger.error(msg);

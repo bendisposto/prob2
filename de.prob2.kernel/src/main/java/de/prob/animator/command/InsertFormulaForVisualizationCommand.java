@@ -6,11 +6,11 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
-public class InsertFormulaForVisualizationCommand extends AbstractCommand {
-
+public class InsertFormulaForVisualizationCommand extends AbstractCommand { 
 	private static final String PROLOG_COMMAND_NAME = "insert_formula_for_expansion";
+	private static final String ID = "Id";
+
 	private final IEvalElement formula;
-	private final String ID = "Id";
 	private FormulaId formulaId;
 
 	public InsertFormulaForVisualizationCommand(final IEvalElement formula) {
@@ -26,15 +26,11 @@ public class InsertFormulaForVisualizationCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		PrologTerm prologTerm = bindings.get(ID);
-
-		formulaId = new FormulaId(prologTerm.getFunctor(), formula);
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		formulaId = new FormulaId(bindings.get(ID).getFunctor(), formula);
 	}
 
 	public FormulaId getFormulaId() {
 		return formulaId;
 	}
-
 }

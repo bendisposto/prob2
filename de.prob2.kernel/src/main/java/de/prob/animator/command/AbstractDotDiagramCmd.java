@@ -14,31 +14,26 @@ import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.Transition;
 
 public abstract class AbstractDotDiagramCmd extends AbstractCommand {
-
-	protected final String SPACE = "StateSpace";
-	private final Map<String, DotNode> nodes = new HashMap<String, DotNode>();
-	private final Map<String, DotEdge> edges = new HashMap<String, DotEdge>();
+	protected static final String STATE_SPACE = "StateSpace";
+	private final Map<String, DotNode> nodes = new HashMap<>();
+	private final Map<String, DotEdge> edges = new HashMap<>();
 
 	protected void extractStates(final ListPrologTerm s) {
-
 		for (PrologTerm prologTerm : s) {
 			if (prologTerm instanceof CompoundPrologTerm) {
 				CompoundPrologTerm cpt = (CompoundPrologTerm) prologTerm;
 				String id = Transition.getIdFromPrologTerm(cpt.getArgument(1));
-				List<String> labels = new ArrayList<String>();
-				ListPrologTerm ls = BindingGenerator
-						.getList(cpt.getArgument(4));
+				List<String> labels = new ArrayList<>();
+				ListPrologTerm ls = BindingGenerator.getList(cpt.getArgument(4));
 				for (PrologTerm pt : ls) {
 					labels.add(pt.getFunctor());
 				}
-				int count = BindingGenerator.getInteger(cpt.getArgument(2))
-						.getValue().intValue();
-				String color = cpt.getArgument(3).getFunctor().toString();
+				int count = BindingGenerator.getInteger(cpt.getArgument(2)).getValue().intValue();
+				String color = cpt.getArgument(3).getFunctor();
 				DotNode n = new DotNode(id, labels, count, color);
 				nodes.put(id, n);
 			}
 		}
-
 	}
 
 	protected void extractTransitions(final ListPrologTerm trans) {
@@ -47,8 +42,7 @@ public abstract class AbstractDotDiagramCmd extends AbstractCommand {
 				CompoundPrologTerm cpt = (CompoundPrologTerm) pt;
 				String id = Transition.getIdFromPrologTerm(cpt.getArgument(1));
 				String src = Transition.getIdFromPrologTerm(cpt.getArgument(2));
-				String dest = Transition
-						.getIdFromPrologTerm(cpt.getArgument(3));
+				String dest = Transition.getIdFromPrologTerm(cpt.getArgument(3));
 				String label = cpt.getArgument(4).toString();
 				String style = cpt.getArgument(5).getFunctor();
 				String color = cpt.getArgument(6).getFunctor();
@@ -57,7 +51,6 @@ public abstract class AbstractDotDiagramCmd extends AbstractCommand {
 				edges.put(id, e);
 			}
 		}
-
 	}
 
 	public Map<String, DotNode> getNodes() {
@@ -67,5 +60,4 @@ public abstract class AbstractDotDiagramCmd extends AbstractCommand {
 	public Map<String, DotEdge> getEdges() {
 		return edges;
 	}
-
 }

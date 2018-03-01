@@ -23,9 +23,9 @@ import de.prob.statespace.Transition;
 public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 		implements IStateSpaceModifier, ITraceDescription {
 
-	public static enum ResultType {
+	public enum ResultType {
 		INTERRUPTED, COUNTER_EXAMPLE, NO_COUNTER_EXAMPLE_FOUND, NO_COUNTER_EXAMPLE_EXISTS
-	};
+	}
 
 	private static final String COMMAND_NAME = "cbc_static_assertion_violation_checking";
 	private static final String RESULT_VARIABLE = "R";
@@ -34,7 +34,7 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 	private Transition counterExampleOperation;
 	private String counterExampleStateID;
 	private final StateSpace s;
-	private final List<Transition> newOps = new ArrayList<Transition>();
+	private final List<Transition> newOps = new ArrayList<>();
 
 	public ConstraintBasedAssertionCheckCommand(final StateSpace s) {
 		this.s = s;
@@ -62,28 +62,24 @@ public class ConstraintBasedAssertionCheckCommand extends AbstractCommand
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		final ResultType result;
 		if (resultTerm.hasFunctor("interrupted", 0)) {
-			result = ResultType.INTERRUPTED;
+			this.result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("no_counterexample_found", 0)) {
-			result = ResultType.NO_COUNTER_EXAMPLE_FOUND;
+			this.result = ResultType.NO_COUNTER_EXAMPLE_FOUND;
 		}  else if (resultTerm.hasFunctor("no_counterexample_exists", 0)) {
 			result = ResultType.NO_COUNTER_EXAMPLE_EXISTS;
 		} else if (resultTerm.hasFunctor("counterexample_found", 2)) {
-			result = ResultType.COUNTER_EXAMPLE;
+			this.result = ResultType.COUNTER_EXAMPLE;
 			CompoundPrologTerm counterExampleTerm = (CompoundPrologTerm) resultTerm;
-			counterExampleOperation = Transition
-					.createTransitionFromCompoundPrologTerm(
-							s,
-							BindingGenerator.getCompoundTerm(
-									counterExampleTerm.getArgument(1), 8));
+			counterExampleOperation = Transition.createTransitionFromCompoundPrologTerm(
+				s,
+				BindingGenerator.getCompoundTerm(counterExampleTerm.getArgument(1), 8)
+			);
 			newOps.add(counterExampleOperation);
-			counterExampleStateID = counterExampleTerm.getArgument(2)
-					.toString();
-		} else
+			counterExampleStateID = counterExampleTerm.getArgument(2).toString();
+		} else {
 			throw new ProBError("unexpected result from deadlock check: " + resultTerm);
-		this.result = result;
-
+		}
 	}
 
 	@Override

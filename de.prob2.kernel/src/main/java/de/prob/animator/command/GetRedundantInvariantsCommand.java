@@ -16,8 +16,8 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class GetRedundantInvariantsCommand extends AbstractCommand {
 	private static final String PROLOG_COMMAND_NAME = "prob2_redundant_invariants";
-	public static final String REDUNDANT_INVS = "Invariants";
-	public static final String TIMEOUT = "Timeouts";
+	private static final String REDUNDANT_INVS = "Invariants";
+	private static final String TIMEOUT = "Timeouts";
 
 	private List<String> redundant = Collections.emptyList();
 	private boolean timeout;
@@ -25,9 +25,8 @@ public class GetRedundantInvariantsCommand extends AbstractCommand {
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		redundant = PrologTerm.atomicStrings((ListPrologTerm) bindings.get(REDUNDANT_INVS));
-		timeout = "true".equals(bindings.get(TIMEOUT).getFunctor()) ? true : false;
+		timeout = "true".equals(bindings.get(TIMEOUT).getFunctor());
 	}
-	
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
@@ -41,6 +40,4 @@ public class GetRedundantInvariantsCommand extends AbstractCommand {
 	public boolean isTimeout() {
 		return timeout;
 	}
-	
-
 }

@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ModelCheckingStepCommand extends AbstractCommand {
+	private static final Logger logger = LoggerFactory.getLogger(ModelCheckingStepCommand.class);
 
 	private static final String PROLOG_COMMAND_NAME = "do_modelchecking";
 
@@ -47,8 +48,6 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	private IModelCheckingResult result;
 	private static final String RESULT_VARIABLE = "Result";
 	private static final String STATS_VARIABLE = "Stats";
-
-	Logger logger = LoggerFactory.getLogger(ModelCheckingStepCommand.class);
 
 	private StateSpaceStats stats;
 
@@ -119,24 +118,22 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 					"A well definedness error occured.", cpt.getArgument(1)
 							.getFunctor());
 		case "general_error":
-			if (cpt.getArity() == 2)
+			if (cpt.getArity() == 2) {
 				return new ModelCheckErrorUncovered(
-						"An unknown result was uncovered: "
-								+ cpt.getArgument(2).toString(),
-						cpt.getArgument(1)
-								.getFunctor());
-			else
+					"An unknown result was uncovered: " + cpt.getArgument(2),
+					cpt.getArgument(1).getFunctor()
+				);
+			} else {
 				return new ModelCheckErrorUncovered(
-						"A general error occured in state: ", cpt.getArgument(1)
-								.getFunctor());
+					"A general error occured in state: ",
+					cpt.getArgument(1).getFunctor()
+				);
+			}
 
 		default:
-			logger.error(
-					"Model checking result unknown. This should not happen "
-							+ "unless someone changed the prolog kernel. Result was: {} ",
-					cpt.toString());
-			throw new IllegalArgumentException("model checking result unknown: "
-					+ cpt.toString());
+			logger.error("Model checking result unknown. This should not happen "
+				+ "unless someone changed the prolog kernel. Result was: {} ", cpt);
+			throw new IllegalArgumentException("model checking result unknown: " + cpt);
 		}
 
 	}

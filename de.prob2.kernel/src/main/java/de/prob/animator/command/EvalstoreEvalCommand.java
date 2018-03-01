@@ -1,13 +1,13 @@
 package de.prob.animator.command;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -28,16 +28,14 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 
 	private EvalstoreResult result;
 
-	public EvalstoreEvalCommand(final long evalstoreId,
-			final IEvalElement evalElement, final Integer timeout) {
+	public EvalstoreEvalCommand(final long evalstoreId, final IEvalElement evalElement, final Integer timeout) {
 		super();
 		this.evalstoreId = evalstoreId;
 		this.evalElement = evalElement;
 		this.timeout = timeout;
 	}
 
-	public EvalstoreEvalCommand(final long evalstoreId,
-			final IEvalElement evalElement) {
+	public EvalstoreEvalCommand(final long evalstoreId, final IEvalElement evalElement) {
 		this(evalstoreId, evalElement, null);
 	}
 
@@ -62,45 +60,32 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 
 		// TODO[DP,23.01.2013] Check with EvaluationResult: I don't know what
 		// most fields are about
-		final EvalstoreResult result;
 		if (term.hasFunctor("interrupted", 0)) {
-			result = new EvalstoreResult(false, true, evalstoreId, null,
-					Collections.<String> emptyList());
+			this.result = new EvalstoreResult(false, true, evalstoreId, null, Collections.emptyList());
 		} else if (term.hasFunctor("timeout", 0)) {
-			result = new EvalstoreResult(true, false, evalstoreId, null,
-					Collections.<String> emptyList());
+			this.result = new EvalstoreResult(true, false, evalstoreId, null, Collections.emptyList());
 		} else if (term.hasFunctor("errors", 1)) {
 			final ListPrologTerm args = (ListPrologTerm) term.getArgument(1);
-			final List<String> errors = new ArrayList<String>(args.size());
-			for (final PrologTerm arg : args) {
-				errors.add(PrologTerm.atomicString(((CompoundPrologTerm) arg)
-						.getArgument(1)));
-			}
-			final String error = errors.isEmpty() ? "unspecified error"
-					: errors.get(0);
-			final AbstractEvalResult er = new ComputationNotCompletedResult(
-					evalElement.getCode(), error);
-			result = new EvalstoreResult(false, false, evalstoreId, er,
-					Collections.<String> emptyList());
+			final List<String> errors = args.stream()
+				.map(arg -> PrologTerm.atomicString(arg.getArgument(1)))
+				.collect(Collectors.toList());
+			final String error = errors.isEmpty() ? "unspecified error" : errors.get(0);
+			final AbstractEvalResult er = new ComputationNotCompletedResult(evalElement.getCode(), error);
+			this.result = new EvalstoreResult(false, false, evalstoreId, er, Collections.emptyList());
 		} else if (term.hasFunctor("ok", 4)) {
 			// first argument ignored
-			final String valueStr = PrologTerm
-					.atomicString(term.getArgument(2));
+			final String valueStr = PrologTerm.atomicString(term.getArgument(2));
 			final ListPrologTerm ids = (ListPrologTerm) term.getArgument(3);
 			final List<String> newIdentifiers = PrologTerm.atomicStrings(ids);
-			final long storeId = ((IntegerPrologTerm) term.getArgument(4))
-					.getValue().longValue();
-			final EvalResult er = new EvalResult(valueStr,
-					Collections.<String, String> emptyMap());
-			result = new EvalstoreResult(false, false, storeId, er,
-					newIdentifiers);
+			final long storeId = ((IntegerPrologTerm) term.getArgument(4)).getValue().longValue();
+			final EvalResult er = new EvalResult(valueStr, Collections.emptyMap());
+			this.result = new EvalstoreResult(false, false, storeId, er, newIdentifiers);
 		} else {
 			// TODO[DP,23.01.2013] This should be some sensible exception - but
 			// I don't now which
 			throw new IllegalStateException("Unexpected es_eval result: "
 					+ term.getFunctor() + "/" + term.getArity());
 		}
-		this.result = result;
 	}
 
 	public EvalstoreResult getResult() {
@@ -153,15 +138,13 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 
 		@Override
 		public String toString() {
-			final String str;
 			if (hasTimeoutOccurred) {
-				str = "*timeout*";
+				return "*timeout*";
 			} else if (hasInterruptedOccurred) {
-				str = "*interrupted*";
+				return "*interrupted*";
 			} else {
-				str = result.toString();
+				return result.toString();
 			}
-			return str;
 		}
 	}
 

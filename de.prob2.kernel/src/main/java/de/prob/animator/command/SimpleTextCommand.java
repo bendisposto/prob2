@@ -1,16 +1,14 @@
 package de.prob.animator.command;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class SimpleTextCommand extends AbstractCommand implements IRawCommand {
-
 	private final String command;
 	private final String resultVar;
 	private List<String> results = null;
@@ -28,14 +26,10 @@ public class SimpleTextCommand extends AbstractCommand implements IRawCommand {
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		results = new ArrayList<String>();
-		ListPrologTerm list = BindingGenerator.getList(bindings.get(resultVar));
-
-		for (PrologTerm prologTerm : list) {
-			results.add(prologTerm.getFunctor());
-		}
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		results = BindingGenerator.getList(bindings.get(resultVar)).stream()
+			.map(PrologTerm::getFunctor)
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -49,5 +43,4 @@ public class SimpleTextCommand extends AbstractCommand implements IRawCommand {
 		}
 		return results;
 	}
-
 }

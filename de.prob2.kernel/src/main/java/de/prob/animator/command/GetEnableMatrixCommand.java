@@ -9,7 +9,6 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class GetEnableMatrixCommand extends AbstractCommand {
-
 	public static class EventPair {
 		private final String first;
 		private final String second;
@@ -49,8 +48,10 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 	}
 
 	public static class EnableMatixEntry {
-
-		public final String enable, keepEnabled, disable, keepDisabled;
+		public final String enable;
+		public final String keepEnabled;
+		public final String disable;
+		public final String keepDisabled;
 
 		public EnableMatixEntry(PrologTerm term) {
 			enable = term.getArgument(1).getFunctor();
@@ -63,11 +64,11 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 		public String toString() {
 			return String.format("Enable: %s, Keep enabled: %s, Disable: %s, Keep disabled: %s %n", enable, keepEnabled,disable, keepDisabled);
 		}
-
 	}
 
 	private static final String PROLOG_COMMAND_NAME = "get_enable_matrix";
 	private static final String MATRIX = "Matrix";
+
 	private final EventPair[] pairs;
 	private Map<EventPair, EnableMatixEntry> matrix = new HashMap<>();
 
@@ -79,10 +80,10 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.openList();
-		for (int i = 0; i < pairs.length; i++) {
+		for (final EventPair pair : pairs) {
 			pto.openTerm("pair");
-			pto.printAtom(pairs[i].getFirst());
-			pto.printAtom(pairs[i].getSecond());
+			pto.printAtom(pair.getFirst());
+			pto.printAtom(pair.getSecond());
 			pto.closeTerm();
 		}
 		pto.closeList();
@@ -93,8 +94,7 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 	// yes('.'(=('Matrix','.'(enable_rel(new,del,enable_edges(ok,ok,false,false)),[])),[]))
 	// enable_edges(Enable,KeepEnabled,Disable,KeepDisabled)
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm elements = (ListPrologTerm) bindings.get(MATRIX);
 		matrix.clear();
 		for (PrologTerm term : elements) {
@@ -104,8 +104,7 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 	}
 
 	public EnableMatixEntry getEnableInfo(EventPair key) {
-		EnableMatixEntry enableMatixEntry = matrix.get(key);
-		return enableMatixEntry;
+		return matrix.get(key);
 	}
 
 }

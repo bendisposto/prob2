@@ -6,19 +6,14 @@
 
 package de.prob.animator.command;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.prob.animator.domainobjects.ProBPreference;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Gets the eclipse preferences from ProB.
@@ -26,10 +21,9 @@ import org.slf4j.LoggerFactory;
  * @author joy
  */
 public final class GetDefaultPreferencesCommand extends AbstractCommand {
-
 	private static final String PROLOG_COMMAND_NAME = "list_all_eclipse_preferences";
-	Logger logger = LoggerFactory.getLogger(GetDefaultPreferencesCommand.class);
 	private static final String PREFS_VARIABLE = "Prefs";
+
 	private List<ProBPreference> prefs;
 
 	public List<ProBPreference> getPreferences() {
@@ -37,20 +31,14 @@ public final class GetDefaultPreferencesCommand extends AbstractCommand {
 	}
 
 	private ProBPreference verifyTerm(final PrologTerm term) {
-		CompoundPrologTerm compoundTerm;
-		compoundTerm = BindingGenerator.getCompoundTerm(term, "preference", 5);
-		return new ProBPreference(compoundTerm);
+		return new ProBPreference(BindingGenerator.getCompoundTerm(term, "preference", 5));
 	}
 
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
-
-		ListPrologTerm p = BindingGenerator.getList(bindings.get(PREFS_VARIABLE));
-		prefs = new ArrayList<ProBPreference>();
-		for (PrologTerm term : p) {
-			ProBPreference preference = verifyTerm(term);
-			prefs.add(preference);
-		}
+		this.prefs = BindingGenerator.getList(bindings.get(PREFS_VARIABLE)).stream()
+			.map(this::verifyTerm)
+			.collect(Collectors.toList());
 	}
 
 	@Override
