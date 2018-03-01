@@ -40,26 +40,11 @@ public class ProBConnection {
 
 	public void connect() throws IOException {
 		logger.debug("Connecting to port {} using key {}", port, key);
-		// try {
 		socket = new Socket(InetAddress.getByName(null), port);
 		inputStream = new BufferedInputStream(socket.getInputStream());
 		OutputStream outstream = socket.getOutputStream();
 		outputStream = new PrintStream(outstream, false, "utf8");
 		logger.debug("Connected");
-		// } catch (final IOException e) {
-		// if (socket != null) {
-		// try {
-		// socket.close();
-		// } catch (final IOException e2) {
-		// } finally {
-		// socket = null;
-		// inputStream = null;
-		// outputStream = null;
-		// }
-		// }
-		// logger.error("Opening connection to ProB server failed", e);
-		// throw new ProBException();
-		// }
 	}
 
 	public String send(final String term) throws IOException {
