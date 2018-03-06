@@ -1,6 +1,6 @@
 package de.prob.animator.domainobjects;
 
-public class DotCommandItem {
+public class DynamicCommandItem {
 
 	private final String command;
 	
@@ -12,7 +12,7 @@ public class DotCommandItem {
 	
 	private final String available;
 	
-	public DotCommandItem(String command, String name, String description, int arity, String available) {
+	public DynamicCommandItem(String command, String name, String description, int arity, String available) {
 		this.command = command;
 		this.name = name;
 		this.description = description;

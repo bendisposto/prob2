@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.animator.domainobjects.DotCommandItem;
+import de.prob.animator.domainobjects.DynamicCommandItem;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -16,10 +16,10 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 	
 	private final File file; 
 	private final List<IEvalElement> formulas; 
-	private final DotCommandItem item;
+	private final DynamicCommandItem item;
 	private final State id;
 	
-	public GetSvgForVisualizationCommand(final State id, DotCommandItem item, File file, List<IEvalElement> formulas) {
+	public GetSvgForVisualizationCommand(final State id, DynamicCommandItem item, File file, List<IEvalElement> formulas) {
 		this.id = id;
 		this.item = item;
 		this.file = file;
