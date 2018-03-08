@@ -195,6 +195,7 @@ public class Api {
 			translator.printProlog(pto);
 			pto.closeTerm();
 			pto.fullstop();
+			pto.flush();
 		}
 	}
 
