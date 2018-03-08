@@ -38,12 +38,7 @@ public class Api {
 	private LinkedHashMap<Object, Object> globals = new LinkedHashMap<>();
 
 	/**
-	 * A {@link FactoryProvider} and
-	 * {@link Provider}{@code <}{@link IAnimator}{@code >} are injected into an
-	 * api object at startup
-	 *
-	 * @param modelFactoryProvider
-	 * @param animatorProvider
+	 * Create an {@link Api} object. Normally this constructor should not be used directly, {@link Api} objects should be obtained using injection instead.
 	 */
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider, final Provider<IAnimator> animatorProvider) {
@@ -63,7 +58,12 @@ public class Api {
 	public String toString() {
 		return "ProB Connector";
 	}
-
+	
+	/**
+	 * Get the version of the ProB CLI.
+	 * 
+	 * @return the version of the ProB CLI, or {@code null} if the version could not be determined
+	 */
 	public CliVersionNumber getVersion() {
 		IAnimator animator = null;
 		try {
@@ -82,9 +82,9 @@ public class Api {
 	}
 
 	/**
-	 * @return Returns a String representation of the currently available
-	 *         commands for the Api object. Intended to ease use in the Groovy
-	 *         console.
+	 * Returns a string representation of the currently available commands for the Api object. Intended to ease use in the Groovy console.
+	 * 
+	 * @return a string representation of the currently available commands
 	 */
 	public String help() {
 		return "Api Commands:\n\n"
@@ -104,18 +104,18 @@ public class Api {
 	/**
 	 * Shutdown the specified {@link ProBInstance} object.
 	 *
-	 * @param x
+	 * @param instance the instance to shut down
 	 */
-	public void shutdown(final ProBInstance x) {
-		x.shutdown();
+	public void shutdown(final ProBInstance instance) {
+		instance.shutdown();
 	}
 
 	/**
-	 * Loads a {@link StateSpace} from the given B file path.
+	 * Load a Classical B machine from the given file.
 	 *
-	 * @param file
-	 * @throws ModelTranslationError
-	 * @throws IOException
+	 * @param file the path of the file to load
+	 * @param prefs the preferences to use
+	 * @return the {@link StateSpace} for the loaded machine
 	 */
 	public StateSpace b_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
 		final ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
@@ -123,25 +123,44 @@ public class Api {
 	}
 
 	/**
-	 * Loads a {@link StateSpace} from the given B file path.
+	 * Load a Classical B machine from the given file.
 	 *
-	 * @param file
-	 * @throws ModelTranslationError
-	 * @throws IOException
+	 * @param file the path of the file to load
+	 * @return the {@link StateSpace} for the loaded machine
 	 */
 	public StateSpace b_load(final String file) throws IOException, ModelTranslationError {
 		return b_load(file, Collections.emptyMap());
 	}
 
+	/**
+	 * Load a Classical B machine from the given AST.
+	 * 
+	 * @param ast the AST to load
+	 * @param prefs the preferences to use
+	 * @return the {@link StateSpace} for the loaded machine
+	 */
 	public StateSpace b_load(final Start ast, final Map<String, String> prefs) throws IOException, ModelTranslationError {
 		final ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
 		return bFactory.create(ast).load(prefs);
 	}
 
+	/**
+	 * Load a Classical B machine from the given AST.
+	 *
+	 * @param ast the AST to load
+	 * @return the {@link StateSpace} for the loaded machine
+	 */
 	public StateSpace b_load(final Start ast) throws IOException, ModelTranslationError {
 		return b_load(ast, Collections.emptyMap());
 	}
 
+	/**
+	 * Load an EventB machine from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @param prefs the preferences to use
+	 * @return the {@link StateSpace} for the loaded machine
+	 */
 	public StateSpace eventb_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
 		final EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (file.endsWith(".eventb")) {
@@ -151,10 +170,22 @@ public class Api {
 		}
 	}
 
+	/**
+	 * Load an EventB machine from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @return the {@link StateSpace} for the loaded machine
+	 */
 	public StateSpace eventb_load(final String file) throws IOException, ModelTranslationError {
 		return eventb_load(file, Collections.emptyMap());
 	}
 
+	/**
+	 * Save an EventB {@link StateSpace} to the given file.
+	 * 
+	 * @param s the {@link StateSpace} to save, whose model must be an EventB model
+	 * @param path the path of the file to save to
+	 */
 	public void eventb_save(final StateSpace s, final String path) throws IOException, ModelTranslationError {
 		final EventBModelTranslator translator = new EventBModelTranslator((EventBModel) s.getModel(), s.getMainComponent());
 
@@ -167,15 +198,35 @@ public class Api {
 		}
 	}
 
+	/**
+	 * Load a TLA model from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @param prefs the preferences to use
+	 * @return the {@link StateSpace} for the loaded model
+	 */
 	public StateSpace tla_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
 		final TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
 		return tlaFactory.extract(file).load(prefs);
 	}
 
+	/**
+	 * Load a TLA model from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @return the {@link StateSpace} for the loaded model
+	 */
 	public StateSpace tla_load(final String file) throws IOException, ModelTranslationError {
 		return tla_load(file, Collections.emptyMap());
 	}
 
+	/**
+	 * Load a B rules machine from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @param prefs the preferences to use
+	 * @return the {@link StateSpace} for the loaded machine
+	 */
 	public StateSpace brules_load(final String file, final Map<String, String> prefs) throws IOException {
 		final RulesModelFactory bRulesFactory = modelFactoryProvider.getBRulesFactory();
 		final RulesProject rulesProject = new RulesProject();
@@ -191,16 +242,23 @@ public class Api {
 		return bRulesFactory.extract(new File(file), rulesProject).load(prefs);
 	}
 
+	/**
+	 * Load a B rules machine from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @return the {@link StateSpace} for the loaded machine
+	 */
 	public StateSpace brules_load(final String file) throws IOException {
 		return brules_load(file, Collections.emptyMap());
 	}
 
 	/**
-	 * Loads a {@link StateSpace} from the given CSP file. If the user does not
-	 * have the cspm parser installed, an Exception is thrown informing the user
-	 * that they need to install it.
+	 * Load a CSP model from the given file. This requires the {@code cspm} parser to be installed.
 	 *
-	 * @param file
+	 * @param file the path of the file to load
+	 * @param prefs the preferences to use
+	 * @return the {@link StateSpace} for the loaded model
+	 * @throws CliError if the {@code cspm} parser is not installed
 	 */
 	public StateSpace csp_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
 		final CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
@@ -215,11 +273,11 @@ public class Api {
 	}
 
 	/**
-	 * Loads a {@link StateSpace} from the given CSP file. If the user does not
-	 * have the cspm parser installed, an Exception is thrown informing the user
-	 * that they need to install it.
+	 * Load a CSP model from the given file. This requires the {@code cspm} parser to be installed.
 	 *
-	 * @param file
+	 * @param file the path of the file to load
+	 * @return the {@link StateSpace} for the loaded model
+	 * @throws CliError if the {@code cspm} parser is not installed
 	 */
 	public StateSpace csp_load(final String file) throws IOException, ModelTranslationError {
 		return csp_load(file, Collections.emptyMap());
