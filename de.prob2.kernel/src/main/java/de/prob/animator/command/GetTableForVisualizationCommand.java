@@ -6,7 +6,6 @@ import java.util.List;
 import de.prob.animator.domainobjects.DynamicCommandItem;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.TableData;
-import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
@@ -49,7 +48,7 @@ public class GetTableForVisualizationCommand extends AbstractCommand {
 
 	@Override
 	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
-		ListPrologTerm table = BindingGenerator.getList(bindings.get(TABLE_VAR));
+		ListPrologTerm table = (ListPrologTerm) bindings.get(TABLE_VAR);
 		this.table = TableData.fromProlog(table);
 	}
 }

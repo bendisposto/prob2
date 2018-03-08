@@ -3,7 +3,6 @@ package de.prob.animator.domainobjects;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -29,9 +28,9 @@ public class TableData {
 	}
 
 	public static TableData fromProlog(ListPrologTerm tableTerm) {
-		List<List<String>> table = BindingGenerator.getList(tableTerm)
+		List<List<String>> table = ((ListPrologTerm) tableTerm.getArgument(1).getArgument(1))
 				.stream()
-				.map(BindingGenerator::getList)
+				.map(term -> (ListPrologTerm)term.getArgument(1))
 				.map(TableData::makeTuple)
 				.collect(Collectors.toList());
 		List<String> header = table.get(0);
