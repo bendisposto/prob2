@@ -90,10 +90,18 @@ public class Api {
 	 *         console.
 	 */
 	public String help() {
-		return ("Api Commands: \n\n ClassicalBModel b_load(String PathToFile): load .mch files \n"
-				+ " CSPModel csp_load(String PathToFile): load .csp files \n"
-				+ " toFile(StateSpace s): save StateSpace\n" + " readFile(): reload saved StateSpace\n"
-				+ " shutdown(ProBInstance x): shutdown ProBInstance\n" + " help(): print out available commands");
+		return "Api Commands:\n\n"
+			+ " String help(): print out available commands\n"
+			+ " CliVersionNumber getVersion(): get the version of the ProB CLI\n"
+			+ " void shutdown(ProBInstance instance): shutdown ProBInstance\n"
+			+ " StateSpace b_load(String filePath, [Map<String, String> prefs]): load a classical B machine from a .mch file\n"
+			+ " StateSpace b_load(Start ast, [Map<String, String> prefs]): load aclassical B machine from an AST\n"
+			+ " StateSpace eventb_load(String filePath, [Map<String, String> prefs]): load an EventB machine from a file\n"
+			+ " void eventb_save(StateSpace stateSpace, String filePath): save an EventB state space to a file\n"
+			+ " StateSpace tla_load(String filePath, [Map<String, String> prefs]): load a .tla file\n"
+			+ " StateSpace brules_load(String filePath, [Map<String, String> prefs]): load a B rules machine from a .rmch file\n"
+			+ " StateSpace csp_load(String filePath, [Map<String, String> prefs]): load a .csp file\n"
+		;
 	}
 
 	/**
