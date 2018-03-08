@@ -30,11 +30,7 @@ import de.prob.model.representation.CSPModel;
 import de.prob.prolog.output.PrologTermOutput;
 import de.prob.statespace.StateSpace;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class Api {
-	private Logger logger = LoggerFactory.getLogger(Api.class);
 	private final FactoryProvider modelFactoryProvider;
 	private final Provider<IAnimator> animatorProvider;
 	private LinkedHashMap globals = new LinkedHashMap();
@@ -51,14 +47,6 @@ public class Api {
 	public Api(final FactoryProvider modelFactoryProvider, final Provider<IAnimator> animatorProvider) {
 		this.animatorProvider = animatorProvider;
 		this.modelFactoryProvider = modelFactoryProvider;
-	}
-
-	public Logger getLogger() {
-		return logger;
-	}
-
-	public void setLogger(Logger logger) {
-		this.logger = logger;
 	}
 
 	public LinkedHashMap getGlobals() {
