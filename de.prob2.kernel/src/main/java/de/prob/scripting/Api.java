@@ -33,7 +33,7 @@ import de.prob.statespace.StateSpace;
 public class Api {
 	private final FactoryProvider modelFactoryProvider;
 	private final Provider<IAnimator> animatorProvider;
-	private LinkedHashMap globals = new LinkedHashMap();
+	private LinkedHashMap<Object, Object> globals = new LinkedHashMap<>();
 
 	/**
 	 * A {@link FactoryProvider} and
@@ -49,11 +49,11 @@ public class Api {
 		this.modelFactoryProvider = modelFactoryProvider;
 	}
 
-	public LinkedHashMap getGlobals() {
+	public LinkedHashMap<Object, Object> getGlobals() {
 		return globals;
 	}
 
-	public void setGlobals(LinkedHashMap globals) {
+	public void setGlobals(LinkedHashMap<Object, Object> globals) {
 		this.globals = globals;
 	}
 
