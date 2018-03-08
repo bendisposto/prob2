@@ -21,12 +21,9 @@ import de.prob.cli.CliVersionNumber;
 import de.prob.cli.ProBInstance;
 import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
-import de.prob.model.brules.RulesModel;
 import de.prob.model.brules.RulesModelFactory;
-import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.translate.EventBModelTranslator;
-import de.prob.model.representation.CSPModel;
 import de.prob.prolog.output.PrologTermOutput;
 import de.prob.statespace.StateSpace;
 
@@ -120,12 +117,9 @@ public class Api {
 	 * @throws ModelTranslationError
 	 * @throws IOException
 	 */
-	public StateSpace b_load(final String file, final Map<String, String> prefs)
-			throws IOException, ModelTranslationError {
-		ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
-		ExtractedModel<ClassicalBModel> extracted = bFactory.extract(file);
-		StateSpace s = extracted.load(prefs);
-		return s;
+	public StateSpace b_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+		final ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
+		return bFactory.extract(file).load(prefs);
 	}
 
 	/**
@@ -136,86 +130,69 @@ public class Api {
 	 * @throws IOException
 	 */
 	public StateSpace b_load(final String file) throws IOException, ModelTranslationError {
-		return b_load(file, Collections.<String, String>emptyMap());
+		return b_load(file, Collections.emptyMap());
 	}
 
-	public StateSpace b_load(final Start ast, final Map<String, String> prefs)
-			throws IOException, ModelTranslationError {
-		ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
-		ExtractedModel<ClassicalBModel> extracted = bFactory.create(ast);
-		StateSpace s = extracted.load(prefs);
-		return s;
+	public StateSpace b_load(final Start ast, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+		final ClassicalBFactory bFactory = modelFactoryProvider.getClassicalBFactory();
+		return bFactory.create(ast).load(prefs);
 	}
 
 	public StateSpace b_load(final Start ast) throws IOException, ModelTranslationError {
-		return b_load(ast, Collections.<String, String>emptyMap());
+		return b_load(ast, Collections.emptyMap());
 	}
 
-	public StateSpace eventb_load(final String file, final Map<String, String> prefs)
-			throws IOException, ModelTranslationError {
-		String fileName = file;
-		EventBFactory factory = modelFactoryProvider.getEventBFactory();
-		if (fileName.endsWith(".eventb")) {
+	public StateSpace eventb_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+		final EventBFactory factory = modelFactoryProvider.getEventBFactory();
+		if (file.endsWith(".eventb")) {
 			return factory.loadModelFromEventBFile(file, prefs);
+		} else {
+			return factory.extract(file).load(prefs);
 		}
-
-		ExtractedModel<EventBModel> extracted = factory.extract(fileName);
-		StateSpace s = extracted.load(prefs);
-		return s;
 	}
 
 	public StateSpace eventb_load(final String file) throws IOException, ModelTranslationError {
-		return eventb_load(file, Collections.<String, String>emptyMap());
+		return eventb_load(file, Collections.emptyMap());
 	}
 
 	public void eventb_save(final StateSpace s, final String path) throws IOException, ModelTranslationError {
-		EventBModelTranslator translator = new EventBModelTranslator((EventBModel) s.getModel(), s.getMainComponent());
+		final EventBModelTranslator translator = new EventBModelTranslator((EventBModel) s.getModel(), s.getMainComponent());
 
-		FileOutputStream fos = new FileOutputStream(path);
-		PrologTermOutput pto = new PrologTermOutput(fos, false);
-
-		pto.openTerm("package");
-		translator.printProlog(pto);
-		pto.closeTerm();
-		pto.fullstop();
-
-		pto.flush();
-		fos.flush();
-		fos.close();
+		try (final FileOutputStream fos = new FileOutputStream(path)) {
+			final PrologTermOutput pto = new PrologTermOutput(fos, false);
+			pto.openTerm("package");
+			translator.printProlog(pto);
+			pto.closeTerm();
+			pto.fullstop();
+		}
 	}
 
-	public StateSpace tla_load(final String file, final Map<String, String> prefs)
-			throws IOException, ModelTranslationError {
-		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
-		ExtractedModel<ClassicalBModel> extracted = tlaFactory.extract(file);
-		StateSpace s = extracted.load(prefs);
-		return s;
+	public StateSpace tla_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+		final TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
+		return tlaFactory.extract(file).load(prefs);
 	}
 
 	public StateSpace tla_load(final String file) throws IOException, ModelTranslationError {
-		return tla_load(file, Collections.<String, String>emptyMap());
+		return tla_load(file, Collections.emptyMap());
 	}
 
 	public StateSpace brules_load(final String file, final Map<String, String> prefs) throws IOException {
-		RulesModelFactory bRulesFactory = modelFactoryProvider.getBRulesFactory();
-		RulesProject rulesProject = new RulesProject();
-		ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
+		final RulesModelFactory bRulesFactory = modelFactoryProvider.getBRulesFactory();
+		final RulesProject rulesProject = new RulesProject();
+		final ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
 		parsingBehaviour.setAddLineNumbers(true);
 		rulesProject.setParsingBehaviour(parsingBehaviour);
 		rulesProject.parseProject(new File(file));
 		rulesProject.checkAndTranslateProject();
 		if (rulesProject.hasErrors()) {
-			BCompoundException compound = new BCompoundException(rulesProject.getBExceptionList());
-			throw new ProBError(compound);
+			throw new ProBError(new BCompoundException(rulesProject.getBExceptionList()));
 		}
 
-		ExtractedModel<RulesModel> extracted = bRulesFactory.extract(new File(file), rulesProject);
-		StateSpace s = extracted.load(prefs);
-		return s;
+		return bRulesFactory.extract(new File(file), rulesProject).load(prefs);
 	}
 
 	public StateSpace brules_load(final String file) throws IOException {
-		return brules_load(file, Collections.<String, String>emptyMap());
+		return brules_load(file, Collections.emptyMap());
 	}
 
 	/**
@@ -225,20 +202,16 @@ public class Api {
 	 *
 	 * @param file
 	 */
-	public StateSpace csp_load(final String file, final Map<String, String> prefs)
-			throws IOException, ModelTranslationError {
-		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
-		StateSpace s = null;
+	public StateSpace csp_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+		final CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
 		try {
-			ExtractedModel<CSPModel> extracted = cspFactory.extract(file);
-			s = extracted.load(prefs);
+			return cspFactory.extract(file).load(prefs);
 		} catch (ProBError error) {
 			throw new CliError(
-					"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory",
-					error);
+				"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory",
+				error
+			);
 		}
-
-		return s;
 	}
 
 	/**
@@ -249,6 +222,6 @@ public class Api {
 	 * @param file
 	 */
 	public StateSpace csp_load(final String file) throws IOException, ModelTranslationError {
-		return csp_load(file, Collections.<String, String>emptyMap());
+		return csp_load(file, Collections.emptyMap());
 	}
 }
