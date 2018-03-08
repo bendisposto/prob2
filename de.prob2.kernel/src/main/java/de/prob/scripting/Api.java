@@ -30,7 +30,12 @@ import de.prob.model.representation.CSPModel;
 import de.prob.prolog.output.PrologTermOutput;
 import de.prob.statespace.StateSpace;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Api {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Api.class);
+	
 	private final FactoryProvider modelFactoryProvider;
 	private final Provider<IAnimator> animatorProvider;
 	private LinkedHashMap<Object, Object> globals = new LinkedHashMap<>();
@@ -63,16 +68,20 @@ public class Api {
 	}
 
 	public CliVersionNumber getVersion() {
+		IAnimator animator = null;
 		try {
-			IAnimator animator = animatorProvider.get();
+			animator = animatorProvider.get();
 			GetVersionCommand versionCommand = new GetVersionCommand();
 			animator.execute(versionCommand);
-			animator.kill();
 			return versionCommand.getVersion();
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
+			LOGGER.warn("Exception while getting CLI version info", e);
 			return null;
+		} finally {
+			if (animator != null) {
+				animator.kill();
+			}
 		}
-
 	}
 
 	/**
