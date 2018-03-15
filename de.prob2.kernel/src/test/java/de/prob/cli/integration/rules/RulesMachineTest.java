@@ -82,7 +82,7 @@ public class RulesMachineTest {
 
 	@Test
 	public void testReuseStateSpace() throws IOException {
-		String ruleWithWDError = "RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END END";
+		String ruleWithWDError = "RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END;RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END";
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(ruleWithWDError);
 		BigInteger numberAfterFirstRun = rulesMachineRun.getTotalNumberOfProBCliErrors();
 
@@ -140,7 +140,7 @@ public class RulesMachineTest {
 		// @formatter:off
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
 				"RULE Rule1 RULEID id1 BODY RULE_FAIL COUNTEREXAMPLE \"foo\" END END",
-				"RULE Rule2 DEPENDS_ON_RULE Rule1 BODY skip END");
+				"RULE Rule2 DEPENDS_ON_RULE Rule1 BODY RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END");
 		System.out.println(rulesMachineRun.getFirstError());
 		// @formatter:on
 		assertTrue(!rulesMachineRun.hasError());

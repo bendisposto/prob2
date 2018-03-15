@@ -101,6 +101,6 @@ END
 RULE RULE_BasedOnRuleWithViolations
 DEPENDS_ON_RULE RULE_WithViolations
 BODY
-  skip
+  RULE_FAIL WHEN 1=2 COUNTEREXAMPLE "fail" END
 END
 END

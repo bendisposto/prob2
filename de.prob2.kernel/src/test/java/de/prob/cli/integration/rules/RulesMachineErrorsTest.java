@@ -26,15 +26,15 @@ public class RulesMachineErrorsTest {
 	@Test
 	public void testRulesMachineWithTypeError() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
-				"RULE foo BODY VAR xx IN xx := 1; xx := TRUE END END");
+				"RULE foo BODY VAR xx IN xx := 1; xx := TRUE END;RULE_FAIL COUNTEREXAMPLE \"fail\" END END");
 		System.out.println(rulesMachineRun.getFirstError());
 		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getFirstError().getType());
 	}
 
 	@Test
 	public void testContinueAfterError() {
-		File runnerFile = createRulesMachineFile("OPERATIONS RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END END;"
-				+ "RULE Rule2 BODY VAR xx IN xx := {1|->2}(3) END END;" + "RULE Rule3 BODY skip END");
+		File runnerFile = createRulesMachineFile("OPERATIONS RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END;RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END;"
+				+ "RULE Rule2 BODY VAR xx IN xx := {1|->2}(3) END;RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END;" + "RULE Rule3 BODY RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END");
 		RulesMachineRun rulesMachineRun = new RulesMachineRun(runnerFile);
 		rulesMachineRun.setContinueAfterErrors(true);
 		rulesMachineRun.start();
@@ -56,8 +56,8 @@ public class RulesMachineErrorsTest {
 	public void testRulesMachineWithWDError() {
 		// @formatter:off
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
-				"RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END END",
-				"RULE Rule2 DEPENDS_ON_RULE Rule1 BODY skip END"
+				"RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END;RULE_FAIL COUNTEREXAMPLE \"fail\" END END",
+				"RULE Rule2 DEPENDS_ON_RULE Rule1 BODY RULE_FAIL COUNTEREXAMPLE \"fail\" END END"
 		);
 		System.out.println(rulesMachineRun.getFirstError());
 		// @formatter:on

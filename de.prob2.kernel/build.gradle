@@ -46,10 +46,10 @@ ext{ cli_version = '1.7.2-beta4' }
 def parser_version
 
 if (project.version.endsWith("-SNAPSHOT")) {
-	parser_version = '2.9.10-SNAPSHOT'
+	parser_version = '2.9.12-SNAPSHOT'
 }
 else {
-	parser_version = '2.9.9'
+	parser_version = '2.9.11'
 }
 
 
