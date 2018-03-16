@@ -190,6 +190,7 @@ task downloadCLIs {
 			def targetdir = dir+n
 			def targetzip = dir+"probcli_${n}.zip"
 			def url = downloadUrlPath()+"probcli_${n}.zip"
+			println("Download ProB cli: ${url}")
 			download(url,targetzip)
 		}
 
