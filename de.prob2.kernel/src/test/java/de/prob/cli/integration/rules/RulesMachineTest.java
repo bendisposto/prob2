@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.prob.model.brules.RuleStatus.*;
@@ -120,6 +119,7 @@ public class RulesMachineTest {
 		File file = createRulesMachineFile(
 				"OPERATIONS RULE Rule1 BODY RULE_FAIL x WHEN x : 1..1000 COUNTEREXAMPLE STRING_FORMAT(\"This is a long counter example message including a unique number to test that the extracted B value will not be truncated: ~w\", x) END END");
 		RulesMachineRun rulesMachineRun = new RulesMachineRun(file);
+		rulesMachineRun.setMaxNumberOfReportedCounterExamples(1000);
 		rulesMachineRun.start();
 		System.out.println(rulesMachineRun.getRuleResults().getRuleResult("Rule1").getCounterExamples());
 		assertEquals(1000, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getCounterExamples().size());

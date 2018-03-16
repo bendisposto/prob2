@@ -11,6 +11,7 @@ import java.util.Set;
 import de.be4.classicalb.core.parser.rules.*;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.State;
 
@@ -40,16 +41,16 @@ public class RuleResults {
 		for (AbstractOperation operation : ruleOperations) {
 			RuleOperation rule = (RuleOperation) operation;
 			ruleList.add(rule);
-			ClassicalB ruleObject = new ClassicalB(rule.getName());
+			ClassicalB ruleObject = new ClassicalB(rule.getName(), FormulaExpand.EXPAND);
 			evalElements.add(ruleObject);
 			// get number of counter examples
 			String numberOfCtsFormula = String.format("card(%s)", rule.getCounterExampleVariableName());
-			ClassicalB numberOfCtsFormulaObject = new ClassicalB(numberOfCtsFormula);
+			ClassicalB numberOfCtsFormulaObject = new ClassicalB(numberOfCtsFormula, FormulaExpand.EXPAND);
 			evalElements.add(numberOfCtsFormulaObject);
 			// get the (restricted) set of counter examples
 			String ctFormula = String.format("SORT(%s)[1..%s]", rule.getCounterExampleVariableName(),
 					maxNumberOfReportedCounterExamples);
-			ClassicalB counterExampleObject = new ClassicalB(ctFormula);
+			ClassicalB counterExampleObject = new ClassicalB(ctFormula, FormulaExpand.EXPAND);
 			evalElements.add(counterExampleObject);
 		}
 		List<AbstractEvalResult> evalResults = state.eval(evalElements);
