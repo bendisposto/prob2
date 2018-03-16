@@ -108,11 +108,12 @@ public class RulesMachineTest {
 		File file = createRulesMachineFile(
 				"OPERATIONS RULE Rule1 BODY RULE_FAIL x WHEN x : 1..1000 COUNTEREXAMPLE STRING_FORMAT(\"~w\", x) END END");
 		RulesMachineRun rulesMachineRun = new RulesMachineRun(file);
-		rulesMachineRun.setMaxNumberOfReportedCounterExamples(100);
+		rulesMachineRun.setMaxNumberOfReportedCounterExamples(50);
 		rulesMachineRun.start();
-		assertEquals(100, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getCounterExamples().size());
+		System.out.println(rulesMachineRun.getRuleResults().getRuleResult("Rule1").getCounterExamples());
+		assertEquals(50, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getCounterExamples().size());
 	}
-
+	
 	@Test
 	public void testInjectConstants() {
 		File file = createRulesMachineFile(
