@@ -71,7 +71,8 @@ public class RulesMachineRun {
 		this.proBCorePreferences.put("TRY_FIND_ABORT", "TRUE");
 		this.proBCorePreferences.put("CLPFD", "FALSE");
 		this.proBCorePreferences.put("MAX_DISPLAY_SET", "-1");
-		//this.proBCorePreferences.put("DATA_VALIDATION", "TRUE");
+		this.proBCorePreferences.put("ENUMERATE_INFINITE_TYPES", "FALSE");
+		// maybe add DATA_VALIDATION TRUE
 
 		this.constantValuesToBeInjected = constantValuesToBeInjected;
 	}
