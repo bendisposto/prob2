@@ -45,4 +45,4 @@ using it or for whether it serves any particular purpose or works at all. No
 warranty is made about the software or its performance.
 
 
-(c) 2012-2017 Jens Bendisposto et.al., all rights reserved
+(c) 2012-2018 Jens Bendisposto et.al., all rights reserved
