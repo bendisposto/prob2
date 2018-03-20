@@ -5,7 +5,7 @@ import de.prob.check.*
 s = api.eventb_load(dir + File.separator + "machines" + File.separator + "InvalidModel" + File.separator +"createErrors.bcm")
 
 model_check = { job ->
-	checker = new ModelChecker(job)
+	def checker = new ModelChecker(job)
 	checker.start()
 	checker.getResult()
 }

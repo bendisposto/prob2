@@ -29,7 +29,6 @@ class StateSpaceEvaluationTest extends Specification {
 
 	def setup() {
 		s.formulaRegistry.clear()
-		s.subscribedFormulas.clear()
 	}
 	def "it is possible to evaluate formulas in a state"() {
 		expect:
@@ -49,7 +48,6 @@ class StateSpaceEvaluationTest extends Specification {
 		success
 		s.formulaRegistry.containsKey(formula)
 		s.formulaRegistry[formula].containsKey(subscriber)
-		s.subscribedFormulas.contains(formula)
 	}
 	def "it is possible for multiple people to subscribe to the same formula"() {
 		when:
@@ -66,7 +64,6 @@ class StateSpaceEvaluationTest extends Specification {
 		s.formulaRegistry.containsKey(formula)
 		s.formulaRegistry[formula].containsKey(subscriber1)
 		s.formulaRegistry[formula].containsKey(subscriber2)
-		s.subscribedFormulas.contains(formula)
 	}
 
 	def "csp formulas cannot be subscribed"() {
@@ -79,7 +76,6 @@ class StateSpaceEvaluationTest extends Specification {
 		then:
 		!success
 		!s.formulaRegistry.containsKey(csp)
-		!s.subscribedFormulas.contains(csp)
 	}
 
 	def "it is possible for someone to subscribe to multiple formulas"() {
@@ -96,10 +92,8 @@ class StateSpaceEvaluationTest extends Specification {
 		success
 		s.formulaRegistry.containsKey(formula)
 		s.formulaRegistry[formula].containsKey(subscriber)
-		s.subscribedFormulas.contains(formula)
 		s.formulaRegistry.containsKey(formula2)
 		s.formulaRegistry[formula2].containsKey(subscriber)
-		s.subscribedFormulas.contains(formula2)
 	}
 	def "it is possible for multiple people to subscribe to the same multiple formulas"() {
 		when:
@@ -119,11 +113,9 @@ class StateSpaceEvaluationTest extends Specification {
 		s.formulaRegistry.containsKey(formula)
 		s.formulaRegistry[formula].containsKey(subscriber1)
 		s.formulaRegistry[formula].containsKey(subscriber2)
-		s.subscribedFormulas.contains(formula)
 		s.formulaRegistry.containsKey(formula2)
 		s.formulaRegistry[formula2].containsKey(subscriber1)
 		s.formulaRegistry[formula2].containsKey(subscriber2)
-		s.subscribedFormulas.contains(formula2)
 	}
 
 	def "multiple csp formulas cannot be subscribed"() {
@@ -138,9 +130,7 @@ class StateSpaceEvaluationTest extends Specification {
 		then:
 		!success
 		!s.formulaRegistry.containsKey(csp)
-		!s.subscribedFormulas.contains(csp)
 		!s.formulaRegistry.containsKey(csp2)
-		!s.subscribedFormulas.contains(csp2)
 	}
 
 	def "formulas should not be evaluated in the root state"() {

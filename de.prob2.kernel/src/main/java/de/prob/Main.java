@@ -8,6 +8,8 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
+import javax.script.ScriptException;
+
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -27,8 +29,6 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.io.File.separator;
-
 /**
  * The Main class initializes ProB 2.0. This class should NOT be instantiated
  * but should rather be started from a .jar file, accessed through Guice via
@@ -36,7 +36,6 @@ import static java.io.File.separator;
  * parameter, or started in a jetty server via {@code WebConsole.run()}.
  *
  * @author joy
- *
  */
 public class Main {
 
@@ -78,7 +77,7 @@ public class Main {
 	 * @param i
 	 *            the new injector to use
 	 */
-	public static synchronized  void setInjector(final Injector i) {
+	public static synchronized void setInjector(final Injector i) {
 		injector = i;
 	}
 
@@ -87,14 +86,6 @@ public class Main {
 	 * {@link Main#getProBDirectory()}
 	 */
 	public static final String PROB_HOME = getProBDirectory();
-
-	/**
-	 * String representing the log configuration file. This defaults to
-	 * "production.xml" if the System property "PROB_LOG_CONFIG" is not defined.
-	 * Otherwise, the system property is used.
-	 */
-	public static final String LOG_CONFIG = System.getProperty("PROB_LOG_CONFIG") == null ? "production.xml"
-			: System.getProperty("PROB_LOG_CONFIG");
 
 	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
@@ -118,8 +109,7 @@ public class Main {
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
-	private void run(final String[] args) throws Throwable {
-
+	private void run(final String[] args) throws IOException, ScriptException {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("maxCacheSize")) {
@@ -135,7 +125,8 @@ public class Main {
 				String value = line.getOptionValue("script");
 				shell.runScript(new File(value), false);
 			}
-		} catch (ParseException exp) {
+		} catch (ParseException e) {
+			logger.debug("Failed to parse CLI", e);
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("java -jar probcli.jar", options);
 			System.exit(-1);
@@ -154,7 +145,7 @@ public class Main {
 	public static String getProBDirectory() {
 		String homedir = System.getProperty("prob.home");
 		if (homedir != null) {
-			return homedir + separator;
+			return homedir + File.separator;
 		}
 		return Installer.DEFAULT_HOME;
 	}
@@ -179,19 +170,17 @@ public class Main {
 	 *            command-line arguments
 	 */
 	public static void main(final String[] args) {
-
 		try {
-			System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
-
 			Main main = getInjector().getInstance(Main.class);
 			Api api = getInjector().getInstance(Api.class);
-		    logger.info("probcli version: {}",api.getVersion().toString());
+			logger.info("probcli version: {}", api.getVersion());
 
 			main.run(args);
-		} catch (Throwable e) {
-			getInjector().getInstance(ProBInstanceProvider.class).shutdownAll();
+		} catch (Exception e) {
 			logger.error("Unhandled exception", e);
 			System.exit(-1);
+		} finally {
+			getInjector().getInstance(ProBInstanceProvider.class).shutdownAll();
 		}
 		System.exit(0);
 	}

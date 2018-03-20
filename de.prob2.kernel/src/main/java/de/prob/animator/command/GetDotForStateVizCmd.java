@@ -1,21 +1,30 @@
 package de.prob.animator.command;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
+
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
-import org.codehaus.groovy.runtime.ResourceGroovyMethods;
-
-import java.io.File;
-import java.io.IOException;
 
 public class GetDotForStateVizCmd extends AbstractCommand {
-	public GetDotForStateVizCmd(State id) throws Exception{
+	private static final String PROLOG_COMMAND_NAME = "write_dot_for_state_viz";
+
+	private final State id;
+	private final File tempFile;
+	private String content;
+
+	public GetDotForStateVizCmd(State id) {
 		this.id = id;
 		try {
 			tempFile = File.createTempFile("dotSM", ".dot");
 		} catch (IOException e){
-			throw new Exception();
+			throw new IllegalStateException(e);
 		}
 	}
 
@@ -29,39 +38,14 @@ public class GetDotForStateVizCmd extends AbstractCommand {
 
 	@Override
 	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings){
-		try {
-			content = ResourceGroovyMethods.getText(tempFile);
-		} catch (IOException e){
-			//throw new Exception();
+		try (final BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(tempFile)))) {
+			content = r.lines().collect(Collectors.joining("\n"));
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
 		}
-	}
-
-	public State getId() {
-		return id;
-	}
-
-	public void setId(State id) {
-		this.id = id;
-	}
-
-	public File getTempFile() {
-		return tempFile;
-	}
-
-	public void setTempFile(File tempFile) {
-		this.tempFile = tempFile;
 	}
 
 	public String getContent() {
 		return content;
 	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	private static final String PROLOG_COMMAND_NAME = "write_dot_for_state_viz";
-	private State id;
-	private File tempFile;
-	private String content;
 }

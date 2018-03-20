@@ -19,6 +19,7 @@ import de.prob.animator.command.GetTotalNumberOfErrorsCommand;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.exception.ProBError;
 import de.prob.statespace.State;
+import de.prob.statespace.StateSpace;
 import de.prob.util.StopWatch;
 
 public class RulesMachineRun {
@@ -38,14 +39,22 @@ public class RulesMachineRun {
 	private final Map<String, String> proBCorePreferences;
 	private final Map<String, String> constantValuesToBeInjected;
 
-	private RuleResults rulesResult;
+	private RuleResults ruleResults;
 	private int maxNumberOfReportedCounterExamples = 50;
 
-	final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	enum Timer {
+		PARSING, EXECUTE_RUN, EXTRACT_RESULTS
+	}
+
+	private final StopWatch<Timer> stopWatch = new StopWatch<>();
 
 	private BigInteger totalNumberOfProBCliErrors;
 
 	private boolean continueAfterErrors = false;
+
+	private StateSpace stateSpace;
 
 	public RulesMachineRun(File runner) {
 		this(runner, new HashMap<String, String>(), new HashMap<String, String>());
@@ -62,6 +71,8 @@ public class RulesMachineRun {
 		this.proBCorePreferences.put("TRY_FIND_ABORT", "TRUE");
 		this.proBCorePreferences.put("CLPFD", "FALSE");
 		this.proBCorePreferences.put("MAX_DISPLAY_SET", "-1");
+		this.proBCorePreferences.put("ENUMERATE_INFINITE_TYPES", "FALSE");
+		// maybe add DATA_VALIDATION TRUE
 
 		this.constantValuesToBeInjected = constantValuesToBeInjected;
 	}
@@ -76,22 +87,20 @@ public class RulesMachineRun {
 
 	public void start() {
 		logger.info("Starting rules machine run: {}", this.runnerFile.getAbsolutePath());
-		final String parserTimer = "parsing";
-		StopWatch.start(parserTimer);
+		stopWatch.start(Timer.PARSING);
 		boolean hasParseErrors = parseAndTranslateRulesProject();
-		logger.info("Time to parse rules project: {} ms", StopWatch.stop(parserTimer));
+		logger.info("Time to parse rules project: {} ms", stopWatch.stop(Timer.PARSING));
 		if (hasParseErrors) {
 			logger.error("RULES_MACHINE has errors!");
 			return;
 		}
 		this.executeRun = rulesMachineRunner.createRulesMachineExecuteRun(this.rulesProject, runnerFile,
-				this.proBCorePreferences, continueAfterErrors);
+				this.proBCorePreferences, continueAfterErrors, this.getStateSpace());
 		try {
-			final String prob2RunTimer = "prob2Run";
-			StopWatch.start(prob2RunTimer);
+			stopWatch.start(Timer.EXECUTE_RUN);
 			logger.info("Start execute ...");
 			this.executeRun.start();
-			logger.info("Execute run finished. Time: {} ms", StopWatch.stop(prob2RunTimer));
+			logger.info("Execute run finished. Time: {} ms", stopWatch.stop(Timer.EXECUTE_RUN));
 		} catch (ProBError e) {
 			logger.error("ProBError: {}", e.getMessage());
 			if (executeRun.getExecuteModelCommand() != null) {
@@ -114,7 +123,6 @@ public class RulesMachineRun {
 				return;
 			}
 		} catch (Exception e) {
-			// TODO when is this exception thrown, is it possible?
 			logger.error("Unexpected error occured: {}", e.getMessage(), e);
 			// storing all error messages
 			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
@@ -126,20 +134,21 @@ public class RulesMachineRun {
 				totalNumberOfProBCliErrors = totalNumberOfErrorsCommand.getTotalNumberOfErrors();
 			}
 		}
-		final String extractResultsTimer = "extractResults";
-		StopWatch.start(extractResultsTimer);
-		this.rulesResult = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
+
+		this.stateSpace = this.executeRun.getUsedStateSpace();
+		stopWatch.start(Timer.EXTRACT_RESULTS);
+		this.ruleResults = new RuleResults(this.rulesProject, executeRun.getExecuteModelCommand().getFinalState(),
 				maxNumberOfReportedCounterExamples);
-		logger.info("Time to extract results form final state: {}", StopWatch.stop(extractResultsTimer));
+		logger.info("Time to extract results from final state: {}", stopWatch.stop(Timer.EXTRACT_RESULTS));
 
 	}
 
 	private boolean parseAndTranslateRulesProject() {
 		this.rulesProject = new RulesProject();
-		rulesProject.parseProject(runnerFile);
 		ParsingBehaviour parsingBehaviour = new ParsingBehaviour();
 		parsingBehaviour.setAddLineNumbers(true);
 		rulesProject.setParsingBehaviour(parsingBehaviour);
+		rulesProject.parseProject(runnerFile);
 
 		for (Entry<String, String> pair : constantValuesToBeInjected.entrySet()) {
 			rulesProject.addConstantValue(pair.getKey(), pair.getValue());
@@ -186,7 +195,7 @@ public class RulesMachineRun {
 	}
 
 	public RuleResults getRuleResults() {
-		return this.rulesResult;
+		return this.ruleResults;
 	}
 
 	public ExecuteRun getExecuteRun() {
@@ -208,6 +217,14 @@ public class RulesMachineRun {
 	 */
 	public BigInteger getTotalNumberOfProBCliErrors() {
 		return this.totalNumberOfProBCliErrors;
+	}
+
+	public StateSpace getStateSpace() {
+		return stateSpace;
+	}
+
+	public void setStateSpace(StateSpace stateSpace) {
+		this.stateSpace = stateSpace;
 	}
 
 	public class Error {

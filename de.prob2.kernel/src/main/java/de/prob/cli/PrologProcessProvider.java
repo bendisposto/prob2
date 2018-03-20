@@ -16,23 +16,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class PrologProcessProvider implements Provider<ProcessHandle> {
-	private static final List<Process> toDestroyOnShutdown = Collections.synchronizedList(new ArrayList<Process>());
+	private static final Logger logger = LoggerFactory.getLogger(PrologProcessProvider.class);
+	private static final List<Process> toDestroyOnShutdown = Collections.synchronizedList(new ArrayList<>());
 
 	static {
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			@Override
-			public void run() {
-				synchronized (toDestroyOnShutdown) {
-					for (final Process process : toDestroyOnShutdown) {
-						process.destroy();
-					}
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			synchronized (toDestroyOnShutdown) {
+				for (final Process process : toDestroyOnShutdown) {
+					process.destroy();
 				}
 			}
 		}, "Prolog Process Destroyer"));
 	}
 
-	private final Logger logger = LoggerFactory
-			.getLogger(PrologProcessProvider.class);
 	private final String debuggingKey;
 	private final String dir;
 	private final OsSpecificInfo osInfo;
@@ -78,7 +74,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 	}
 
 	private List<String> makeCommand(final String executable) {
-		List<String> command = new ArrayList<String>();
+		List<String> command = new ArrayList<>();
 		if (osInfo.getHelperCmd() != null) {
 			command.add(osInfo.getHelperCmd());
 		}
@@ -97,11 +93,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 	private String checkCliPath(final String dirname) {
 		File dir = new File(dirname);
 		if (!dir.exists()) {
-			try {
-				dir.mkdirs();
-			} catch (SecurityException e) {
-				throw e;
-			}
+			dir.mkdirs();
 		}
 		return dirname;
 	}

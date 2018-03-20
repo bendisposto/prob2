@@ -1,16 +1,16 @@
 package de.prob.model.brules;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
-
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
+import de.be4.classicalb.core.parser.rules.AbstractOperation;
 import de.be4.classicalb.core.parser.rules.RulesProject;
-
 import de.prob.animator.command.LoadRulesProjectCommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationException;
@@ -27,6 +27,7 @@ import de.prob.statespace.StateSpace;
 public class RulesModel extends AbstractModel {
 
 	private RulesProject project;
+	private Map<AbstractOperation, IEvalElement> operationStateFormulaCache = new HashMap<>();
 
 	@Inject
 	public RulesModel(StateSpaceProvider stateSpaceProvider) {
@@ -92,4 +93,18 @@ public class RulesModel extends AbstractModel {
 		return new LoadRulesProjectCommand(project, modelFile);
 	}
 
+	public RulesProject getRulesProject() {
+		return this.project;
+	}
+
+	public IEvalElement getEvalElement(AbstractOperation abstractOperation) {
+		if (operationStateFormulaCache.containsKey(abstractOperation)) {
+			return operationStateFormulaCache.get(abstractOperation);
+		} else {
+			String name = abstractOperation.getName();
+			IEvalElement evalElement = this.parseFormula(name);
+			operationStateFormulaCache.put(abstractOperation, evalElement);
+			return evalElement;
+		}
+	}
 }

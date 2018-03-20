@@ -1,45 +1,44 @@
 package de.prob.animator.prologast;
 
 import java.util.List;
+import java.util.Objects;
 
-public class ASTCategory extends PrologASTNode{
-    private boolean expanded;
-    private boolean propagated;
-    private String name;
+import com.google.common.base.MoreObjects;
 
-    ASTCategory(){
-        super();
-    }
+public final class ASTCategory extends PrologASTNode{
+	private final String name;
+	private final boolean expanded;
+	private final boolean propagated;
 
-    ASTCategory(List<PrologASTNode> subnodes){
-        super(subnodes);
-    }
+	public ASTCategory(List<PrologASTNode> subnodes, String name, boolean expanded, boolean propagated) {
+		super(subnodes);
+		
+		Objects.requireNonNull(name, "name");
+		
+		this.name = name;
+		this.expanded = expanded;
+		this.propagated = propagated;
+	}
 
-    void setExpanded(boolean expanded){
-        this.expanded = expanded;
-    }
+	public boolean isExpanded(){
+		return expanded;
+	}
 
-    void setPropagated(boolean propagated){
-        this.propagated = propagated;
-    }
+	public boolean isPropagated(){
+		return propagated;
+	}
 
-    public boolean isExpanded(){
-        return expanded;
-    }
+	public String getName(){
+		return name;
+	}
 
-    public boolean isPropagated(){
-        return propagated;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public String toString(){
-        return "\n[Category] : "+this.name+((isExpanded())?("\n[expanded]"):"\n[]")+((isPropagated())?("\n[propagated]"):"\n[]");
-    }
+	@Override
+	public String toString(){
+		return MoreObjects.toStringHelper(this)
+			.add("subnodes", this.getSubnodes())
+			.add("name", this.getName())
+			.add("expanded", this.isExpanded())
+			.add("propagated", this.isPropagated())
+			.toString();
+	}
 }

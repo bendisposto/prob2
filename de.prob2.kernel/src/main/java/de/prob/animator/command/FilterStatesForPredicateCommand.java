@@ -15,19 +15,17 @@ import de.prob.statespace.State;
 import de.prob.statespace.Transition;
 
 public class FilterStatesForPredicateCommand extends AbstractCommand {
-
 	private static final String PROLOG_COMMAND_NAME = "filter_states_for_predicate";
+	private static final String FILTERED_VARIABLE = "Filtered";
+
 	private final Collection<State> ids;
 	private final IEvalElement predicate;
-	private static final String FILTERED_VARIABLE = "Filtered";
-	private final List<String> filtered = new ArrayList<String>();
-	private final List<String> errors = new ArrayList<String>();
+	private final List<String> filtered = new ArrayList<>();
+	private final List<String> errors = new ArrayList<>();
 
-	public FilterStatesForPredicateCommand(final IEvalElement predicate,
-			final Collection<State> ids) {
+	public FilterStatesForPredicateCommand(final IEvalElement predicate, final Collection<State> ids) {
 		if (!EvalElementType.PREDICATE.equals(predicate.getKind())) {
-			throw new IllegalArgumentException(
-					"Formula in GetStatesFromPredicate must be a predicate");
+			throw new IllegalArgumentException("Formula in GetStatesFromPredicate must be a predicate");
 		}
 		this.predicate = predicate;
 		this.ids = ids;
@@ -51,9 +49,7 @@ public class FilterStatesForPredicateCommand extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		PrologTerm term = bindings.get(FILTERED_VARIABLE);
 		if (term.hasFunctor("errors", 1)) {
-			PrologTerm errorL = BindingGenerator.getCompoundTerm(term, 1)
-					.getArgument(1);
-			ListPrologTerm errList = BindingGenerator.getList(errorL);
+			ListPrologTerm errList = BindingGenerator.getList(BindingGenerator.getCompoundTerm(term, 1).getArgument(1));
 			for (PrologTerm prologTerm : errList) {
 				errors.add(prologTerm.getFunctor());
 			}

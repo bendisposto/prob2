@@ -19,15 +19,14 @@ class InterruptRefPattern extends AbstractCliPattern<Long> {
 	private final Logger logger = LoggerFactory
 			.getLogger(InterruptRefPattern.class);
 
-	public InterruptRefPattern() {
+	InterruptRefPattern() {
 		super("user interrupt reference id: *(\\d+) *$");
 	}
 
 	@Override
 	protected void setValue(final Matcher matcher) {
 		reference = Long.parseLong(matcher.group(1));
-		logger.info("Server can receive user interrupts via reference "
-				+ reference);
+		logger.info("Server can receive user interrupts via reference {}", reference);
 	}
 
 	@Override

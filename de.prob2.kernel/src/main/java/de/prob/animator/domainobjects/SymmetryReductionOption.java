@@ -6,7 +6,6 @@
 
 package de.prob.animator.domainobjects;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,11 +29,10 @@ public enum SymmetryReductionOption {
 		return description;
 	}
 
-	private static final Map<Integer, SymmetryReductionOption> lookup = new HashMap<Integer, SymmetryReductionOption>();
+	private static final Map<Integer, SymmetryReductionOption> lookup = new HashMap<>();
 
 	static {
-		for (SymmetryReductionOption s : EnumSet
-				.allOf(SymmetryReductionOption.class)) {
+		for (SymmetryReductionOption s : values()) {
 			lookup.put(s.getPos(), s);
 		}
 	}
@@ -43,7 +41,7 @@ public enum SymmetryReductionOption {
 		return pos;
 	}
 
-	public final static SymmetryReductionOption get(final int code) {
+	public static SymmetryReductionOption get(final int code) {
 		return lookup.get(code);
 	}
 

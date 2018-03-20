@@ -6,15 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
+import de.prob.model.brules.RuleStatus;
 import de.prob.model.brules.RulesMachineRun;
 import de.be4.classicalb.core.parser.exceptions.BException;
-import de.prob.model.brules.RuleResult.RESULT_ENUM;
 import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
 
-@Ignore
 public class RulesMachineErrorsTest {
 
 	@Test
@@ -28,22 +26,20 @@ public class RulesMachineErrorsTest {
 	@Test
 	public void testRulesMachineWithTypeError() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
-				"RULE foo BODY VAR xx IN xx := 1; xx := TRUE END END");
+				"RULE foo BODY VAR xx IN xx := 1; xx := TRUE END;RULE_FAIL COUNTEREXAMPLE \"fail\" END END");
 		System.out.println(rulesMachineRun.getFirstError());
 		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getFirstError().getType());
 	}
 
 	@Test
 	public void testContinueAfterError() {
-		File runnerFile = createRulesMachineFile("OPERATIONS RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END END;"
-				+ "RULE Rule2 BODY VAR xx IN xx := {1|->2}(3) END END;"
-				+ "RULE Rule3 BODY skip END"
-				);
+		File runnerFile = createRulesMachineFile("OPERATIONS RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END;RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END;"
+				+ "RULE Rule2 BODY VAR xx IN xx := {1|->2}(3) END;RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END;" + "RULE Rule3 BODY RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END");
 		RulesMachineRun rulesMachineRun = new RulesMachineRun(runnerFile);
 		rulesMachineRun.setContinueAfterErrors(true);
 		rulesMachineRun.start();
 		assertTrue(rulesMachineRun.getTotalNumberOfProBCliErrors().intValue() >= 2);
-		assertEquals(RESULT_ENUM.SUCCESS, rulesMachineRun.getRuleResults().getRuleResult("Rule3").getResultEnum());
+		assertEquals(RuleStatus.SUCCESS, rulesMachineRun.getRuleResults().getRuleResult("Rule3").getRuleState());
 	}
 
 	@Test
@@ -60,8 +56,8 @@ public class RulesMachineErrorsTest {
 	public void testRulesMachineWithWDError() {
 		// @formatter:off
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
-				"RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END END",
-				"RULE Rule2 DEPENDS_ON_RULE Rule1 BODY skip END"
+				"RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END;RULE_FAIL COUNTEREXAMPLE \"fail\" END END",
+				"RULE Rule2 DEPENDS_ON_RULE Rule1 BODY RULE_FAIL COUNTEREXAMPLE \"fail\" END END"
 		);
 		System.out.println(rulesMachineRun.getFirstError());
 		// @formatter:on
@@ -75,10 +71,10 @@ public class RulesMachineErrorsTest {
 		System.out.println(rulesMachineRun.getRuleResults());
 
 		// Rule1 is not checked because of the WD Error
-		assertEquals(RESULT_ENUM.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getResultEnum());
+		assertEquals(RuleStatus.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getRuleState());
 
 		// Rule2 is not checked because of the dependency to Rule1
-		assertEquals(RESULT_ENUM.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule2").getResultEnum());
+		assertEquals(RuleStatus.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule2").getRuleState());
 	}
 
 	@Test

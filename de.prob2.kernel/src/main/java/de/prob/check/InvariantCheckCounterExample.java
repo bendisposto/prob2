@@ -18,7 +18,8 @@ import de.prob.statespace.Transition;
  */
 public class InvariantCheckCounterExample implements ITraceDescription {
 	private final String eventName;
-	private final Transition step1, step2;
+	private final Transition step1;
+	private final Transition step2;
 
 	public InvariantCheckCounterExample(final String eventName,
 			final Transition step1, final Transition step2) {

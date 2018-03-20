@@ -118,13 +118,12 @@ public final class ExploreStateCommand extends AbstractCommand implements
 	}
 
 	public Set<String> getOperationsWithTimeout() {
-		return new HashSet<String>(checkTimeoutOpsCmd.getTimeouts());
+		return new HashSet<>(checkTimeoutOpsCmd.getTimeouts());
 	}
 
 	@Override
 	public List<AbstractCommand> getSubcommands() {
-		List<AbstractCommand> subcommands = allCommands.getSubcommands();
-		return subcommands;
+		return allCommands.getSubcommands();
 	}
 
 	@Override

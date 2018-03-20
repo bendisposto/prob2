@@ -34,22 +34,22 @@ def gradle_version = '4.2.1'
 
 
 // IMPORTANT !!!
-project.version = '3.2.7'
+project.version = '3.2.9'
 // Remember to release the cli
 //  - create a tag in the prob_prolog repository
 //  - enter this tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/cli_release/"
 //  - enter the same tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/crosscompile_release/"
-ext{ cli_version = '1.7.2-beta4' }
+ext{ cli_version = '1.8.0-final' }
 // IMPORTANT !!!
 
 
 def parser_version
 
 if (project.version.endsWith("-SNAPSHOT")) {
-	parser_version = '2.9.10-SNAPSHOT'
+	parser_version = '2.9.12-SNAPSHOT'
 }
 else {
-	parser_version = '2.9.9'
+	parser_version = '2.9.11'
 }
 
 
@@ -190,6 +190,7 @@ task downloadCLIs {
 			def targetdir = dir+n
 			def targetzip = dir+"probcli_${n}.zip"
 			def url = downloadUrlPath()+"probcli_${n}.zip"
+			println("Download ProB cli: ${url}")
 			download(url,targetzip)
 		}
 

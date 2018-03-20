@@ -99,7 +99,11 @@ class ClassicalBModel extends AbstractModel {
 		try {
 			return new ClassicalB(bparser.parseFormula(formula), expand)
 		} catch (BCompoundException e) {
-			throw new EvaluationException(((BParseException) (e.cause.cause)).realMsg)
+			if (e.cause?.cause instanceof BParseException) {
+				throw new EvaluationException(((BParseException)e.cause.cause).realMsg, e)
+			} else {
+				throw new EvaluationException(e)
+			}
 		}
 	}
 

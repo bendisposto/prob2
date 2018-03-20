@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
  */
 abstract class AbstractCliPattern<T> {
 	private final Pattern pattern;
-	private Matcher matcher;
 
 	protected AbstractCliPattern(String regex) {
 		this.pattern = Pattern.compile(regex);
@@ -28,7 +27,7 @@ abstract class AbstractCliPattern<T> {
 	public boolean matchesLine(String line) {
 		if (line == null)
 			return false;
-		matcher = pattern.matcher(line);
+		final Matcher matcher = pattern.matcher(line);
 		final boolean hit = matcher.find();
 		if (hit) {
 			setValue(matcher);

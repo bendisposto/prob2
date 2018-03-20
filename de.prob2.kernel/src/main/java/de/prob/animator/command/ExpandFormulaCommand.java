@@ -5,15 +5,14 @@ import de.prob.animator.domainobjects.FormulaId;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
 
 public class ExpandFormulaCommand extends AbstractCommand {
-
 	private static final String PROLOG_COMMAND_NAME = "expand_formula";
+	private static final String TREE = "TREE";
+
 	private final State stateId;
-	private final String TREE = "TREE";
 	private final FormulaId id;
 	private ExpandedFormula result;
 
@@ -32,15 +31,11 @@ public class ExpandFormulaCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
-				bindings.get(TREE), 4);
-		result = new ExpandedFormula(cpt);
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		result = new ExpandedFormula(BindingGenerator.getCompoundTerm(bindings.get(TREE), 4));
 	}
 
 	public ExpandedFormula getResult() {
 		return result;
 	}
-
 }

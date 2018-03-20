@@ -31,9 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 		implements IStateSpaceModifier {
-
-	Logger logger = LoggerFactory
-			.getLogger(ConstraintBasedDeadlockCheckCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConstraintBasedDeadlockCheckCommand.class);
 
 	private static final String PROLOG_COMMAND_NAME = "prob2_deadlock_freedom_check";
 	private static final String RESULT_VARIABLE = "R";
@@ -42,14 +40,12 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 	private String deadlockStateId;
 	private Transition deadlockOperation;
 	private final IEvalElement formula;
-	private final List<Transition> newOps = new ArrayList<Transition>();
+	private final List<Transition> newOps = new ArrayList<>();
 
 	private final StateSpace s;
 
 	/**
-	 * @param predicate
-	 *            is a parsed predicate
-	 * 
+	 * @param predicate is a parsed predicate 
 	 */
 	public ConstraintBasedDeadlockCheckCommand(final StateSpace s,
 			final IEvalElement predicate) {
@@ -85,29 +81,23 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		final IModelCheckingResult result;
 		if (resultTerm.hasFunctor("no_deadlock_found", 0)) {
-			result = new ModelCheckOk("No deadlock was found");
+			this.result = new ModelCheckOk("No deadlock was found");
 		} else if (resultTerm.hasFunctor("errors", 1)) {
 			PrologTerm error = resultTerm.getArgument(1);
-			logger.error("CBC Deadlock Check produced errors: "
-					+ error.toString());
-			result = new CheckError(
-					"CBC Deadlock check produced errors. This was likely during the typechecking of "
-							+ "the given predicate. See Log for details.");
+			logger.error("CBC Deadlock Check produced errors: {}", error);
+			this.result = new CheckError(
+				"CBC Deadlock check produced errors. This was likely during the typechecking of "
+				+ "the given predicate. See Log for details.");
 		} else if (resultTerm.hasFunctor("interrupted", 0)) {
-			result = new NotYetFinished("CBC Deadlock check was interrupted",
-					-1);
+			this.result = new NotYetFinished("CBC Deadlock check was interrupted", -1);
 		} else if (resultTerm.hasFunctor("deadlock", 2)) {
+			CompoundPrologTerm deadlockTerm = BindingGenerator.getCompoundTerm(resultTerm, 2);
 
-			CompoundPrologTerm deadlockTerm = BindingGenerator.getCompoundTerm(
-					resultTerm, 2);
-
-			Transition deadlockOperation = Transition
-					.createTransitionFromCompoundPrologTerm(
-							s,
-							BindingGenerator.getCompoundTerm(
-									deadlockTerm.getArgument(1), 4));
+			Transition deadlockOperation = Transition.createTransitionFromCompoundPrologTerm(
+				s,
+				BindingGenerator.getCompoundTerm(deadlockTerm.getArgument(1), 4)
+			);
 			newOps.add(deadlockOperation);
 			String deadlockStateId = deadlockTerm.getArgument(2).toString();
 
@@ -117,7 +107,6 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 			logger.error(msg);
 			throw new ProBError(msg);
 		}
-		this.result = result;
 	}
 
 	@Override

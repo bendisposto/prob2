@@ -9,12 +9,14 @@ import java.net.Socket;
 
 import com.google.common.base.MoreObjects;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProBConnection {
 
-	private final int BUFFER_SIZE = 1024;
+	private static final int BUFFER_SIZE = 1024;
 
 	private Socket socket;
 	private BufferedInputStream inputStream;
@@ -38,36 +40,20 @@ public class ProBConnection {
 
 	public void connect() throws IOException {
 		logger.debug("Connecting to port {} using key {}", port, key);
-		// try {
 		socket = new Socket(InetAddress.getByName(null), port);
 		inputStream = new BufferedInputStream(socket.getInputStream());
 		OutputStream outstream = socket.getOutputStream();
 		outputStream = new PrintStream(outstream, false, "utf8");
 		logger.debug("Connected");
-		// } catch (final IOException e) {
-		// if (socket != null) {
-		// try {
-		// socket.close();
-		// } catch (final IOException e2) {
-		// } finally {
-		// socket = null;
-		// inputStream = null;
-		// outputStream = null;
-		// }
-		// }
-		// logger.error("Opening connection to ProB server failed", e);
-		// throw new ProBException();
-		// }
 	}
 
 	public String send(final String term) throws IOException {
-		logger.debug(term);
+		if (logger.isDebugEnabled()) {
+			logger.debug(StringUtils.chomp(StringUtils.abbreviate(term, 200)));
+		}
 		if (shutingDown) {
-			final String message = "probcli is currently shutting down";
-			logger.error(message);
-			throw new IllegalStateException(
-					"ProB has been shut down. It does not accept messages. Received: "
-							+ term);
+			logger.error("Cannot send terms while probcli is shutting down: {}", term);
+			throw new IOException("ProB has been shut down. It does not accept messages.");
 		}
 		if (isStreamReady()) {
 			outputStream.println(term);

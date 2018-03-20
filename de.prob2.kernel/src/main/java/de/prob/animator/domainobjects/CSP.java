@@ -1,6 +1,16 @@
 package de.prob.animator.domainobjects;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.gson.Gson;
+
 import de.prob.Main;
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
@@ -11,13 +21,9 @@ import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
-import org.codehaus.groovy.runtime.IOGroovyMethods;
-import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Formula representation for CSP
@@ -25,11 +31,11 @@ import java.util.Arrays;
  * @author joy
  */
 public class CSP extends AbstractEvalElement {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CSP.class);
 
-	private FormulaUUID uuid = new FormulaUUID();
-	private String code;
-	private String fileName;
-	private String procname;
+	private final FormulaUUID uuid;
+	private final String fileName;
+	private final String procname;
 
 	/**
 	 * When a new formula is entered, the entire model must be reparsed. For this reason,
@@ -39,7 +45,9 @@ public class CSP extends AbstractEvalElement {
 	 * @param model csp model
 	 */
 	public CSP(String formula, CSPModel model) {
-		this.code = formula;
+		super(formula);
+		
+		this.uuid = new FormulaUUID();
 		this.fileName = model.getModelFile().getAbsolutePath();
 		OsInfoProvider osInfoProvider = Main.getInjector().getInstance(OsInfoProvider.class);
 		//TODO: die methode get( wird nicht erkannt
@@ -50,76 +58,51 @@ public class CSP extends AbstractEvalElement {
 		}
 
 		this.procname = Main.getProBDirectory() + "lib" + File.separator + "cspmf" + target;
-		this.expansion = FormulaExpand.TRUNCATE;// this doesn't matter
 	}
 
-	public String getCode() {
-		return code;
-	}
-
+	@Override
 	public void printProlog(IPrologTermOutput pout) {
-
-		/* Calling the cspmf command:
-         * cspmf translate [OPTIONS] FILE
-		 * where OPTIONS could be:
-		 --prologOut=FILE   translate a CSP-M file to Prolog
-		 --expressionToPrologTerm=STRING   translate a single CSP-M expression to Prolog
-		 --declarationToPrologTerm=STRING  translate a single CSP-M declaration to Prolog
-		 * For more detailed description of all translating options just type
-		 *  "cspmf translate --help" on the command line
-		 */
-		try {
-			Process process = ProcessGroovyMethods.execute(new ArrayList<>(Arrays.asList(this.procname, "translate", "--expressionToPrologTerm=" + code, fileName)));
-			executeCmd(process, pout);
-		} catch (IOException e){
-			e.printStackTrace();
-		}
+		callCSPMF(pout, "translate", "--expressionToPrologTerm=" + this.getCode(), fileName);
 	}
 
 	public void printPrologAssertion(IPrologTermOutput pout) {
-
-		/* Calling the cspmf command:
-		 * cspmf translate [OPTIONS] FILE
-		 * where OPTIONS could be:
-		 --prologOut=FILE   translate a CSP-M file to Prolog
-		 --expressionToPrologTerm=STRING   translate a single CSP-M expression to Prolog
-		 --declarationToPrologTerm=STRING  translate a single CSP-M declaration to Prolog
-		 * For more detailed description of all translating options just type
-		 *  "cspmf translate --help" on the command line
-		 */
-		try {
-			Process process = ProcessGroovyMethods.execute(new ArrayList<>(Arrays.asList(this.procname, "translate", "--declarationToPrologTerm=" + code, fileName)));
-			executeCmd(process, pout);
-		} catch (IOException e){
-			e.printStackTrace();
-		}
-
+		callCSPMF(pout, "translate", "--declarationToPrologTerm=" + this.getCode(), fileName);
 	}
 
-	private boolean executeCmd(Process process) {
+	/* Calling the cspmf command:
+	 * cspmf translate [OPTIONS] FILE
+	 * where OPTIONS could be:
+	 * --prologOut=FILE   translate a CSP-M file to Prolog
+	 * --expressionToPrologTerm=STRING   translate a single CSP-M expression to Prolog
+	 * --declarationToPrologTerm=STRING  translate a single CSP-M declaration to Prolog
+	 * For more detailed description of all translating options just type
+	 *  "cspmf translate --help" on the command line
+	 */
+	private void callCSPMF(final IPrologTermOutput pout, final String... args) {
+		final List<String> cmd = new ArrayList<>();
+		cmd.add(this.procname);
+		cmd.addAll(Arrays.asList(args));
 		try {
-			process.waitFor();
-		} catch(InterruptedException e){
-			e.printStackTrace();
-		}
-		return process.exitValue() == 0;
-	}
-
-	private void executeCmd(Process process, IPrologTermOutput pout) {
-		if (executeCmd(process)) {
-			try {
-				pout.printString(ProcessGroovyMethods.getText(process));
-			} catch (IOException e){
-				e.printStackTrace();
+			final Process process = new ProcessBuilder(cmd).start();
+			final int exitCode = process.waitFor();
+			if (exitCode == 0) {
+				try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+					pout.printString(reader.lines().collect(Collectors.joining("\n")));
+				}
+			} else {
+				try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+					final String errorMessage = reader.lines().collect(Collectors.joining("\n"));
+					throw new EvaluationException("Error parsing CSP " + errorMessage);
+				}
 			}
-		} else {
-			try {
-				throw new EvaluationException("Error parsing CSP " + IOGroovyMethods.getText(ProcessGroovyMethods.getErr(process)));
-			} catch (IOException e){
-				e.printStackTrace();
-			}
+		} catch (IOException e) {
+			LOGGER.error("IOException while calling cspmf", e);
+			throw new EvaluationException("IOException while parsing CSP", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			LOGGER.error("Thread interrupted while calling cspmf", e);
+			throw new EvaluationException("Thread interrupted while parsing CSP", e);
 		}
-
 	}
 
 	@Override
@@ -128,14 +111,8 @@ public class CSP extends AbstractEvalElement {
 	}
 
 	@Override
-	public String toString() {
-		return code;
-	}
-
-	@Override
 	public String serialized() {
-		Gson g = new Gson();
-		return "#CSP:" + g.toJson(this);
+		return "#CSP:" + new Gson().toJson(this);
 	}
 
 	@Override
@@ -148,6 +125,4 @@ public class CSP extends AbstractEvalElement {
 		/* TODO: we could do a more efficient implementation here */
 		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
-
-
 }

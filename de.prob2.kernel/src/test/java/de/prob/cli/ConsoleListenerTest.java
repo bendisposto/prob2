@@ -1,17 +1,16 @@
 package de.prob.cli;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 import java.io.BufferedReader;
 import java.io.StringReader;
 
 import org.junit.Test;
+
 import org.slf4j.Logger;
 
-import test.AbstractUnitTest;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-public class ConsoleListenerTest extends AbstractUnitTest {
+public class ConsoleListenerTest {
 
 	@Test
 	public void testMultiLineRead() throws Exception {
@@ -24,8 +23,8 @@ public class ConsoleListenerTest extends AbstractUnitTest {
 		assertEquals("foo", line1);
 		String line2 = listener.readAndLog();
 		assertEquals("bar", line2);
-		verify(logger).info("foo");
-		verify(logger).info("bar");
+		verify(logger).info("{}\u001b[0m", "foo");
+		verify(logger).info("{}\u001b[0m", "bar");
 	}
 
 	@Test
@@ -38,8 +37,8 @@ public class ConsoleListenerTest extends AbstractUnitTest {
 				logger);
 		when(proBInstance.isShuttingDown()).thenReturn(false, false, true);
 		listener.logLines();
-		verify(logger).info("foo");
-		verify(logger).info("bar");
+		verify(logger).info("{}\u001b[0m", "foo");
+		verify(logger).info("{}\u001b[0m", "bar");
 		verifyNoMoreInteractions(logger);
 	}
 
@@ -52,7 +51,7 @@ public class ConsoleListenerTest extends AbstractUnitTest {
 				logger);
 		String line = listener.readAndLog();
 		assertEquals("foo", line);
-		verify(logger).info("foo");
+		verify(logger).info("{}\u001b[0m", "foo");
 	}
 
 	@Test
@@ -64,7 +63,7 @@ public class ConsoleListenerTest extends AbstractUnitTest {
 		ConsoleListener listener = new ConsoleListener(proBInstance, reader,
 				logger);
 		listener.logLines();
-		verify(logger, never()).debug("foo");
+		verify(logger, never()).debug("{}\u001b[0m", "foo");
 	}
 
 	@Test

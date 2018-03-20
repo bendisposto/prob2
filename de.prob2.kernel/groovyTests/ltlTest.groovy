@@ -8,7 +8,7 @@ import de.prob.statespace.*
 s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 ltl_check = { formula ->
-	checker = new ModelChecker(new LTLChecker(s, formula))
+	def checker = new ModelChecker(new LTLChecker(s, formula))
 	checker.start()
 	checker.getResult()
 }

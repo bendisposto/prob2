@@ -175,7 +175,7 @@ class State {
 	}
 
 	/**
-	 * Takes a formula and evaluateds it via the {@link State#eval(List)} method.
+	 * Takes a formula and evaluates it via the {@link State#eval(List)} method.
 	 * @param formula as IEvalElement
 	 * @return the {@link AbstractEvalResult} calculated by ProB
 	 */
@@ -186,16 +186,43 @@ class State {
 	def List<AbstractEvalResult> eval(IEvalElement... formulas) {
 		return eval(formulas as List)
 	}
-
+	
+	
+	def Map<IEvalElement, AbstractEvalResult> getVariableValues() {
+		return evalFormulas(stateSpace.getLoadedMachine().getVariableEvalElements());
+	}
+	
+	def Map<IEvalElement, AbstractEvalResult> getConstantValues() {
+		return evalFormulas(stateSpace.getLoadedMachine().getConstantEvalElements());
+	}
+	
+	def Map<IEvalElement, AbstractEvalResult> evalFormulas(List<IEvalElement> formulas) {
+		List<IEvalElement> notEvaluatedElements = new ArrayList();
+		for (IEvalElement element : formulas) {
+			if(!values.containsKey(element)) {
+				notEvaluatedElements.add(element);
+			}
+		}
+		if(!notEvaluatedElements.isEmpty()) {
+			def cmd = new EvaluateFormulasCommand(notEvaluatedElements, this.getId());
+			stateSpace.execute(cmd);
+			values.putAll(cmd.getResultMap());
+		}
+		
+		LinkedHashMap<IEvalElement, AbstractEvalResult> result = new LinkedHashMap();
+		for (IEvalElement element : formulas) {
+			result.put(element, values.get(element));
+		}
+		return result;
+	}
+	
+	
 	/**
 	 * @param formulas to be evaluated
 	 * @return list of results calculated by ProB for a given formula
 	 */
 	def List<AbstractEvalResult> eval(List<IEvalElement> formulas) {
-		//currently no caching
-		def cmd = new EvaluateFormulasCommand(formulas, this.getId());
-		stateSpace.execute(cmd)
-		cmd.getValues()
+		return new ArrayList(evalFormulas(formulas).values());
 	}
 
 
@@ -236,7 +263,10 @@ class State {
 	};
 
 
-
+	def boolean isExplored() {
+		return explored;
+	}
+	
 	def boolean isInitialised() {
 		if (!explored) {
 			explore()
@@ -331,6 +361,6 @@ class State {
 			stateSpace.execute(cmd)
 			values.putAll(cmd.getResults())
 		}
-		values
+		return new HashMap(values);
 	}
 }

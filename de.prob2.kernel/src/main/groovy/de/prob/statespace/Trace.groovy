@@ -18,7 +18,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings
  */
 public class Trace {
 
-	def static boolean exploreStateByDefault = true
+	def boolean exploreStateByDefault = true
 	def final TraceElement current
 	def final TraceElement head
 	def final StateSpace stateSpace
@@ -85,6 +85,7 @@ public class Trace {
 		def newHE = new TraceElement(op, current)
 		def transitionList = branchTransitionListIfNecessary(op)
 		Trace newTrace = new Trace(stateSpace, newHE, transitionList, this.UUID)
+		newTrace.setExploreStateByDefault(this.exploreStateByDefault);
 		if (exploreStateByDefault && !op.getDestination().isExplored()) {
 			op.getDestination().explore()
 		}
@@ -115,7 +116,8 @@ public class Trace {
 	def Trace addTransitionWith(String name, List<String> parameters) {
 		def op = getCurrentState().getOutTransitions(true).find { it.getName() == name && it.getParams() == parameters }
 		if (op == null) {
-			throw new IllegalArgumentException("Could find operation "+name+" with parameters "+parameters.toString());
+		    /* TODO: call GetOperationByPredicateCommand when MAX_OPERATIONS reached */
+			throw new IllegalArgumentException("Could not find operation "+name+" with parameters "+parameters.toString());
 		}
 		return add(op);
 	}

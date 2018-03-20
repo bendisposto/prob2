@@ -7,6 +7,7 @@ import de.prob.animator.IPrologResult;
 import de.prob.animator.InterruptedResult;
 import de.prob.animator.NoResult;
 import de.prob.animator.YesResult;
+import de.prob.animator.domainobjects.ErrorItem;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
@@ -123,24 +124,19 @@ public abstract class AbstractCommand {
 	 * {@link AbstractCommand}, but if a developer wants to implement special
 	 * behavior, he/she needs to overwrite this method.
 	 * 
-	 * @param result
-	 *            is <code>null</code> if Prolog answered no or a list of
-	 *            bindings if the execution of the Prolog query was successful.
-	 * @param errormessages
-	 *            contains a {@link String} listing the error messages or
-	 *            <code>null</code> if no error messages were logged.
+	 * @param result the result returned from Prolog
+	 * @param errors the error messages and locations that were reported
 	 */
-	public void processErrorResult(final IPrologResult result,
-			final List<String> errormessages) {
+	public void processErrorResult(final IPrologResult result, final List<ErrorItem> errors) {
 		if (result instanceof NoResult) {
-			throw new ProBError("Prolog said no.", errormessages);
+			throw new ProBError("Prolog said no.", errors);
 		} else if (result instanceof InterruptedResult) {
 			interrupted = true;
 		} else if (result instanceof YesResult) {
 			processResult(((YesResult) result).getBindings());
-			throw new ProBError("ProB reported Errors", errormessages);
+			throw new ProBError("ProB reported Errors", errors);
 		} else {
-			throw new ProBError("Errors were", errormessages);
+			throw new ProBError("Errors were", errors);
 		}
 	}
 }

@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.unicode.UnicodeTranslator;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class ExpandedFormula {
 
@@ -21,7 +21,7 @@ public class ExpandedFormula {
 	private String id;
 	private boolean hasError = false;
 	private List<ExpandedFormula> children;
-	private final Map<String, Object> fields = new HashMap<String, Object>();
+	private final Map<String, Object> fields = new HashMap<>();
 
 	public ExpandedFormula(final CompoundPrologTerm cpt) {
 		init(cpt);
@@ -44,8 +44,8 @@ public class ExpandedFormula {
 
 		ListPrologTerm list = BindingGenerator.getList(cpt.getArgument(4));
 		if (!list.isEmpty()) {
-			children = new ArrayList<ExpandedFormula>();
-			List<Object> childrenFields = new ArrayList<Object>();
+			children = new ArrayList<>();
+			List<Object> childrenFields = new ArrayList<>();
 			for (PrologTerm prologTerm : list) {
 				ExpandedFormula expandedFormula = new ExpandedFormula(
 						BindingGenerator.getCompoundTerm(prologTerm, 4));
@@ -73,7 +73,7 @@ public class ExpandedFormula {
 			return cpt.getArgument(1).getFunctor();
 		default:
 			throw new IllegalArgumentException("Received unexpected result from Prolog. "
-					+ "Expected is either p,v or e as a functor, but Prolog returned" + functor);
+					+ "Expected is either p, v or e as a functor, but Prolog returned " + functor);
 		}
 	}
 
@@ -104,12 +104,10 @@ public class ExpandedFormula {
 
 	public void toggle() {
 		if (fields.containsKey("children")) {
-			Object _children = fields.get("children");
-			fields.put("_children", _children);
+			fields.put("_children", fields.get("children"));
 			fields.remove("children");
 		} else {
-			Object children = fields.get("_children");
-			fields.put("children", children);
+			fields.put("children", fields.get("_children"));
 			fields.remove("_children");
 		}
 	}

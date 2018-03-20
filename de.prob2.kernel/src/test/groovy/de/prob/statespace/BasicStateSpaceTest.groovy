@@ -73,14 +73,14 @@ class BasicStateSpaceTest extends Specification {
 		s.printState(s.getRoot()) != null
 	}
 
-	def "it states are not explored by default, not all transitions may be shown"() {
+	def "if states are not explored by default, not all transitions may be shown"() {
 		when:
-		Trace.exploreStateByDefault = false
+		s.getRoot().explored = false
 
 		then:
 		s.printOps(s.getRoot()).contains("Possibly not all transitions shown.")
 
 		cleanup:
-		Trace.exploreStateByDefault = true
+		s.getRoot().explored = true
 	}
 }

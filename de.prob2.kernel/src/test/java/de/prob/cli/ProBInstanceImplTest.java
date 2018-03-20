@@ -1,20 +1,15 @@
 package de.prob.cli;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
 import java.io.BufferedReader;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Test;
 
-import test.AbstractUnitTest;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-public class ProBInstanceImplTest extends AbstractUnitTest {
+public class ProBInstanceImplTest {
 
 	private Process process;
 	private BufferedReader reader;

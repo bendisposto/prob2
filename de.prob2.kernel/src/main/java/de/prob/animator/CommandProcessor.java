@@ -2,9 +2,6 @@ package de.prob.animator;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
 import de.prob.cli.ProBInstance;
@@ -19,6 +16,11 @@ import de.prob.parser.BindingGenerator;
 import de.prob.parser.ProBResultParser;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
+
+import org.apache.commons.lang.StringUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class CommandProcessor {
 
@@ -40,12 +42,16 @@ class CommandProcessor {
 			pto.printAtom("true");
 			query = pto.fullstop().toString();
 		}
-		logger.debug("SEND QUERY: {}", query);
+		if (logger.isDebugEnabled()) {
+			logger.debug(StringUtils.chomp(StringUtils.abbreviate(query, 200)));
+		}
 		String result = cli.send(query);
 
 		final Start ast = parseResult(result);
 		IPrologResult extractResult = extractResult(ast);
-		logger.debug(extractResult.toString());
+		if (logger.isDebugEnabled()) {
+			logger.debug(StringUtils.chomp(StringUtils.abbreviate(extractResult.toString(), 200)));
+		}
 		return extractResult;
 	}
 

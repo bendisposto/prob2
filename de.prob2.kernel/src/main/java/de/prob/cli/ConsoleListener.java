@@ -12,7 +12,7 @@ final class ConsoleListener implements Runnable {
 	private final Logger logger;
 
 	ConsoleListener(ProBInstance cli, BufferedReader stream, Logger logger) {
-		this.cli = new WeakReference<ProBInstance>(cli);
+		this.cli = new WeakReference<>(cli);
 		this.stream = stream;
 		this.logger = logger;
 	}
@@ -31,9 +31,8 @@ final class ConsoleListener implements Runnable {
 
 	void logLines() throws IOException {
 		String line;
-		ProBInstance instance;
 		do {
-			instance = cli.get();
+			ProBInstance instance = cli.get();
 			if (instance == null || instance.isShuttingDown()) {
 				return;
 			}
@@ -45,7 +44,7 @@ final class ConsoleListener implements Runnable {
 		String line;
 		line = stream.readLine();
 		if (line != null) {
-			logger.info(line);
+			logger.info("{}\u001b[0m", line);
 		}
 		return line;
 	}

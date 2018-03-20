@@ -7,7 +7,8 @@ import de.prob.statespace.Transition;
 
 public class RefinementCheckCounterExample implements ITraceDescription {
 	private final String eventName;
-	private final Transition step1, step2;
+	private final Transition step1;
+	private final Transition step2;
 
 	public RefinementCheckCounterExample(final String eventName,
 			final Transition step1, final Transition step2) {
@@ -29,7 +30,7 @@ public class RefinementCheckCounterExample implements ITraceDescription {
 	}
 
 	@Override
-	public Trace getTrace(StateSpace s) throws RuntimeException {
+	public Trace getTrace(StateSpace s) {
 		Trace t = new Trace(s);
 		t = t.add(step1);
 		t = t.add(step2);

@@ -10,8 +10,6 @@ import java.io.OutputStream;
 import de.prob.Main;
 import de.prob.cli.OsSpecificInfo;
 
-import org.codehaus.groovy.runtime.IOGroovyMethods;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +35,9 @@ public class Installer {
 			final File zip = new File(DEFAULT_HOME + zipName);
 			copyResourceToFile("cli/" + zipName, zip);
 			FileHandler.extractZip(zip, DEFAULT_HOME);
-			zip.delete();
+			if (!zip.delete()) {
+				logger.warn("Could not delete probcli zip file after extracting");
+			}
 
 			String outcspmf = DEFAULT_HOME + "lib" + File.separator + "cspmf";
 			String cspmfName = os + "-cspmf";
@@ -52,7 +52,9 @@ public class Installer {
 
 			final File cspmfFile = new File(outcspmf);
 			copyResourceToFile("cli/" + cspmfName, cspmfFile);
-			cspmfFile.setExecutable(true);
+			if (!cspmfFile.setExecutable(true)) {
+				logger.warn("Could not set the cspmf binary as executable");
+			}
 			logger.info("CLI binaries successfully installed");
 		} catch (IOException e) {
 			logger.info("Exception occurred when trying to access resources.", e);
@@ -64,7 +66,14 @@ public class Installer {
 			final InputStream is = getClass().getClassLoader().getResourceAsStream(resource);
 			final OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
 		) {
-			IOGroovyMethods.leftShift(os, is);
+			final byte[] buf = new byte[1024];
+			while (true) {
+				final int count = is.read(buf, 0, buf.length);
+				if (count == -1) {
+					break;
+				}
+				os.write(buf, 0, count);
+			}
 		}
 	}
 }

@@ -6,21 +6,17 @@
 
 package de.prob.animator.command;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Transition;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the enabled operations for a given state id.
@@ -29,12 +25,9 @@ import org.slf4j.LoggerFactory;
  */
 public final class GetEnabledOperationsCommand extends AbstractCommand
 		implements IStateSpaceModifier {
-
 	private static final String PROLOG_COMMAND_NAME = "compute_operations_for_state";
-
-	Logger logger = LoggerFactory.getLogger(GetEnabledOperationsCommand.class);
-
 	private static final String OPERATIONS_VARIABLE = "PLOps";
+
 	private final String id;
 	private List<Transition> enabledOperations = Collections.emptyList();
 
@@ -47,18 +40,11 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 
 	// [op(id,name,src,dest,[Arguments], [ArgsPrettyPrint],[Infos])]
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		enabledOperations = new ArrayList<Transition>();
-
-		final ListPrologTerm prologTerm = (ListPrologTerm) bindings
-				.get(OPERATIONS_VARIABLE);
-		for (PrologTerm op : prologTerm) {
-			CompoundPrologTerm cpt;
-			cpt = BindingGenerator.getCompoundTerm(op, 4);
-			enabledOperations.add(Transition.createTransitionFromCompoundPrologTerm(s,
-					cpt));
-		}
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		enabledOperations = ((ListPrologTerm)bindings.get(OPERATIONS_VARIABLE)).stream()
+			.map(op -> Transition.createTransitionFromCompoundPrologTerm(
+				s, BindingGenerator.getCompoundTerm(op, 4)))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -75,6 +61,6 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 
 	@Override
 	public List<Transition> getNewTransitions() {
-		return enabledOperations;
+		return this.getEnabledOperations();
 	}
 }

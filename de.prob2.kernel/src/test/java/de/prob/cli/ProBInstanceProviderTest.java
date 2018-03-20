@@ -1,17 +1,16 @@
 package de.prob.cli;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Map;
 
+import de.prob.Main;
+
 import org.junit.Test;
 
-import de.prob.Main;
-import test.AbstractUnitTest;
+import static org.junit.Assert.*;
 
-public class ProBInstanceProviderTest extends AbstractUnitTest {
+public class ProBInstanceProviderTest {
 
 	@Test
 	public void testExtractCliInformation() throws Exception {

@@ -14,4 +14,4 @@ Be sure to install the latest Prolog binaries. You can do that from within the g
 
 
   
-(c) 2011-2017 Jens Bendisposto, all rights reserved
+(c) 2011-2018 Jens Bendisposto, all rights reserved

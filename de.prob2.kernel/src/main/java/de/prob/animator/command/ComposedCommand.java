@@ -1,6 +1,7 @@
 package de.prob.animator.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.prob.animator.IAnimator;
@@ -18,8 +19,7 @@ import de.prob.prolog.term.PrologTerm;
  * 
  */
 public class ComposedCommand extends AbstractCommand {
-	private static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			.toCharArray();
+	private static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
 	private final AbstractCommand[] cmds;
 
@@ -28,21 +28,18 @@ public class ComposedCommand extends AbstractCommand {
 	}
 
 	public ComposedCommand(final List<? extends AbstractCommand> cmds) {
-		this.cmds = cmds.toArray(new AbstractCommand[cmds.size()]);
+		this.cmds = cmds.toArray(new AbstractCommand[0]);
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		final PrefixMap<PrologTerm> prefixMap = new PrefixMap<PrologTerm>(
-				bindings);
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		final PrefixMap<PrologTerm> prefixMap = new PrefixMap<>(bindings);
 		for (int i = 0; i < cmds.length; i++) {
 			processPrefixedCommand(prefixMap, i);
 		}
 	}
 
-	private void processPrefixedCommand(final PrefixMap<PrologTerm> prefixMap,
-			final int i) {
+	private void processPrefixedCommand(final PrefixMap<PrologTerm> prefixMap, final int i) {
 		prefixMap.prefix = createPrefix(i);
 		cmds[i].processResult(prefixMap);
 	}
@@ -55,8 +52,7 @@ public class ComposedCommand extends AbstractCommand {
 		}
 	}
 
-	private void writePrefixedCommand(final PrologPrefixVarOutput pto,
-			final int i) {
+	private void writePrefixedCommand(final PrologPrefixVarOutput pto, final int i) {
 		pto.prefix = createPrefix(i);
 		cmds[i].writeCommand(pto);
 	}
@@ -75,13 +71,11 @@ public class ComposedCommand extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final int index = indexOf(command);
 		// added second condition in case command is not included in cmds
-		if (index >= 0 && !(index == cmds.length)) {
-			final PrefixMap<PrologTerm> prefixMap = new PrefixMap<PrologTerm>(
-					bindings);
+		if (index >= 0 && index != cmds.length) {
+			final PrefixMap<PrologTerm> prefixMap = new PrefixMap<>(bindings);
 			processPrefixedCommand(prefixMap, index);
 		} else {
-			throw new IllegalArgumentException(
-					"cannot reprocess command, command unknown");
+			throw new IllegalArgumentException("cannot reprocess command, command unknown");
 		}
 	}
 
@@ -121,8 +115,7 @@ public class ComposedCommand extends AbstractCommand {
 	/**
 	 * This simplified map prefixes every query to the map with a given string.
 	 */
-	private static final class PrefixMap<V> implements
-			ISimplifiedROMap<String, V> {
+	private static final class PrefixMap<V> implements ISimplifiedROMap<String, V> {
 		private final ISimplifiedROMap<String, V> map;
 		private String prefix;
 
@@ -151,10 +144,6 @@ public class ComposedCommand extends AbstractCommand {
 
 	@Override
 	public List<AbstractCommand> getSubcommands() {
-		List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
-		for (AbstractCommand iCommand : cmds) {
-			commands.add(iCommand);
-		}
-		return commands;
+		return new ArrayList<>(Arrays.asList(cmds));
 	}
 }

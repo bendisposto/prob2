@@ -1,7 +1,12 @@
 package de.prob.model.representation;
 
+import java.io.File;
+import java.util.Map;
+
 import com.github.krukow.clj_lang.PersistentHashMap;
+
 import com.google.inject.Inject;
+
 import de.prob.animator.command.LoadCSPCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationException;
@@ -11,15 +16,14 @@ import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.scripting.StateSpaceProvider;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-
-import java.io.File;
-import java.util.Map;
 
 public class CSPModel extends AbstractModel {
+	private final String content;
+	private final CSPElement mainComponent;
+	
 	@Inject
 	public CSPModel(final StateSpaceProvider ssProvider) {
-		super(ssProvider, PersistentHashMap.emptyMap(), new DependencyGraph(), null);
+		this(ssProvider, null, null, null);
 	}
 
 	public CSPModel(final StateSpaceProvider ssProvider, String content, File modelFile, CSPElement mainComponent) {
@@ -76,17 +80,10 @@ public class CSPModel extends AbstractModel {
 	@Override
 	public Object getProperty(String name) {
 		AbstractElement component = getComponent(name);
-		if (DefaultGroovyMethods.asBoolean(component)) {
-			return component;
-		}
-
-		return super.getProperty(name);
+		return component != null ? component : super.getProperty(name);
 	}
 
 	public Object getAt(String name) {
 		return getComponent(name);
 	}
-
-	private String content;
-	private CSPElement mainComponent;
 }
