@@ -143,7 +143,6 @@ public class EvalResult extends AbstractEvalResult {
 				return formulaCache.get(value);
 			}
 
-			// String code = pt.getArgument(3).getFunctor();
 			if (v instanceof CompoundPrologTerm && v.getArity() == 2) {
 				CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 2);
 				value = cpt.getArgument(1).getFunctor();

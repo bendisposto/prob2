@@ -57,8 +57,7 @@ public class LTL extends AbstractEvalElement {
 	@Override
 	public String serialized() {
 		// FIXME, maybe?
-		Gson g = new Gson();
-		return "#LTL:" + g.toJson(this);
+		return "#LTL:" + new Gson().toJson(this);
 	}
 
 	@Override

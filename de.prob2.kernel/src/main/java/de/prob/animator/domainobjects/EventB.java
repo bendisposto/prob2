@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.node.*;
+import de.be4.classicalb.core.parser.node.Node;
 
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
@@ -69,7 +69,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		kind = EvalElementType.PREDICATE;
 		IParseResult parseResult = FormulaFactory.getInstance(types)
 				.parsePredicate(unicode, null);
-		List<String> errors = new ArrayList<String>();
+		List<String> errors = new ArrayList<>();
 
 		if (!parseResult.hasProblem()) {
 			ast = preparePredicateAst(parseResult);
@@ -94,7 +94,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		}
 		if (parseResult.hasProblem()) {
 			for (String string : errors) {
-				logger.error(string);
+				logger.error("{}", string);
 			}
 			logger.error("Parsing of code failed. Ascii is: {}", this.getCode());
 			logger.error("Parsing of code failed. Unicode is: {}", unicode);

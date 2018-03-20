@@ -96,8 +96,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 			operations.add(Transition.createTransitionFromCompoundPrologTerm(s, cpt));
 		}
 
-		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS_VARIABLE));
-		for (PrologTerm prologTerm : errors) {
+		for (PrologTerm prologTerm : BindingGenerator.getList(bindings.get(ERRORS_VARIABLE))) {
 			this.errors.add(prologTerm.getFunctor());
 		}
 	}

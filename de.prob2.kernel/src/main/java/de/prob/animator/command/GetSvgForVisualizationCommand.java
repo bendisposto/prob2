@@ -43,6 +43,6 @@ public class GetSvgForVisualizationCommand extends AbstractCommand {
 
 	@Override
 	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
-		
+		// There are no output variables, the command only creates a file.
 	}
 }

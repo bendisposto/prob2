@@ -61,6 +61,6 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 
 	@Override
 	public List<Transition> getNewTransitions() {
-		return enabledOperations;
+		return this.getEnabledOperations();
 	}
 }

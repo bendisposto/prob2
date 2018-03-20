@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import de.prob.animator.command.GetMachineOperationInfos.OperationInfo;
 import de.prob.animator.domainobjects.AbstractEvalResult;
@@ -31,19 +30,16 @@ public class PersistentTransition {
 		this.name = transition.getName();
 		final LoadedMachine loadedMachine = transition.getStateSpace().getLoadedMachine();
 		final State destinationState = transition.getDestination();
-		if (name.equals("$setup_constants")) {
+		if ("$setup_constants".equals(name)) {
 			if (storeDestinationState) {
 				addValuesToDestState(destinationState.getConstantValues());
 			}
-
 		} else {
 			if (storeDestinationState) {
 				addValuesToDestState(destinationState.getVariableValues());
 			}
 
-			if (name.equals("$initialise_machine")) {
-
-			} else {
+			if (!"$initialise_machine".equals(name)) {
 				// for each operation
 				OperationInfo machineOperationInfo = loadedMachine.getMachineOperationInfo(name);
 				params = new HashMap<>();
@@ -63,7 +59,7 @@ public class PersistentTransition {
 		if (destState == null) {
 			destState = new HashMap<>();
 		}
-		for (Entry<IEvalElement, AbstractEvalResult> entry : map.entrySet()) {
+		for (Map.Entry<IEvalElement, AbstractEvalResult> entry : map.entrySet()) {
 			if (entry.getValue() instanceof EvalResult) {
 				EvalResult evalResult = (EvalResult) entry.getValue();
 				destState.put(entry.getKey().getCode(), evalResult.getValue());

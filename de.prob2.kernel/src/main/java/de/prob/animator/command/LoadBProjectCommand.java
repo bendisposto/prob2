@@ -34,19 +34,20 @@ public class LoadBProjectCommand extends AbstractCommand {
 		pto.openTerm(PROLOG_COMMAND_NAME);
 		pto.printAtom(mainMachine.getAbsolutePath());
 		pto.openList();
-		printLoadTerm(rml, pto);
+		printLoadTerm(pto);
 		pto.closeList();
 		pto.closeTerm();
 	}
 
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		// There are no output variables.
 	}
 
-	private void printLoadTerm(final RecursiveMachineLoader rml, IPrologTermOutput pto) {
+	private void printLoadTerm(IPrologTermOutput pto) {
 		StructuredPrologOutput parserOutput = new StructuredPrologOutput();
-		rml.printAsProlog(parserOutput);
-		nodeIdMapping = rml.getNodeIdMapping();
+		this.rml.printAsProlog(parserOutput);
+		nodeIdMapping = this.rml.getNodeIdMapping();
 		for (PrologTerm term : parserOutput.getSentences()) {
 			pto.printTerm(term);
 		}

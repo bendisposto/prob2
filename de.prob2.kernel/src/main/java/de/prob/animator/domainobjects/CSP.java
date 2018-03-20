@@ -112,8 +112,7 @@ public class CSP extends AbstractEvalElement {
 
 	@Override
 	public String serialized() {
-		Gson g = new Gson();
-		return "#CSP:" + g.toJson(this);
+		return "#CSP:" + new Gson().toJson(this);
 	}
 
 	@Override

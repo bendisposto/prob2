@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,9 +26,7 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 public final class ProBInstanceProvider implements Provider<ProBInstance> {
-
-	private final Logger logger = LoggerFactory
-			.getLogger(ProBInstanceProvider.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProBInstanceProvider.class);
 
 	private final PrologProcessProvider processProvider;
 	private final String home;
@@ -122,7 +119,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 			ProBInstance cli = new ProBInstance(process, stream,
 					userInterruptReference, connection, home, osInfo,
 					processCounter);
-			processes.add(new WeakReference<ProBInstance>(cli));
+			processes.add(new WeakReference<>(cli));
 			return cli;
 		} catch (IOException e) {
 			processCounter.decrementAndGet();
@@ -137,11 +134,10 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		final PortPattern portPattern = new PortPattern();
 		final InterruptRefPattern intPattern = new InterruptRefPattern();
 
-		Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> pattern = new HashMap<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>>();
+		Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> pattern = new HashMap<>();
 		pattern.put(PortPattern.class, portPattern);
 		pattern.put(InterruptRefPattern.class, intPattern);
-		Collection<AbstractCliPattern<?>> values = pattern.values();
-		analyseStdout(input, values);
+		analyseStdout(input, pattern.values());
 		return pattern;
 	}
 
@@ -151,7 +147,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		try {
 			String line;
 			boolean endReached = false;
-			while (!endReached && (line = input.readLine()) != null) { // NOPMD
+			while (!endReached && (line = input.readLine()) != null) {
 				logger.debug("Apply cli detection patterns to {}", line);
 				applyPatterns(patterns, line);
 				endReached = patterns.isEmpty()
@@ -172,15 +168,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		}
 	}
 
-	private void applyPatterns(
-			final Collection<? extends AbstractCliPattern<?>> patterns,
-			final String line) {
-		for (Iterator<? extends AbstractCliPattern<?>> it = patterns.iterator(); it
-				.hasNext();) {
-			final AbstractCliPattern<?> p = it.next();
-			if (p.matchesLine(line)) {
-				it.remove();
-			}
-		}
+	private void applyPatterns(final Collection<? extends AbstractCliPattern<?>> patterns, final String line) {
+		patterns.removeIf(p -> p.matchesLine(line));
 	}
 }

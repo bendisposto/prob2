@@ -36,7 +36,7 @@ public class ProBInstance {
 		this.connection = connection;
 		this.processCounter = processCounter;
 		final String command = home + osInfo.getUserInterruptCmd();
-		interruptCommand = new String[] { command, Long.toString(userInterruptReference.longValue()) };
+		interruptCommand = new String[] { command, Long.toString(userInterruptReference) };
 		thread = makeOutputPublisher(stream);
 		thread.start();
 	}
@@ -47,7 +47,7 @@ public class ProBInstance {
 	}
 
 	public void shutdown() {
-		if (shuttingDown == false) {
+		if (!shuttingDown) {
 			processCounter.decrementAndGet();
 		}
 		shuttingDown = true;

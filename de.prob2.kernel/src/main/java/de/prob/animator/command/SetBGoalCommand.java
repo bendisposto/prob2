@@ -22,8 +22,8 @@ public class SetBGoalCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		// There are no output variables.
 	}
 
 }

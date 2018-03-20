@@ -1,16 +1,12 @@
 package de.prob.animator.command;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.stream.Collectors;
 
 import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
@@ -29,24 +25,10 @@ public class GetStateBasedErrorsCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		final List<StateError> errors;
-		ListPrologTerm list;
-		list = BindingGenerator.getList(bindings, "Errors");
-
-		if (list.isEmpty()) {
-			errors = Collections.emptyList();
-		} else {
-			errors = new ArrayList<StateError>();
-			for (PrologTerm term : list) {
-				CompoundPrologTerm compoundTerm;
-				compoundTerm = BindingGenerator.getCompoundTerm(term, "error",
-						3);
-				errors.add(new StateError(compoundTerm));
-			}
-		}
-		stateErrors = errors;
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		stateErrors = BindingGenerator.getList(bindings, "Errors").stream()
+			.map(term -> new StateError(BindingGenerator.getCompoundTerm(term, "error", 3)))
+			.collect(Collectors.toList());
 	}
 
 	@Override

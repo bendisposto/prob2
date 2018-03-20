@@ -67,7 +67,7 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 	}
 
 	private static final String PROLOG_COMMAND_NAME = "get_enable_matrix";
-	private static final String MATRIX = "Matrix";
+	private static final String MATRIX_VAR = "Matrix";
 
 	private final EventPair[] pairs;
 	private Map<EventPair, EnableMatixEntry> matrix = new HashMap<>();
@@ -87,7 +87,7 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 			pto.closeTerm();
 		}
 		pto.closeList();
-		pto.printVariable(MATRIX);
+		pto.printVariable(MATRIX_VAR);
 		pto.closeTerm();
 	}
 
@@ -95,7 +95,7 @@ public class GetEnableMatrixCommand extends AbstractCommand {
 	// enable_edges(Enable,KeepEnabled,Disable,KeepDisabled)
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
-		ListPrologTerm elements = (ListPrologTerm) bindings.get(MATRIX);
+		ListPrologTerm elements = (ListPrologTerm) bindings.get(MATRIX_VAR);
 		matrix.clear();
 		for (PrologTerm term : elements) {
 			EventPair key = new EventPair(term.getArgument(1).getFunctor(), term.getArgument(2).getFunctor());

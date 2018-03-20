@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class ModelChecker {
 
 	private static int counter = 0;
-	private static String JOBPREFIX = "mc";
+	private static final String JOBPREFIX = "mc";
 
 	public static String generateJobId() {
 		return JOBPREFIX + counter++;
@@ -73,7 +73,7 @@ public class ModelChecker {
 		} catch (InterruptedException e) {
 			logger.debug("Interrupted",e);
 			f.cancel(true);
-		    Thread.currentThread().interrupt();
+			Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
 			logger.debug("Execution failed",e);
 			launderThrowable(e.getCause());

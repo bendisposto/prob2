@@ -17,11 +17,11 @@ public final class ProBPreference {
 	public final String category;
 	public final String defaultValue;
 
-	private final static int NAME_POSITION = 1;
-	private final static int TYPE_POSITION = 2;
-	private final static int DESC_POSITION = 3;
-	private final static int CAT_POSITION = 4;
-	private final static int DEFAULT_POSITION = 5;
+	private static final int NAME_POSITION = 1;
+	private static final int TYPE_POSITION = 2;
+	private static final int DESC_POSITION = 3;
+	private static final int CAT_POSITION = 4;
+	private static final int DEFAULT_POSITION = 5;
 
 	public ProBPreference(final CompoundPrologTerm term) {
 		name = PrologTerm.atomicString(term.getArgument(NAME_POSITION));
@@ -35,13 +35,7 @@ public final class ProBPreference {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(name);
-		sb.append("(cat. ").append(category);
-		sb.append(", type ").append(type.toString());
-		sb.append(", default ").append(defaultValue);
-		sb.append(") ").append(description);
-		return sb.toString();
+		return name + "(cat. " + category + ", type " + type + ", default " + defaultValue + ") " + description;
 	}
 
 }

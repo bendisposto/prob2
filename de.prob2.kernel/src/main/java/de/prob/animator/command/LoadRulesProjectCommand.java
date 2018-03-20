@@ -32,6 +32,7 @@ public class LoadRulesProjectCommand extends AbstractCommand {
 
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		// There are no output variables.
 	}
 
 	private void printLoadTerm(IPrologTermOutput pto) {
