@@ -27,8 +27,8 @@ public class TableData {
 		return rows;
 	}
 
-	public static TableData fromProlog(ListPrologTerm tableTerm) {
-		List<List<String>> table = ((ListPrologTerm) tableTerm.getArgument(1).getArgument(1))
+	public static TableData fromProlog(PrologTerm tableTerm) {
+		List<List<String>> table = ((ListPrologTerm) tableTerm.getArgument(1))
 				.stream()
 				.map(term -> (ListPrologTerm)term.getArgument(1))
 				.map(TableData::makeTuple)

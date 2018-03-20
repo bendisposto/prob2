@@ -8,7 +8,6 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.TableData;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
 
@@ -48,7 +47,6 @@ public class GetTableForVisualizationCommand extends AbstractCommand {
 
 	@Override
 	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
-		ListPrologTerm table = (ListPrologTerm) bindings.get(TABLE_VAR);
-		this.table = TableData.fromProlog(table);
+		this.table = TableData.fromProlog(bindings.get(TABLE_VAR));
 	}
 }
