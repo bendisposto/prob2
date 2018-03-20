@@ -38,9 +38,16 @@ public final class TableData {
 		return new TableData(header, table);
 	}
 
-	private static List<String> tableRowFromList(ListPrologTerm term) {
-		return term.stream()
-				.map(PrologTerm::getFunctor)
-				.collect(Collectors.toList());
+	private static List<String> tableRowFromList(ListPrologTerm list) {
+		return list.stream()
+			.map(term -> {
+				if (term.isAtom()) {
+					// Special case so that atoms aren't displayed with quotes.
+					return term.getFunctor();
+				} else {
+					return term.toString();
+				}
+			})
+			.collect(Collectors.toList());
 	}
 }
