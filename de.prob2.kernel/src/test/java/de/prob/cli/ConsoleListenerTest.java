@@ -23,8 +23,8 @@ public class ConsoleListenerTest {
 		assertEquals("foo", line1);
 		String line2 = listener.readAndLog();
 		assertEquals("bar", line2);
-		verify(logger).info("foo\u001b[0m");
-		verify(logger).info("bar\u001b[0m");
+		verify(logger).info("{}\u001b[0m", "foo");
+		verify(logger).info("{}\u001b[0m", "bar");
 	}
 
 	@Test
@@ -37,8 +37,8 @@ public class ConsoleListenerTest {
 				logger);
 		when(proBInstance.isShuttingDown()).thenReturn(false, false, true);
 		listener.logLines();
-		verify(logger).info("foo\u001b[0m");
-		verify(logger).info("bar\u001b[0m");
+		verify(logger).info("{}\u001b[0m", "foo");
+		verify(logger).info("{}\u001b[0m", "bar");
 		verifyNoMoreInteractions(logger);
 	}
 
@@ -51,7 +51,7 @@ public class ConsoleListenerTest {
 				logger);
 		String line = listener.readAndLog();
 		assertEquals("foo", line);
-		verify(logger).info("foo\u001b[0m");
+		verify(logger).info("{}\u001b[0m", "foo");
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class ConsoleListenerTest {
 		ConsoleListener listener = new ConsoleListener(proBInstance, reader,
 				logger);
 		listener.logLines();
-		verify(logger, never()).debug("foo");
+		verify(logger, never()).debug("{}\u001b[0m", "foo");
 	}
 
 	@Test
