@@ -3,6 +3,8 @@ package de.prob.animator.domainobjects;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.prob.parser.BindingGenerator;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -23,21 +25,22 @@ public final class TableData {
 		return rows;
 	}
 
+	private static ListPrologTerm getListTermContents(final PrologTerm term) {
+		final CompoundPrologTerm listCompoundTerm = BindingGenerator.getCompoundTerm(term, "list", 1);
+		return BindingGenerator.getList(listCompoundTerm.getArgument(1));
+	}
+
 	public static TableData fromProlog(PrologTerm tableTerm) {
-		List<List<String>> table = ((ListPrologTerm) tableTerm.getArgument(1))
-				.stream()
-				.map(term -> (ListPrologTerm)term.getArgument(1))
-				.map(TableData::makeTuple)
-				.collect(Collectors.toList());
-		List<String> header = table.get(0);
-		table.remove(0);
+		final List<List<String>> table = getListTermContents(tableTerm).stream()
+			.map(term -> tableRowFromList(getListTermContents(term)))
+			.collect(Collectors.toList());
+		final List<String> header = table.remove(0);
 		return new TableData(header, table);
 	}
 
-	private static List<String> makeTuple(ListPrologTerm term) {
+	private static List<String> tableRowFromList(ListPrologTerm term) {
 		return term.stream()
 				.map(PrologTerm::getFunctor)
 				.collect(Collectors.toList());
 	}
-
 }
