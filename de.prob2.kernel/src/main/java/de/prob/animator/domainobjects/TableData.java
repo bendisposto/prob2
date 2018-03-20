@@ -6,17 +6,13 @@ import java.util.stream.Collectors;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class TableData {
-
-	private List<String> header;
-	private List<List<String>> rows;
+public final class TableData {
+	private final List<String> header;
+	private final List<List<String>> rows;
 
 	private TableData(List<String> header, List<List<String>> table) {
 		this.header = header;
 		rows = table;
-	}
-
-	private TableData() {
 	}
 
 	public List<String> getHeader() {
