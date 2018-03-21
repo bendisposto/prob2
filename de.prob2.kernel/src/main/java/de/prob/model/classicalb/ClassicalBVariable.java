@@ -13,6 +13,7 @@ public class ClassicalBVariable extends Variable {
 		this.name = expression.getCode();
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

@@ -13,9 +13,9 @@ public class ReferenceExtractor extends DepthFirstAdapter {
 
 	private boolean machine = false;
 	private boolean context = false;
-	private List<String> refines = new ArrayList<String>();
-	private List<String> sees = new ArrayList<String>();
-	private List<String> extendsL = new ArrayList<String>();
+	private List<String> refines = new ArrayList<>();
+	private List<String> sees = new ArrayList<>();
+	private List<String> extendsL = new ArrayList<>();
 
 	public boolean isMachine() {
 		return machine;

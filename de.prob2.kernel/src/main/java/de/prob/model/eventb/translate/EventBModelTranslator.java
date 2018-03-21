@@ -18,9 +18,9 @@ import de.prob.model.representation.Machine;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public class EventBModelTranslator {
-	List<EventBMachineTranslator> machineTranslators = new ArrayList<EventBMachineTranslator>();
-	List<ContextTranslator> contextTranslators = new ArrayList<ContextTranslator>();
-	List<ProofObligation> proofObligations = new ArrayList<ProofObligation>();
+	private final List<EventBMachineTranslator> machineTranslators = new ArrayList<>();
+	private final List<ContextTranslator> contextTranslators = new ArrayList<>();
+	private final List<ProofObligation> proofObligations = new ArrayList<>();
 	private final TheoryTranslator theoryTranslator;
 	private final EventBModel model;
 
@@ -48,7 +48,7 @@ public class EventBModelTranslator {
 		if (mainComponent instanceof Context) {
 			return Collections.emptyList();
 		}
-		List<EventBMachine> machines = new ArrayList<EventBMachine>();
+		List<EventBMachine> machines = new ArrayList<>();
 		if (mainComponent instanceof EventBMachine) {
 			EventBMachine machine = (EventBMachine) mainComponent;
 			machines.add(machine);
@@ -61,7 +61,7 @@ public class EventBModelTranslator {
 		if (machine.getRefines().isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<EventBMachine> machines = new ArrayList<EventBMachine>();
+		List<EventBMachine> machines = new ArrayList<>();
 		for (EventBMachine eventBMachine : machine.getRefines()) {
 			EventBMachine refinedMachine = model.getMachine(eventBMachine.getName());
 			machines.add(refinedMachine);
@@ -82,7 +82,7 @@ public class EventBModelTranslator {
 	}
 
 	private List<Context> extractContextHierarchy(final EventBMachine machine, EventBModel model) {
-		List<Context> contexts = new ArrayList<Context>();
+		List<Context> contexts = new ArrayList<>();
 		for (Context c : machine.getSees()) {
 			Context seenContext = model.getContext(c.getName());
 			contexts.add(seenContext);
@@ -97,7 +97,7 @@ public class EventBModelTranslator {
 	}
 
 	private List<Context> extractContextHierarchy(final Context context, EventBModel model) {
-		List<Context> contexts = new ArrayList<Context>();
+		List<Context> contexts = new ArrayList<>();
 		contexts.add(context);
 		for (Context c : context.getExtends()) {
 			Context extendedContext = model.getContext(c.getName());
@@ -115,8 +115,8 @@ public class EventBModelTranslator {
 	public void printProlog(final IPrologTermOutput pto) {
 		RodinPosPrinter labelPrinter = new RodinPosPrinter();
 
-		List<Node> machineNodes = new ArrayList<Node>();
-		List<Node> contextNodes = new ArrayList<Node>();
+		List<Node> machineNodes = new ArrayList<>();
+		List<Node> contextNodes = new ArrayList<>();
 		for (EventBMachineTranslator trans : machineTranslators) {
 			machineNodes.add(trans.translateMachine());
 			labelPrinter.addNodeInfos(trans.getNodeInfos());

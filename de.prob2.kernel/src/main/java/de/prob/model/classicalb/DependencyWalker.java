@@ -1,13 +1,11 @@
 package de.prob.model.classicalb;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.base.Joiner;
+import java.util.stream.Collectors;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
@@ -21,6 +19,8 @@ import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PMachineReference;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.be4.classicalb.core.parser.node.Token;
+
 import de.prob.model.representation.DependencyGraph;
 import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.ModelElementList;
@@ -37,7 +37,7 @@ public class DependencyWalker extends DepthFirstAdapter {
 	public DependencyWalker(final LinkedList<TIdentifierLiteral> machine,
 			final ModelElementList<ClassicalBMachine> machines,
 			final DependencyGraph graph, final Map<String, Start> map) {
-		this.machineIds = new HashSet<LinkedList<TIdentifierLiteral>>();
+		this.machineIds = new HashSet<>();
 		this.name = extractMachineName(machine);
 		this.prefix = extractMachinePrefix(machine);
 		this.machines = machines;
@@ -57,11 +57,8 @@ public class DependencyWalker extends DepthFirstAdapter {
 
 	@Override
 	public void caseAImportsMachineClause(final AImportsMachineClause node) {
-		final LinkedList<PMachineReference> machineReferences = node
-				.getMachineReferences();
-		for (final PMachineReference r : machineReferences) {
-			final String dest = extractMachineName(((AMachineReference) r)
-					.getMachineName());
+		for (final PMachineReference r : node.getMachineReferences()) {
+			final String dest = extractMachineName(((AMachineReference) r).getMachineName());
 			addMachine(dest, prefix, ERefType.IMPORTS);
 		}
 	}
@@ -108,17 +105,14 @@ public class DependencyWalker extends DepthFirstAdapter {
 		return list.getLast().getText();
 	}
 
-	private String extractMachinePrefix(
-			LinkedList<TIdentifierLiteral> list) {
+	private String extractMachinePrefix(LinkedList<TIdentifierLiteral> list) {
 		if (list.size() > 1) {
-			List<TIdentifierLiteral> subList = list.subList(0, list.size() - 1);
-			List<String> names = new ArrayList<String>();
-			for (TIdentifierLiteral tIdentifierLiteral : subList) {
-				names.add(tIdentifierLiteral.getText());
-			}
-			return Joiner.on(".").join(names);
+			return list.subList(0, list.size() - 1).stream()
+				.map(Token::getText)
+				.collect(Collectors.joining("."));
+		} else {
+			return null;
 		}
-		return null;
 	}
 
 	private ClassicalBMachine makeMachine(final String dest, final String prefix) {
@@ -132,9 +126,8 @@ public class DependencyWalker extends DepthFirstAdapter {
 	// graph
 	private void addMachine(final String dest, String prefix, final ERefType refType) {
 		final ClassicalBMachine newMachine = makeMachine(dest, prefix);
-		final String name = newMachine.getName();
 		machines = machines.addElement(newMachine);
-		graph = graph.addEdge(concat(this.prefix, this.name), name, refType);
+		graph = graph.addEdge(concat(this.prefix, this.name), newMachine.getName(), refType);
 	}
 
 	public String concat(String prefix, String name) {

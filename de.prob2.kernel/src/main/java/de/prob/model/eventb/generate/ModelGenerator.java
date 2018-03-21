@@ -4,14 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -19,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import de.be4.eventbalg.core.parser.BException;
 import de.be4.eventbalg.core.parser.EventBParser;
 import de.be4.eventbalg.core.parser.node.Start;
+
 import de.prob.Main;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.ModelModifier;
@@ -36,27 +35,20 @@ public class ModelGenerator {
 		checkFile(file, true);
 		ModelModifier modelM = extractTheories(model, path);
 
-		File[] files = file.listFiles(new FilenameFilter() {
-
-			@Override
-			public boolean accept(final File dir, final String name) {
-				String lowercaseName = name.toLowerCase();
-				if (lowercaseName.endsWith(".emch")
-						|| lowercaseName.endsWith(".ctx")
-						|| lowercaseName.endsWith(".procedure")) {
-					return true;
-				} else {
-					return false;
-				}
-			}
+		File[] files = file.listFiles((dir, name) -> {
+			String lowercaseName = name.toLowerCase();
+			return lowercaseName.endsWith(".emch")
+				|| lowercaseName.endsWith(".ctx")
+				|| lowercaseName.endsWith(".procedure");
 		});
-		Map<String, String> components = new HashMap<String, String>();
-		if (files != null)
+		Map<String, String> components = new HashMap<>();
+		if (files != null) {
 			for (File f : files) {
 				checkFile(f, false);
 				String text = readFile(f);
 				components.put(f.getName(), text);
 			}
+		}
 		this.modelM = addComponents(modelM, components);
 	}
 
@@ -69,12 +61,10 @@ public class ModelGenerator {
 		ModelModifier mm = new ModelModifier(model);
 		String file = readFile(theoryPath);
 		Gson gson = new Gson();
-		Type type = new TypeToken<Map<String, List<String>>>() {
-		}.getType();
-		Map<String, List<String>> fromJson = (Map<String, List<String>>) gson
-				.fromJson(file, type);
-		for (Entry<String, List<String>> theory : fromJson.entrySet()) {
-			LinkedHashMap<String, Object> properties = new LinkedHashMap<String, Object>();
+		Type type = new TypeToken<Map<String, List<String>>>() {}.getType();
+		Map<String, List<String>> fromJson = gson.fromJson(file, type);
+		for (Map.Entry<String, List<String>> theory : fromJson.entrySet()) {
+			LinkedHashMap<String, Object> properties = new LinkedHashMap<>();
 			properties.put("workspace", path);
 			properties.put("project", theory.getKey());
 			properties.put("theories", theory.getValue());
@@ -119,7 +109,7 @@ public class ModelGenerator {
 
 	private ModelModifier addComponents(ModelModifier modelM,
 			Map<String, String> components) throws BException {
-		for (Entry<String, String> e : components.entrySet()) {
+		for (Map.Entry<String, String> e : components.entrySet()) {
 			String name = e.getKey();
 			if (name.endsWith(".emch")) {
 				name = name.substring(0, name.length() - 5);

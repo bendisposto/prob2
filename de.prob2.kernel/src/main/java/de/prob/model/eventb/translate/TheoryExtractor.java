@@ -15,14 +15,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.eventb.core.ast.FormulaFactory;
-import org.eventb.core.ast.extension.IFormulaExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.theory.AxiomaticDefinitionBlock;
@@ -46,18 +38,28 @@ import de.prob.tmparser.TheoryMappingException;
 import de.prob.tmparser.TheoryMappingParser;
 import de.prob.util.Tuple2;
 
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.extension.IFormulaExtension;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 public class TheoryExtractor extends DefaultHandler {
 
 	private final Logger logger = LoggerFactory.getLogger(TheoryExtractor.class);
 
 	private Theory theory;
-	private ModelElementList<Theory> imported = new ModelElementList<Theory>();
-	private ModelElementList<Type> typeParameters = new ModelElementList<Type>();
-	private ModelElementList<DataType> dataTypes = new ModelElementList<DataType>();
-	private ModelElementList<Operator> operators = new ModelElementList<Operator>();
-	private ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionsBlocks = new ModelElementList<AxiomaticDefinitionBlock>();
-	private ModelElementList<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
-	private ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
+	private ModelElementList<Theory> imported = new ModelElementList<>();
+	private ModelElementList<Type> typeParameters = new ModelElementList<>();
+	private ModelElementList<DataType> dataTypes = new ModelElementList<>();
+	private ModelElementList<Operator> operators = new ModelElementList<>();
+	private ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionsBlocks = new ModelElementList<>();
+	private ModelElementList<EventBAxiom> theorems = new ModelElementList<>();
+	private ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<>();
 
 	// For adding DataType
 	private String dataTypeName;
@@ -107,7 +109,7 @@ public class TheoryExtractor extends DefaultHandler {
 	private String name;
 
 	private String workspacePath;
-	ModelElementList<Theory> theories = new ModelElementList<Theory>();
+	private ModelElementList<Theory> theories = new ModelElementList<>();
 
 	public TheoryExtractor(final String workspacePath, String project,
 			String name, Map<String, Theory> theoryMap) {
@@ -115,23 +117,19 @@ public class TheoryExtractor extends DefaultHandler {
 		this.project = project;
 		this.name = name;
 		this.theoryMap = theoryMap;
-		Collection<OperatorMapping> mappings = new ArrayList<OperatorMapping>();
+		Collection<OperatorMapping> mappings = new ArrayList<>();
 		try {
 			String mappingFileName = workspacePath + File.separator + project
 					+ File.separator + name + ".ptm";
 			mappings = TheoryMappingParser.parseTheoryMapping(name,
 					mappingFileName);
 		} catch (FileNotFoundException e) {
-			logger.warn("No .ptm file found for Theory "
-					+ name
-					+ ". This means that ProB has no information on how to interpret this theory.", e);
-		} catch (TheoryMappingException e) {
-			logger.error("Error extracting theory", e);
-		} catch (IOException e) {
+			logger.warn("No .ptm file found for Theory {}. This means that ProB has no information on how to interpret this theory.", name, e);
+		} catch (IOException | TheoryMappingException e) {
 			logger.error("Error extracting theory", e);
 		}
 		theory = new Theory(name, project, mappings);
-		typeEnv = new HashSet<IFormulaExtension>();
+		typeEnv = new HashSet<>();
 
 	}
 
@@ -143,52 +141,76 @@ public class TheoryExtractor extends DefaultHandler {
 	public void startElement(final String uri, final String localName,
 			final String qName, final Attributes attributes)
 					throws SAXException {
-		if (qName.equals("org.eventb.theory.core.scTypeParameter")) {
-			addTypeParameter(attributes);
-		} else if (qName.equals("org.eventb.theory.core.useTheory")) {
-			addUsedTheory(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scDatatypeDefinition")) {
-			beginAddingDataType(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scTypeArgument")) {
-			addTypeArgument(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scDatatypeConstructor")) {
-			beginAddingDataTypeConstructor(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scConstructorArgument")) {
-			addDestructor(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
-			beginAddingOperator(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scDirectOperatorDefinition")) {
-			addDirectDefinition(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scRecursiveOperatorDefinition")) {
-			beginRecursiveOpDef(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scRecursiveDefinitionCase")) {
-			addRecursiveDefinitionCase(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scOperatorArgument")) {
-			addOperatorArgument(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scAxiomaticDefinitionsBlock")) {
-			addAxiomaticDefinitionBlock(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scAxiomaticOperatorDefinition")) {
-			beginAddingAxiomaticOperator(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scAxiomaticDefinitionAxiom")) {
-			addDefinitionAxiom(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scAxiomaticTypeDefinition")) {
-			addTypeParameter(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scTheorem")) {
-			addTheorem(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scProofRulesBlock")) {
-			beginProofRulesBlock(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scMetavariable")) {
-			addMetaVariable(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scRewriteRule")) {
-			beginRewriteRule(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scRewriteRuleRHS")) {
-			addRightHandSide(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scInferenceRule")) {
-			beginInferenceRule(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scInfer")) {
-			addInfer(attributes);
-		} else if (qName.equals("org.eventb.theory.core.scGiven")) {
-			addGiven(attributes);
+		switch (qName) {
+			case "org.eventb.theory.core.scTypeParameter":
+				addTypeParameter(attributes);
+				break;
+			case "org.eventb.theory.core.useTheory":
+				addUsedTheory(attributes);
+				break;
+			case "org.eventb.theory.core.scDatatypeDefinition":
+				beginAddingDataType(attributes);
+				break;
+			case "org.eventb.theory.core.scTypeArgument":
+				addTypeArgument(attributes);
+				break;
+			case "org.eventb.theory.core.scDatatypeConstructor":
+				beginAddingDataTypeConstructor(attributes);
+				break;
+			case "org.eventb.theory.core.scConstructorArgument":
+				addDestructor(attributes);
+				break;
+			case "org.eventb.theory.core.scNewOperatorDefinition":
+				beginAddingOperator(attributes);
+				break;
+			case "org.eventb.theory.core.scDirectOperatorDefinition":
+				addDirectDefinition(attributes);
+				break;
+			case "org.eventb.theory.core.scRecursiveOperatorDefinition":
+				beginRecursiveOpDef(attributes);
+				break;
+			case "org.eventb.theory.core.scRecursiveDefinitionCase":
+				addRecursiveDefinitionCase(attributes);
+				break;
+			case "org.eventb.theory.core.scOperatorArgument":
+				addOperatorArgument(attributes);
+				break;
+			case "org.eventb.theory.core.scAxiomaticDefinitionsBlock":
+				addAxiomaticDefinitionBlock(attributes);
+				break;
+			case "org.eventb.theory.core.scAxiomaticOperatorDefinition":
+				beginAddingAxiomaticOperator(attributes);
+				break;
+			case "org.eventb.theory.core.scAxiomaticDefinitionAxiom":
+				addDefinitionAxiom(attributes);
+				break;
+			case "org.eventb.theory.core.scAxiomaticTypeDefinition":
+				addTypeParameter(attributes);
+				break;
+			case "org.eventb.theory.core.scTheorem":
+				addTheorem(attributes);
+				break;
+			case "org.eventb.theory.core.scProofRulesBlock":
+				beginProofRulesBlock(attributes);
+				break;
+			case "org.eventb.theory.core.scMetavariable":
+				addMetaVariable(attributes);
+				break;
+			case "org.eventb.theory.core.scRewriteRule":
+				beginRewriteRule(attributes);
+				break;
+			case "org.eventb.theory.core.scRewriteRuleRHS":
+				addRightHandSide(attributes);
+				break;
+			case "org.eventb.theory.core.scInferenceRule":
+				beginInferenceRule(attributes);
+				break;
+			case "org.eventb.theory.core.scInfer":
+				addInfer(attributes);
+				break;
+			case "org.eventb.theory.core.scGiven":
+				addGiven(attributes);
+				break;
 		}
 	}
 
@@ -203,7 +225,7 @@ public class TheoryExtractor extends DefaultHandler {
 	}
 
 	private void beginInferenceRule(final Attributes attributes) {
-		given = new ArrayList<EventB>();
+		given = new ArrayList<>();
 	}
 
 	private void addRightHandSide(final Attributes attributes) {
@@ -225,7 +247,7 @@ public class TheoryExtractor extends DefaultHandler {
 		rewriteRule = new RewriteRule(label, applicability, complete, desc,
 				formula, typeEnv);
 
-		rightHandSides = new ModelElementList<RewriteRuleRHS>();
+		rightHandSides = new ModelElementList<>();
 		rewriteRules = rewriteRules.addElement(rewriteRule);
 	}
 
@@ -242,9 +264,9 @@ public class TheoryExtractor extends DefaultHandler {
 		}
 		block = new ProofRulesBlock(name);
 
-		metaVars = new ModelElementList<MetaVariable>();
-		rewriteRules = new ModelElementList<RewriteRule>();
-		inferenceRules = new ModelElementList<InferenceRule>();
+		metaVars = new ModelElementList<>();
+		rewriteRules = new ModelElementList<>();
+		inferenceRules = new ModelElementList<>();
 
 		proofRules = proofRules.addElement(block);
 	}
@@ -260,9 +282,9 @@ public class TheoryExtractor extends DefaultHandler {
 	private void addAxiomaticDefinitionBlock(final Attributes attributes) {
 		String name = attributes.getValue("org.eventb.core.label");
 		axiomaticDefinitionBlock = new AxiomaticDefinitionBlock(name);
-		typeArguments = new ModelElementList<Type>();
-		axiomaticOperators = new ModelElementList<Operator>();
-		definitionAxioms = new ModelElementList<EventBAxiom>();
+		typeArguments = new ModelElementList<>();
+		axiomaticOperators = new ModelElementList<>();
+		definitionAxioms = new ModelElementList<>();
 
 		axiomaticDefinitionsBlocks = axiomaticDefinitionsBlocks
 				.addElement(axiomaticDefinitionBlock);
@@ -271,7 +293,7 @@ public class TheoryExtractor extends DefaultHandler {
 	private void beginAddingAxiomaticOperator(final Attributes attributes) {
 		axiomaticOperator = createOperator(attributes);
 
-		opArgs = new ModelElementList<OperatorArgument>();
+		opArgs = new ModelElementList<>();
 	}
 
 	private void addDefinitionAxiom(final Attributes attributes) {
@@ -306,13 +328,13 @@ public class TheoryExtractor extends DefaultHandler {
 				.getValue("org.eventb.theory.core.inductiveArgument");
 		definition = new RecursiveOperatorDefinition(indArg, typeEnv);
 
-		recursiveDefinitions = new ModelElementList<RecursiveDefinitionCase>();
+		recursiveDefinitions = new ModelElementList<>();
 	}
 
 	private void beginAddingOperator(final Attributes attributes) {
 		operator = createOperator(attributes);
 
-		opArgs = new ModelElementList<OperatorArgument>();
+		opArgs = new ModelElementList<>();
 	}
 
 	private Operator createOperator(final Attributes attributes) {
@@ -339,7 +361,7 @@ public class TheoryExtractor extends DefaultHandler {
 		String type = attributes.getValue("org.eventb.core.type");
 
 		constructors.get(currentConstructor).add(
-				new Tuple2<String, String>(name, type));
+			new Tuple2<>(name, type));
 	}
 
 	private void beginAddingDataTypeConstructor(final Attributes attributes) {
@@ -347,14 +369,14 @@ public class TheoryExtractor extends DefaultHandler {
 
 		currentConstructor = name;
 		constructors.put(currentConstructor,
-				new ArrayList<Tuple2<String, String>>());
+			new ArrayList<>());
 	}
 
 	private void beginAddingDataType(final Attributes attributes) {
 		String name = attributes.getValue("name");
 		dataTypeName = name;
-		constructors = new HashMap<String, List<Tuple2<String, String>>>();
-		types = new ArrayList<String>();
+		constructors = new HashMap<>();
+		types = new ArrayList<>();
 
 	}
 
@@ -377,9 +399,7 @@ public class TheoryExtractor extends DefaultHandler {
 				saxParser.parse(new File(workspacePath + path), extractor);
 				theories = theories.addElement(extractor.getTheory());
 				typeEnv.addAll(extractor.getTypeEnv());
-			} catch (ParserConfigurationException e) {
-				logger.error("Error extracting theory", e);
-			} catch (IOException e) {
+			} catch (IOException | ParserConfigurationException e) {
 				logger.error("Error extracting theory", e);
 			}
 		}
@@ -398,27 +418,32 @@ public class TheoryExtractor extends DefaultHandler {
 
 	@Override
 	public void endElement(final String uri, final String localName,
-			final String qName) throws SAXException {
-		if (qName.equals("org.eventb.theory.core.scDatatypeDefinition")) {
-			finishDataType();
-		} else if (qName
-				.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
-			finishOperator();
-		} else if (qName
-				.equals("org.eventb.theory.core.scRecursiveDefinitionCase")) {
-			finishRecursiveDefinition();
-		} else if (qName
-				.equals("org.eventb.theory.core.scAxiomaticOperatorDefinition")) {
-			finishAxiomaticOperator();
-		} else if (qName
-				.equals("org.eventb.theory.core.scAxiomaticDefinitionsBlock")) {
-			finishAxiomaticDefinitionBlock();
-		} else if (qName.equals("org.eventb.theory.core.scProofRulesBlock")) {
-			finishProofRulesBlock();
-		} else if (qName.equals("org.eventb.theory.core.scRewriteRule")) {
-			finishRewriteRule();
-		} else if (qName.equals("org.eventb.theory.core.scInferenceRule")) {
-			finishInferenceRule();
+			final String qName) {
+		switch (qName) {
+			case "org.eventb.theory.core.scDatatypeDefinition":
+				finishDataType();
+				break;
+			case "org.eventb.theory.core.scNewOperatorDefinition":
+				finishOperator();
+				break;
+			case "org.eventb.theory.core.scRecursiveDefinitionCase":
+				finishRecursiveDefinition();
+				break;
+			case "org.eventb.theory.core.scAxiomaticOperatorDefinition":
+				finishAxiomaticOperator();
+				break;
+			case "org.eventb.theory.core.scAxiomaticDefinitionsBlock":
+				finishAxiomaticDefinitionBlock();
+				break;
+			case "org.eventb.theory.core.scProofRulesBlock":
+				finishProofRulesBlock();
+				break;
+			case "org.eventb.theory.core.scRewriteRule":
+				finishRewriteRule();
+				break;
+			case "org.eventb.theory.core.scInferenceRule":
+				finishInferenceRule();
+				break;
 		}
 	}
 
@@ -486,7 +511,7 @@ public class TheoryExtractor extends DefaultHandler {
 	}
 
 	@Override
-	public void endDocument() throws SAXException {
+	public void endDocument() {
 		theory = theory.set(DataType.class, dataTypes);
 		theory = theory.set(Theory.class, imported);
 		theory = theory.set(Operator.class, operators);

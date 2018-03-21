@@ -19,6 +19,6 @@ public class Constraint extends AbstractFormulaElement {
 
 	@Override
 	public IEvalElement getFormula() {
-		return predicate;
+		return this.getPredicate();
 	}
 }

@@ -4,14 +4,11 @@ import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.animator.domainobjects.EventB;
 
 public class FormulaTypeError extends RuntimeException {
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1240768003086819313L;
-	private SourcePosition startPosition;
-	private SourcePosition endPosition;
-	private EventB formula;
-	private String expected;
+	private final SourcePosition startPosition;
+	private final SourcePosition endPosition;
+	private final EventB formula;
+	private final String expected;
 
 	public FormulaTypeError(SourcePosition startPosition,
 			SourcePosition endPosition, EventB formula, String expected) {
@@ -39,7 +36,6 @@ public class FormulaTypeError extends RuntimeException {
 
 	@Override
 	public String getMessage() {
-		return startPosition.toString() + " expected " + formula.toString()
-				+ " to have type " + expected;
+		return startPosition + " expected " + formula + " to have type " + expected;
 	}
 }

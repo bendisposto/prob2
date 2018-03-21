@@ -2,11 +2,11 @@ package de.prob.model.eventb;
 
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class Witness extends AbstractElement {
 
@@ -34,7 +34,7 @@ public class Witness extends AbstractElement {
 	}
 
 	public IEvalElement getFormula() {
-		return predicate;
+		return this.getPredicate();
 	}
 
 	public String getComment() {

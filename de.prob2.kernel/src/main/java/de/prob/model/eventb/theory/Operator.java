@@ -1,7 +1,13 @@
 package de.prob.model.eventb.theory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+
+import de.prob.animator.domainobjects.EventB;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.ModelElementList;
+import de.prob.unicode.UnicodeTranslator;
 
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.ExtendedExpression;
@@ -15,8 +21,6 @@ import org.eventb.core.ast.extension.IExtendedFormula;
 import org.eventb.core.ast.extension.IExtensionKind;
 import org.eventb.core.ast.extension.IFormulaExtension;
 import org.eventb.core.ast.extension.IOperatorProperties;
-import org.eventb.core.ast.extension.IOperatorProperties.FormulaType;
-import org.eventb.core.ast.extension.IOperatorProperties.Notation;
 import org.eventb.core.ast.extension.IPredicateExtension;
 import org.eventb.core.ast.extension.IPriorityMediator;
 import org.eventb.core.ast.extension.ITypeCheckMediator;
@@ -24,20 +28,13 @@ import org.eventb.core.ast.extension.ITypeMediator;
 import org.eventb.core.ast.extension.IWDMediator;
 import org.eventb.internal.core.ast.extension.ExtensionKind;
 
-import com.google.common.base.Objects;
-
-import de.prob.animator.domainobjects.EventB;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.ModelElementList;
-import de.prob.unicode.UnicodeTranslator;
-
 public class Operator extends AbstractElement {
 
 	private final boolean associative;
 	private final IOperatorProperties.FormulaType formulaType;
 	private final IOperatorProperties.Notation notation;
 	private final boolean commutative;
-	private IOperatorDefinition definition;
+	private final IOperatorDefinition definition;
 	private final String theoryName;
 	private IFormulaExtension extension;
 	private final ModelElementList<OperatorArgument> operatorArguments;
@@ -45,7 +42,24 @@ public class Operator extends AbstractElement {
 	private final EventB wd;
 	private final EventB type;
 	private final EventB predicate;
-	private EventB syntax;
+	private final EventB syntax;
+
+	private static IOperatorProperties.FormulaType formulaTypeFromBoolean(final boolean formulaType) {
+		return formulaType ? IOperatorProperties.FormulaType.EXPRESSION : IOperatorProperties.FormulaType.PREDICATE;
+	}
+
+	private static IOperatorProperties.Notation notationTypeFromString(final String notationType) {
+		switch (notationType) {
+			case "PREFIX":
+				return IOperatorProperties.Notation.PREFIX;
+
+			case "INFIX":
+				return IOperatorProperties.Notation.INFIX;
+
+			default:
+				return IOperatorProperties.Notation.POSTFIX;
+		}
+	}
 
 	public Operator(final String theoryName, final String operator,
 			final boolean associative, final boolean commutative,
@@ -53,18 +67,19 @@ public class Operator extends AbstractElement {
 			final String groupId, final String type, final String wd,
 			final String predicate, final Set<IFormulaExtension> typeEnv) {
 		this(
-				theoryName,
-				new EventB(operator, typeEnv),
-				associative,
-				commutative,
-				formulaType ? IOperatorProperties.FormulaType.EXPRESSION
-						: IOperatorProperties.FormulaType.PREDICATE,
-				notationType.equals("PREFIX") ? IOperatorProperties.Notation.PREFIX
-						: (notationType.equals("INFIX") ? IOperatorProperties.Notation.INFIX
-								: IOperatorProperties.Notation.POSTFIX),
-				groupId, type == null ? null : new EventB(type, typeEnv),
-				new EventB(wd, typeEnv), new EventB(predicate, typeEnv), null,
-				null);
+			theoryName,
+			new EventB(operator, typeEnv),
+			associative,
+			commutative,
+			formulaTypeFromBoolean(formulaType),
+			notationTypeFromString(notationType),
+			groupId,
+			type == null ? null : new EventB(type, typeEnv),
+			new EventB(wd, typeEnv),
+			new EventB(predicate, typeEnv),
+			null,
+			null
+		);
 	}
 
 	public Operator(final String theoryName, final EventB syntax,
@@ -180,13 +195,13 @@ public class Operator extends AbstractElement {
 			return false;
 		}
 		Operator other = (Operator) obj;
-		return Objects.equal(syntax, other.syntax)
-				&& Objects.equal(theoryName, other.theoryName);
+		return Objects.equals(syntax, other.syntax)
+				&& Objects.equals(theoryName, other.theoryName);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(syntax, theoryName);
+		return Objects.hash(syntax, theoryName);
 	}
 
 	private class OperatorExtension implements IFormulaExtension {
@@ -225,8 +240,8 @@ public class Operator extends AbstractElement {
 
 		@Override
 		public IExtensionKind getKind() {
-			if (formulaType.equals(FormulaType.EXPRESSION)
-					&& notation.equals(Notation.INFIX) && associative) {
+			if (formulaType.equals(IOperatorProperties.FormulaType.EXPRESSION)
+					&& notation.equals(IOperatorProperties.Notation.INFIX) && associative) {
 				return new ExtensionKind(notation, formulaType,
 						ExtensionFactory.TWO_OR_MORE_EXPRS, true);
 			}

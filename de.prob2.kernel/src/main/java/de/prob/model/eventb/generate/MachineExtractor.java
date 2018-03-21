@@ -1,12 +1,8 @@
 package de.prob.model.eventb.generate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.eventb.core.ast.extension.IFormulaExtension;
-
-import com.google.common.base.Joiner;
+import java.util.stream.Collectors;
 
 import de.be4.eventbalg.core.parser.node.AAlgorithm;
 import de.be4.eventbalg.core.parser.node.ADerivedInvariant;
@@ -16,6 +12,8 @@ import de.be4.eventbalg.core.parser.node.ATypedVar;
 import de.be4.eventbalg.core.parser.node.AVariable;
 import de.be4.eventbalg.core.parser.node.AVariant;
 import de.be4.eventbalg.core.parser.node.TComment;
+import de.be4.eventbalg.core.parser.node.Token;
+
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Event.EventType;
 import de.prob.model.eventb.EventBMachine;
@@ -24,9 +22,11 @@ import de.prob.model.eventb.ModelGenerationException;
 import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.representation.BEvent;
 
+import org.eventb.core.ast.extension.IFormulaExtension;
+
 public class MachineExtractor extends ElementExtractor {
 
-	MachineModifier machineM;
+	private MachineModifier machineM;
 
 	public MachineExtractor(final MachineModifier machineM, final Set<IFormulaExtension> typeEnv) {
 		super(typeEnv);
@@ -106,10 +106,6 @@ public class MachineExtractor extends ElementExtractor {
 	}
 
 	public String getComment(final List<TComment> comments) {
-		List<String> cmts = new ArrayList<String>();
-		for (TComment tComment : comments) {
-			cmts.add(tComment.getText());
-		}
-		return Joiner.on("\n").join(cmts);
+		return comments.stream().map(Token::getText).collect(Collectors.joining("\n"));
 	}
 }

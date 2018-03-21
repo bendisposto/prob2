@@ -19,7 +19,7 @@ public class Parameter extends AbstractFormulaElement {
 
 	@Override
 	public IEvalElement getFormula() {
-		return expression;
+		return this.getExpression();
 	}
 
 }

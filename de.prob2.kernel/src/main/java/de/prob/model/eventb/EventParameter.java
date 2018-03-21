@@ -38,20 +38,15 @@ public class EventParameter extends AbstractElement {
 	}
 
 	public IEvalElement getFormula() {
-		return expression;
+		return this.getExpression();
 	}
 
 	@Override
 	public boolean equals(final Object that) {
-		if (that == this) {
-			return true;
-		}
-		if (that instanceof EventParameter
-				&& getExpression().getCode().equals(
-						((EventParameter) that).getExpression().getCode())) {
-			return true;
-		}
-		return false;
+		return that == this || (
+			that instanceof EventParameter
+			&& getExpression().getCode().equals(((EventParameter)that).getExpression().getCode())
+		);
 	}
 
 	@Override
