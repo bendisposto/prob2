@@ -17,7 +17,7 @@ public abstract class Axiom extends AbstractTheoremElement {
 
 	@Override
 	public IEvalElement getFormula() {
-		return predicate;
+		return this.getPredicate();
 	}
 
 	@Override

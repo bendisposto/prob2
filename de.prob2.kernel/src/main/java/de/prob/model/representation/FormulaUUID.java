@@ -7,7 +7,7 @@ public class FormulaUUID implements IFormulaUUID {
 	private final String uuid;
 
 	public FormulaUUID() {
-		this.uuid = "formula_" + (++count) + "";
+		this.uuid = "formula_" + ++count;
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import de.prob.Main;
 import de.prob.cli.OsSpecificInfo;
@@ -35,9 +36,7 @@ public class Installer {
 			final File zip = new File(DEFAULT_HOME + zipName);
 			copyResourceToFile("cli/" + zipName, zip);
 			FileHandler.extractZip(zip, DEFAULT_HOME);
-			if (!zip.delete()) {
-				logger.warn("Could not delete probcli zip file after extracting");
-			}
+			Files.delete(zip.toPath());
 
 			String outcspmf = DEFAULT_HOME + "lib" + File.separator + "cspmf";
 			String cspmfName = os + "-cspmf";

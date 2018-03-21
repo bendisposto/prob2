@@ -111,6 +111,7 @@ public class Transition {
 	 * parameter list via the {@link #evaluate()} method.
 	 * 
 	 * @return list of values for the parameters represented as strings
+	 * @deprecated
 	 */
 	@Deprecated
 	public List<String> getParams() {
@@ -283,7 +284,7 @@ public class Transition {
 	public boolean isSame(final Transition that) {
 		evaluate();
 		that.evaluate();
-		return that.getName().equals(name) && that.getParams().equals(params);
+		return that.getName().equals(name) && that.getParameterValues().equals(params);
 	}
 
 	/**
@@ -299,20 +300,13 @@ public class Transition {
 	}
 
 	public boolean canBeEvaluated(final FormulaExpand expansion) {
-		if (!evaluated) {
-			return true;
-		}
-		if (this.formulaExpansion == FormulaExpand.TRUNCATE && expansion == FormulaExpand.EXPAND) {
-			return true;
-		}
-		return false;
+		return !evaluated || this.formulaExpansion == FormulaExpand.TRUNCATE && expansion == FormulaExpand.EXPAND;
 	}
 
 	public Transition evaluate(final FormulaExpand expansion) {
 		if (canBeEvaluated(expansion)) {
 			GetOpFromId command = new GetOpFromId(this, expansion);
 			stateSpace.execute(command);
-			return this;
 		}
 		return this;
 	}

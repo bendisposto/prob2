@@ -13,7 +13,11 @@ import java.util.zip.ZipInputStream;
  *
  * @author joy
  */
-public class FileHandler {
+public final class FileHandler {
+	private FileHandler() {
+		throw new AssertionError("Utility class");
+	}
+	
 	private static void createDirectory(String dest, ZipEntry entry) {
 		new File(dest + File.separator + entry.getName()).mkdir();
 	}

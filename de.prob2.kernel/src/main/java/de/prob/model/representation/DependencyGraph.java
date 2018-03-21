@@ -3,8 +3,9 @@ package de.prob.model.representation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.github.krukow.clj_lang.IPersistentMap;
 import com.github.krukow.clj_lang.PersistentHashMap;
@@ -40,7 +41,7 @@ public class DependencyGraph {
 		final PersistentHashSet<Edge> outEdges;
 
 		public Node(final String elementName) {
-			this(elementName, PersistentHashSet.<Edge>emptySet());
+			this(elementName, PersistentHashSet.emptySet());
 		}
 
 		private Node(final String elementName, PersistentHashSet<Edge> edges) {
@@ -130,7 +131,7 @@ public class DependencyGraph {
 	IPersistentMap<String, Node> graph;
 
 	public DependencyGraph() {
-		this(PersistentHashMap.<String, Node>emptyMap());
+		this(PersistentHashMap.emptyMap());
 	}
 
 	private DependencyGraph(IPersistentMap<String, Node> graph) {
@@ -161,33 +162,28 @@ public class DependencyGraph {
 
 	public Set<String> getVertices() {
 		Set<String> vertices = new HashSet<>();
-		for (Entry<String, Node> entry : graph) {
+		for (Map.Entry<String, Node> entry : graph) {
 			vertices.add(entry.getKey());
 		}
 		return vertices;
 	}
 
 	public Set<Edge> getEdges() {
-		HashSet<Edge> set = new HashSet<>();
-		for (Entry<String, Node> entry : graph) {
+		Set<Edge> set = new HashSet<>();
+		for (Map.Entry<String, Node> entry : graph) {
 			set.addAll(entry.getValue().getOutEdges());
 		}
 		return set;
 	}
 
 	public Set<Edge> getOutEdges(String name) {
-		Node node = graph.valAt(name);
-		return node.getOutEdges();
+		return graph.valAt(name).getOutEdges();
 	}
 
 	public Set<Edge> getIncomingEdges(String name) {
-		HashSet<Edge> set = new HashSet<>();
-		for (Edge edge : getEdges()) {
-			if (edge.getTo().getElementName().equals(name)) {
-				set.add(edge);
-			}
-		}
-		return set;
+		return getEdges().stream()
+			.filter(edge -> edge.getTo().getElementName().equals(name))
+			.collect(Collectors.toSet());
 	}
 
 	/**
@@ -254,15 +250,15 @@ public class DependencyGraph {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (Entry<String, Node> entry : graph) {
+		for (Map.Entry<String, Node> entry : graph) {
 			List<String> s = new ArrayList<>();
 			Set<Edge> outEdges = entry.getValue().getOutEdges();
 			sb.append(entry.getKey());
 			sb.append(" : ");
 			for (Edge edge : outEdges) {
-				s.add(edge.getRelationship().toString() + " -> " + edge.getTo().getElementName());
+				s.add(edge.getRelationship() + " -> " + edge.getTo().getElementName());
 			}
-			sb.append(s.toString());
+			sb.append(s);
 			sb.append("\n");
 		}
 		return sb.toString();

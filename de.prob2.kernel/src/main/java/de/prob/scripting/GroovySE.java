@@ -71,7 +71,7 @@ public class GroovySE implements ScriptEngine {
 		if (buff.length() > 0) {
 			logger.error("Automatically captured prints from groovy. "
 					+ "Users of a groovy engine should provide a console. "
-					+ "Output was: {}", buff.toString());
+					+ "Output was: {}", buff);
 		}
 		return result;
 	}

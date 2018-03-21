@@ -21,7 +21,7 @@ public abstract class AbstractElement {
 	protected final PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children;
 
 	public AbstractElement() {
-		this(PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap());
+		this(PersistentHashMap.emptyMap());
 	}
 
 	public AbstractElement(
