@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -141,34 +142,33 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		return pattern;
 	}
 
-	private void analyseStdout(final BufferedReader input,
-			Collection<? extends AbstractCliPattern<?>> patterns) {
-		patterns = new ArrayList<AbstractCliPattern<?>>(patterns);
+	private static void analyseStdout(final BufferedReader input, final Collection<? extends AbstractCliPattern<?>> patterns) {
+		final List<AbstractCliPattern<?>> patternsList = new ArrayList<>(patterns);
 		try {
 			String line;
-			boolean endReached = false;
-			while (!endReached && (line = input.readLine()) != null) {
+			do {
+				line = input.readLine();
+				if (line == null) {
+					break;
+				}
 				logger.debug("Apply cli detection patterns to {}", line);
-				applyPatterns(patterns, line);
-				endReached = patterns.isEmpty()
-						|| line.contains("starting command loop");
-			}
+				applyPatterns(patternsList, line);
+			} while (!patternsList.isEmpty() && !line.contains("starting command loop"));
 		} catch (IOException e) {
 			final String message = "Problem while starting ProB. Cannot read from input stream.";
 			logger.error(message);
 			logger.debug(message, e);
 			throw new CliError(message, e);
 		}
-		for (AbstractCliPattern<?> p : patterns) {
+		for (AbstractCliPattern<?> p : patternsList) {
 			p.notifyNotFound();
 			if (p.notFoundIsFatal()) {
-				throw new CliError("Missing info from CLI "
-						+ p.getClass().getSimpleName());
+				throw new CliError("Missing info from CLI " + p.getClass().getSimpleName());
 			}
 		}
 	}
 
-	private void applyPatterns(final Collection<? extends AbstractCliPattern<?>> patterns, final String line) {
+	private static void applyPatterns(final Collection<? extends AbstractCliPattern<?>> patterns, final String line) {
 		patterns.removeIf(p -> p.matchesLine(line));
 	}
 }
