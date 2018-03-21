@@ -43,7 +43,9 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 			@DebuggingKey final String debuggingKey, @Home final String path) {
 		this.osInfo = osInfo;
 		this.debuggingKey = debuggingKey;
-		dir = checkCliPath(path);
+		// Create ProB home directory if necessary.
+		new File(path).mkdirs();
+		dir = path;
 
 	}
 
@@ -82,20 +84,4 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 		command.add("-sf");
 		return command;
 	}
-
-	/**
-	 * Checks if the directory exists and creates it if it does not exist.
-	 * 
-	 * @return Name of the ProB Directory
-	 * @throws SecurityException
-	 *             if the directory does not exist end cannot be created.
-	 */
-	private String checkCliPath(final String dirname) {
-		File dir = new File(dirname);
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-		return dirname;
-	}
-
 }
