@@ -10,9 +10,9 @@ assert trans.evaluate(FormulaExpand.TRUNCATE).getRep() == "4,{(5|->#4:{2,...,8})
 assert trans.evaluate(FormulaExpand.EXPAND).getRep() == "4,{(5|->{2,4,6,8})},6 <-- Crazy2(5,{2,4,6,8})"
 assert trans.evaluate(FormulaExpand.TRUNCATE).getRep() == "4,{(5|->{2,4,6,8})},6 <-- Crazy2(5,{2,4,6,8})"
 
-truncated = new ClassicalB("{2,4,6,8,10}")
+truncated = new ClassicalB("{2,4,6,8,10}", FormulaExpand.TRUNCATE)
 assert t.evalCurrent(truncated).getValue() == "#5:{2,...,10}"
-expanded = new ClassicalB("{2,4,6,8,10}",FormulaExpand.EXPAND)
+expanded = new ClassicalB("{2,4,6,8,10}")
 assert t.evalCurrent(expanded).getValue() == "{2,4,6,8,10}"
 
 "Expanding and truncating a formila works correctly"
