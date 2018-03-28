@@ -205,7 +205,7 @@ public class StateSpace implements IAnimator {
 	 * @throws IllegalArgumentException
 	 *             if a state with the specified id doesn't exist
 	 */
-	public Object getAt(final int stateId) {
+	public State getAt(final int stateId) {
 		return getState(stateId);
 	}
 
