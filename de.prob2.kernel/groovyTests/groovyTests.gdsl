@@ -1,0 +1,16 @@
+// This is a GroovyDSL definition file, which can be loaded in IntelliJ IDEA to inform it about additional globals, methods, etc. that are available in our Groovy integration test scripts. This improves the accuracy of usage search, refactoring, etc. in the Groovy integration tests.
+// To load this file in IntelliJ, it must be located in a source root. Right-click on the groovyTests folder in the file tree, then select "Mark Directory as" > "Test Sources Root". (You can also do this under "Modules" in the Project Structure window.)
+// Once this is done, a yellow banner will appear above the file saying "DSL descriptor file has been changed [...]". To load the file, click the "Activate back" link in the banner.
+
+final testPathRegexp = ".*/prob2/de.prob2.kernel/groovyTests/.*"
+
+contributor(context(ctype: "groovy.lang.Script", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
+	property(name: "animations", type: "de.prob.statespace.AnimationSelector")
+	property(name: "api", type: "de.prob.scripting.Api")
+	property(name: "dir", type: "java.lang.String")
+	property(name: "engine", type: "javax.script.ScriptEngine")
+	property(name: "inConsole", type: "boolean")
+	
+	// TODO There are some additional methods and classes defined in src/main/resources/initscript which are not yet listed here.
+	// However none of the integration tests seem to use them, so it probably doesn't matter that they are missing.
+}
