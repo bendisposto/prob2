@@ -66,7 +66,7 @@ public class RulesModel extends AbstractModel {
 	@Override
 	public boolean checkSyntax(String formula) {
 		try {
-			parseFormula(formula);
+			parseFormula(formula, FormulaExpand.TRUNCATE);
 			return true;
 		} catch (EvaluationException e) {
 			return false;
@@ -102,7 +102,7 @@ public class RulesModel extends AbstractModel {
 			return operationStateFormulaCache.get(abstractOperation);
 		} else {
 			String name = abstractOperation.getName();
-			IEvalElement evalElement = this.parseFormula(name);
+			IEvalElement evalElement = this.parseFormula(name, FormulaExpand.EXPAND);
 			operationStateFormulaCache.put(abstractOperation, evalElement);
 			return evalElement;
 		}

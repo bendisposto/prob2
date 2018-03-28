@@ -3,6 +3,7 @@ package de.prob.model.eventb;
 import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 
@@ -16,7 +17,7 @@ public class Witness extends AbstractElement {
 
 	public Witness(final String name, final String code,
 			final Set<IFormulaExtension> typeEnv) {
-		this(name, new EventB(code, typeEnv), "");
+		this(name, new EventB(code, typeEnv, FormulaExpand.EXPAND), "");
 	}
 
 	public Witness(final String name, EventB predicate, String comment) {

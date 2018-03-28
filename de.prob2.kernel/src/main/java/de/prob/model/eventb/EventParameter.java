@@ -1,6 +1,7 @@
 package de.prob.model.eventb;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 
@@ -17,7 +18,7 @@ public class EventParameter extends AbstractElement {
 	public EventParameter(final String name, String comment) {
 		this.name = name;
 		this.comment = comment == null ? "" : comment;
-		expression = new EventB(name);
+		expression = new EventB(name, FormulaExpand.EXPAND);
 	}
 
 	public String getName() {

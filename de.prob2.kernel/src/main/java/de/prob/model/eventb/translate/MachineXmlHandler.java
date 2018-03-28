@@ -13,6 +13,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBAction;
@@ -343,7 +344,7 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	private void addSet(final Attributes attributes) {
 		String name = attributes.getValue("name");
-		sets.add(new de.prob.model.representation.Set(new EventB(name)));
+		sets.add(new de.prob.model.representation.Set(new EventB(name, FormulaExpand.EXPAND)));
 	}
 
 	private void addConstant(final Attributes attributes) {

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import de.prob.animator.command.GetMachineIdentifiersCommand;
 import de.prob.animator.command.GetMachineOperationInfos;
 import de.prob.animator.command.GetMachineOperationInfos.OperationInfo;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 
 public class LoadedMachine {
@@ -62,7 +63,7 @@ public class LoadedMachine {
 		if (variableEvalElements == null) {
 			variableEvalElements = new ArrayList<>();
 			for (String string : getVariableNames()) {
-				variableEvalElements.add(stateSpace.getModel().parseFormula(string));
+				variableEvalElements.add(stateSpace.getModel().parseFormula(string, FormulaExpand.EXPAND));
 			}
 		}
 		return variableEvalElements;
@@ -82,7 +83,7 @@ public class LoadedMachine {
 		if (constantEvalElements == null) {
 			constantEvalElements = new ArrayList<>();
 			for (String string : getConstantNames()) {
-				constantEvalElements.add(stateSpace.getModel().parseFormula(string));
+				constantEvalElements.add(stateSpace.getModel().parseFormula(string, FormulaExpand.EXPAND));
 			}
 		}
 		return constantEvalElements;

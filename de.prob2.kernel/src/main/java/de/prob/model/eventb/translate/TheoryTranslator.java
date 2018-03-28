@@ -9,6 +9,7 @@ import java.util.Set;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.theory.AxiomaticDefinitionBlock;
 import de.prob.model.eventb.theory.DataType;
@@ -119,7 +120,7 @@ public class TheoryTranslator {
 	}
 
 	private void printType(final String type, final IPrologTermOutput pto) {
-		printEventBElement(new EventB(type, typeEnv), pto);
+		printEventBElement(new EventB(type, typeEnv, FormulaExpand.EXPAND), pto);
 	}
 
 	private void printConstructor(String name,
@@ -130,7 +131,7 @@ public class TheoryTranslator {
 		pto.openList();
 		for (Tuple2<String, String> arg : destructors) {
 			printTypedIdentifier("destructor", arg.getFirst(),
-					new EventB(arg.getSecond(), typeEnv), pto);
+					new EventB(arg.getSecond(), typeEnv, FormulaExpand.EXPAND), pto);
 		}
 		pto.closeList();
 		pto.closeTerm();

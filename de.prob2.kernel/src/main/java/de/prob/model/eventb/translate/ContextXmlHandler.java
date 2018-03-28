@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBConstant;
@@ -98,7 +99,7 @@ public class ContextXmlHandler extends DefaultHandler {
 	private void addSet(final Attributes attributes) {
 		String name = attributes.getValue("name");
 		de.prob.model.representation.Set bSet = new de.prob.model.representation.Set(
-				new EventB(name));
+				new EventB(name, FormulaExpand.EXPAND));
 		if (inInternalContext) {
 			internalSets.add(bSet);
 		} else {

@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
 import de.prob.unicode.UnicodeTranslator;
@@ -68,15 +69,15 @@ public class Operator extends AbstractElement {
 			final String predicate, final Set<IFormulaExtension> typeEnv) {
 		this(
 			theoryName,
-			new EventB(operator, typeEnv),
+			new EventB(operator, typeEnv, FormulaExpand.EXPAND),
 			associative,
 			commutative,
 			formulaTypeFromBoolean(formulaType),
 			notationTypeFromString(notationType),
 			groupId,
-			type == null ? null : new EventB(type, typeEnv),
-			new EventB(wd, typeEnv),
-			new EventB(predicate, typeEnv),
+			type == null ? null : new EventB(type, typeEnv, FormulaExpand.EXPAND),
+			new EventB(wd, typeEnv, FormulaExpand.EXPAND),
+			new EventB(predicate, typeEnv, FormulaExpand.EXPAND),
 			null,
 			null
 		);

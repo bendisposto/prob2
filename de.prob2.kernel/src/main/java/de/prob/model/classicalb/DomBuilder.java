@@ -34,6 +34,7 @@ import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.be4.classicalb.core.parser.node.Token;
 
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.Action;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Constant;
@@ -146,13 +147,17 @@ public class DomBuilder extends DepthFirstAdapter {
 	@Override
 	public void outADeferredSetSet(final ADeferredSetSet node) {
 		sets.add(new de.prob.model.representation.Set(new ClassicalB(
-				extractIdentifierName(node.getIdentifier()))));
+			extractIdentifierName(node.getIdentifier()),
+			FormulaExpand.EXPAND
+		)));
 	}
 
 	@Override
 	public void outAEnumeratedSetSet(final AEnumeratedSetSet node) {
 		sets.add(new de.prob.model.representation.Set(new ClassicalB(
-				extractIdentifierName(node.getIdentifier()))));
+			extractIdentifierName(node.getIdentifier()),
+			FormulaExpand.EXPAND
+		)));
 	}
 
 	@Override

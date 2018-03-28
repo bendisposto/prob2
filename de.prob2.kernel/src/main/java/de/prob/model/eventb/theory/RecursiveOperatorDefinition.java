@@ -3,6 +3,7 @@ package de.prob.model.eventb.theory;
 import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
 
@@ -16,7 +17,7 @@ IOperatorDefinition {
 
 	public RecursiveOperatorDefinition(final String inductiveArgument,
 			final Set<IFormulaExtension> typeEnv) {
-		this.inductiveArgument = new EventB(inductiveArgument, typeEnv);
+		this.inductiveArgument = new EventB(inductiveArgument, typeEnv, FormulaExpand.EXPAND);
 		this.cases = new ModelElementList<>();
 	}
 

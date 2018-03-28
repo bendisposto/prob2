@@ -16,6 +16,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.theory.AxiomaticDefinitionBlock;
 import de.prob.model.eventb.theory.DataType;
@@ -216,12 +217,12 @@ public class TheoryExtractor extends DefaultHandler {
 
 	private void addGiven(final Attributes attributes) {
 		String predicate = attributes.getValue("org.eventb.core.predicate");
-		given.add(new EventB(predicate, typeEnv));
+		given.add(new EventB(predicate, typeEnv, FormulaExpand.EXPAND));
 	}
 
 	private void addInfer(final Attributes attributes) {
 		String predicate = attributes.getValue("org.eventb.core.predicate");
-		infer = new EventB(predicate, typeEnv);
+		infer = new EventB(predicate, typeEnv, FormulaExpand.EXPAND);
 	}
 
 	private void beginInferenceRule(final Attributes attributes) {

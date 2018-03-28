@@ -2,12 +2,13 @@ package de.prob.model.eventb.theory;
 
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.AbstractElement;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class RecursiveDefinitionCase extends AbstractElement {
 
@@ -30,8 +31,8 @@ public class RecursiveDefinitionCase extends AbstractElement {
 	}
 
 	public void parseCase(final Set<IFormulaExtension> typeEnv) {
-		expression = new EventB(expressionString, typeEnv);
-		formula = new EventB(formulaString, typeEnv);
+		expression = new EventB(expressionString, typeEnv, FormulaExpand.EXPAND);
+		formula = new EventB(formulaString, typeEnv, FormulaExpand.EXPAND);
 	}
 
 	@Override

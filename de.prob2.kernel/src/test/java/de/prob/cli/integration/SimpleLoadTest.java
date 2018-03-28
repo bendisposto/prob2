@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import de.prob.Main;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.scripting.Api;
 import de.prob.scripting.ModelTranslationError;
 import de.prob.statespace.StateSpace;
@@ -37,7 +38,7 @@ public class SimpleLoadTest {
 				+ "tla" + File.separator + "Definitions.tla");
 		assertNotNull(s);
 		Trace t = new Trace(s);
-		assertEquals(1, t.getNextTransitions().size());
+		assertEquals(1, t.getNextTransitions(FormulaExpand.EXPAND).size());
 		s.kill();
 	}
 
@@ -47,7 +48,7 @@ public class SimpleLoadTest {
 				+ "tla" + File.separator + "ForDistribution" + File.separator + "Club.tla");
 		assertNotNull(s);
 		Trace t = new Trace(s);
-		assertEquals(1, t.getNextTransitions().size());
+		assertEquals(1, t.getNextTransitions(FormulaExpand.EXPAND).size());
 		s.kill();
 	}
 

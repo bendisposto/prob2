@@ -2,10 +2,11 @@ package de.prob.model.eventb;
 
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.Axiom;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class EventBAxiom extends Axiom {
 
@@ -15,7 +16,7 @@ public class EventBAxiom extends Axiom {
 
 	public EventBAxiom(final String name, final String code,
 			final boolean theorem, final Set<IFormulaExtension> typeEnv) {
-		this(name, new EventB(code, typeEnv), theorem, "");
+		this(name, new EventB(code, typeEnv, FormulaExpand.EXPAND), theorem, "");
 	}
 
 	public EventBAxiom(final String name, final EventB predicate,

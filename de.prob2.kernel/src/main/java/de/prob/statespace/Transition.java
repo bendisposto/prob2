@@ -120,7 +120,7 @@ public class Transition {
 
 	public List<String> getParameterValues() {
 		if (!evaluated) {
-			evaluate();
+			evaluate(FormulaExpand.EXPAND);
 		}
 		return params;
 	}
@@ -156,7 +156,7 @@ public class Transition {
 	 */
 	public List<String> getReturnValues() {
 		if (!evaluated) {
-			evaluate();
+			evaluate(FormulaExpand.EXPAND);
 		}
 		return returnValues;
 	}
@@ -209,7 +209,7 @@ public class Transition {
 		if (isArtificialTransition()) {
 			return Collections.emptyList();
 		}
-		evaluate();
+		evaluate(FormulaExpand.EXPAND);
 		List<String> predicates = new ArrayList<>();
 		AbstractElement mainComponent = stateSpace.getMainComponent();
 		List<String> paramNames = new ArrayList<>();
@@ -282,8 +282,8 @@ public class Transition {
 	 *         equivalent
 	 */
 	public boolean isSame(final Transition that) {
-		evaluate();
-		that.evaluate();
+		evaluate(FormulaExpand.EXPAND);
+		that.evaluate(FormulaExpand.EXPAND);
 		return that.getName().equals(name) && that.getParameterValues().equals(params);
 	}
 
@@ -336,7 +336,7 @@ public class Transition {
 	 *             if no SHA-1 provider is found
 	 */
 	public String sha() throws NoSuchAlgorithmException {
-		evaluate();
+		evaluate(FormulaExpand.EXPAND);
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		md.update(getDestination().getStateRep().getBytes());
 		return new BigInteger(1, md.digest()).toString(Character.MAX_RADIX);

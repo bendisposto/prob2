@@ -2,12 +2,13 @@ package de.prob.model.eventb;
 
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.Guard;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class EventBGuard extends Guard {
 
@@ -17,7 +18,7 @@ public class EventBGuard extends Guard {
 
 	public EventBGuard(final String name, final String code,
 			final boolean theorem, final Set<IFormulaExtension> typeEnv) {
-		this(name, new EventB(code, typeEnv), theorem, "");
+		this(name, new EventB(code, typeEnv, FormulaExpand.EXPAND), theorem, "");
 	}
 
 	public EventBGuard(final String name, final EventB predicate,
