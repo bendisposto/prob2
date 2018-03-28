@@ -1,14 +1,13 @@
-import de.prob.statespace.*
-import de.prob.animator.command.*
+import de.prob.animator.command.ComputeCoverageCommand
+import de.prob.statespace.Trace
 
-
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch") 
-h = new Trace(s)
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch") 
+def h = new Trace(s)
 h = h.add(0)
 h = h.add(1)
 h = h.add(2)
 h.getCurrentState().explore()
-cmd = new ComputeCoverageCommand()
+final cmd = new ComputeCoverageCommand()
 s.execute(cmd)
 result = cmd.getResult()
 assert result.getOps() == ["'INITIALISATION:1'","'nr_ready:2'","'new:5'","'del:1'","'ready:1'"]

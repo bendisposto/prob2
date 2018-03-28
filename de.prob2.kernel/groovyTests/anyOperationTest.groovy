@@ -1,10 +1,10 @@
-import de.prob.statespace.*
+import de.prob.statespace.Trace
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-h = new Trace(s)
-h1 = h.anyOperation(".*i.*")
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+def h = new Trace(s)
+def h1 = h.anyOperation(".*i.*")
 assert h1 != h
-h2 = h1.anyOperation(".*z.*")
+def h2 = h1.anyOperation(".*z.*")
 assert h2 == h1
 h = h2
 h = h.anyOperation("new")

@@ -1,25 +1,21 @@
-import de.prob.model.eventb.*
-import de.prob.model.eventb.proof.*
-import de.prob.model.eventb.translate.*
-import de.prob.model.representation.DependencyGraph.ERefType;
-
-
+import de.prob.model.eventb.EventBModel
+import de.prob.model.representation.DependencyGraph.ERefType
 /*
  * Tests loading of EventB to make sure that all components are there. 
  */
 
-s = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
+final s = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
 assert s != null
 
-l = s.getTotalNumberOfErrors()
+final l = s.getTotalNumberOfErrors()
 
-m = s as EventBModel
+final m = s as EventBModel
 
 assert ERefType.SEES == m.getRelationship("lift0", "levels")
 
-levels = m.levels
+final levels = m.levels
 assert levels != null
-constants = levels.constants
+final constants = levels.constants
 
 assert constants != null
 assert constants.size() == 6
@@ -33,28 +29,28 @@ assert constants.collect { it.name } == [
 ]
 assert !constants.inject(false) { acc, val -> acc || val.isAbstract}
 
-axioms = levels.axioms
+final axioms = levels.axioms
 assert axioms != null
 assert axioms.size() == 3
 
-sets = levels.sets
+final sets = levels.sets
 assert sets != null
 assert sets.size() == 1
 assert sets[0].name == "levels"
 
-lift0 = m.lift0
+final lift0 = m.lift0
 assert lift0 != null
 
-variables = lift0.variables
+final variables = lift0.variables
 assert variables != null
 assert variables.size() == 1
 assert variables[0].name == "level"
 
-invariants = lift0.invariants
+final invariants = lift0.invariants
 assert invariants != null
 assert invariants.size() == 1
 
-events = lift0.events
+final events = lift0.events
 assert events != null
 assert events.size() == 4
 assert events.collect { it.name } == [
@@ -64,19 +60,19 @@ assert events.collect { it.name } == [
 	"randomCrazyJump"
 ]
 
-up = events.up
+final up = events.up
 assert up != null
 assert up.guards.size() == 1
 assert up.actions.size() == 1
 
-randomCrazyJump = events.randomCrazyJump
+final randomCrazyJump = events.randomCrazyJump
 assert randomCrazyJump != null
 assert randomCrazyJump.parameters.size() == 1
 assert randomCrazyJump.parameters[0].name == "prm1"
 assert randomCrazyJump.guards.size() == 1
 assert randomCrazyJump.actions.size() == 1
 
-variant = lift0.variant
+final variant = lift0.variant
 assert variant == null
 
 assert lift0.sees.contains(levels)

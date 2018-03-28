@@ -1,16 +1,15 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import de.prob.statespace.Trace
 
 // You can change the model you are testing here.
-factory = api.modelFactoryProvider.eventBFactory
+final factory = api.modelFactoryProvider.eventBFactory
 
-m = factory.extractModelFromZip(dir + File.separator + "machines" + File.separator + "Farmer.zip")
-s = m.load(m.MFarmer)
-t = s as Trace
+final m = factory.extractModelFromZip(dir + File.separator + "machines" + File.separator + "Farmer.zip")
+final s1 = m.load(m.MFarmer)
+def t = s1 as Trace
 t.$setup_constants().$initialise_machine().randomAnimation(5)
 
-s = m.load(m.CFarmer)
-t = s as Trace
+final s2 = m.load(m.CFarmer)
+t = s2 as Trace
 t = t.$setup_constants()
 
 "a model can be loaded from a zip file"

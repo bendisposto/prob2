@@ -1,10 +1,8 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import de.prob.model.classicalb.ClassicalBModel
 
-
-sep = File.separator
-s = api.b_load(dir+sep+"machines"+sep+"references"+sep+"Foo.mch")
-m = s as ClassicalBModel
+final sep = File.separator
+final s = api.b_load(dir+sep+"machines"+sep+"references"+sep+"Foo.mch")
+final m = s as ClassicalBModel
 
 assert m.B.variables[0].getFormula().getCode() == "B.foo"
 assert m.B.invariants[0].getFormula().getCode() == "B.foo:NAT"

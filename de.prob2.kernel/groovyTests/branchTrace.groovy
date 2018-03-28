@@ -1,9 +1,8 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import de.prob.statespace.Trace
 
 // You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-t = new Trace(s)
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+def t = new Trace(s)
 t = t.$initialise_machine()
 t = t.new('pp = PID1')
 
@@ -15,8 +14,8 @@ assert t.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machi
 
 // list underneath doesn't change
 t = s as Trace
-t1 = t.$initialise_machine()
-t2 = t.$initialise_machine()
+final t1 = t.$initialise_machine()
+final t2 = t.$initialise_machine()
 
 assert t1.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machine()"]
 assert t2.getTransitionList(true).collect { it.getRep() } == ["\$initialise_machine()"]

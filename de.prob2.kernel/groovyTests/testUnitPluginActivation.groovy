@@ -1,28 +1,26 @@
-import de.prob.statespace.*
-import de.prob.animator.command.*
-import de.prob.exception.ProBError;
-import de.prob.parser.*
-import de.prob.prolog.term.*
+import de.prob.animator.command.ActivateUnitPluginCommand
+import de.prob.animator.command.GetPluginResultCommand
+import de.prob.exception.ProBError
+import de.prob.prolog.term.ListPrologTerm
 
-
-s = api.b_load(dir+File.separator+"machines"+File.separator+"Empty.mch") 
-thrown = false
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"Empty.mch") 
+def thrown = false
 try {
-	cmd = new GetPluginResultCommand("Grounded Result State")
-	s.execute(cmd)
-	assert cmd.getResult() == ""
-} catch(ProBError e) {
+	final cmd1 = new GetPluginResultCommand("Grounded Result State")
+	s.execute(cmd1)
+	assert cmd1.getResult() == ""
+} catch (ProBError e) {
 	thrown = true
 }
 assert thrown
 
 s.execute(new ActivateUnitPluginCommand())
 
-cmd = new GetPluginResultCommand("Grounded Result State")
-s.execute(cmd)
-res = cmd.getResult()
+final cmd2 = new GetPluginResultCommand("Grounded Result State")
+s.execute(cmd2)
+final res = cmd2.getResult()
 assert res.functor == "state"
-arg1 = res.getArgument(1)
+final arg1 = res.getArgument(1)
 assert arg1 instanceof ListPrologTerm
 assert arg1.isEmpty()
 

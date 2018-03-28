@@ -1,42 +1,43 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import de.prob.animator.command.CbcSolveCommand
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.EvalResult
 
 // You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
-cbc_solve = { String str ->
-	cmd = new CbcSolveCommand(str as ClassicalB)
+def cbc_solve = { String str ->
+	final cmd = new CbcSolveCommand(str as ClassicalB)
 	s.execute(cmd)
 	cmd
 }
 
-cmd = cbc_solve("1 = 2")
-res = cmd.getValue()
-assert res instanceof EvalResult
-assert res.getValue() == "FALSE"
-assert cmd.getFreeVariables() == []
+final cmd1 = cbc_solve("1 = 2")
+final res1 = cmd1.getValue()
+assert res1 instanceof EvalResult
+assert res1.getValue() == "FALSE"
+assert cmd1.getFreeVariables() == []
 
 //TODO: Get another example for timeout ?
 //res = cbc_solve("x : POW(NAT) & card(x) = 1000000000")
 //assert res instanceof ComputationNotCompletedResult
 //assert res.getReason() == "time out"
 
-cmd = cbc_solve("x : POW(NAT) & card(x) = 4 & y : x")
-res = cmd.getValue()
-assert res instanceof EvalResult
-assert res.getValue() == "TRUE"
-assert cmd.getFreeVariables().contains("x")
-assert cmd.getFreeVariables().contains("y")
+final cmd2 = cbc_solve("x : POW(NAT) & card(x) = 4 & y : x")
+final res2 = cmd2.getValue()
+assert res2 instanceof EvalResult
+assert res2.getValue() == "TRUE"
+assert cmd2.getFreeVariables().contains("x")
+assert cmd2.getFreeVariables().contains("y")
 
 // x is the set {0,1,2,3}. However, we can not rely on the order of elements
-set = res.x.replaceAll("\\{","[")
+def set = res2.x.replaceAll("\\{","[")
 set = set.replaceAll("\\}","]")
 set = Eval.me(set)
 
 assert set.size() == 4
 assert set.containsAll([0,1,2,3])
 
-assert ["0","1","2","3"].contains(res.y)
+assert ["0","1","2","3"].contains(res2.y)
 // TODO
 // Test after translation
 // set = new HashSet()

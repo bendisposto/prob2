@@ -1,8 +1,7 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-import de.prob.model.eventb.translate.*
+import de.prob.model.eventb.ModelModifier
+import de.prob.statespace.Trace
 
-mm = new ModelModifier().make {
+final mm = new ModelModifier().make {
 	
 	machine(name: "bowl1") {
 		var name: "size",
@@ -55,9 +54,9 @@ mm = new ModelModifier().make {
 	}
 }
 
-m = mm.getModel()
-s = m.load(m.bowl2)
-t = s as Trace
+final m = mm.getModel()
+final s = m.load(m.bowl2)
+def t = s as Trace
 
 t = t.randomAnimation(10)
 

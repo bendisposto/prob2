@@ -1,10 +1,8 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import de.prob.animator.command.SimpleTextCommand
 
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-
-cmd = new SimpleTextCommand("compute_operations_for_state(root,Transitions)","Transitions")
+final cmd = new SimpleTextCommand("compute_operations_for_state(root,Transitions)","Transitions")
 s.execute(cmd)
 assert cmd.getResults() == ["op"]
 

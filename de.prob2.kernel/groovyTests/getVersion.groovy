@@ -1,10 +1,9 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import de.prob.animator.command.GetVersionCommand
 
 // You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
-cmd = new GetVersionCommand()
+final cmd = new GetVersionCommand()
 s.execute(cmd)
 
 assert cmd.getMajor() != ""

@@ -1,57 +1,55 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-
+import de.prob.animator.domainobjects.ClassicalB
 // You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
 
-def typecheck(formula) {
+final typecheck = {formula ->
 	s.typeCheck(formula as ClassicalB)
 }
 
-res = typecheck("1 = BOOL")
-assert !res.isOk()
-assert !res.getErrors().isEmpty()
-assert res.getType() == "pred"
+final res1 = typecheck("1 = BOOL")
+assert !res1.isOk()
+assert !res1.getErrors().isEmpty()
+assert res1.getType() == "pred"
 
-res = typecheck("1") 
-assert res.isOk()
-assert res.getErrors().isEmpty()
-assert res.getType() == "integer"
+final res2 = typecheck("1") 
+assert res2.isOk()
+assert res2.getErrors().isEmpty()
+assert res2.getType() == "integer"
 
-res = typecheck("TRUE") 
-assert res.isOk()
-assert res.getErrors().isEmpty()
-assert res.getType() == "boolean"
+final res3 = typecheck("TRUE") 
+assert res3.isOk()
+assert res3.getErrors().isEmpty()
+assert res3.getType() == "boolean"
 
-res = typecheck("FALSE")
-assert res.isOk()
-assert res.getErrors().isEmpty()
-assert res.getType() == "boolean"
+final res4 = typecheck("FALSE")
+assert res4.isOk()
+assert res4.getErrors().isEmpty()
+assert res4.getType() == "boolean"
 
-res = typecheck("{1,2,3}")
-assert res.isOk()
-assert res.getErrors().isEmpty()
-assert res.getType() == "set(integer)"
+final res5 = typecheck("{1,2,3}")
+assert res5.isOk()
+assert res5.getErrors().isEmpty()
+assert res5.getType() == "set(integer)"
 
-res = typecheck("1 |-> 2")
-assert res.isOk()
-assert res.getErrors().isEmpty()
-assert res.getType() == "couple(integer,integer)"
+final res6 = typecheck("1 |-> 2")
+assert res6.isOk()
+assert res6.getErrors().isEmpty()
+assert res6.getType() == "couple(integer,integer)"
 
-res = typecheck("PID1") 
-assert res.isOk()
-assert res.getErrors().isEmpty()
-assert res.getType() == "global('PID')"
+final res7 = typecheck("PID1") 
+assert res7.isOk()
+assert res7.getErrors().isEmpty()
+assert res7.getType() == "global('PID')"
 
-res = typecheck('"BLAH"')
-assert res.isOk()
-assert res.getErrors().isEmpty()
-assert res.getType() == "string"
+final res8 = typecheck('"BLAH"')
+assert res8.isOk()
+assert res8.getErrors().isEmpty()
+assert res8.getType() == "string"
 
-res = typecheck("rec(PID1:1,PID2:2,PID3:3)")
-assert res.isOk()
-assert res.getErrors().isEmpty()
-assert res.getType() == "record([field('PID1',integer),field('PID2',integer),field('PID3',integer)])"
+final res9 = typecheck("rec(PID1:1,PID2:2,PID3:3)")
+assert res9.isOk()
+assert res9.getErrors().isEmpty()
+assert res9.getType() == "record([field('PID1',integer),field('PID2',integer),field('PID3',integer)])"
 
 "it is possible to type check a formula"

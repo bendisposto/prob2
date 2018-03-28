@@ -1,38 +1,41 @@
 import de.prob.animator.command.SetBGoalCommand
-import de.prob.animator.domainobjects.*
-import de.prob.check.ModelCheckErrorUncovered;
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.check.CheckError
+import de.prob.check.ConsistencyChecker
+import de.prob.check.ModelCheckErrorUncovered
+import de.prob.check.ModelChecker
+import de.prob.check.ModelCheckingOptions
 import de.prob.exception.ProBError
-import de.prob.statespace.*
 
 // You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 
-model_check = { job ->
-	def checker = new ModelChecker(job)
+final model_check = { job ->
+	final checker = new ModelChecker(job)
 	checker.start()
 	checker.getResult()
 }
 
-cmd = new SetBGoalCommand("1=1" as ClassicalB)
-s.execute(cmd)
+final cmd1 = new SetBGoalCommand("1=1" as ClassicalB)
+s.execute(cmd1)
 
-thrown = false
+def thrown = false
 try {
-	cmd = new SetBGoalCommand("1" as ClassicalB)
-	s.execute(cmd)
-} catch(ProBError e) {
+	final cmd2 = new SetBGoalCommand("1" as ClassicalB)
+	s.execute(cmd2)
+} catch (ProBError e) {
 	assert e.getMessage().contains("typeerror")
 	thrown = true
 }
 assert thrown
 
-res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkGoal(true), "card(waiting) = 2" as ClassicalB))
-assert res instanceof ModelCheckErrorUncovered
-t = res.getTrace(s)
+final res1 = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkGoal(true), "card(waiting) = 2" as ClassicalB))
+assert res1 instanceof ModelCheckErrorUncovered
+final t = res1.getTrace(s)
 assert t != null
 assert t.evalCurrent("card(waiting) = 2" as ClassicalB).value == "TRUE"
 
-res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkGoal(true), "1" as ClassicalB))
-assert res instanceof CheckError
+final res2 = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkGoal(true), "1" as ClassicalB))
+assert res2 instanceof CheckError
 
 "checking for goal works"

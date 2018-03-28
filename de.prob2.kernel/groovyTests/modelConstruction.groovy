@@ -1,10 +1,7 @@
-
-import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
-import de.prob.model.eventb.translate.*
-import de.prob.statespace.*
+import de.prob.statespace.Trace
 
-mm = new ModelModifier()
+def mm = new ModelModifier()
 mm = mm.make {
 	context(name: "levels") {
 		theorem always_true: "1 < 5"
@@ -96,10 +93,10 @@ mm = mm.make {
 	}
 }
 
-model = mm.getModel()
+final model = mm.getModel()
 assert model.levels.axioms.always_true.isTheorem()
 
-lift0 = model.lift0
+final lift0 = model.lift0
 assert lift0 != null
 assert lift0.variables.level != null
 assert lift0.invariants.collect { it.getName() } == ["inv_level","typing_door_open","always_true","also_always_true","inv0"]
@@ -108,7 +105,7 @@ assert lift0.invariants.inv0.getPredicate().getCode() == "level > 0"
 assert lift0.invariants.typing_door_open.getPredicate().getCode() == "door_open : BOOL"
 assert lift0.invariants.always_true.isTheorem()
 assert lift0.invariants.also_always_true.isTheorem()
-init = lift0.events.INITIALISATION
+final init = lift0.events.INITIALISATION
 assert init.actions.collect { it.getName() } == ["act_level", "init_door_open"]
 init.actions.act_level.getCode().getCode() == "level := 1"
 init.actions.init_door_open.getCode().getCode() == "door_open := FALSE"
@@ -120,8 +117,8 @@ assert model.door.getExtends()[0].getName() == "IDoNothing"
 //d = mtx.writeToRodin(m, "MyLift", dir)
 //d.deleteDir()
 
-s = model.load(model.lift1)
-t = s as Trace
+final s = model.load(model.lift1)
+def t = s as Trace
 
 t = t.$setup_constants()
 t = t.$initialise_machine()

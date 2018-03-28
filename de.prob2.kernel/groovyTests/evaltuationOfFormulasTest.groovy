@@ -1,10 +1,11 @@
 import de.prob.animator.domainobjects.ClassicalB
-import de.prob.animator.domainobjects.TranslatedEvalResult;
-import de.prob.statespace.*
-import de.prob.translator.types.Atom;
+import de.prob.animator.domainobjects.EvalResult
+import de.prob.animator.domainobjects.TranslatedEvalResult
+import de.prob.statespace.Trace
+import de.prob.translator.types.Atom
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-h = new Trace(s)
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+def h = new Trace(s)
 h = h.add(0)
 h = h.add(3)
 assert "2" == h.getCurrentState().getId()
@@ -12,15 +13,15 @@ assert ['1']== s.eval(s[3],["2-1" as ClassicalB]).collect { it.toString() }
 assert ['{}']== s.eval(s[0],["waiting" as ClassicalB]).collect { it.getValue().toString() }
 assert ['{PID2}']== s.eval(s[2],["waiting" as ClassicalB]).collect { it.toString() }
 
-formula = "x : waiting & x = PID2 & y : NAT & y = 1" as ClassicalB
-EvalResult res = s.eval(s[2],[formula]).get(0)
+final formula = "x : waiting & x = PID2 & y : NAT & y = 1" as ClassicalB
+final EvalResult res = s.eval(s[2],[formula]).get(0)
 assert res.value == "TRUE"
 assert res.getSolutions().containsKey("x")
 assert res.getSolutions().containsKey("y")
 assert res.x == "PID2"
 assert res.y == "1"
 
-t = res.translate()
+final t = res.translate()
 assert t != null && t instanceof TranslatedEvalResult
 assert t.value == true
 assert t.getSolutions().containsKey("x")

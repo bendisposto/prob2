@@ -1,14 +1,12 @@
-import de.prob.animator.domainobjects.*
-import de.prob.exception.ProBError
+import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.ModelModifier
-import de.prob.statespace.*
+import de.prob.statespace.Trace
 
+final s1 = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
+assert s1.getMainComponent() != null
+final m1 = s1 as EventBModel
 
-s = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
-assert s.getMainComponent() != null
-m = s as EventBModel
-
-mm = new ModelModifier(m).make {
+final mm2 = new ModelModifier(m1).make {
 	machine(name: "EmptyMachine") {
 		var "x", "x : NAT", "x := 0"
 		
@@ -24,14 +22,14 @@ mm = new ModelModifier(m).make {
 	}
 }
 
-m = mm.getModel()
-s = m.load(m.EmptyMachine)
-t = s as Trace
+final m2 = mm2.getModel()
+final s2 = m2.load(m2.EmptyMachine)
+t = s2 as Trace
 t = t.$initialise_machine()
 assert !t.canExecuteEvent("event1", [])
 assert !t.canExecuteEvent("event2", [])
 
-mm = mm.make {
+final mm3 = mm2.make {
 	machine(name: "EmptyMachine") {
 		event(name: "event1") {
 			removeGuard "g"
@@ -43,9 +41,9 @@ mm = mm.make {
 	}
 }
 
-m = mm.getModel()
-s = m.load(m.EmptyMachine)
-t = s as Trace
+final m3 = mm3.getModel()
+final s3 = m3.load(m3.EmptyMachine)
+t = s3 as Trace
 t = t.$initialise_machine()
 assert t.canExecuteEvent("event1", [])
 assert t.canExecuteEvent("event2", [])

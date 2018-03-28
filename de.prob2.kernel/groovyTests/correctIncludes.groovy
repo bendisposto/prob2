@@ -1,18 +1,17 @@
-import de.prob.animator.domainobjects.*
-import de.prob.model.representation.DependencyGraph.ERefType;
-import de.prob.model.representation.DependencyGraph.Edge;
-import de.prob.statespace.*
+import de.prob.model.representation.DependencyGraph.ERefType
+import de.prob.model.representation.DependencyGraph.Edge
+import de.prob.statespace.Trace
 
 // You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"includes"+File.separator+"M1.mch")
-t = new Trace(s)
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"includes"+File.separator+"M1.mch")
+def t = new Trace(s)
 t = t.$initialise_machine()
 t = t."MA.set"()
 t = t."MB.set"()
 assert t != null
 
-m = s.getModel()
-graph = m.getGraph()
+final m = s.getModel()
+final graph = m.getGraph()
 assert graph.getVertices() == ["M1","MB.M2","MA.M2","MA.MD.M3","MA.MC.M3","MB.MD.M3","MB.MC.M3"] as HashSet
 ["MA.MD.M3","MA.MC.M3","MB.MD.M3","MB.MC.M3"].each {
 	assert graph.getOutEdges(it).isEmpty()

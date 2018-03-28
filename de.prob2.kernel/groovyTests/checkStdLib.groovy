@@ -1,15 +1,10 @@
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import de.prob.statespace.Trace
 
-import com.google.inject.Injector;
-
-import de.prob.Main;
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import static org.junit.Assert.assertNotNull
 
 assertNotNull(System.getProperty("prob.stdlib")); // default folder has been set
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"LoadStdLibTest.mch")
-t = new Trace(s)
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"LoadStdLibTest.mch")
+final t = new Trace(s)
 
 "the standard library is present"

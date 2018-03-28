@@ -1,13 +1,10 @@
-import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
-import de.prob.statespace.*
-
 // You can change the model you are testing here.
 
 final workspace = dir + File.separator + "TheoryExamples"
-m = new ModelModifier().make {
+def m = new ModelModifier().make {
 	
 	loadTheories workspace: workspace,
 				project:  "BasicTheory",

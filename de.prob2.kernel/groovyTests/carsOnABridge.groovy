@@ -1,12 +1,12 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-import de.prob.model.eventb.translate.*
-import static de.prob.model.eventb.Event.EventType.CONVERGENT
+import de.prob.model.eventb.ModelModifier
+import de.prob.statespace.Trace
+
 import static de.prob.model.eventb.Event.EventType.ANTICIPATED
+import static de.prob.model.eventb.Event.EventType.CONVERGENT
 
 // You can change the model you are testing here.
 
-mm = new ModelModifier().make {
+final mm = new ModelModifier().make {
 
 	context(name: "cd") {
 		constant "d"
@@ -63,9 +63,9 @@ mm = new ModelModifier().make {
 	}
 }
 
-m = mm.getModel()
-s = m.load(m.getComponent("m1"))
-t = s as Trace
+final m = mm.getModel()
+final s = m.load(m.getComponent("m1"))
+def t = s as Trace
 
 
 assert m.m1.variant.getExpression().getCode() == "2*a+b"

@@ -1,29 +1,30 @@
-import de.prob.animator.command.GetCurrentPreferencesCommand;
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import de.prob.animator.command.GetCurrentPreferencesCommand
+import de.prob.animator.command.GetDefaultPreferencesCommand
+import de.prob.animator.command.GetPreferenceCommand
+import de.prob.animator.command.SetPreferenceCommand
 
 // You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch", ["MAXINT":"10"])
+final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch", ["MAXINT":"10"])
 
-cmd = new GetDefaultPreferencesCommand()
-s.execute(cmd)
-ps = cmd.getPreferences()
+final cmd1 = new GetDefaultPreferencesCommand()
+s.execute(cmd1)
+final ps = cmd1.getPreferences()
 
-prefs = [:]
-ps.each { prefs[it.name] = it.defaultValue }
+final prefs1 = [:]
+ps.each { prefs1[it.name] = it.defaultValue }
 
-assert prefs.size() > 0 // there are some preferences set
+assert prefs1.size() > 0 // there are some preferences set
 
-cmd = new GetCurrentPreferencesCommand()
-s.execute(cmd)
-prefs = cmd.getPreferences()
-assert prefs["MAXINT"] == "10"
+final cmd2 = new GetCurrentPreferencesCommand()
+s.execute(cmd2)
+final prefs2 = cmd2.getPreferences()
+assert prefs2["MAXINT"] == "10"
 
-cmd = new SetPreferenceCommand("MAXINT","12")
-s.execute(cmd)
+final cmd3 = new SetPreferenceCommand("MAXINT","12")
+s.execute(cmd3)
 
-cmd = new GetPreferenceCommand("MAXINT")
-s.execute(cmd)
-assert cmd.getValue() == "12"
+final cmd4 = new GetPreferenceCommand("MAXINT")
+s.execute(cmd4)
+assert cmd4.getValue() == "12"
 
 "the preferences for a model are as expected"

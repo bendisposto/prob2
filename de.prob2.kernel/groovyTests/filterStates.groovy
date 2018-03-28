@@ -1,9 +1,10 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import de.prob.animator.command.FilterStatesForPredicateCommand
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.statespace.Trace
 
 // You can change the model you are testing here.
-s = api.b_load(dir+""+File.separator+"machines"+File.separator+"scheduler.mch")
-t = new Trace(s)
+final s = api.b_load(dir+""+File.separator+"machines"+File.separator+"scheduler.mch")
+def t = new Trace(s)
 
 t = t.$initialise_machine()
 t = t.new("pp = PID1")
@@ -12,9 +13,9 @@ t = t.new("pp = PID3")
 t = t.del("pp = PID3")
 t = t.ready("rr = PID2")
 
-sIds = t.getTransitionList().collect { it.getDestination().explore() }
-formula = "card(waiting) = 1" as ClassicalB
-cmd = new FilterStatesForPredicateCommand(formula, sIds )
+final sIds = t.getTransitionList().collect { it.getDestination().explore() }
+final formula = "card(waiting) = 1" as ClassicalB
+final cmd = new FilterStatesForPredicateCommand(formula, sIds )
 s.execute(cmd)
 assert cmd.getFiltered() != null
 
@@ -23,7 +24,7 @@ sIds.each {
 	if (filtered.contains(it.getId())) {
 		assert !s.canBeEvaluated(it) || s.eval(it,[formula])[0].value == "TRUE"
 	} else {
-		x = it.eval("waiting")
+		final x = it.eval("waiting")
 		assert it.eval(formula).value == "FALSE"
 	}
 }
