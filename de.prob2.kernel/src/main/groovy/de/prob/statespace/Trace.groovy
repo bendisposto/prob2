@@ -320,7 +320,15 @@ public class Trace {
 		return stateSpace
 	}
 
-	def Set<Transition> getNextTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.TRUNCATE) {
+	/**
+	 * @deprecated Use {@link #getNextTransitions(boolean, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
+	def Set<Transition> getNextTransitions(boolean evaluate=false) {
+		this.getNextTransitions(evaluate, FormulaExpand.TRUNCATE)
+	}
+
+	def Set<Transition> getNextTransitions(boolean evaluate=false, FormulaExpand expansion) {
 		return getCurrentState().getOutTransitions(evaluate, expansion)
 	}
 
@@ -353,7 +361,15 @@ public class Trace {
 		throw new ClassCastException("Not able to convert Trace object to ${className}")
 	}
 
-	def List<Transition> getTransitionList(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.TRUNCATE) {
+	/**
+	 * @deprecated Use {@link #getTransitionList(boolean, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
+	def List<Transition> getTransitionList(boolean evaluate=false) {
+		this.getTransitionList(evaluate, FormulaExpand.TRUNCATE)
+	}
+
+	def List<Transition> getTransitionList(boolean evaluate=false, FormulaExpand expansion) {
 		List<Transition> ops = transitionList
 		if (evaluate) {
 			stateSpace.evaluateTransitions(ops, expansion)

@@ -45,7 +45,7 @@ public class CSP extends AbstractEvalElement {
 	 * @param model csp model
 	 */
 	public CSP(String formula, CSPModel model) {
-		super(formula);
+		super(formula, FormulaExpand.EXPAND);
 		
 		this.uuid = new FormulaUUID();
 		this.fileName = model.getModelFile().getAbsolutePath();

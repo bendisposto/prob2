@@ -308,6 +308,14 @@ class State {
 		}
 		return stateErrors
 	}
+	
+	/**
+	 * @deprecated Use {@link #getOutTransitions(boolean, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
+	def List<Transition> getOutTransitions(boolean evaluate=false) {
+		this.getOutTransitions(evaluate, FormulaExpand.TRUNCATE)
+	}
 
 	/**
 	 * If the state has not yet been explored (i.e. the default number
@@ -323,7 +331,7 @@ class State {
 	 * 		be evaluated. By default this is set to false.
 	 * @return the outgoing transitions from this state
 	 */
-	def List<Transition> getOutTransitions(boolean evaluate=false, FormulaExpand expansion=FormulaExpand.TRUNCATE) {
+	def List<Transition> getOutTransitions(boolean evaluate=false, FormulaExpand expansion) {
 		if (!explored) {
 			explore()
 		}

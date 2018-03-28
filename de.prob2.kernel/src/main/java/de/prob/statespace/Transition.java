@@ -294,7 +294,9 @@ public class Transition {
 	 * are set.
 	 * 
 	 * @return {@code this}
+	 * @deprecated Use {@link #evaluate(FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
 	 */
+	@Deprecated
 	public Transition evaluate() {
 		return evaluate(FormulaExpand.TRUNCATE);
 	}

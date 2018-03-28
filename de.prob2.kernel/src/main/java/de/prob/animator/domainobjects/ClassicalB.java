@@ -46,7 +46,9 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 * @param ast
 	 *            is saved and the string representation determined from the ast
 	 *            and saved
+	 * @deprecated Use {@link #ClassicalB(Start, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
 	 */
+	@Deprecated
 	public ClassicalB(final Start ast) {
 		this(ast, FormulaExpand.TRUNCATE);
 	}
@@ -60,7 +62,9 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 *            will be parsed and the resulting {@link Start} ast saved
 	 * @throws EvaluationException
 	 *             if the code could not be parsed
+	 * @deprecated Use {@link #ClassicalB(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
 	 */
+	@Deprecated
 	public ClassicalB(final String code) {
 		this(code, FormulaExpand.EXPAND);
 	}

@@ -73,9 +73,11 @@ public abstract class AbstractModel extends AbstractElement {
 	 * @param formula to be parsed
 	 * @return a valid formula
 	 * @throws RuntimeException if parsing is not successful
+	 * @deprecated Use {@link #parseFormula(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
 	 */
+	@Deprecated
 	public IEvalElement parseFormula(String formula) {
-		return this.parseFormula(formula, FormulaExpand.TRUNCATE);
+		return this.parseFormula(formula, FormulaExpand.EXPAND);
 	}
 
 	/**
