@@ -1,18 +1,15 @@
-import de.prob.statespace.Trace;
+import java.nio.file.Paths
 
-/*
-  this tests ensures that a .bcm file can be loaded
-  and it does not result in an empty machine
-*/
+import de.prob.statespace.Trace
 
-final s = api.eventb_load(dir+File.separator+"Scheduler"+File.separator+"Scheduler0.bcm") 
+final s = api.eventb_load(Paths.get(dir, "Scheduler", "Scheduler0.bcm").toString()) 
 def c = s as Trace
-assert c.getCurrentState() == s.root
-assert c.getCurrentState().toString() == "root"
+assert c.currentState == s.root
+assert c.currentState.toString() == "root"
 c = c.anyEvent()
-st = c.getCurrentState()
+st = c.currentState
 assert st != s.root
 c = c.anyEvent()
-assert c.getCurrentState() != st
+assert c.currentState != st
 
 "A .bcm file (Scheduler0.bcm) was loaded and some steps were made"

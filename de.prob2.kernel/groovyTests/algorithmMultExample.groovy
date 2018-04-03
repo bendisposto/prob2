@@ -3,7 +3,6 @@ import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
 
 final mm = new ModelModifier().make {
-	
 	machine(name: "multiplication") {
 		variables "x", "x0"
 		var "y", "y : NAT1", "y :: NAT1"
@@ -25,7 +24,6 @@ final mm = new ModelModifier().make {
 	}
 }
 
-def m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
+final m = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().DEFAULT).run()
 
 "generating a model from an algorithm"

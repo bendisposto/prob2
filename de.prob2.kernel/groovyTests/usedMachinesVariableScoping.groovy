@@ -1,9 +1,10 @@
+import java.nio.file.Paths
+
 import de.prob.model.classicalb.ClassicalBModel
 
-final sep = File.separator
-final s = api.b_load(dir+sep+"machines"+sep+"references"+sep+"Foo.mch")
+final s = api.b_load(Paths.get(dir, "machines", "references", "Foo.mch").toString())
 final m = s as ClassicalBModel
 
-assert m.B.variables[0].getFormula().getCode() == "B.foo"
-assert m.B.invariants[0].getFormula().getCode() == "B.foo:NAT"
+assert m.B.variables[0].formula.code == "B.foo"
+assert m.B.invariants[0].formula.code == "B.foo:NAT"
 "variables from used machines are correctly prefixed"

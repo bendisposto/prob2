@@ -1,18 +1,15 @@
+import java.nio.file.Paths
+
 import de.prob.statespace.Trace
 
-/*
-  this tests ensures that a .buc file can be loaded
-  and it does not result in an empty machine
-*/
-
-final s = api.eventb_load(dir+File.separator+"Lift"+File.separator+"levels.buc") 
+final s = api.eventb_load(Paths.get(dir, "Lift", "levels.buc").toString()) 
 def c = s as Trace
-assert c.getCurrentState() == s.root
-assert c.getCurrentState().toString() == "root"
+assert c.currentState == s.root
+assert c.currentState.toString() == "root"
 c = c.$setup_constants()
-final st = c.getCurrentState()
+final st = c.currentState
 assert st != s.root
 c = c.$initialise_machine()
-assert c.getCurrentState() != st
+assert c.currentState != st
 
-"A .buc file can be loaded"
+"A .buc file can be loaded and does not result in an empty machine"

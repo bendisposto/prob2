@@ -1,18 +1,15 @@
+import java.nio.file.Paths
+
 import de.prob.statespace.Trace
 
-/*
-  this tests ensures that a .bum.bum file can be loaded
-  and it does not result in an empty machine
-*/
-
-final s = api.eventb_load(dir+File.separator+"counter"+File.separator+"machine.bum.bum") 
+final s = api.eventb_load(Paths.get(dir, "counter", "machine.bum.bum").toString()) 
 def c = s as Trace
-assert c.getCurrentState() == s.root
-assert c.getCurrentState().toString() == "root"
+assert c.currentState == s.root
+assert c.currentState.toString() == "root"
 c = c.anyEvent()
-final st = c.getCurrentState()
+final st = c.currentState
 assert st != s.root
 c = c.anyEvent()
-assert c.getCurrentState() != st
+assert c.currentState != st
 
 "A .bum.bum file can be loaded and does not result in an empty machine"

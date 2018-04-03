@@ -1,15 +1,17 @@
+import java.nio.file.Paths
+
 import de.prob.animator.command.GetTransitionDiagramCommand
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.statespace.Trace
 
-final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 def t = new Trace(s)
-t.getCurrentState().explore()
+t.currentState.explore()
 
 final cmd = new GetTransitionDiagramCommand(new ClassicalB("waiting"))
 s.execute(cmd)
 
-assert !cmd.getNodes().isEmpty()
-assert !cmd.getEdges().isEmpty()
+assert !cmd.nodes.isEmpty()
+assert !cmd.edges.isEmpty()
 
 "All tests passed!"

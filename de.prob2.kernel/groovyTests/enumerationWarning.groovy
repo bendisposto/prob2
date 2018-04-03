@@ -1,8 +1,10 @@
+import java.nio.file.Paths
+
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EnumerationWarning
 import de.prob.statespace.Trace
 
-final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 def t = new Trace(s)
 t = t.$initialise_machine()
 

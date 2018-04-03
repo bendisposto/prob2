@@ -2,9 +2,7 @@ import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
 
-final workspace = dir + File.separator + "TheoryExamples"
 final mm = new ModelModifier().make {
-	
 	procedure(name: "mult") {
 		argument "x", "NAT"
 		argument "y", "NAT"
@@ -40,7 +38,6 @@ final mm = new ModelModifier().make {
 	}
 }
 
-def m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
+final m = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
 
 "generate and animate a model"

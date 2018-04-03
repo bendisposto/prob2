@@ -1,17 +1,19 @@
+import java.nio.file.Paths
+
 import de.prob.statespace.Trace
 
-final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 def h = new Trace(s)
-def h1 = h.anyOperation(".*i.*")
+final h1 = h.anyOperation(".*i.*")
 assert h1 != h
-def h2 = h1.anyOperation(".*z.*")
+final h2 = h1.anyOperation(".*z.*")
 assert h2 == h1
 h = h2
 h = h.anyOperation("new")
-assert h.current.getTransition().getName() == "new"
-h = h.anyOperation(["new","del"])
-assert h.current.getTransition().getName() == "new" || h.current.getTransition().getName() == "del"
+assert h.current.transition.name == "new"
+h = h.anyOperation(["new", "del"])
+assert h.current.transition.name == "new" || h.current.transition.name == "del"
 h = h.anyEvent("nr_ready")
-assert h.current.getTransition().getName() == "nr_ready"
+assert h.current.transition.name == "nr_ready"
 
 "anyOperation and anyEvent on Trace work correctly"

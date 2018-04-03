@@ -7,7 +7,7 @@ import de.prob.model.representation.DependencyGraph.ERefType
 final s = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
 assert s != null
 
-final l = s.getTotalNumberOfErrors()
+final l = s.totalNumberOfErrors
 
 final m = s as EventBModel
 
@@ -75,8 +75,8 @@ assert randomCrazyJump.actions.size() == 1
 final variant = lift0.variant
 assert variant == null
 
-assert lift0.sees.contains(levels)
+assert levels in lift0.sees
 
-assert l == s.getTotalNumberOfErrors()
+assert l == s.totalNumberOfErrors
 
 "When an EventB file is loaded (Lift example), the model elements are accessible."

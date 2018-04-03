@@ -14,7 +14,6 @@ final mm = new ModelModifier().make {
 	}
 }
 
-
-final m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
+final m = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
 
 "it is possible to generate models to check the termination of loops"

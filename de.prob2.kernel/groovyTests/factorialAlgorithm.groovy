@@ -3,12 +3,11 @@ import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
 
 mm = new ModelModifier().make {
-	
 	context(name: "definitions") {
 		constant "fac"
 		axioms "fac : NAT --> NAT",
-		       "fac(0) = 1",
-			   "!m.(m > 0 & m : dom(fac) & m - 1 : dom(fac) => fac(m) = fac(m - 1) * m)"
+			"fac(0) = 1",
+			"!m.(m > 0 & m : dom(fac) & m - 1 : dom(fac) => fac(m) = fac(m - 1) * m)"
 		theorem "dom(fac) = NAT"
 		theorem "!m.(m : dom(fac) & m + 1 : dom(fac) => fac(m + 1) = fac(m) * (m + 1))"
 		theorem "fac(0) = fac(1)"
@@ -54,7 +53,6 @@ mm = new ModelModifier().make {
 	}
 }
 
-def m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
+def m = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
 
 "generate and animate a model"

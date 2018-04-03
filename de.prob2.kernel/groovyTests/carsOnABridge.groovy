@@ -4,14 +4,11 @@ import de.prob.statespace.Trace
 import static de.prob.model.eventb.Event.EventType.ANTICIPATED
 import static de.prob.model.eventb.Event.EventType.CONVERGENT
 
-// You can change the model you are testing here.
-
 final mm = new ModelModifier().make {
-
 	context(name: "cd") {
 		constant "d"
 		axioms "d : NAT",
-				"d > 0"
+			"d > 0"
 	}
 	
 	machine(name: "m0", sees: ["cd"]) {
@@ -35,7 +32,7 @@ final mm = new ModelModifier().make {
 		var "b", "b : NAT", "b := 0"
 		var "c", "c : NAT", "c := 0"
 		invariants gluing: "n = a+b+c",
-		           oneway: "a=0 or c=0"
+			oneway: "a=0 or c=0"
 		theorem "a+b+c : NAT"
 		theorem "c > 0 or a > 0 or (a+b<d & c=0) or (0<b & a=0)"
 		
@@ -63,12 +60,11 @@ final mm = new ModelModifier().make {
 	}
 }
 
-final m = mm.getModel()
+final m = mm.model
 final s = m.load(m.getComponent("m1"))
 def t = s as Trace
 
-
-assert m.m1.variant.getExpression().getCode() == "2*a+b"
+assert m.m1.variant.expression.code == "2*a+b"
 assert m.m1.events.IL_in.type == CONVERGENT
 assert m.m1.events.IL_out.type == ANTICIPATED
 t = t.randomAnimation(10)

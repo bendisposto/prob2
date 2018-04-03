@@ -1,8 +1,9 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import java.nio.file.Paths
 
-// You can change the model you are testing here.
-final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+import de.prob.animator.domainobjects.WDError
+import de.prob.statespace.Trace
+
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 def t = new Trace(s)
 t = t.$initialise_machine()
 

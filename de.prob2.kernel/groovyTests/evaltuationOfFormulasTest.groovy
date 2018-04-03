@@ -1,31 +1,34 @@
+import java.nio.file.Paths
+
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvalResult
 import de.prob.animator.domainobjects.TranslatedEvalResult
 import de.prob.statespace.Trace
 import de.prob.translator.types.Atom
 
-final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 def h = new Trace(s)
 h = h.add(0)
 h = h.add(3)
-assert "2" == h.getCurrentState().getId()
-assert ['1']== s.eval(s[3],["2-1" as ClassicalB]).collect { it.toString() }
-assert ['{}']== s.eval(s[0],["waiting" as ClassicalB]).collect { it.getValue().toString() }
-assert ['{PID2}']== s.eval(s[2],["waiting" as ClassicalB]).collect { it.toString() }
+assert h.currentState.id == "2"
+assert s.eval(s[3], ["2-1" as ClassicalB]).collect {it.toString()} == ['1']
+assert s.eval(s[0], ["waiting" as ClassicalB]).collect {it.value.toString()} == ['{}']
+assert s.eval(s[2], ["waiting" as ClassicalB]).collect {it.toString()} == ['{PID2}']
 
 final formula = "x : waiting & x = PID2 & y : NAT & y = 1" as ClassicalB
-final EvalResult res = s.eval(s[2],[formula]).get(0)
+final res = s.eval(s[2], [formula])[0]
+assert res instanceof EvalResult
 assert res.value == "TRUE"
-assert res.getSolutions().containsKey("x")
-assert res.getSolutions().containsKey("y")
+assert res.solutions.containsKey("x")
+assert res.solutions.containsKey("y")
 assert res.x == "PID2"
 assert res.y == "1"
 
 final t = res.translate()
 assert t != null && t instanceof TranslatedEvalResult
 assert t.value == true
-assert t.getSolutions().containsKey("x")
-assert t.getSolutions().containsKey("y")
+assert t.solutions.containsKey("x")
+assert t.solutions.containsKey("y")
 assert t.x == new Atom("PID2")
 assert t.y == 1
 

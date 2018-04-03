@@ -1,10 +1,12 @@
+import java.nio.file.Paths
+
 import de.prob.animator.command.EvaluateRegisteredFormulasCommand
 import de.prob.animator.command.RegisterFormulaCommand
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvaluationErrorResult
 import de.prob.statespace.Trace;
 
-final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 
 def t = s as Trace
 t = t.$initialise_machine()
@@ -15,13 +17,13 @@ final cmd1 = new RegisterFormulaCommand(f)
 s.execute(cmd1)
 final cmd2 = new RegisterFormulaCommand(f2)
 s.execute(cmd2)
-final cmd3 = new EvaluateRegisteredFormulasCommand("3",[f,f2])
+final cmd3 = new EvaluateRegisteredFormulasCommand("3", [f, f2])
 s.execute(cmd3)
-assert cmd3.getResults().get(f).getValue() == "2"
-assert cmd3.getResults().get(f2).getValue() == "{}"
-final cmd4 = new EvaluateRegisteredFormulasCommand("root",[f,f2])
+assert cmd3.results[f].value == "2"
+assert cmd3.results[f2].value == "{}"
+final cmd4 = new EvaluateRegisteredFormulasCommand("root", [f, f2])
 s.execute(cmd4)
-assert cmd4.getResults().get(f).getValue() == "2"
-assert cmd4.getResults().get(f2) instanceof EvaluationErrorResult
+assert cmd4.results[f].value == "2"
+assert cmd4.results[f2] instanceof EvaluationErrorResult
 
 "It is possible to register formulas and asynchronously evaluate them later"

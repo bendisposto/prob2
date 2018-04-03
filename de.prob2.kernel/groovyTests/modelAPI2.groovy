@@ -1,9 +1,11 @@
+import java.nio.file.Paths
+
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.ModelModifier
 import de.prob.statespace.Trace
 
-final s1 = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
-assert s1.getMainComponent() != null
+final s1 = api.eventb_load(Paths.get(dir, "Empty", "EmptyMachine.bcm").toString())
+assert s1.mainComponent != null
 final m1 = s1 as EventBModel
 
 final mm2 = new ModelModifier(m1).make {
@@ -22,7 +24,7 @@ final mm2 = new ModelModifier(m1).make {
 	}
 }
 
-final m2 = mm2.getModel()
+final m2 = mm2.model
 final s2 = m2.load(m2.EmptyMachine)
 t = s2 as Trace
 t = t.$initialise_machine()
@@ -41,7 +43,7 @@ final mm3 = mm2.make {
 	}
 }
 
-final m3 = mm3.getModel()
+final m3 = mm3.model
 final s3 = m3.load(m3.EmptyMachine)
 t = s3 as Trace
 t = t.$initialise_machine()

@@ -3,20 +3,19 @@ import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
 
 final mm = new ModelModifier().make {
-	
 	context(name: "definitions") {
 		constants "Divides", "GCD"
 		
 		axioms "Divides = {i|->j | #k.k:0..j & j = i*k}",
-		       "GCD = {x|->y|->res | res|->x : Divides & res|->y : Divides & (!r. r : (0..x \\/ 0..y) => (r|->x : Divides & r|->y : Divides => r|->res : Divides) ) }",
-			   "GCD : (NAT ** NAT) +-> NAT",
-			   "!x,y.x|->x|->y : GCD => x = y",
-			   "!v.GCD[{0|->v}] = {v}",
-			   "!v.GCD[{v|->v}] = {v}",
-			   "!x,y.y-x>0 => GCD[{x|->y}] = GCD[{x|->y-x}]",
-			   "!x,y.GCD[{x|->y}] = GCD[{y|->x}]"
+			"GCD = {x|->y|->res | res|->x : Divides & res|->y : Divides & (!r. r : (0..x \\/ 0..y) => (r|->x : Divides & r|->y : Divides => r|->res : Divides) ) }",
+			"GCD : (NAT ** NAT) +-> NAT",
+			"!x,y.x|->x|->y : GCD => x = y",
+			"!v.GCD[{0|->v}] = {v}",
+			"!v.GCD[{v|->v}] = {v}",
+			"!x,y.y-x>0 => GCD[{x|->y}] = GCD[{x|->y-x}]",
+			"!x,y.GCD[{x|->y}] = GCD[{y|->x}]"
 		theorem "4|->2|->2 : GCD"
-	    theorem "!x,y.x <= y => GCD[{y|->x}]=GCD[{y-x|->x}]"
+		theorem "!x,y.x <= y => GCD[{y|->x}]=GCD[{y-x|->x}]"
 		theorem "!x,y.x <= y => GCD[{x|->y}]=GCD[{y-x|->x}]"
 	}
 	
@@ -45,17 +44,16 @@ final mm = new ModelModifier().make {
 					Assert("u >= v")
 					Assign("u := u - v")
 					Assert("v > 0")
-			    }
-			    Assert("GCD(m|->n) = v")
+				}
+				Assert("GCD(m|->n) = v")
 				Return("v")
 			}
 		}
 	}
 }
 
-def m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
-
-m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
+final m1 = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
+final m2 = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 
 
 "generate a model of a multiplication algorithm"

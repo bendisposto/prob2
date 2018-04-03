@@ -1,27 +1,25 @@
 import de.prob.model.eventb.ModelModifier
 import de.prob.statespace.Trace
 
-def mm = new ModelModifier()
-mm = mm.make {
+final mm = new ModelModifier().make {
 	context(name: "levels") {
 		theorem always_true: "1 < 5"
 		constants "TOP", "BOTTOM"
 		axioms "TOP = 5",
-		       "BOTTOM = 1"
+			"BOTTOM = 1"
 	}
 	
 	machine(name: "lift0", sees: ["levels"]) {
-		
 		var name: "level", 
-		          invariant: [inv_level: "level : BOTTOM..TOP"],
-				  init: [act_level: "level := BOTTOM"]
-				  
+			invariant: [inv_level: "level : BOTTOM..TOP"],
+			init: [act_level: "level := BOTTOM"]
+		
 		var name: "door_open",
-				  invariant: "door_open : BOOL",
-				  init: "door_open := FALSE"
-				  
+			invariant: "door_open : BOOL",
+			init: "door_open := FALSE"
+		
 		invariant always_true: "1 > 0", true
-		theorem   also_always_true: "5 < 6"
+		theorem also_always_true: "5 < 6"
 		invariant "level > 0"
 		
 		event(name: "up") {
@@ -54,24 +52,24 @@ mm = mm.make {
 	
 	context(name: "door", extends: "IDoNothing") {
 		enumerated_set name: "door_state",
-		               constants: ["open", "closed"]
+			constants: ["open", "closed"]
 	}
 	
 	machine(name: "lift1", refines: "lift0", sees: ["door","levels"]) {
 		variables "door", "level"
 		invariants "door : door_state",
-				   "level : BOTTOM..TOP"
-	    invariant  gluing: "door_open = TRUE <=> door = open"
-				   
+			"level : BOTTOM..TOP" 
+		invariant gluing: "door_open = TRUE <=> door = open"
+		
 		initialisation {
 			actions level: "level := BOTTOM",
-			        door: "door := closed"
+				door: "door := closed"
 		}
 		
 		event(name: "up", refines: "up") {
 			guards level_grd: "level < TOP",
-				   door_grd: "door = closed"
-		
+				door_grd: "door = closed"
+			
 			action move_up: "level := level + 1" 
 		}
 		
@@ -93,13 +91,13 @@ mm = mm.make {
 	}
 }
 
-final model = mm.getModel()
+final model = mm.model
 assert model.levels.axioms.always_true.isTheorem()
 
 final lift0 = model.lift0
 assert lift0 != null
 assert lift0.variables.level != null
-assert lift0.invariants.collect { it.getName() } == ["inv_level","typing_door_open","always_true","also_always_true","inv0"]
+assert lift0.invariants.collect { it.getName() } == ["inv_level", "typing_door_open", "always_true", "also_always_true", "inv0"]
 assert lift0.invariants.inv_level.getPredicate().getCode() == "level : BOTTOM..TOP"
 assert lift0.invariants.inv0.getPredicate().getCode() == "level > 0"
 assert lift0.invariants.typing_door_open.getPredicate().getCode() == "door_open : BOOL"
@@ -122,16 +120,16 @@ def t = s as Trace
 
 t = t.$setup_constants()
 t = t.$initialise_machine()
-assert !t.canExecuteEvent("down",[])
+assert !t.canExecuteEvent("down", [])
 assert t.canExecuteEvent("up", [])
 t = t.up().up().up().up()
-assert t.canExecuteEvent("down",[])
-assert !t.canExecuteEvent("up",[])
+assert t.canExecuteEvent("down", [])
+assert !t.canExecuteEvent("up", [])
 t = t.down()
-assert t.canExecuteEvent("down",[]) && t.canExecuteEvent("up",[])
+assert t.canExecuteEvent("down", []) && t.canExecuteEvent("up", [])
 t = t.open_door()
-assert !t.canExecuteEvent("down",[])
-assert !t.canExecuteEvent("up",[])
+assert !t.canExecuteEvent("down", [])
+assert !t.canExecuteEvent("up", [])
 assert t.evalCurrent("door").value == "open"
 
 "it is possible to construct a model"

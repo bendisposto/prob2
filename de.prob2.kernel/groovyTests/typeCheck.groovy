@@ -1,55 +1,57 @@
+import java.nio.file.Paths
+
 import de.prob.animator.domainobjects.ClassicalB
-// You can change the model you are testing here.
-final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 
 
-final typecheck = {formula ->
+final typecheck = {String formula ->
 	s.typeCheck(formula as ClassicalB)
 }
 
 final res1 = typecheck("1 = BOOL")
-assert !res1.isOk()
-assert !res1.getErrors().isEmpty()
-assert res1.getType() == "pred"
+assert !res1.ok
+assert !res1.errors.empty
+assert res1.type == "pred"
 
 final res2 = typecheck("1") 
-assert res2.isOk()
-assert res2.getErrors().isEmpty()
-assert res2.getType() == "integer"
+assert res2.ok
+assert res2.errors.empty
+assert res2.type == "integer"
 
 final res3 = typecheck("TRUE") 
-assert res3.isOk()
-assert res3.getErrors().isEmpty()
-assert res3.getType() == "boolean"
+assert res3.ok
+assert res3.errors.empty
+assert res3.type == "boolean"
 
 final res4 = typecheck("FALSE")
-assert res4.isOk()
-assert res4.getErrors().isEmpty()
-assert res4.getType() == "boolean"
+assert res4.ok
+assert res4.errors.empty
+assert res4.type == "boolean"
 
 final res5 = typecheck("{1,2,3}")
-assert res5.isOk()
-assert res5.getErrors().isEmpty()
-assert res5.getType() == "set(integer)"
+assert res5.ok
+assert res5.errors.empty
+assert res5.type == "set(integer)"
 
 final res6 = typecheck("1 |-> 2")
-assert res6.isOk()
-assert res6.getErrors().isEmpty()
-assert res6.getType() == "couple(integer,integer)"
+assert res6.ok
+assert res6.errors.empty
+assert res6.type == "couple(integer,integer)"
 
 final res7 = typecheck("PID1") 
-assert res7.isOk()
-assert res7.getErrors().isEmpty()
-assert res7.getType() == "global('PID')"
+assert res7.ok
+assert res7.errors.empty
+assert res7.type == "global('PID')"
 
 final res8 = typecheck('"BLAH"')
-assert res8.isOk()
-assert res8.getErrors().isEmpty()
-assert res8.getType() == "string"
+assert res8.ok
+assert res8.errors.empty
+assert res8.type == "string"
 
 final res9 = typecheck("rec(PID1:1,PID2:2,PID3:3)")
-assert res9.isOk()
-assert res9.getErrors().isEmpty()
-assert res9.getType() == "record([field('PID1',integer),field('PID2',integer),field('PID3',integer)])"
+assert res9.ok
+assert res9.errors.empty
+assert res9.type == "record([field('PID1',integer),field('PID2',integer),field('PID3',integer)])"
 
 "it is possible to type check a formula"

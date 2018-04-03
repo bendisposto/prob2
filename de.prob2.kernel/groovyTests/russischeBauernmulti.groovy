@@ -3,9 +3,8 @@ import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
 
 final mm = new ModelModifier().make {
-
 	machine(name: "multiplication") {
-		variables "x","y"
+		variables "x", "y"
 		var name: "x0", invariant: "x0 : NAT", init: "x0,x :| x0' : NAT1 & x0'=x'"
 		var name: "y0", invariant: "y0 : NAT", init: "y0,y :| y0' : NAT1 & y0'=y'"
 		var name: "product", invariant: "product : NAT", init: "product := 0"
@@ -26,7 +25,7 @@ final mm = new ModelModifier().make {
 	}
 	
 	machine(name: "multiplication2") {
-		variables "x","y"
+		variables "x", "y"
 		var name: "x0", invariant: "x0 : NAT", init: "x0,x :| x0' : NAT1 & x0'=x'"
 		var name: "y0", invariant: "y0 : NAT", init: "y0,y :| y0' : NAT1 & y0'=y'"
 		var name: "product", invariant: "product : NAT", init: "product := 0"
@@ -49,7 +48,6 @@ final mm = new ModelModifier().make {
 	}
 }
 
-def m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().optimize(true).propagateAssertions(true)).run()
+final m = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().optimize(true).propagateAssertions(true)).run()
 
 "generate and animate a model"

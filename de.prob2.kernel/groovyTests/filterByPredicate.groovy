@@ -1,24 +1,28 @@
+import java.nio.file.Paths
+
 import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.FormulaExpand
+import de.prob.animator.domainobjects.IEvalElement
+import de.prob.statespace.State
 import de.prob.statespace.Trace
 
-// You can change the model you are testing here.
-final s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 def t = new Trace(s)
 t = t.anyEvent()
 
 t = t.new()
 t = t.ready()
-t.getCurrentState().getOutTransitions().each { it.getDestination().explore() }
+t.currentState.getOutTransitions(FormulaExpand.EXPAND).each { it.destination.explore() }
 final allStates = s.getStatesFromPredicate("TRUE = TRUE" as ClassicalB)
 
-def validateResults = { stateL, formula ->
+final validateResults = {List<State> stateL, IEvalElement formula ->
 	allStates.each {
 		if (stateL.contains(it)) {
 			if (s.canBeEvaluated(it)) {
 				assert s.eval(it, [formula])[0].value == "TRUE"
 			}
 		} else {
-				assert s.canBeEvaluated(it) && s.eval(it, [formula])[0].value != "TRUE"
+			assert s.canBeEvaluated(it) && s.eval(it, [formula])[0].value != "TRUE"
 		}
 	}
 }
