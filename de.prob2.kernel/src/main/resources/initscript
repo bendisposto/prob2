@@ -103,6 +103,7 @@ def execTrace(t,c) {
 EvalResult.getMetaClass().getProperty = {
   name ->
     if (name == "value") return delegate.getValue();
+    if (name == "solutions") return delegate.getSolutions();
     if (delegate.getSolutions().containsKey(name)) {
            delegate.getSolution(name)
     }
@@ -114,6 +115,7 @@ EvalResult.getMetaClass().getProperty = {
 TranslatedEvalResult.getMetaClass().getProperty = {
   name ->
     if (name == "value") return delegate.getValue();
+    if (name == "solutions") return delegate.getSolutions();
     if (delegate.getSolutions().containsKey(name)) {
            delegate.getSolution(name)
     }
