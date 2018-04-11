@@ -101,6 +101,7 @@ public abstract class AbstractModel extends AbstractElement {
 		return stateSpaceProvider;
 	}
 
+	@Override
 	public Object getProperty(String name) {
 		if ("stateSpaceProvider".equals(name)) {
 			return getStateSpaceProvider();
