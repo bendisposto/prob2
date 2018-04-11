@@ -31,8 +31,7 @@ class TraceConstructionTest extends Specification {
 		new Trace(null)
 
 		then:
-		def e = thrown(GroovyRuntimeException)
-		e.getMessage().startsWith("Ambiguous method overloading");
+		thrown(RuntimeException)
 	}
 
 	def "casting trace with AbstractModel works"() {
