@@ -37,11 +37,11 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	@Inject
 	public ProBInstanceProvider(final PrologProcessProvider processProvider,
-			@Home final String home, final OsSpecificInfo osInfo) {
+			@Home final String home, final OsSpecificInfo osInfo, final Installer installer) {
 		this.processProvider = processProvider;
 		this.home = home;
 		this.osInfo = osInfo;
-		new Installer(osInfo).ensureCLIsInstalled();
+		installer.ensureCLIsInstalled();
 		processCounter = new AtomicInteger();
 	}
 

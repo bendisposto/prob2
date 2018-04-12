@@ -8,18 +8,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import de.prob.Main;
 import de.prob.cli.OsSpecificInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Installer {
+@Singleton
+public final class Installer {
 	public static final String DEFAULT_HOME = System.getProperty("user.home") + File.separator + ".prob" + File.separator + "prob2-" + Main.getVersion() + File.separator;
-	private final Logger logger = LoggerFactory.getLogger(Installer.class);
+	private static final Logger logger = LoggerFactory.getLogger(Installer.class);
 	private final OsSpecificInfo osInfo;
 
-	public Installer(final OsSpecificInfo osInfo) {
+	@Inject
+	private Installer(final OsSpecificInfo osInfo) {
 		this.osInfo = osInfo;
 	}
 
