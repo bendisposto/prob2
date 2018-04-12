@@ -1,6 +1,5 @@
 package de.prob.scripting;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,10 +7,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+
+import com.google.common.io.ByteStreams;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -47,47 +47,34 @@ public final class Installer {
 		) {
 			logger.debug("Acquired installer lock file");
 			final String os = osInfo.getDirName();
-			final String zipName = "probcli_" + os + ".zip";
-			final File zip = new File(DEFAULT_HOME + zipName);
-			copyResourceToFile("cli/" + zipName, zip);
-			FileHandler.extractZip(zip, DEFAULT_HOME);
-			Files.delete(zip.toPath());
+			try (final InputStream is = this.getClass().getResourceAsStream("/cli/probcli_" + os + ".zip")) {
+				FileHandler.extractZip(is, Paths.get(DEFAULT_HOME));
+			}
 
 			String outcspmf = DEFAULT_HOME + "lib" + File.separator + "cspmf";
 			String cspmfName = os + "-cspmf";
 			if (os.startsWith("win")) {
-				final String windowsLibsZipName = "win32".equals(os) ? "windowslib32.zip" : "windowslib64.zip";
-				final File windowsLibsZip = new File(DEFAULT_HOME + windowsLibsZipName);
-				copyResourceToFile("cli/" + windowsLibsZipName, windowsLibsZip);
-				FileHandler.extractZip(windowsLibsZip, DEFAULT_HOME);
+				final String bits = "win32".equals(os) ? "32" : "64";
+				try (final InputStream is = this.getClass().getResourceAsStream("/cli/windowslib" + bits + ".zip")) {
+					FileHandler.extractZip(is, Paths.get(DEFAULT_HOME));
+				}
 				cspmfName = "windows-cspmf.exe";
 				outcspmf += ".exe";
 			}
 
+			try (
+				final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName);
+				final OutputStream fos = new FileOutputStream(outcspmf);
+			) {
+				ByteStreams.copy(is, fos);
+			}
 			final File cspmfFile = new File(outcspmf);
-			copyResourceToFile("cli/" + cspmfName, cspmfFile);
 			if (!cspmfFile.setExecutable(true)) {
 				logger.warn("Could not set the cspmf binary as executable");
 			}
 			logger.info("CLI binaries successfully installed");
 		} catch (IOException e) {
 			logger.info("Exception occurred when trying to access resources.", e);
-		}
-	}
-
-	public void copyResourceToFile(String resource, File outFile) throws IOException {
-		try (
-			final InputStream is = getClass().getClassLoader().getResourceAsStream(resource);
-			final OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
-		) {
-			final byte[] buf = new byte[1024];
-			while (true) {
-				final int count = is.read(buf, 0, buf.length);
-				if (count == -1) {
-					break;
-				}
-				os.write(buf, 0, count);
-			}
 		}
 	}
 }
