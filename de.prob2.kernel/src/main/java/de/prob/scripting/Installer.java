@@ -6,7 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -20,6 +25,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public final class Installer {
 	public static final String DEFAULT_HOME = System.getProperty("user.home") + File.separator + ".prob" + File.separator + "prob2-" + Main.getVersion() + File.separator;
+	private static final Path LOCK_FILE_PATH = Paths.get(DEFAULT_HOME, "installer.lock");
 	private static final Logger logger = LoggerFactory.getLogger(Installer.class);
 	private final OsSpecificInfo osInfo;
 
@@ -35,7 +41,11 @@ public final class Installer {
 		}
 
 		logger.info("Attempting to install CLI binaries");
-		try {
+		try (
+			final FileChannel lockFileChannel = FileChannel.open(LOCK_FILE_PATH, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+			final FileLock lock = lockFileChannel.lock();
+		) {
+			logger.debug("Acquired installer lock file");
 			final String os = osInfo.getDirName();
 			final String zipName = "probcli_" + os + ".zip";
 			final File zip = new File(DEFAULT_HOME + zipName);
