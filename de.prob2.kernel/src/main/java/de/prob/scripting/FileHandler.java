@@ -1,13 +1,10 @@
 package de.prob.scripting;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -39,15 +36,5 @@ public final class FileHandler {
 				}
 			}
 		}
-	}
-
-	public static void extractZip(File zip, final String targetDirPath) throws IOException {
-		try (final InputStream is = new FileInputStream(zip)) {
-			extractZip(is, Paths.get(targetDirPath));
-		}
-	}
-
-	public static void extractZip(String pathToZip, String targetDirPath) throws IOException {
-		extractZip(new File(pathToZip), targetDirPath);
 	}
 }

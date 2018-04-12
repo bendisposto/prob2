@@ -1,7 +1,9 @@
 package de.prob.scripting;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -85,7 +87,9 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 
 	public EventBModel extractModelFromZip(final String zipfile) throws IOException {
 		final File tempdir = createTempDir();
-		FileHandler.extractZip(zipfile, tempdir.getAbsolutePath());
+		try (final InputStream is = new FileInputStream(zipfile)) {
+			FileHandler.extractZip(is, tempdir.toPath());
+		}
 
 		final Pattern pattern = Pattern.compile(".*.bcc$|.*.bcm$");
 		final List<File> modelFiles = new ArrayList<>();
