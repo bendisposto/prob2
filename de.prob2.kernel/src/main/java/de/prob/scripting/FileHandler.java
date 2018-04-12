@@ -1,7 +1,9 @@
 package de.prob.scripting;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,10 +23,10 @@ public final class FileHandler {
 		throw new AssertionError("Utility class");
 	}
 
-	public static void extractZip(final Path zip, final Path targetDir) throws IOException {
+	public static void extractZip(final InputStream zipFileStream, final Path targetDir) throws IOException {
 		Files.createDirectories(targetDir);
 
-		try (final ZipInputStream inStream = new ZipInputStream(Files.newInputStream(zip))) {
+		try (final ZipInputStream inStream = new ZipInputStream(zipFileStream)) {
 			ZipEntry entry;
 			while ((entry = inStream.getNextEntry()) != null) {
 				final Path dest = targetDir.resolve(entry.getName());
@@ -40,7 +42,9 @@ public final class FileHandler {
 	}
 
 	public static void extractZip(File zip, final String targetDirPath) throws IOException {
-		extractZip(zip.toPath(), Paths.get(targetDirPath));
+		try (final InputStream is = new FileInputStream(zip)) {
+			extractZip(is, Paths.get(targetDirPath));
+		}
 	}
 
 	public static void extractZip(String pathToZip, String targetDirPath) throws IOException {
