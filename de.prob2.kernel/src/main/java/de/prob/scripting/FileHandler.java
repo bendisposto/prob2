@@ -27,6 +27,9 @@ public final class FileHandler {
 			ZipEntry entry;
 			while ((entry = inStream.getNextEntry()) != null) {
 				final Path dest = targetDir.resolve(entry.getName());
+				if (dest.getParent() != null) {
+					Files.createDirectories(dest.getParent());
+				}
 				if (entry.isDirectory()) {
 					Files.createDirectories(dest);
 				} else {
