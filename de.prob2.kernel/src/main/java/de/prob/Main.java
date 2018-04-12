@@ -147,7 +147,7 @@ public class Main {
 		if (homedir != null) {
 			return homedir + File.separator;
 		}
-		return Installer.DEFAULT_HOME;
+		return Installer.DEFAULT_HOME + File.separator;
 	}
 
 	public static String getVersion() {

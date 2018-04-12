@@ -1,15 +1,17 @@
 package de.prob.scripting;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Collections;
 
 import com.google.common.io.ByteStreams;
 
@@ -24,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 public final class Installer {
-	public static final String DEFAULT_HOME = System.getProperty("user.home") + File.separator + ".prob" + File.separator + "prob2-" + Main.getVersion() + File.separator;
-	private static final Path LOCK_FILE_PATH = Paths.get(DEFAULT_HOME, "installer.lock");
+	public static final Path DEFAULT_HOME = Paths.get(System.getProperty("user.home"), ".prob", "prob2-" + Main.getVersion());
+	private static final Path LOCK_FILE_PATH = DEFAULT_HOME.resolve("installer.lock");
 	private static final Logger logger = LoggerFactory.getLogger(Installer.class);
 	private final OsSpecificInfo osInfo;
 
@@ -48,29 +50,37 @@ public final class Installer {
 			logger.debug("Acquired installer lock file");
 			final String os = osInfo.getDirName();
 			try (final InputStream is = this.getClass().getResourceAsStream("/cli/probcli_" + os + ".zip")) {
-				FileHandler.extractZip(is, Paths.get(DEFAULT_HOME));
+				FileHandler.extractZip(is, DEFAULT_HOME);
 			}
 
-			String outcspmf = DEFAULT_HOME + "lib" + File.separator + "cspmf";
-			String cspmfName = os + "-cspmf";
+			final Path outcspmf;
+			final String cspmfName;
 			if (os.startsWith("win")) {
 				final String bits = "win32".equals(os) ? "32" : "64";
 				try (final InputStream is = this.getClass().getResourceAsStream("/cli/windowslib" + bits + ".zip")) {
-					FileHandler.extractZip(is, Paths.get(DEFAULT_HOME));
+					FileHandler.extractZip(is, DEFAULT_HOME);
 				}
+				outcspmf = DEFAULT_HOME.resolve("lib").resolve("cspmf.exe");
 				cspmfName = "windows-cspmf.exe";
-				outcspmf += ".exe";
+			} else {
+				outcspmf = DEFAULT_HOME.resolve("lib").resolve("cspmf");
+				cspmfName = os + "-cspmf";
 			}
 
 			try (
 				final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName);
-				final OutputStream fos = new FileOutputStream(outcspmf);
+				final OutputStream fos = Files.newOutputStream(outcspmf);
 			) {
 				ByteStreams.copy(is, fos);
 			}
-			final File cspmfFile = new File(outcspmf);
-			if (!cspmfFile.setExecutable(true)) {
-				logger.warn("Could not set the cspmf binary as executable");
+			try {
+				// Try to make the cspmf binary executable.
+				Files.getFileAttributeView(outcspmf, PosixFileAttributeView.class).setPermissions(
+					Collections.singleton(PosixFilePermission.OWNER_EXECUTE)
+				);
+			} catch (UnsupportedOperationException e) {
+				// If making the file executable is unsupported, we're probably on Windows, so nothing needs to be done
+				logger.info("cspmf binary could not be made executable (this is usually not an error)", e);
 			}
 			logger.info("CLI binaries successfully installed");
 		} catch (IOException e) {
