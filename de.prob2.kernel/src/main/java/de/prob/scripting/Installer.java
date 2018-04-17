@@ -10,8 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.common.io.ByteStreams;
 
@@ -34,6 +36,60 @@ public final class Installer {
 	@Inject
 	private Installer(final OsSpecificInfo osInfo) {
 		this.osInfo = osInfo;
+	}
+
+	/**
+	 * Fix permissions of the given path (set user read and write bits). This is needed to fix a previous mistake that cleared the owner read/write bits on the cspmf binary.
+	 *
+	 * @param path the path of the file to fix
+	 */
+	private static void fixPermissions(final Path path) throws IOException {
+		try {
+			final Set<PosixFilePermission> perms = new HashSet<>(Files.readAttributes(path, PosixFileAttributes.class).permissions());
+			final PosixFileAttributeView view = Files.getFileAttributeView(path, PosixFileAttributeView.class);
+			if (view == null) {
+				// If the PosixFileAttributeView is not available, we're probably on Windows, so nothing needs to be done
+				logger.info("Could not get POSIX attribute view for {} (this is usually not an error)", path);
+				return;
+			}
+			perms.add(PosixFilePermission.OWNER_READ);
+			perms.add(PosixFilePermission.OWNER_WRITE);
+			view.setPermissions(perms);
+		} catch (UnsupportedOperationException e) {
+			// If POSIX attributes are unsupported, we're probably on Windows, so nothing needs to be done
+			logger.info("Could not fix permissions of {} (this is usually not an error): {}", path, e);
+		}
+	}
+
+	/**
+	 * Set or clear the executable bits of the given path.
+	 *
+	 * @param path the path of the file to make (non-)executable
+	 * @param executable whether the file should be executable
+	 */
+	private static void setExecutable(final Path path, final boolean executable) throws IOException {
+		try {
+			final Set<PosixFilePermission> perms = new HashSet<>(Files.readAttributes(path, PosixFileAttributes.class).permissions());
+			final PosixFileAttributeView view = Files.getFileAttributeView(path, PosixFileAttributeView.class);
+			if (view == null) {
+				// If the PosixFileAttributeView is not available, we're probably on Windows, so nothing needs to be done
+				logger.info("Could not get POSIX attribute view for {} (this is usually not an error)", path);
+				return;
+			}
+			if (executable) {
+				perms.add(PosixFilePermission.OWNER_EXECUTE);
+				perms.add(PosixFilePermission.GROUP_EXECUTE);
+				perms.add(PosixFilePermission.OTHERS_EXECUTE);
+			} else {
+				perms.remove(PosixFilePermission.OWNER_EXECUTE);
+				perms.remove(PosixFilePermission.GROUP_EXECUTE);
+				perms.remove(PosixFilePermission.OTHERS_EXECUTE);
+			}
+			view.setPermissions(perms);
+		} catch (UnsupportedOperationException e) {
+			// If POSIX attributes are unsupported, we're probably on Windows, so nothing needs to be done
+			logger.info("Could not set executable status of {} to {} (this is usually not an error): {}", path, executable, e);
+		}
 	}
 
 	@SuppressWarnings("try") // don't warn about unused resource in try
@@ -68,25 +124,14 @@ public final class Installer {
 				cspmfName = os + "-cspmf";
 			}
 
+			fixPermissions(outcspmf);
 			try (
 				final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName);
 				final OutputStream fos = Files.newOutputStream(outcspmf);
 			) {
 				ByteStreams.copy(is, fos);
 			}
-			// Try to make the cspmf binary executable.
-			final PosixFileAttributeView view = Files.getFileAttributeView(outcspmf, PosixFileAttributeView.class);
-			if (view == null) {
-				// If the PosixFileAttributeView is not available, we're probably on Windows, so nothing needs to be done
-				logger.info("Could not get POSIX attribute view for cspmf binary (this is usually not an error)");
-			} else {
-				try {
-					view.setPermissions(Collections.singleton(PosixFilePermission.OWNER_EXECUTE));
-				} catch (UnsupportedOperationException e) {
-					// If making the file executable is unsupported, we're probably on Windows, so nothing needs to be done
-					logger.info("cspmf binary could not be made executable (this is usually not an error)", e);
-				}
-			}
+			setExecutable(outcspmf, true);
 			logger.info("CLI binaries successfully installed");
 		} catch (IOException e) {
 			logger.info("Exception occurred when trying to access resources.", e);
