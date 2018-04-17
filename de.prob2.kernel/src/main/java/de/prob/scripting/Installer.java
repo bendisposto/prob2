@@ -68,6 +68,7 @@ public final class Installer {
 	 * @param executable whether the file should be executable
 	 */
 	private static void setExecutable(final Path path, final boolean executable) throws IOException {
+		logger.trace("Attempting to set executable status of {} to {}", path, executable);
 		try {
 			final Set<PosixFilePermission> perms = new HashSet<>(Files.readAttributes(path, PosixFileAttributes.class).permissions());
 			final PosixFileAttributeView view = Files.getFileAttributeView(path, PosixFileAttributeView.class);
@@ -88,14 +89,57 @@ public final class Installer {
 			view.setPermissions(perms);
 		} catch (UnsupportedOperationException e) {
 			// If POSIX attributes are unsupported, we're probably on Windows, so nothing needs to be done
-			logger.info("Could not set executable status of {} to {} (this is usually not an error): {}", path, executable, e);
+			logger.info("Could not set executable status of {} (this is usually not an error)", path, e);
 		}
 	}
 
+	/**
+	 * Install probcli and related libraries and files.
+	 */
+	private void installProbcli() throws IOException {
+		logger.trace("Installing probcli");
+		try (final InputStream is = this.getClass().getResourceAsStream("/cli/probcli_" + osInfo.getDirName() + ".zip")) {
+			FileHandler.extractZip(is, DEFAULT_HOME);
+		}
+		logger.trace("Installed probcli");
+	}
+
+	/**
+	 * Install the cspmf binary.
+	 */
+	private void installCspmf() throws IOException {
+		logger.trace("Installing cspmf");
+		final Path outcspmf;
+		final String cspmfName;
+		if (osInfo.getDirName().startsWith("win")) {
+			final String bits = "win32".equals(osInfo.getDirName()) ? "32" : "64";
+			try (final InputStream is = this.getClass().getResourceAsStream("/cli/windowslib" + bits + ".zip")) {
+				FileHandler.extractZip(is, DEFAULT_HOME);
+			}
+			outcspmf = DEFAULT_HOME.resolve("lib").resolve("cspmf.exe");
+			cspmfName = "windows-cspmf.exe";
+		} else {
+			outcspmf = DEFAULT_HOME.resolve("lib").resolve("cspmf");
+			cspmfName = osInfo.getDirName() + "-cspmf";
+		}
+		
+		fixPermissions(outcspmf);
+		try (
+			final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName);
+			final OutputStream os = Files.newOutputStream(outcspmf);
+		) {
+			ByteStreams.copy(is, os);
+		}
+		setExecutable(outcspmf, true);
+	}
+
+	/**
+	 * Install all CLI binaries, if necessary.
+	 */
 	@SuppressWarnings("try") // don't warn about unused resource in try
 	public void ensureCLIsInstalled() {
 		if (System.getProperty("prob.home") != null) {
-			logger.info("prob.home is set. Not installing new CLI.");
+			logger.info("prob.home is set. Not installing CLI from kernel resources.");
 			return;
 		}
 
@@ -105,36 +149,11 @@ public final class Installer {
 			final FileLock lock = lockFileChannel.lock();
 		) {
 			logger.debug("Acquired installer lock file");
-			final String os = osInfo.getDirName();
-			try (final InputStream is = this.getClass().getResourceAsStream("/cli/probcli_" + os + ".zip")) {
-				FileHandler.extractZip(is, DEFAULT_HOME);
-			}
-
-			final Path outcspmf;
-			final String cspmfName;
-			if (os.startsWith("win")) {
-				final String bits = "win32".equals(os) ? "32" : "64";
-				try (final InputStream is = this.getClass().getResourceAsStream("/cli/windowslib" + bits + ".zip")) {
-					FileHandler.extractZip(is, DEFAULT_HOME);
-				}
-				outcspmf = DEFAULT_HOME.resolve("lib").resolve("cspmf.exe");
-				cspmfName = "windows-cspmf.exe";
-			} else {
-				outcspmf = DEFAULT_HOME.resolve("lib").resolve("cspmf");
-				cspmfName = os + "-cspmf";
-			}
-
-			fixPermissions(outcspmf);
-			try (
-				final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName);
-				final OutputStream fos = Files.newOutputStream(outcspmf);
-			) {
-				ByteStreams.copy(is, fos);
-			}
-			setExecutable(outcspmf, true);
+			installProbcli();
+			installCspmf();
 			logger.info("CLI binaries successfully installed");
 		} catch (IOException e) {
-			logger.info("Exception occurred when trying to access resources.", e);
+			logger.error("Failed to install CLI binaries", e);
 		}
 	}
 }
