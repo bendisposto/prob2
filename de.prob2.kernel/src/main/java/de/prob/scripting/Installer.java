@@ -58,7 +58,7 @@ public final class Installer {
 			perms.add(PosixFilePermission.OWNER_WRITE);
 			view.setPermissions(perms);
 		} catch (FileNotFoundException | NoSuchFileException e) {
-			logger.info("Not fixing permissions of nonexistant file {}", path);
+			logger.info("Not fixing permissions of nonexistant file {}", path, e);
 		} catch (UnsupportedOperationException e) {
 			// If POSIX attributes are unsupported, we're probably on Windows, so nothing needs to be done
 			logger.info("Could not fix permissions of {} (this is usually not an error): {}", path, e);
