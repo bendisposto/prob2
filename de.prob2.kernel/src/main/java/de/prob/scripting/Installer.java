@@ -74,14 +74,18 @@ public final class Installer {
 			) {
 				ByteStreams.copy(is, fos);
 			}
-			try {
-				// Try to make the cspmf binary executable.
-				Files.getFileAttributeView(outcspmf, PosixFileAttributeView.class).setPermissions(
-					Collections.singleton(PosixFilePermission.OWNER_EXECUTE)
-				);
-			} catch (UnsupportedOperationException e) {
-				// If making the file executable is unsupported, we're probably on Windows, so nothing needs to be done
-				logger.info("cspmf binary could not be made executable (this is usually not an error)", e);
+			// Try to make the cspmf binary executable.
+			final PosixFileAttributeView view = Files.getFileAttributeView(outcspmf, PosixFileAttributeView.class);
+			if (view == null) {
+				// If the PosixFileAttributeView is not available, we're probably on Windows, so nothing needs to be done
+				logger.info("Could not get POSIX attribute view for cspmf binary (this is usually not an error)");
+			} else {
+				try {
+					view.setPermissions(Collections.singleton(PosixFilePermission.OWNER_EXECUTE));
+				} catch (UnsupportedOperationException e) {
+					// If making the file executable is unsupported, we're probably on Windows, so nothing needs to be done
+					logger.info("cspmf binary could not be made executable (this is usually not an error)", e);
+				}
 			}
 			logger.info("CLI binaries successfully installed");
 		} catch (IOException e) {
