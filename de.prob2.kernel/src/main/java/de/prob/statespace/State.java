@@ -160,7 +160,7 @@ public class State extends GroovyObjectSupport {
 	}
 
 	public State anyOperation(final Object filter) {
-		List<Transition> ops = getOutTransitions(true);
+		List<Transition> ops = getOutTransitions(true, FormulaExpand.TRUNCATE);
 		if (filter instanceof String) {
 			final Pattern filterPattern = Pattern.compile((String)filter);
 			ops = ops.stream().filter(t -> filterPattern.matcher(t.getName()).matches()).collect(Collectors.toList());
@@ -188,8 +188,20 @@ public class State extends GroovyObjectSupport {
 	 * @param formula representation of a formula
 	 * @return the {@link AbstractEvalResult} calculated from ProB
 	 */
+	public AbstractEvalResult eval(String formula, FormulaExpand expand) {
+		return eval(stateSpace.getModel().parseFormula(formula, expand));
+	}
+	
+	/**
+	 * Takes a formula and evaluates it via the {@link State#eval(IEvalElement)}
+	 * method. The formula is parsed via the {@link AbstractModel#parseFormula(String)} method.
+	 * @param formula representation of a formula
+	 * @return the {@link AbstractEvalResult} calculated from ProB
+	 * @deprecated Use {@link #eval(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
 	public AbstractEvalResult eval(String formula) {
-		return eval(stateSpace.getModel().parseFormula(formula));
+		return this.eval(formula, FormulaExpand.TRUNCATE);
 	}
 
 	/**

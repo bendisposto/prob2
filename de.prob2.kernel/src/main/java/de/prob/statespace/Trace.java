@@ -78,8 +78,16 @@ public class Trace extends GroovyObjectSupport {
 		return uuid;
 	}
 
+	public AbstractEvalResult evalCurrent(String formula, FormulaExpand expand) {
+		return getCurrentState().eval(formula, expand);
+	}
+	
+	/**
+	 * @deprecated Use {@link #evalCurrent(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
 	public AbstractEvalResult evalCurrent(String formula) {
-		return getCurrentState().eval(formula);
+		return getCurrentState().eval(formula, FormulaExpand.TRUNCATE);
 	}
 
 	public AbstractEvalResult evalCurrent(IEvalElement formula) {
@@ -107,8 +115,16 @@ public class Trace extends GroovyObjectSupport {
 		return res;
 	}
 
+	public List<Tuple2<String, AbstractEvalResult>> eval(String formula, FormulaExpand expand) {
+		return this.eval(stateSpace.getModel().parseFormula(formula, expand));
+	}
+	
+	/**
+	 * @deprecated Use {@link #eval(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
 	public List<Tuple2<String, AbstractEvalResult>> eval(String formula) {
-		return this.eval(stateSpace.getModel().parseFormula(formula));
+		return this.eval(formula, FormulaExpand.TRUNCATE);
 	}
 
 	public Trace add(final Transition op) {
@@ -143,8 +159,8 @@ public class Trace extends GroovyObjectSupport {
 	 * @return a new trace with the operation added.
 	 */
 	public Trace addTransitionWith(final String name, final List<String> parameters) {
-		Transition op = getCurrentState().getOutTransitions(true).stream()
-			.filter(it -> it.getName().equals(name) && it.getParams().equals(parameters))
+		Transition op = getCurrentState().getOutTransitions(true, FormulaExpand.EXPAND).stream()
+			.filter(it -> it.getName().equals(name) && it.getParameterValues().equals(parameters))
 			.findAny()
 			.orElseThrow(() -> new IllegalArgumentException("Could not find operation " + name + " with parameters " + parameters));
 		/* TODO: call GetOperationByPredicateCommand when MAX_OPERATIONS reached */
@@ -320,7 +336,7 @@ public class Trace extends GroovyObjectSupport {
 	}
 
 	public Trace anyOperation(final Object filter) {
-		List<Transition> ops = current.getCurrentState().getOutTransitions(true);
+		List<Transition> ops = current.getCurrentState().getOutTransitions(true, FormulaExpand.EXPAND);
 		if (filter instanceof String) {
 			final Pattern filterPattern = Pattern.compile((String)filter);
 			ops = ops.stream().filter(t -> filterPattern.matcher(t.getName()).matches()).collect(Collectors.toList());
