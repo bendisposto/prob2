@@ -1,11 +1,13 @@
 package de.prob.scripting;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -55,6 +57,8 @@ public final class Installer {
 			perms.add(PosixFilePermission.OWNER_READ);
 			perms.add(PosixFilePermission.OWNER_WRITE);
 			view.setPermissions(perms);
+		} catch (FileNotFoundException | NoSuchFileException e) {
+			logger.info("Not fixing permissions of nonexistant file {}", path);
 		} catch (UnsupportedOperationException e) {
 			// If POSIX attributes are unsupported, we're probably on Windows, so nothing needs to be done
 			logger.info("Could not fix permissions of {} (this is usually not an error): {}", path, e);
