@@ -1,7 +1,6 @@
 import java.nio.file.Paths
 
 import de.prob.animator.domainobjects.ClassicalB
-import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.statespace.State
 import de.prob.statespace.Trace
@@ -12,7 +11,7 @@ t = t.anyEvent()
 
 t = t.new()
 t = t.ready()
-t.currentState.getOutTransitions(FormulaExpand.EXPAND).each { it.destination.explore() }
+t.currentState.outTransitions.each { it.destination.explore() }
 final allStates = s.getStatesFromPredicate("TRUE = TRUE" as ClassicalB)
 
 final validateResults = {List<State> stateL, IEvalElement formula ->

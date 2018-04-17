@@ -327,12 +327,9 @@ public class State extends GroovyObjectSupport {
 		return stateErrors;
 	}
 
-	/**
-	 * @deprecated Use {@link #getOutTransitions(FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
-	 */
-	@Deprecated
 	public List<Transition> getOutTransitions() {
-		return getOutTransitions(false);
+		// The FormulaExpand argument is ignored if evaluate is false
+		return getOutTransitions(false, FormulaExpand.TRUNCATE);
 	}
 
 	/**
@@ -341,10 +338,6 @@ public class State extends GroovyObjectSupport {
 	@Deprecated
 	public List<Transition> getOutTransitions(boolean evaluate) {
 		return this.getOutTransitions(evaluate, FormulaExpand.TRUNCATE);
-	}
-
-	public List<Transition> getOutTransitions(FormulaExpand expansion) {
-		return getOutTransitions(false, expansion);
 	}
 
 	/**
