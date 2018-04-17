@@ -36,6 +36,7 @@ public final class Installer {
 		this.osInfo = osInfo;
 	}
 
+	@SuppressWarnings("try") // don't warn about unused resource in try
 	public void ensureCLIsInstalled() {
 		if (System.getProperty("prob.home") != null) {
 			logger.info("prob.home is set. Not installing new CLI.");
