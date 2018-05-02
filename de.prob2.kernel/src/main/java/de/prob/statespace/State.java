@@ -225,7 +225,7 @@ public class State extends GroovyObjectSupport {
 		return evalFormulas(stateSpace.getLoadedMachine().getConstantEvalElements());
 	}
 
-	public Map<IEvalElement, AbstractEvalResult> evalFormulas(List<IEvalElement> formulas) {
+	public Map<IEvalElement, AbstractEvalResult> evalFormulas(List<? extends IEvalElement> formulas) {
 		final List<IEvalElement> notEvaluatedElements = new ArrayList<>();
 		for (IEvalElement element : formulas) {
 			if (!values.containsKey(element)) {
@@ -249,7 +249,7 @@ public class State extends GroovyObjectSupport {
 	 * @param formulas to be evaluated
 	 * @return list of results calculated by ProB for a given formula
 	 */
-	public List<AbstractEvalResult> eval(List<IEvalElement> formulas) {
+	public List<AbstractEvalResult> eval(List<? extends IEvalElement> formulas) {
 		return new ArrayList<>(evalFormulas(formulas).values());
 	}
 

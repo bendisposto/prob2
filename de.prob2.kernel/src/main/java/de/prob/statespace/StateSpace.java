@@ -365,7 +365,7 @@ public class StateSpace implements IAnimator {
 	 *            to be evaluated
 	 * @return a list of {@link AbstractEvalResult}s
 	 */
-	public List<AbstractEvalResult> eval(final State state, final List<IEvalElement> formulas) {
+	public List<AbstractEvalResult> eval(final State state, final List<? extends IEvalElement> formulas) {
 		return state.eval(formulas);
 	}
 
