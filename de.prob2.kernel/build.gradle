@@ -1,5 +1,5 @@
 plugins {
-	id "org.sonarqube" version "2.5"
+	id "org.sonarqube" version "2.6.2"
 }
 
 apply plugin: 'java'
@@ -142,7 +142,6 @@ sonarqube {
 		property("sonar.projectKey", "prob2kernel")
 		property("sonar.projectName", "prob2kernel")
 		property("sonar.exclusions", "de.prob2.kernel/gradle/wrapper/*,de.prob2.kernel/build/**/*,de.prob2.kernel/groovyIntegrationTests/*")
-		property("sonar.organization", "prob2")
 		property("sonar.login", System.getenv("SONAR_TOKEN"))
 	}
 }

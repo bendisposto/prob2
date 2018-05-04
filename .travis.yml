@@ -11,9 +11,7 @@ branches:
   - develop
 addons:
   sonarcloud:
-    branches:
-    - master
-    - develop
+    organization: prob2
 sudo: false
 install: /bin/true
 script:
