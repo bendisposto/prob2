@@ -66,7 +66,7 @@ public class ProBError extends RuntimeException {
 	}
 
 	public ProBError(BCompoundException e) {
-		this(convertParserExceptionToErrorItems(e));
+		this(null, convertParserExceptionToErrorItems(e), e);
 	}
 
 	private static List<ErrorItem> convertParserExceptionToErrorItems(BCompoundException e) {
