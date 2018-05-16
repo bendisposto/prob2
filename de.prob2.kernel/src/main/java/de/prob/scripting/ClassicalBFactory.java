@@ -10,6 +10,7 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.CachingDefinitionFileProvider;
 import de.be4.classicalb.core.parser.IDefinitionFileProvider;
 import de.be4.classicalb.core.parser.ParsingBehaviour;
+import de.be4.classicalb.core.parser.PlainFileContentProvider;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Start;
@@ -131,7 +132,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 		try {
 			logger.trace("Parsing file");
 			Start ast = null;
-			ast = bparser.parse(model, false);
+			ast = bparser.parse(model, false, new PlainFileContentProvider());
 			return ast;
 		} catch (BCompoundException e) {
 			throw new ProBError(e);
