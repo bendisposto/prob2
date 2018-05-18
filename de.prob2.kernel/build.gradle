@@ -136,11 +136,10 @@ dependencies {
 
 }
 
-final probHome = System.getenv("PROB_HOME")
-allprojects {
-	if (probHome != null) {
+if (project.hasProperty("probHome")) {
+	allprojects {
 		tasks.withType(JavaExec) {
-			systemProperties["prob.home"] = probHome
+			systemProperties["prob.home"] = project.probHome
 		}
 	}
 }
@@ -260,7 +259,7 @@ git=${getCheckedOutGitCommitHash()}"""
 		f.delete()
 		f << buildconstants_class
 	}
-	if (probHome == null) {
+	if (!project.hasProperty("probHome")) {
 		// Automatically download probcli/cspmf, unless a custom PROB_HOME is set
 		dependsOn(downloadCSPMFrontend)
 	}
