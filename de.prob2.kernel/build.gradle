@@ -178,6 +178,8 @@ def cspmfmapping(n) {
 
 task downloadCLIs {
 	doLast {
+		if (System.getProperty("prob.home") != null) return;
+
 		def dir = 'src/main/resources/cli/'
 		delete file(dir)
 		def f = file(dir)
@@ -206,6 +208,7 @@ task downloadCLIs {
 
 task downloadCSPMFrontend {
 	doLast {
+		if (System.getProperty("prob.home") != null) return;
 		def dir = 'src/main/resources/cli/'
 		[
 			'darwin-64',
@@ -264,6 +267,7 @@ test.doFirst {
 }
 
 test {
+	systemProperties System.getProperties()
 	exclude('de/prob/cli/integration')
 	testLogging {
 		exceptionFormat = 'full'
