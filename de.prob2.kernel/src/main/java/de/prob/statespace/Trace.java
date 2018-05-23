@@ -360,12 +360,8 @@ public class Trace extends GroovyObjectSupport {
 		return stateSpace;
 	}
 
-	/**
-	 * @deprecated Use {@link #getNextTransitions(FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
-	 */
-	@Deprecated
 	public Set<Transition> getNextTransitions() {
-		return getNextTransitions(false);
+		return getNextTransitions(false, FormulaExpand.TRUNCATE);
 	}
 
 	/**
@@ -374,10 +370,6 @@ public class Trace extends GroovyObjectSupport {
 	@Deprecated
 	public Set<Transition> getNextTransitions(boolean evaluate) {
 		return this.getNextTransitions(evaluate, FormulaExpand.TRUNCATE);
-	}
-
-	public Set<Transition> getNextTransitions(FormulaExpand expansion) {
-		return getNextTransitions(false, expansion);
 	}
 
 	public Set<Transition> getNextTransitions(boolean evaluate, FormulaExpand expansion) {
