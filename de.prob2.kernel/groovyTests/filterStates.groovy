@@ -2,7 +2,6 @@ import java.nio.file.Paths
 
 import de.prob.animator.command.FilterStatesForPredicateCommand
 import de.prob.animator.domainobjects.ClassicalB
-import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.statespace.Trace
 
 // You can change the model you are testing here.
@@ -16,7 +15,7 @@ t = t.new("pp = PID3")
 t = t.del("pp = PID3")
 t = t.ready("rr = PID2")
 
-final sIds = t.getTransitionList(FormulaExpand.EXPAND).collect {it.destination.explore()}
+final sIds = t.transitionList.collect {it.destination.explore()}
 final formula = "card(waiting) = 1" as ClassicalB
 final cmd = new FilterStatesForPredicateCommand(formula, sIds)
 s.execute(cmd)

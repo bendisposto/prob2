@@ -413,12 +413,8 @@ public class Trace extends GroovyObjectSupport {
 		throw new ClassCastException("Not able to convert Trace object to " + clazz);
 	}
 
-	/**
-	 * @deprecated Use {@link #getTransitionList(FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
-	 */
-	@Deprecated
 	public List<Transition> getTransitionList() {
-		return getTransitionList(false);
+		return getTransitionList(false, FormulaExpand.TRUNCATE);
 	}
 
 	/**
@@ -427,10 +423,6 @@ public class Trace extends GroovyObjectSupport {
 	@Deprecated
 	public List<Transition> getTransitionList(boolean evaluate) {
 		return this.getTransitionList(evaluate, FormulaExpand.TRUNCATE);
-	}
-
-	public List<Transition> getTransitionList(FormulaExpand expansion) {
-		return getTransitionList(false, expansion);
 	}
 
 	public List<Transition> getTransitionList(boolean evaluate, FormulaExpand expansion) {

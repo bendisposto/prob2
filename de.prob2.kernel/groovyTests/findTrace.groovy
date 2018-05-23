@@ -22,7 +22,7 @@ final ops2 = cmd2.newTransitions
 assert ops2 != null
 assert !ops2.empty
 t = s.getTrace("4")
-final opList2 = t.getTransitionList(FormulaExpand.EXPAND)
+final opList2 = t.transitionList
 assert !opList2.empty
 assert ops2.size() == opList2.size()
 final len = ops2.size()
