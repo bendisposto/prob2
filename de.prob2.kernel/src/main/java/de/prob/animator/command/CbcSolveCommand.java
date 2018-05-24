@@ -15,6 +15,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.State;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,18 +45,27 @@ public class CbcSolveCommand extends AbstractCommand {
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
 	private static final String IDENTIFIER_LIST = "IdList";
 	private final IEvalElement evalElement;
+	private final Solvers solver;
+	private final State state;
 	private AbstractEvalResult result;
 	private final List<String> freeVariables = new ArrayList<>();
-
-	private Solvers solver;
 
 	public CbcSolveCommand(final IEvalElement evalElement) {
 		this(evalElement, Solvers.PROB);
 	}
 
+	public CbcSolveCommand(final IEvalElement evalElement, final State state) {
+		this(evalElement, Solvers.PROB, state);
+	}
+	
 	public CbcSolveCommand(final IEvalElement evalElement, final Solvers solver) {
+		this(evalElement, solver, null);
+	}
+
+	public CbcSolveCommand(final IEvalElement evalElement, final Solvers solver, final State state) {
 		this.evalElement = evalElement;
 		this.solver = solver;
+		this.state = state;
 	}
 
 	public AbstractEvalResult getValue() {
@@ -112,6 +122,9 @@ public class CbcSolveCommand extends AbstractCommand {
 		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.printAtom(solver.toString());
 		evalElement.printProlog(pout);
+		if (state != null) {
+			pout.printAtomOrNumber(state.getId());
+		}
 		pout.printVariable(IDENTIFIER_LIST);
 		pout.printVariable(EVALUATE_TERM_VARIABLE);
 		pout.closeTerm();
