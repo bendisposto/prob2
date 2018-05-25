@@ -259,6 +259,9 @@ public class Trace extends GroovyObjectSupport {
 				transitionList = transitionList.assocN(transitionList.size(), op);
 			}
 			currentState = op.getDestination();
+			if(Thread.currentThread().isInterrupted()) {
+				return this;
+			}
 		}
 
 		return new Trace(stateSpace, current, transitionList, this.uuid);
