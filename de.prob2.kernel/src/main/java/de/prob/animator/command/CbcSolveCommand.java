@@ -8,6 +8,7 @@ import java.util.Map;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -16,9 +17,6 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the values of Classical-B Predicates and Expressions.
@@ -31,7 +29,7 @@ public class CbcSolveCommand extends AbstractCommand {
 		PROB, KODKOD, SMT_SUPPORTED_INTERPRETER, Z3
 	}
 
-	private static final String PROLOG_COMMAND_NAME = "cbc_solve";
+	private static final String PROLOG_COMMAND_NAME = "cbc_solve_with_opts";
 
 	private static final int BINDINGS = 1;
 
@@ -39,8 +37,6 @@ public class CbcSolveCommand extends AbstractCommand {
 	@SuppressWarnings("unused")
 	private static final int PROLOG_REP = 2;
 	private static final int PRETTY_PRINT = 3;
-
-	Logger logger = LoggerFactory.getLogger(CbcSolveCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
 	private static final String IDENTIFIER_LIST = "IdList";
@@ -121,10 +117,19 @@ public class CbcSolveCommand extends AbstractCommand {
 	public void writeCommand(final IPrologTermOutput pout) {
 		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.printAtom(solver.toString());
-		evalElement.printProlog(pout);
+		
+		pout.openList();
 		if (state != null) {
+			pout.openTerm("solve_in_visited_state");
 			pout.printAtomOrNumber(state.getId());
+			pout.closeTerm();
 		}
+		if (evalElement.expansion() == FormulaExpand.TRUNCATE) {
+			pout.printAtom("truncate");
+		}
+		pout.closeList();
+		
+		evalElement.printProlog(pout);
 		pout.printVariable(IDENTIFIER_LIST);
 		pout.printVariable(EVALUATE_TERM_VARIABLE);
 		pout.closeTerm();
