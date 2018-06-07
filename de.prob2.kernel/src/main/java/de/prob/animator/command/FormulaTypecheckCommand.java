@@ -3,6 +3,7 @@ package de.prob.animator.command;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.prob.animator.domainobjects.ErrorItem;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.TypeCheckResult;
 import de.prob.parser.BindingGenerator;
@@ -37,8 +38,8 @@ public class FormulaTypecheckCommand extends AbstractCommand {
 	@Override
 	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
 		String type = bindings.get(TYPE).toString();
-		List<String> errors = BindingGenerator.getList(bindings.get(ERRORS)).stream()
-			.map(PrologTerm::toString)
+		List<ErrorItem> errors = BindingGenerator.getList(bindings.get(ERRORS)).stream()
+			.map(ErrorItem::fromProlog)
 			.collect(Collectors.toList());
 		result = new TypeCheckResult(type, errors);
 	}
