@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.ListPrologTerm;
+import de.prob.prolog.term.PrologTerm;
+
 public final class ErrorItem {
 	public enum Type {
 		WARNING,
@@ -30,6 +34,25 @@ public final class ErrorItem {
 			this.startColumn = startColumn;
 			this.endLine = endLine;
 			this.endColumn = endColumn;
+		}
+		
+		public static Location fromProlog(final PrologTerm location) {
+			if (!location.hasFunctor("error_span", 5)) {
+				throw new IllegalArgumentException(String.format(
+					"Error locations list should contain terms of form " +
+					"error_span(Filename,StartLine,StartCol,EndLine,EndCol), " +
+					"but found term %s with arity %d",
+					location.getFunctor(), location.getArity()
+				));
+			}
+			
+			final String filename = PrologTerm.atomicString(location.getArgument(1));
+			final int startLine = ((IntegerPrologTerm)location.getArgument(2)).getValue().intValueExact();
+			final int startColumn = ((IntegerPrologTerm)location.getArgument(3)).getValue().intValueExact();
+			final int endLine = ((IntegerPrologTerm)location.getArgument(4)).getValue().intValueExact();
+			final int endColumn = ((IntegerPrologTerm)location.getArgument(5)).getValue().intValueExact();
+			
+			return new Location(filename, startLine, startColumn, endLine, endColumn);
 		}
 		
 		public String getFilename() {
@@ -107,6 +130,43 @@ public final class ErrorItem {
 		this.message = message;
 		this.type = type;
 		this.locations = new ArrayList<>(locations);
+	}
+	
+	public static ErrorItem fromProlog(final PrologTerm error) {
+		if (!error.hasFunctor("error", 3)) {
+			throw new IllegalArgumentException(String.format(
+				"Errors list should contain terms of form " +
+				"error(Msg,Type,Locations), but found term %s with arity %d",
+				error.getFunctor(), error.getArity()
+			));
+		}
+		
+		final String message = PrologTerm.atomicString(error.getArgument(1));
+		
+		final String typeName = PrologTerm.atomicString(error.getArgument(2));
+		final Type type;
+		switch (typeName) {
+			case "warning":
+				type = Type.WARNING;
+				break;
+			
+			case "error":
+				type = Type.ERROR;
+				break;
+			
+			case "internal_error":
+				type = Type.INTERNAL_ERROR;
+				break;
+			
+			default:
+				throw new IllegalArgumentException("Unknown error type: " + typeName);
+		}
+		
+		final List<Location> locations = ((ListPrologTerm)error.getArgument(3)).stream()
+			.map(Location::fromProlog)
+			.collect(Collectors.toList());
+		
+		return new ErrorItem(message, type, locations);
 	}
 	
 	public String getMessage() {
