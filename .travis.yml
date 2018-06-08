@@ -1,7 +1,9 @@
 language: groovy
-jdk:
-- oraclejdk8
-- oraclejdk9
+matrix:
+  include:
+    - jdk: oraclejdk8
+      env: DO_AFTER_SUCCESS=true
+    - jdk: oraclejdk9
 before_install:
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out pubring.gpg -d
@@ -20,7 +22,7 @@ script:
 after_success:
 # Run uploadArchives and sonarqube only on one of the workers
 - |
-  if [[ "$(java -version 2>&1)" =~ "1\.8\.0" ]]
+  if [[ "${DO_AFTER_SUCCESS}" == "true" ]]
   then
     TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives --info --stacktrace --warning-mode=all
     git fetch --unshallow
