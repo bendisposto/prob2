@@ -1,7 +1,7 @@
 # ProB 2.0
 
 [![Build Status](https://travis-ci.org/bendisposto/prob2.svg?branch=develop)](https://travis-ci.org/bendisposto/prob2)
-[![SonarCloud Tech Debt](https://sonarcloud.io/api/badges/measure?key=prob2kernel&metric=sqale_debt_ratio)](https://sonarcloud.io/dashboard?id=prob2kernel)
+[![SonarCloud Tech Debt](https://sonarcloud.io/api/project_badges/measure?project=prob2kernel&metric=sqale_index)](https://sonarcloud.io/dashboard?id=prob2kernel)
 
 **IMPORTANT:** The layout of the repository has changed! The Eclipse/Rodin plugin was moved to a separate repository: http://github.com/bendisposto/prob2-plugin. This repository only contains the Kernel of ProB 2.0.
 
