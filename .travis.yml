@@ -18,9 +18,13 @@ install: /bin/true
 script:
 - TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean allTests --info --stacktrace --warning-mode=all
 after_success:
-- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives --info --stacktrace --warning-mode=all
-- git fetch --unshallow
-- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle sonarqube --info --stacktrace --warning-mode=all
+# Run uploadArchives and sonarqube only on one of the workers
+- if [[ "$(java -version)" =~ "1\.8\.0" ]]
+  then
+    TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives --info --stacktrace --warning-mode=all
+    git fetch --unshallow
+    TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle sonarqube --info --stacktrace --warning-mode=all
+  fi
 
 env:
   global:
