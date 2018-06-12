@@ -38,9 +38,9 @@ public class GetMachineOperationInfos extends AbstractCommand {
 			final String opName = prologTerm.getArgument(1).getFunctor();
 			final List<String> outputParameterNames = convertAtomicStringList(prologTerm.getArgument(2));
 			final List<String> parameterNames = convertAtomicStringList(prologTerm.getArgument(3));
-			final List<String> readVariables = convertAtomicStringList(prologTerm.getArgument(4));
-			final List<String> writtenVariables = convertAtomicStringList(prologTerm.getArgument(5));
-			final List<String> nonDetWrittenVariables = convertAtomicStringList(prologTerm.getArgument(6));
+			final List<String> readVariables = convertAtomicStringList(prologTerm.getArgument(6));
+			final List<String> writtenVariables = convertAtomicStringList(prologTerm.getArgument(7));
+			final List<String> nonDetWrittenVariables = convertAtomicStringList(prologTerm.getArgument(8));
 			operationInfos.add(new OperationInfo(opName, parameterNames, outputParameterNames, readVariables, writtenVariables, nonDetWrittenVariables));
 		}
 	}
