@@ -30,7 +30,6 @@ import de.prob.animator.command.FindStateCommand;
 import de.prob.animator.command.FindTraceBetweenNodesCommand;
 import de.prob.animator.command.FormulaTypecheckCommand;
 import de.prob.animator.command.GetCurrentPreferencesCommand;
-import de.prob.animator.command.GetMachineOperationInfos.OperationInfo;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;

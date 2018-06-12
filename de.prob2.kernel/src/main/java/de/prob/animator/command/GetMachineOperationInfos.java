@@ -9,6 +9,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.OperationInfo;
 
 public class GetMachineOperationInfos extends AbstractCommand {
 	private static final String PROLOG_COMMAND_NAME = "get_machine_operation_infos";
@@ -42,37 +43,4 @@ public class GetMachineOperationInfos extends AbstractCommand {
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(RESULT_VARIABLE).closeTerm();
 	}
-
-	public class OperationInfo {
-		private final String operationName;
-		private final List<String> parameterNames;
-		private final List<String> outputParameterNames;
-
-		private OperationInfo(String opName, List<String> parameterNames, List<String> outputParameterNames) {
-			this.operationName = opName;
-			this.parameterNames = parameterNames;
-			this.outputParameterNames = outputParameterNames;
-		}
-
-		public String getOperationName() {
-			return operationName;
-		}
-
-		public List<String> getParameterNames() {
-			return parameterNames;
-		}
-
-		public List<String> getOutputParameterNames() {
-			return outputParameterNames;
-		}
-
-		@Override
-		public String toString() {
-			return String.format("[opName: %s, params: [%s], outputParams: [%s]]", operationName,
-					String.join(", ", parameterNames), String.join(", ", outputParameterNames));
-
-		}
-
-	}
-
 }

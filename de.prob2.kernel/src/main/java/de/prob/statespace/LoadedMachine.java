@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import de.prob.animator.command.GetMachineIdentifiersCommand;
 import de.prob.animator.command.GetMachineOperationInfos;
-import de.prob.animator.command.GetMachineOperationInfos.OperationInfo;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 
