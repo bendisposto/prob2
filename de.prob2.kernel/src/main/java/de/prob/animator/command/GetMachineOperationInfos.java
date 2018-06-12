@@ -1,6 +1,7 @@
 package de.prob.animator.command;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,19 +22,25 @@ public class GetMachineOperationInfos extends AbstractCommand {
 		super();
 	}
 
-	private static List<String> convertAtomicStringList(final ListPrologTerm list) {
-		return list.stream().map(PrologTerm::atomicString).collect(Collectors.toList());
+	private static List<String> convertAtomicStringList(final PrologTerm list) {
+		if (list instanceof ListPrologTerm) {
+			return ((ListPrologTerm)list).stream().map(PrologTerm::atomicString).collect(Collectors.toList());
+		} else if ("unknown".equals(PrologTerm.atomicString(list))) {
+			return Collections.emptyList();
+		} else {
+			throw new AssertionError("Not a list or 'unknown': " + list);
+		}
 	}
 
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		for (PrologTerm prologTerm : BindingGenerator.getList(bindings, RESULT_VARIABLE)) {
 			final String opName = prologTerm.getArgument(1).getFunctor();
-			final List<String> outputParameterNames = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(2));
-			final List<String> parameterNames = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(3));
-			final List<String> readVariables = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(4));
-			final List<String> writtenVariables = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(5));
-			final List<String> nonDetWrittenVariables = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(6));
+			final List<String> outputParameterNames = convertAtomicStringList(prologTerm.getArgument(2));
+			final List<String> parameterNames = convertAtomicStringList(prologTerm.getArgument(3));
+			final List<String> readVariables = convertAtomicStringList(prologTerm.getArgument(4));
+			final List<String> writtenVariables = convertAtomicStringList(prologTerm.getArgument(5));
+			final List<String> nonDetWrittenVariables = convertAtomicStringList(prologTerm.getArgument(6));
 			operationInfos.add(new OperationInfo(opName, parameterNames, outputParameterNames, readVariables, writtenVariables, nonDetWrittenVariables));
 		}
 	}
