@@ -21,17 +21,20 @@ public class GetMachineOperationInfos extends AbstractCommand {
 		super();
 	}
 
+	private static List<String> convertAtomicStringList(final ListPrologTerm list) {
+		return list.stream().map(PrologTerm::atomicString).collect(Collectors.toList());
+	}
+
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		for (PrologTerm prologTerm : BindingGenerator.getList(bindings, RESULT_VARIABLE)) {
 			final String opName = prologTerm.getArgument(1).getFunctor();
-			final List<String> outputParameterNames = ((ListPrologTerm)prologTerm.getArgument(2)).stream()
-				.map(PrologTerm::getFunctor)
-				.collect(Collectors.toList());
-			final List<String> parameterNames = ((ListPrologTerm)prologTerm.getArgument(3)).stream()
-				.map(PrologTerm::getFunctor)
-				.collect(Collectors.toList());
-			operationInfos.add(new OperationInfo(opName, parameterNames, outputParameterNames));
+			final List<String> outputParameterNames = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(2));
+			final List<String> parameterNames = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(3));
+			final List<String> readVariables = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(4));
+			final List<String> writtenVariables = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(5));
+			final List<String> nonDetWrittenVariables = convertAtomicStringList((ListPrologTerm)prologTerm.getArgument(6));
+			operationInfos.add(new OperationInfo(opName, parameterNames, outputParameterNames, readVariables, writtenVariables, nonDetWrittenVariables));
 		}
 	}
 
