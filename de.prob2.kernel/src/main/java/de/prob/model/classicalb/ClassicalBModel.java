@@ -77,6 +77,7 @@ public class ClassicalBModel extends AbstractModel {
 			for (final LinkedList<TIdentifierLiteral> machineId : vertices) {
 				final String machineName = machineId.getLast().getText();
 				final Start ast = rml.getParsedMachines().get(machineName);
+				if (ast == null) throw new IllegalStateException("Cannot get machine, maybe the name "+machineName+" is not allowed");
 				if (!done.contains(machineId)) {
 					final DependencyWalker walker = new DependencyWalker(machineId, machines, graph, rml.getParsedMachines());
 					ast.apply(walker);
