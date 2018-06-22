@@ -45,12 +45,14 @@ ext {
 // IMPORTANT !!!
 
 
-def parser_version
-
+final parser_version
+final cliDownloadURL
 if (project.version.endsWith("-SNAPSHOT")) {
 	parser_version = '2.9.12-SNAPSHOT'
+	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/nightly"
 } else {
 	parser_version = '2.9.11'
+	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/releases/${cli_version}"
 }
 
 
@@ -155,80 +157,59 @@ sonarqube {
 }
 
 def download(address, target) {
-	def file = new FileOutputStream(file(target).path)
-	def out = new BufferedOutputStream(file)
-	out << new URL(address).openStream()
-	out.close()
-}
-
-
-
-def downloadUrlPath() {
-	if (project.version.endsWith("-SNAPSHOT")) {
-		return "https://www3.hhu.de/stups/downloads/prob/cli/nightly/"
-	} else {
-		return "https://www3.hhu.de/stups/downloads/prob/cli/releases/" + cli_version + "/"
+	println("Downloading ${address} to ${target}")
+	new BufferedOutputStream(new FileOutputStream(file(target))).withStream {out ->
+		new URL(address).openStream().withStream {inp ->
+			out << inp
+		}
 	}
 }
 
-def cspmfmapping(n) {
-	def m = [
-		'darwin-64': 'leopard64',
-		'linux-32': 'linux32',
-		'linux-64': 'linux64',
-		'windows': 'windows'
-	]
-	return m.get(n)
-}
-
-
-
-
 task downloadCLIs {
 	doLast {
-		def dir = 'src/main/resources/cli/'
-		delete file(dir)
-		def f = file(dir)
-		f.mkdirs()
+		final targetDir = 'src/main/resources/cli'
+		delete file(targetDir)
+		file(targetDir).mkdirs()
 
+		final files = []
 		[
 			'leopard64',
 			'linux32',
 			'linux64',
 			'win32',
-			'win64'
-		].each { n ->
-			def targetdir = dir+n
-			def targetzip = dir+"probcli_${n}.zip"
-			def url = downloadUrlPath()+"probcli_${n}.zip"
-			println("Download ProB cli: ${url}")
-			download(url, targetzip)
+			'win64',
+		].each {platform ->
+			files << "probcli_${platform}.zip"
 		}
-
-		['32', '64'].each { winV ->
-			def targetzip = dir+"windowslib${winV}.zip"
-			download(downloadUrlPath()+"windowslib${winV}.zip", targetzip)
+		['32', '64'].each {bits ->
+			files << "windowslib${bits}.zip"
+		}
+		
+		files.each {filename ->
+			download("${cliDownloadURL}/${filename}", "${targetDir}/${filename}")
 		}
 	}
 }
 
 task downloadCSPMFrontend {
 	doLast {
-		def dir = 'src/main/resources/cli/'
+		final cspmfDownloadURL = "https://www3.hhu.de/stups/downloads/cspmf"
+		final targetDir = 'src/main/resources/cli'
 		[
-			'darwin-64',
-			'linux-32',
-			'linux-64',
-			'windows',
-		].each { n ->
-			def libName = "cspmf"
-			def target = dir + cspmfmapping(n) + "-cspmf"
-			if (n=="windows") {
-				target += ".exe"
-				libName += ".exe"
+			'darwin-64': 'leopard64',
+			'linux-32': 'linux32',
+			'linux-64': 'linux64',
+			'windows': 'windows',
+		].each {cspmfPlatform, probPlatform ->
+			final libName
+			if (cspmfPlatform == "windows") {
+				libName = "cspmf.exe"
+			} else {
+				libName = "cspmf"
 			}
-			download('https://www3.hhu.de/stups/downloads/cspmf/'+n+'/'+libName, target)
-			file(target).setExecutable(true)
+			final target = "${targetDir}/${probPlatform}-${libName}"
+			download("${cspmfDownloadURL}/${cspmfPlatform}/${libName}", target)
+			file(target).executable = true
 		}
 	}
 	dependsOn downloadCLIs
