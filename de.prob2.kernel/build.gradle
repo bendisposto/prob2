@@ -29,10 +29,6 @@ if (System.env.TRAVIS == 'true') {
 }
 
 
-def gradle_version = '4.7'
-
-
-
 // IMPORTANT !!!
 project.version = '3.2.10-SNAPSHOT'
 // Remember to release the cli
@@ -277,7 +273,10 @@ groovydoc {
 	docTitle="ProB Core "+project.version
 }
 
-task wrapper(type: Wrapper) { gradleVersion = gradle_version }
+wrapper {
+	gradleVersion = "4.8.1"
+	distributionType = Wrapper.DistributionType.ALL
+}
 
 
 def os_extension() {
