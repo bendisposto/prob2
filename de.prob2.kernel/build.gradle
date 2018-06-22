@@ -157,18 +157,26 @@ sonarqube {
 }
 
 def download(address, target) {
-	println("Downloading ${address} to ${target}")
-	new BufferedOutputStream(new FileOutputStream(file(target))).withStream {out ->
-		new URL(address).openStream().withStream {inp ->
-			out << inp
+	final targetFile = file(target)
+	final connection = (HttpURLConnection)new URL(address).openConnection()
+	connection.ifModifiedSince = targetFile.lastModified()
+	connection.connect()
+	if (connection.responseCode == HttpURLConnection.HTTP_NOT_MODIFIED) {
+		println("Not redownloading ${address} because ${target} is up-to-date")
+	} else {
+		println("Downloading ${address} to ${target}")
+		connection.inputStream.withStream {inp ->
+			new BufferedOutputStream(new FileOutputStream(targetFile)).withStream {out ->
+				out << inp
+			}
 		}
+		targetFile.lastModified = connection.lastModified
 	}
 }
 
 task downloadCLIs {
 	doLast {
 		final targetDir = 'src/main/resources/cli'
-		delete file(targetDir)
 		file(targetDir).mkdirs()
 
 		final files = []
