@@ -1,4 +1,3 @@
-import org.gradle.api.tasks.wrapper.Wrapper
 
 plugins {
 	id "org.sonarqube" version "2.6.2"
@@ -190,7 +189,7 @@ task downloadCLIs {
 		['32', '64'].each {bits ->
 			files << "windowslib${bits}.zip"
 		}
-		
+
 		files.each {filename ->
 			download("${cliDownloadURL}/${filename}", "${targetDir}/${filename}")
 		}
@@ -277,7 +276,8 @@ groovydoc {
 
 wrapper {
 	gradleVersion = "4.8.1"
-	distributionType = Wrapper.DistributionType.ALL
+	// seems to break win64 build
+  //	distributionType = Wrapper.DistributionType.ALL
 }
 
 
