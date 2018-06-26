@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.wrapper.Wrapper
+
 plugins {
 	id "org.sonarqube" version "2.6.2"
 }
