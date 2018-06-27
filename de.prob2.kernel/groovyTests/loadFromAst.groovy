@@ -19,7 +19,7 @@ assert modelFactory != null
 final p = new BParser()
 final ast = p.parse(modelString, false)
 
-final em = modelFactory.create(ast)
+final em = modelFactory.create("blah",ast)
 final m = em.model
 final s = em.load()
 

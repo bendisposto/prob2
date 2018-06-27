@@ -15,7 +15,7 @@ END"""
 final modelFactory = api.modelFactoryProvider.classicalBFactory
 assert modelFactory != null 
 
-final em = modelFactory.create(modelString)
+final em = modelFactory.create("blah", modelString)
 final m = em.model
 final s = em.load()
 
