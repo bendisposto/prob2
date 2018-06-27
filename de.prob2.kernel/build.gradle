@@ -1,4 +1,3 @@
-
 plugins {
 	id "org.sonarqube" version "2.6.2"
 }
@@ -276,22 +275,7 @@ groovydoc {
 
 wrapper {
 	gradleVersion = "4.8.1"
-	// seems to break win64 build
-  //	distributionType = Wrapper.DistributionType.ALL
-}
-
-
-def os_extension() {
-	def bits = System.getProperty("sun.arch.data.model")
-	def os = System.getProperty("os.name").toLowerCase()
-	if (os.indexOf("mac") > -1) {
-		return "probcli_leopard64"
-	}
-	if (os.indexOf("win") > -1) {
-		return "probcli_win32"
-	} else {
-		return "probcli_linux" + (bits.equals("64") ? "64": "32")
-	}
+	distributionType = Wrapper.DistributionType.ALL
 }
 
 // run integration tests after downloading fresh CLI from Nightly Build
