@@ -1,12 +1,15 @@
 package de.prob.animator.command;
 
-import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * @deprecated This command does not support text entries. Use {@link GetAnimationMatrixForStateCommand} instead.
+ */
+@Deprecated
 public class GetImagesForStateCommand extends AbstractCommand {
 
 	private static final String PROLOG_COMMAND_NAME = "get_animation_image_matrix_for_state";
