@@ -18,9 +18,11 @@ public class LoadedMachine {
 	private Map<String, OperationInfo> machineOperationInfos;
 	private List<String> variableNames;
 	private List<String> constantNames;
+	private List<String> setNames;
 
 	private List<IEvalElement> variableEvalElements;
 	private List<IEvalElement> constantEvalElements;
+	private List<IEvalElement> setEvalElements;
 
 	public LoadedMachine(StateSpace stateSpace) {
 		this.stateSpace = stateSpace;
@@ -87,5 +89,24 @@ public class LoadedMachine {
 		}
 		return constantEvalElements;
 	}
-	
+
+	public List<String> getSetNames() {
+		if (this.setNames == null) {
+			GetMachineIdentifiersCommand command = new GetMachineIdentifiersCommand(
+					GetMachineIdentifiersCommand.Category.SETS);
+			this.stateSpace.execute(command);
+			this.setNames = command.getIdentifiers();
+		}
+		return new ArrayList<>(this.setNames);
+	}
+
+	public List<IEvalElement> getSetEvalElements() {
+		if (setEvalElements == null) {
+			setEvalElements = new ArrayList<>();
+			for (String string : getSetNames()) {
+				setEvalElements.add(stateSpace.getModel().parseFormula(string, FormulaExpand.EXPAND));
+			}
+		}
+		return setEvalElements;
+	}
 }

@@ -12,7 +12,11 @@ import de.prob.prolog.term.PrologTerm;
 public class GetMachineIdentifiersCommand extends AbstractCommand {
 
 	public enum Category {
-		MACHINES("machines"), VARIABLES("variables"), CONSTANTS("constants");
+		MACHINES("machines"),
+		SETS("sets"),
+		CONSTANTS("constants"),
+		VARIABLES("variables"),
+		;
 
 		String prologAtom;
 
