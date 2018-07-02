@@ -50,13 +50,14 @@ public final class GetAnimationMatrixForStateCommand extends AbstractCommand {
 		final int maxRow = BindingGenerator.getInteger(bindings.get(MAX_ROW_VAR)).getValue().intValueExact();
 		final int minColumn = BindingGenerator.getInteger(bindings.get(MIN_COL_VAR)).getValue().intValueExact();
 		final int maxColumn = BindingGenerator.getInteger(bindings.get(MAX_COL_VAR)).getValue().intValueExact();
-		if (minRow < 0 || maxRow < 0 || minColumn < 0 || maxColumn < 0) {
+		
+		final int rows = maxRow - minRow + 1;
+		final int columns = maxColumn - minColumn + 1;
+		if (rows <= 0 || columns <= 0) {
 			// No animation function defined
 			return;
 		}
 		
-		final int rows = maxRow - minRow + 1;
-		final int columns = maxColumn - minColumn + 1;
 		// Create a rows*columns 2D list filled with nulls.
 		// https://stackoverflow.com/a/5600690
 		this.matrix = Stream.generate(() -> new ArrayList<>(Collections.nCopies(columns, null))).limit(rows).collect(Collectors.toList());
