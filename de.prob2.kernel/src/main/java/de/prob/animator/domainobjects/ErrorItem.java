@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import de.be4.classicalb.core.parser.exceptions.BException;
+
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -53,6 +55,16 @@ public final class ErrorItem {
 			final int endColumn = ((IntegerPrologTerm)location.getArgument(5)).getValue().intValueExact();
 			
 			return new Location(filename, startLine, startColumn, endLine, endColumn);
+		}
+		
+		public static Location fromParserLocation(final BException.Location location) {
+			return new ErrorItem.Location(
+				location.getFilename() == null ? "(unknown file)" : location.getFilename(),
+				location.getStartLine(),
+				location.getStartColumn(),
+				location.getEndLine(),
+				location.getEndColumn()
+			);
 		}
 		
 		public String getFilename() {
@@ -167,6 +179,12 @@ public final class ErrorItem {
 			.collect(Collectors.toList());
 		
 		return new ErrorItem(message, type, locations);
+	}
+	
+	public static ErrorItem fromParserException(final BException exception) {
+		return new ErrorItem(exception.getMessage(), Type.ERROR, exception.getLocations().stream()
+			.map(Location::fromParserLocation)
+			.collect(Collectors.toList()));
 	}
 	
 	public String getMessage() {
