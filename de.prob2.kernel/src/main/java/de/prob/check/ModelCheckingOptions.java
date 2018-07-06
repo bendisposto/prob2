@@ -2,6 +2,7 @@ package de.prob.check;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class ModelCheckingOptions {
@@ -105,6 +106,23 @@ public class ModelCheckingOptions {
 
 	public Set<Options> getPrologOptions() {
 		return Collections.unmodifiableSet(options);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj) {
+			return true;
+		}
+		if(this.getClass() != obj.getClass()) {
+			return false;
+		}
+		ModelCheckingOptions other = (ModelCheckingOptions) obj;
+		return other.options.equals(this.options);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(options);
 	}
 
 	@Override
