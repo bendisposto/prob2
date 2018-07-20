@@ -113,7 +113,7 @@ public class ModelCheckingOptions {
 		if(this == obj) {
 			return true;
 		}
-		if(this.getClass() != obj.getClass()) {
+		if(obj == null || this.getClass() != obj.getClass()) {
 			return false;
 		}
 		ModelCheckingOptions other = (ModelCheckingOptions) obj;
