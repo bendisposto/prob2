@@ -17,12 +17,12 @@ public class EventBParserBase implements ProBParserBase {
 
 	@Override
 	public void parseExpression(IPrologTermOutput pto, String expression, boolean wrap) throws ProBParseException {
-		toPrologTerm(pto, new EventB(expression).getAst(), wrap, EXPR_WRAPPER);
+		toPrologTerm(pto, new EventB(expression, FormulaExpand.EXPAND).getAst(), wrap, EXPR_WRAPPER);
 	}
 
 	@Override
 	public void parsePredicate(IPrologTermOutput pto, String predicate, boolean wrap) throws ProBParseException {
-		toPrologTerm(pto, new EventB(predicate).getAst(), wrap, PRED_WRAPPER);
+		toPrologTerm(pto, new EventB(predicate, FormulaExpand.EXPAND).getAst(), wrap, PRED_WRAPPER);
 	}
 
 	@Override

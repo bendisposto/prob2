@@ -1,12 +1,14 @@
 package de.prob.statespace;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import com.google.inject.Singleton;
 
@@ -22,11 +24,10 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class Animations {
 
-	Logger logger = LoggerFactory.getLogger(Animations.class);
+	private static final Logger logger = LoggerFactory.getLogger(Animations.class);
 
-	List<ITraceChangesListener> traceListeners = new CopyOnWriteArrayList<ITraceChangesListener>();
-
-	Map<UUID, Trace> traces = new LinkedHashMap<UUID, Trace>();
+	private final List<ITraceChangesListener> traceListeners = new CopyOnWriteArrayList<>();
+	private final Map<UUID, Trace> traces = new LinkedHashMap<>();
 
 	/**
 	 * An {@link IAnimationChangeListener} can register itself via this method
@@ -74,13 +75,9 @@ public class Animations {
 	private void notifyTraceChange(final Trace trace) {
 		for (ITraceChangesListener listener : traceListeners) {
 			try {
-				listener.changed(java.util.Collections.singletonList(trace));
-			} catch (Exception e) {
-				logger.error("An exception of type "
-						+ e.getClass()
-						+ " was thrown while executing IAnimationChangeListener of class "
-						+ listener.getClass() + " with message "
-						+ e.getMessage());
+				listener.changed(Collections.singletonList(trace));
+			} catch (RuntimeException e) {
+				logger.error("An exception was thrown while executing IAnimationChangeListener of class {}", listener.getClass(), e);
 			}
 		}
 	}
@@ -88,34 +85,24 @@ public class Animations {
 	private void notifyTraceRemove(final Trace trace) {
 		for (ITraceChangesListener listener : traceListeners) {
 			try {
-				listener.removed(java.util.Collections.singletonList(trace
-						.getUUID()));
-			} catch (Exception e) {
-				logger.error("An exception of type "
-						+ e.getClass()
-						+ " was thrown while executing IAnimationChangeListener of class "
-						+ listener.getClass() + " with message "
-						+ e.getMessage());
+				listener.removed(Collections.singletonList(trace.getUUID()));
+			} catch (RuntimeException e) {
+				logger.error("An exception was thrown while executing IAnimationChangeListener of class {}", listener.getClass(), e);
 			}
 		}
 	}
 
 	public void notifyBusy() {
-		HashSet<UUID> busy = new HashSet<UUID>();
-		for (Trace t : traces.values()) {
-			if (t.getStateSpace().isBusy())
-				busy.add(t.getUUID());
-		}
-
+		Set<UUID> busy = traces.values().stream()
+			.filter(t -> t.getStateSpace().isBusy())
+			.map(Trace::getUUID)
+			.collect(Collectors.toSet());
+		
 		for (ITraceChangesListener listener : traceListeners) {
 			try {
 				listener.animatorStatus(busy);
-			} catch (Exception e) {
-				logger.error("An exception of type "
-						+ e.getClass()
-						+ " was thrown while executing IAnimationChangeListener of class "
-						+ listener.getClass() + " with message "
-						+ e.getMessage());
+			} catch (RuntimeException e) {
+				logger.error("An exception was thrown while executing IAnimationChangeListener of class {}", listener.getClass(), e);
 			}
 		}
 	}
@@ -124,8 +111,7 @@ public class Animations {
 	 * @return the list of {@link Trace} objects in the registry.
 	 */
 	public List<Trace> getTraces() {
-		return java.util.Collections.unmodifiableList(new ArrayList<Trace>(
-				traces.values()));
+		return Collections.unmodifiableList(new ArrayList<>(traces.values()));
 	}
 
 	public Trace getTrace(final UUID uuid) {
@@ -156,8 +142,7 @@ public class Animations {
 	 *            Trace object containing the changes.
 	 */
 	public void traceChange(final Trace trace) {
-		UUID uuid = trace.getUUID();
-		traces.put(uuid, trace);
+		traces.put(trace.getUUID(), trace);
 		notifyTraceChange(trace);
 	}
 

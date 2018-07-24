@@ -1,36 +1,40 @@
-import de.prob.statespace.*
+import java.nio.file.Paths
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.statespace.State
+import de.prob.statespace.Trace
 
-formula = "waiting \\/ ready" as ClassicalB
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
+
+final formula = "waiting \\/ ready" as ClassicalB
 assert !s.formulaRegistry.containsKey(formula)
 s.subscribe(s, formula)
 
-h = new Trace(s)
+def h = new Trace(s)
 h = h.add(0)
 h = h.add(4)
 h = h.add(6)
-a = h.getCurrentState()
+final a = h.currentState
 assert a == s[4]
-assert a.getClass() == State
+assert a.class == State
 
-values = s.valuesAt(a)
-assert values.containsKey(formula)
-assert values[formula].getValue() == "{PID1,PID3}"
+final values1 = s.valuesAt(a)
+assert values1.containsKey(formula)
+assert values1[formula].value == "{PID1,PID3}"
 h = h.back()
 h = h.back()
-b = h.getCurrentState()
+final b = h.currentState
 assert b == s[0]
-values = s.valuesAt(b)
-assert values.containsKey(formula)
-assert values[formula].getValue() == "{}"
+final values2 = s.valuesAt(b)
+assert values2.containsKey(formula)
+assert values2[formula].value == "{}"
 
-f2 = "card(waiting)" as ClassicalB
-before = b.getValues()
+final f2 = "card(waiting)" as ClassicalB
+final before = b.values
 assert !before.containsKey(f2)
 s.subscribe(s, f2)
-after = b.getValues()
+final after = b.values
 assert after.containsKey(f2)
-assert after.get(f2).getValue() == "0"
+assert after[f2].value == "0"
 
 "A registered formula is automatically evaluated in every state and can be found in the cache later"

@@ -1,6 +1,9 @@
 language: groovy
-jdk:
-- oraclejdk8
+matrix:
+  include:
+    - jdk: oraclejdk8
+      env: DO_AFTER_SUCCESS=true
+    - jdk: oraclejdk9
 before_install:
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out pubring.gpg -d
@@ -11,17 +14,20 @@ branches:
   - develop
 addons:
   sonarcloud:
-    branches:
-    - master
-    - develop
+    organization: prob2
 sudo: false
 install: /bin/true
 script:
-- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean allTests --info --stacktrace
+- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle clean allTests --info --stacktrace --warning-mode=all
 after_success:
-- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives --info --stacktrace
-- git fetch --unshallow
-- TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle sonarqube --info --stacktrace
+# Run uploadArchives and sonarqube only on one of the workers
+- |
+  if [[ "${DO_AFTER_SUCCESS}" == "true" ]]
+  then
+    TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle uploadArchives --info --stacktrace --warning-mode=all
+    git fetch --unshallow
+    TERM=dumb ./de.prob2.kernel/gradlew -b de.prob2.kernel/build.gradle sonarqube --info --stacktrace --warning-mode=all
+  fi
 
 env:
   global:

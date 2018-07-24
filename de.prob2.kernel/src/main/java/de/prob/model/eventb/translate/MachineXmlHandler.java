@@ -12,17 +12,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.Event;
-import de.prob.model.eventb.Event.EventType;
 import de.prob.model.eventb.EventBAction;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBConstant;
@@ -47,25 +40,35 @@ import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.Variable;
 
+import org.eventb.core.ast.extension.IFormulaExtension;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 public class MachineXmlHandler extends DefaultHandler {
+	private static final Logger logger = LoggerFactory.getLogger(MachineXmlHandler.class);
 
 	private EventBModel model;
 	private final Set<IFormulaExtension> typeEnv;
 	private EventBMachine machine;
-	private final List<String> seesNames = new ArrayList<String>();
+	private final List<String> seesNames = new ArrayList<>();
 	private final String directoryPath;
 
-	private final List<Context> sees = new ArrayList<Context>();
-	private final List<EventBMachine> refines = new ArrayList<EventBMachine>();
-	private final List<EventBInvariant> invariants = new ArrayList<EventBInvariant>();
-	private final List<EventBInvariant> inheritedInvariants = new ArrayList<EventBInvariant>();
-	private final List<EventBVariable> variables = new ArrayList<EventBVariable>();
-	private final List<Event> events = new ArrayList<Event>();
-	private final List<Variant> variant = new ArrayList<Variant>();
+	private final List<Context> sees = new ArrayList<>();
+	private final List<EventBMachine> refines = new ArrayList<>();
+	private final List<EventBInvariant> invariants = new ArrayList<>();
+	private final List<EventBInvariant> inheritedInvariants = new ArrayList<>();
+	private final List<EventBVariable> variables = new ArrayList<>();
+	private final List<Event> events = new ArrayList<>();
+	private final List<Variant> variant = new ArrayList<>();
 
 	// For extracting internal contexts
 	private Context internalContext;
-	private List<Context> Extends;
+	private List<Context> extendedContexts;
 	private List<de.prob.model.representation.Set> sets;
 	private List<EventBAxiom> axioms;
 	private List<EventBAxiom> inheritedAxioms;
@@ -81,11 +84,9 @@ public class MachineXmlHandler extends DefaultHandler {
 	private List<Witness> witnesses;
 	private boolean extractingEvent = false;
 
-	private final Map<String, Map<String, EventBAxiom>> axiomCache = new HashMap<String, Map<String, EventBAxiom>>();
-	private final Map<String, Map<String, EventBInvariant>> invariantCache = new HashMap<String, Map<String, EventBInvariant>>();
-	private final Map<String, Map<String, Event>> eventCache = new HashMap<String, Map<String, Event>>();
-
-	private final Logger logger = LoggerFactory.getLogger(MachineXmlHandler.class);
+	private final Map<String, Map<String, EventBAxiom>> axiomCache = new HashMap<>();
+	private final Map<String, Map<String, EventBInvariant>> invariantCache = new HashMap<>();
+	private final Map<String, Map<String, Event>> eventCache = new HashMap<>();
 
 	public MachineXmlHandler(EventBModel model, final String fileName, final Set<IFormulaExtension> typeEnv) {
 		this.model = model;
@@ -93,60 +94,87 @@ public class MachineXmlHandler extends DefaultHandler {
 
 		String name = fileName.substring(
 				fileName.lastIndexOf(File.separatorChar) + 1,
-				fileName.lastIndexOf("."));
+				fileName.lastIndexOf('.'));
 		directoryPath = fileName.substring(0,
 				fileName.lastIndexOf(File.separatorChar));
 		machine = new EventBMachine(name);
 
-		axiomCache.put(name, new HashMap<String, EventBAxiom>());
-		invariantCache.put(name, new HashMap<String, EventBInvariant>());
-		eventCache.put(name, new HashMap<String, Event>());
+		axiomCache.put(name, new HashMap<>());
+		invariantCache.put(name, new HashMap<>());
+		eventCache.put(name, new HashMap<>());
 	}
 
 	@Override
 	public void startElement(final String uri, final String localName,
-			final String qName, final Attributes attributes)
-					throws SAXException {
-
-		if (qName.equals("org.eventb.core.scRefinesMachine")) {
-			addRefinedMachine(attributes);
-		} else if (qName.equals("org.eventb.core.scSeesContext")) {
-			addSeesContext(attributes);
-		} else if (qName.equals("org.eventb.core.scInternalContext")) {
-			beginContextExtraction(attributes);
-		} else if (extractingContext
-				&& qName.equals("org.eventb.core.scExtendsContext")) {
-			addExtendedContext(attributes);
-		} else if (extractingContext && qName.equals("org.eventb.core.scAxiom")) {
-			addAxiom(attributes);
-		} else if (extractingContext
-				&& qName.equals("org.eventb.core.scConstant")) {
-			addConstant(attributes);
-		} else if (extractingContext
-				&& qName.equals("org.eventb.core.scCarrierSet")) {
-			addSet(attributes);
-		} else if (qName.equals("org.eventb.core.scInvariant")) {
-			addInvariant(attributes);
-		} else if (qName.equals("org.eventb.core.scVariable")) {
-			addVariable(attributes);
-		} else if (qName.equals("org.eventb.core.scVariant")) {
-			addVariant(attributes);
-		} else if (qName.equals("org.eventb.core.scEvent")) {
-			beginEventExtraction(attributes);
-		} else if (extractingEvent && qName.equals("org.eventb.core.scAction")) {
-			addAction(attributes);
-		} else if (extractingEvent && qName.equals("org.eventb.core.scGuard")) {
-			addGuard(attributes);
-		} else if (extractingEvent
-				&& qName.equals("org.eventb.core.scParameter")) {
-			addEventParameter(attributes);
-		} else if (extractingEvent
-				&& qName.equals("org.eventb.core.scRefinesEvent")) {
-			addRefinedEvent(attributes);
-		} else if (extractingEvent && qName.equals("org.eventb.core.scWitness")) {
-			addWitness(attributes);
+			final String qName, final Attributes attributes) {
+		switch (qName) {
+			case "org.eventb.core.scRefinesMachine":
+				addRefinedMachine(attributes);
+				break;
+			case "org.eventb.core.scSeesContext":
+				addSeesContext(attributes);
+				break;
+			case "org.eventb.core.scInternalContext":
+				beginContextExtraction(attributes);
+				break;
+			case "org.eventb.core.scExtendsContext":
+				if (extractingContext) {
+					addExtendedContext(attributes);
+				}
+				break;
+			case "org.eventb.core.scAxiom":
+				if (extractingContext) {
+					addAxiom(attributes);
+				}
+				break;
+			case "org.eventb.core.scConstant":
+				if (extractingContext) {
+					addConstant(attributes);
+				}
+				break;
+			case "org.eventb.core.scCarrierSet":
+				if (extractingContext) {
+					addSet(attributes);
+				}
+				break;
+			case "org.eventb.core.scInvariant":
+				addInvariant(attributes);
+				break;
+			case "org.eventb.core.scVariable":
+				addVariable(attributes);
+				break;
+			case "org.eventb.core.scVariant":
+				addVariant(attributes);
+				break;
+			case "org.eventb.core.scEvent":
+				beginEventExtraction(attributes);
+				break;
+			case "org.eventb.core.scAction":
+				if (extractingEvent) {
+					addAction(attributes);
+				}
+				break;
+			case "org.eventb.core.scGuard":
+				if (extractingEvent) {
+					addGuard(attributes);
+				}
+				break;
+			case "org.eventb.core.scParameter":
+				if (extractingEvent) {
+					addEventParameter(attributes);
+				}
+				break;
+			case "org.eventb.core.scRefinesEvent":
+				if (extractingEvent) {
+					addRefinedEvent(attributes);
+				}
+				break;
+			case "org.eventb.core.scWitness":
+				if (extractingEvent) {
+					addWitness(attributes);
+				}
+				break;
 		}
-
 	}
 
 	private void addWitness(final Attributes attributes) {
@@ -198,19 +226,24 @@ public class MachineXmlHandler extends DefaultHandler {
 		String name = attributes.getValue("org.eventb.core.label");
 		String convergence = attributes.getValue("org.eventb.core.convergence");
 		String extended = attributes.getValue("org.eventb.core.extended");
-		EventType eventType = "0".equals(convergence) ? EventType.ORDINARY
-				: ("1".equals(convergence) ? EventType.CONVERGENT
-						: EventType.ANTICIPATED);
+		Event.EventType eventType;
+		if ("0".equals(convergence)) {
+			eventType = Event.EventType.ORDINARY;
+		} else if ("1".equals(convergence)) {
+			eventType = Event.EventType.CONVERGENT;
+		} else {
+			eventType = Event.EventType.ANTICIPATED;
+		}
 		event = new Event(name, eventType, Boolean.valueOf(extended));
 		eventCache.get(machine.getName()).put(crazyRodinInternalName, event);
 
 		extractingEvent = true;
 
-		refinesForEvent = new ArrayList<Event>();
-		guards = new ArrayList<EventBGuard>();
-		actions = new ArrayList<EventBAction>();
-		witnesses = new ArrayList<Witness>();
-		parameters = new ArrayList<EventParameter>();
+		refinesForEvent = new ArrayList<>();
+		guards = new ArrayList<>();
+		actions = new ArrayList<>();
+		witnesses = new ArrayList<>();
+		parameters = new ArrayList<>();
 	}
 
 	private void addVariant(final Attributes attributes) {
@@ -223,20 +256,20 @@ public class MachineXmlHandler extends DefaultHandler {
 			final String qName) throws SAXException {
 
 		if (extractingContext
-				&& qName.equals("org.eventb.core.scInternalContext")) {
+				&& "org.eventb.core.scInternalContext".equals(qName)) {
 			endContextExtraction();
 		}
-		if (extractingEvent && qName.equals("org.eventb.core.scEvent")) {
+		if (extractingEvent && "org.eventb.core.scEvent".equals(qName)) {
 			endEventExtraction();
 		}
 	}
 
 	private void endEventExtraction() {
-		event = event.set(Action.class, new ModelElementList<EventBAction>(actions));
-		event = event.set(Guard.class, new ModelElementList<EventBGuard>(guards));
-		event = event.set(EventParameter.class, new ModelElementList<EventParameter>(parameters));
-		event = event.set(Event.class, new ModelElementList<Event>(refinesForEvent));
-		event = event.set(Witness.class, new ModelElementList<Witness>(witnesses));
+		event = event.set(Action.class, new ModelElementList<>(actions));
+		event = event.set(Guard.class, new ModelElementList<>(guards));
+		event = event.set(EventParameter.class, new ModelElementList<>(parameters));
+		event = event.set(Event.class, new ModelElementList<>(refinesForEvent));
+		event = event.set(Witness.class, new ModelElementList<>(witnesses));
 
 		events.add(event);
 		extractingEvent = false;
@@ -254,8 +287,8 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	private void addRefinedMachine(final Attributes attributes) {
 		String target = attributes.getValue("org.eventb.core.scTarget");
-		String machineName = target.substring(target.lastIndexOf("/") + 1,
-				target.lastIndexOf("."));
+		String machineName = target.substring(target.lastIndexOf('/') + 1,
+				target.lastIndexOf('.'));
 
 		model = model.addRelationship(machine.getName(), machineName, ERefType.REFINES);
 
@@ -281,11 +314,7 @@ public class MachineXmlHandler extends DefaultHandler {
 				refines.add(handler.getMachine());
 
 				model = handler.getModel();
-			} catch (ParserConfigurationException e) {
-				logger.error("Error parsing XML",e);
-			} catch (SAXException e) {
-				logger.error("Error parsing XML",e);
-			} catch (IOException e) {
+			} catch (IOException | ParserConfigurationException | SAXException e) {
 				logger.error("Error parsing XML",e);
 			}
 		}
@@ -296,9 +325,9 @@ public class MachineXmlHandler extends DefaultHandler {
 		String internalName = source.substring(source.lastIndexOf('#') + 1,
 				source.length());
 		internalName = internalName.replace("\\", "");
-		String filePath = source.substring(0, source.indexOf("|"));
-		String machineName = filePath.substring(filePath.lastIndexOf("/") + 1,
-				filePath.lastIndexOf("."));
+		String filePath = source.substring(0, source.indexOf('|'));
+		String machineName = filePath.substring(filePath.lastIndexOf('/') + 1,
+				filePath.lastIndexOf('.'));
 		if (machineName.equals(machine.getName())) {
 			String label = attributes.getValue("org.eventb.core.label");
 			String predicate = attributes.getValue("org.eventb.core.predicate");
@@ -315,7 +344,7 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	private void addSet(final Attributes attributes) {
 		String name = attributes.getValue("name");
-		sets.add(new de.prob.model.representation.Set(new EventB(name)));
+		sets.add(new de.prob.model.representation.Set(new EventB(name, FormulaExpand.EXPAND)));
 	}
 
 	private void addConstant(final Attributes attributes) {
@@ -335,7 +364,7 @@ public class MachineXmlHandler extends DefaultHandler {
 				ERefType.EXTENDS);
 
 		Context extended = (Context) model.getComponent(contextName);
-		Extends.add(extended);
+		extendedContexts.add(extended);
 
 	}
 
@@ -345,8 +374,8 @@ public class MachineXmlHandler extends DefaultHandler {
 				source.length());
 		internalName = internalName.replace("\\", "");
 		String filePath = source.substring(0, source.indexOf('|'));
-		String contextName = filePath.substring(filePath.lastIndexOf("/") + 1,
-				filePath.lastIndexOf("."));
+		String contextName = filePath.substring(filePath.lastIndexOf('/') + 1,
+				filePath.lastIndexOf('.'));
 		if (contextName.equals(internalContext.getName())) {
 			String label = attributes.getValue("org.eventb.core.label");
 			String predicate = attributes.getValue("org.eventb.core.predicate");
@@ -362,8 +391,8 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	private void addSeesContext(final Attributes attributes) {
 		String target = attributes.getValue("org.eventb.core.scTarget");
-		String contextName = target.substring(target.lastIndexOf("/") + 1,
-				target.lastIndexOf("."));
+		String contextName = target.substring(target.lastIndexOf('/') + 1,
+				target.lastIndexOf('.'));
 
 		model = model.addRelationship(machine.getName(), contextName, ERefType.SEES);
 
@@ -385,23 +414,23 @@ public class MachineXmlHandler extends DefaultHandler {
 
 		internalContext = new Context(name);
 
-		axiomCache.put(name, new HashMap<String, EventBAxiom>());
+		axiomCache.put(name, new HashMap<>());
 
-		Extends = new ArrayList<Context>();
-		axioms = new ArrayList<EventBAxiom>();
-		inheritedAxioms = new ArrayList<EventBAxiom>();
-		sets = new ArrayList<de.prob.model.representation.Set>();
-		constants = new ArrayList<EventBConstant>();
+		extendedContexts = new ArrayList<>();
+		axioms = new ArrayList<>();
+		inheritedAxioms = new ArrayList<>();
+		sets = new ArrayList<>();
+		constants = new ArrayList<>();
 	}
 
 	private void endContextExtraction() throws SAXException {
-		ModelElementList<EventBAxiom> axms = new ModelElementList<EventBAxiom>(inheritedAxioms);
+		ModelElementList<EventBAxiom> axms = new ModelElementList<>(inheritedAxioms);
 		axms = axms.addMultiple(axioms);
 		internalContext = internalContext.set(Axiom.class, axms);
-		internalContext = internalContext.set(Constant.class, new ModelElementList<EventBConstant>(constants));
-		internalContext = internalContext.set(Context.class, new ModelElementList<Context>(Extends));
+		internalContext = internalContext.set(Constant.class, new ModelElementList<>(constants));
+		internalContext = internalContext.set(Context.class, new ModelElementList<>(extendedContexts));
 		internalContext = internalContext.set(de.prob.model.representation.Set.class,
-				new ModelElementList<de.prob.model.representation.Set>(sets));
+			new ModelElementList<>(sets));
 
 		ProofExtractor extractor = new ProofExtractor(internalContext,
 				directoryPath + File.separatorChar + internalContext.getName());
@@ -417,15 +446,15 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	@Override
 	public void endDocument() throws SAXException {
-		machine = machine.set(Event.class, new ModelElementList<Event>(events));
-		ModelElementList<EventBInvariant> invs = new ModelElementList<EventBInvariant>(inheritedInvariants);
+		machine = machine.set(Event.class, new ModelElementList<>(events));
+		ModelElementList<EventBInvariant> invs = new ModelElementList<>(inheritedInvariants);
 		invs = invs.addMultiple(invariants);
 		machine = machine.set(Invariant.class, invs);
-		machine = machine.set(Machine.class, new ModelElementList<EventBMachine>(refines));
-		machine = machine.set(Context.class, new ModelElementList<Context>(sees));
-		machine = machine.set(Variable.class, new ModelElementList<EventBVariable>(variables));
-		machine = machine.set(Variant.class, new ModelElementList<Variant>(variant));
-		machine = machine.set(BEvent.class, new ModelElementList<Event>(events));
+		machine = machine.set(Machine.class, new ModelElementList<>(refines));
+		machine = machine.set(Context.class, new ModelElementList<>(sees));
+		machine = machine.set(Variable.class, new ModelElementList<>(variables));
+		machine = machine.set(Variant.class, new ModelElementList<>(variant));
+		machine = machine.set(BEvent.class, new ModelElementList<>(events));
 
 		ProofExtractor proofExtractor = new ProofExtractor(machine,
 				directoryPath + File.separatorChar + machine.getName());

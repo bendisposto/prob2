@@ -3,6 +3,9 @@ package de.prob.scripting;
 import java.io.File;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -10,14 +13,12 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.CachingDefinitionFileProvider;
 import de.be4.classicalb.core.parser.IDefinitionFileProvider;
 import de.be4.classicalb.core.parser.ParsingBehaviour;
+import de.be4.classicalb.core.parser.PlainFileContentProvider;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Creates new {@link ClassicalBModel} objects.
@@ -48,30 +49,53 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 		return new ExtractedModel<>(classicalBModel, classicalBModel.getMainMachine());
 	}
 
+	/**
+	 * Use create(name,model) instead. The cli now checks if the name matches
+	 * the filename.
+	 * 
+	 * @deprecated
+	 */
+	@Deprecated
 	public ExtractedModel<ClassicalBModel> create(final String model) {
+		return create("from_string", model);
+	}
+
+	public ExtractedModel<ClassicalBModel> create(final String name, final String model) {
 		ClassicalBModel classicalBModel = modelCreator.get();
 		BParser bparser = new BParser();
 
 		Start ast = parseString(model, bparser);
-		final RecursiveMachineLoader rml = parseAllMachines(ast, ".", new File(""), bparser.getContentProvider(),
+		final RecursiveMachineLoader rml = parseAllMachines(ast, ".", new File(name + ".mch"),
+				bparser.getContentProvider(),
 				bparser);
-		classicalBModel = classicalBModel.create(ast, rml, new File("from_string"), bparser);
-		return new ExtractedModel<>(classicalBModel, classicalBModel.getMainMachine());
-	}
-
-	public ExtractedModel<ClassicalBModel> create(final Start model) {
-		ClassicalBModel classicalBModel = modelCreator.get();
-		BParser bparser = new BParser();
-
-		final RecursiveMachineLoader rml = parseAllMachines(model, ".", new File(""),
-				new CachingDefinitionFileProvider(), bparser);
-		classicalBModel = classicalBModel.create(model, rml, new File("from_string"), bparser);
+		classicalBModel = classicalBModel.create(ast, rml, new File(name + ".mch"), bparser);
 		return new ExtractedModel<>(classicalBModel, classicalBModel.getMainMachine());
 	}
 
 	/**
-	 * Given an {@link Start} ast, {@link File} f, and {@link BParser} bparser, all
-	 * machines are loaded.
+	 * Use create(name,model) instead. The cli now checks if the name matches
+	 * the filename.
+	 * 
+	 * @deprecated
+	 */
+	@Deprecated
+	public ExtractedModel<ClassicalBModel> create(final Start model) {
+		return create("from_string", model);
+	}
+	
+	public ExtractedModel<ClassicalBModel> create(final String name, final Start model) {
+		ClassicalBModel classicalBModel = modelCreator.get();
+		BParser bparser = new BParser();
+
+		final RecursiveMachineLoader rml = parseAllMachines(model, ".", new File(name + ".mch"),
+				new CachingDefinitionFileProvider(), bparser);
+		classicalBModel = classicalBModel.create(model, rml, new File(name + ".mch"), bparser);
+		return new ExtractedModel<>(classicalBModel, classicalBModel.getMainMachine());
+	}
+
+	/**
+	 * Given an {@link Start} ast, {@link File} f, and {@link BParser} bparser,
+	 * all machines are loaded.
 	 *
 	 * @param ast
 	 *            {@link Start} representing the abstract syntax tree for the
@@ -110,7 +134,8 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	 *            {@link File} containing B machine
 	 * @param bparser
 	 *            {@link BParser} for parsing
-	 * @return {@link Start} AST after parsing model with {@link BParser} bparser
+	 * @return {@link Start} AST after parsing model with {@link BParser}
+	 *         bparser
 	 * @throws IOException
 	 *             if an I/O error occurred
 	 * @throws ProBError
@@ -131,7 +156,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 		try {
 			logger.trace("Parsing file");
 			Start ast = null;
-			ast = bparser.parse(model, false);
+			ast = bparser.parse(model, false, new PlainFileContentProvider());
 			return ast;
 		} catch (BCompoundException e) {
 			throw new ProBError(e);

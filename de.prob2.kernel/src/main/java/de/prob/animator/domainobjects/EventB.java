@@ -49,13 +49,23 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	 * @param code
 	 *            - The String which is a representation of the desired Event-B
 	 *            formula
+	 * @deprecated Use {@link #EventB(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
 	 */
+	@Deprecated
 	public EventB(final String code) {
 		this(code, Collections.emptySet());
 	}
 
+	public EventB(final String code, final FormulaExpand expand) {
+		this(code, Collections.emptySet(), expand);
+	}
+
+	/**
+	 * @deprecated Use {@link #EventB(String, Set, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
 	public EventB(final String code, final Set<IFormulaExtension> types) {
-		this(code, types, FormulaExpand.TRUNCATE);
+		this(code, types, FormulaExpand.EXPAND);
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types, final FormulaExpand expansion) {

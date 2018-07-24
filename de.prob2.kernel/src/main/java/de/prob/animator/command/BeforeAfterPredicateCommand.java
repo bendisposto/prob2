@@ -1,6 +1,7 @@
 package de.prob.animator.command;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -28,7 +29,7 @@ public class BeforeAfterPredicateCommand extends AbstractCommand {
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		CompoundPrologTerm compoundTerm = BindingGenerator.getCompoundTerm(bindings.get(BA_PRED_VARIABLE), 0);
 		String code = compoundTerm.getFunctor();
-		result = new EventB(code);
+		result = new EventB(code, FormulaExpand.EXPAND);
 	}
 
 	@Override

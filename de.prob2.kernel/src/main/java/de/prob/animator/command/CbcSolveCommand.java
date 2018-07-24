@@ -8,6 +8,7 @@ import java.util.Map;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -15,9 +16,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.prob.statespace.State;
 
 /**
  * Calculates the values of Classical-B Predicates and Expressions.
@@ -27,10 +26,10 @@ import org.slf4j.LoggerFactory;
  */
 public class CbcSolveCommand extends AbstractCommand {
 	public enum Solvers {
-		PROB, KODKOD, SMT_SUPPORTED_INTERPRETER, Z3
+		PROB, KODKOD, SMT_SUPPORTED_INTERPRETER, Z3, CVC4
 	}
 
-	private static final String PROLOG_COMMAND_NAME = "cbc_solve";
+	private static final String PROLOG_COMMAND_NAME = "cbc_solve_with_opts";
 
 	private static final int BINDINGS = 1;
 
@@ -39,23 +38,30 @@ public class CbcSolveCommand extends AbstractCommand {
 	private static final int PROLOG_REP = 2;
 	private static final int PRETTY_PRINT = 3;
 
-	Logger logger = LoggerFactory.getLogger(CbcSolveCommand.class);
-
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
 	private static final String IDENTIFIER_LIST = "IdList";
 	private final IEvalElement evalElement;
+	private final Solvers solver;
+	private final State state;
 	private AbstractEvalResult result;
 	private final List<String> freeVariables = new ArrayList<>();
-
-	private Solvers solver;
 
 	public CbcSolveCommand(final IEvalElement evalElement) {
 		this(evalElement, Solvers.PROB);
 	}
 
+	public CbcSolveCommand(final IEvalElement evalElement, final State state) {
+		this(evalElement, Solvers.PROB, state);
+	}
+	
 	public CbcSolveCommand(final IEvalElement evalElement, final Solvers solver) {
+		this(evalElement, solver, null);
+	}
+
+	public CbcSolveCommand(final IEvalElement evalElement, final Solvers solver, final State state) {
 		this.evalElement = evalElement;
 		this.solver = solver;
+		this.state = state;
 	}
 
 	public AbstractEvalResult getValue() {
@@ -111,6 +117,18 @@ public class CbcSolveCommand extends AbstractCommand {
 	public void writeCommand(final IPrologTermOutput pout) {
 		pout.openTerm(PROLOG_COMMAND_NAME);
 		pout.printAtom(solver.toString());
+		
+		pout.openList();
+		if (state != null) {
+			pout.openTerm("solve_in_visited_state");
+			pout.printAtomOrNumber(state.getId());
+			pout.closeTerm();
+		}
+		if (evalElement.expansion() == FormulaExpand.TRUNCATE) {
+			pout.printAtom("truncate");
+		}
+		pout.closeList();
+		
 		evalElement.printProlog(pout);
 		pout.printVariable(IDENTIFIER_LIST);
 		pout.printVariable(EVALUATE_TERM_VARIABLE);

@@ -1,19 +1,18 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-import de.prob.animator.command.GetEnableMatrixCommand;
+import java.nio.file.Paths
 
-// You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+import de.prob.animator.command.GetEnableMatrixCommand
 
-p1 = new GetEnableMatrixCommand.EventPair("new","del");
-p2 = new GetEnableMatrixCommand.EventPair("del","del");
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 
-c = new GetEnableMatrixCommand(p1,p2);
+final p1 = new GetEnableMatrixCommand.EventPair("new", "del")
+final p2 = new GetEnableMatrixCommand.EventPair("del", "del")
 
-s.execute(c);
+final c = new GetEnableMatrixCommand(p1, p2)
 
-x = c.getEnableInfo(p1);
-y = c.getEnableInfo(p2);
+s.execute(c)
+
+final x = c.getEnableInfo(p1)
+final y = c.getEnableInfo(p2)
 
 assert x.enable == "ok"
 assert y.enable == "false"

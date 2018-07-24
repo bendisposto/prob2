@@ -1,11 +1,11 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import java.nio.file.Paths
 
+import de.prob.animator.command.SimpleTextCommand
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 
-cmd = new SimpleTextCommand("compute_operations_for_state(root,Transitions)","Transitions")
+final cmd = new SimpleTextCommand("compute_operations_for_state(root,Transitions)","Transitions")
 s.execute(cmd)
-assert cmd.getResults() == ["op"]
+assert cmd.results == ["op"]
 
 "possible to create a simple text command"

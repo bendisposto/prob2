@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eventb.core.ast.Expression;
-import org.eventb.core.ast.FreeIdentifier;
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
+
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.theory.AxiomaticDefinitionBlock;
 import de.prob.model.eventb.theory.DataType;
@@ -28,13 +26,17 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.tmparser.OperatorMapping;
 import de.prob.util.Tuple2;
 
+import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.FreeIdentifier;
+import org.eventb.core.ast.extension.IFormulaExtension;
+
 public class TheoryTranslator {
 
 	private final List<Theory> theories;
-	Set<IFormulaExtension> typeEnv;
+	private Set<IFormulaExtension> typeEnv;
 
 	public TheoryTranslator(final ModelElementList<Theory> theories) {
-		this.theories = new ArrayList<Theory>();
+		this.theories = new ArrayList<>();
 
 		for (Theory theory : theories) {
 			if (!this.theories.contains(theory)) {
@@ -118,7 +120,7 @@ public class TheoryTranslator {
 	}
 
 	private void printType(final String type, final IPrologTermOutput pto) {
-		printEventBElement(new EventB(type, typeEnv), pto);
+		printEventBElement(new EventB(type, typeEnv, FormulaExpand.EXPAND), pto);
 	}
 
 	private void printConstructor(String name,
@@ -129,7 +131,7 @@ public class TheoryTranslator {
 		pto.openList();
 		for (Tuple2<String, String> arg : destructors) {
 			printTypedIdentifier("destructor", arg.getFirst(),
-					new EventB(arg.getSecond(), typeEnv), pto);
+					new EventB(arg.getSecond(), typeEnv, FormulaExpand.EXPAND), pto);
 		}
 		pto.closeList();
 		pto.closeTerm();

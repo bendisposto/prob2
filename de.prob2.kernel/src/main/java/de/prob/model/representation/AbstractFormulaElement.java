@@ -5,7 +5,7 @@ import de.prob.statespace.StateSpace;
 
 public abstract class AbstractFormulaElement extends AbstractElement {
 
-	abstract public IEvalElement getFormula();
+	public abstract IEvalElement getFormula();
 
 	public void subscribe(final StateSpace s) {
 		s.subscribe(this, getFormula());

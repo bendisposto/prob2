@@ -1,28 +1,29 @@
-import de.prob.animator.domainobjects.*
-import de.prob.exception.ProBError
+import java.nio.file.Paths
+
+import de.prob.animator.domainobjects.ComputationNotCompletedResult
+import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.ModelModifier
-import de.prob.statespace.*
+import de.prob.statespace.Trace
 
+final s1 = api.eventb_load(Paths.get(dir, "Empty", "EmptyMachine.bcm").toString())
+assert s1.mainComponent != null
+final m = s1 as EventBModel
 
-s = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
-assert s.getMainComponent() != null
-m = s as EventBModel
-
-mm = new ModelModifier(m).make {
+final mm2 = new ModelModifier(m).make {
 	context(name: "EmptyContext") {
 		enumerated_set(name: "mySet", constants: ["x", "y", "z"])
 	}
 }
 
-final m2 = mm.getModel()
-s = m2.load(m2.EmptyMachine)
-t = s as Trace
+final m2 = mm2.model
+final s2 = m2.load(m2.EmptyMachine)
+def t = s2 as Trace
 t = t.$initialise_machine()
-x = t.evalCurrent("mySet")
-assert x.getValue() == "{x,y,z}"
+final x2 = t.evalCurrent("mySet")
+assert x2.getValue() == "{x,y,z}"
 
 final axmName = m2.EmptyContext.axioms[0].getName()
-mm = mm.make {
+final mm3 = mm2.make {
 	context(name: "EmptyContext") {
 		removeSet "mySet"
 		removeConstant "x"
@@ -32,15 +33,15 @@ mm = mm.make {
 	}
 }
 
-m3 = mm.getModel()
-s = m3.load(m3.EmptyMachine)
+final m3 = mm3.model
+final s3 = m3.load(m3.EmptyMachine)
 
-t = s as Trace
+t = s3 as Trace
 t = t.$initialise_machine()
-x = t.evalCurrent("mySet")
-assert x instanceof ComputationNotCompletedResult
+final x3 = t.evalCurrent("mySet")
+assert x3 instanceof ComputationNotCompletedResult
 
-mm = mm.make {
+final mm4 = mm3.make {
 	context(name: "EmptyContext") {
 		constant "one"
 		set "set"
@@ -48,14 +49,14 @@ mm = mm.make {
 	}
 }
 
-m4 = mm.getModel()
-s = m4.load(m4.EmptyMachine)
-t = s as Trace
+final m4 = mm4.model
+final s4 = m4.load(m4.EmptyMachine)
+t = s4 as Trace
 t = t.$initialise_machine()
-x = t.evalCurrent("set")
-assert x.value == "{one}"
+final x4 = t.evalCurrent("set")
+assert x4.value == "{one}"
 
-mm = mm.make { 
+final mm5 = mm4.make { 
 	context(name: "EmptyContext") {
 		removeConstant "one"
 		removeAxiom "ax1"
@@ -63,14 +64,14 @@ mm = mm.make {
 	}
 }
 
-m5 = mm.getModel()
-s = m5.load(m5.EmptyMachine)
-t = s as Trace
+final m5 = mm5.model
+final s5 = m5.load(m5.EmptyMachine)
+t = s5 as Trace
 t = t.$initialise_machine()
-x = t.evalCurrent("set")
-assert x instanceof ComputationNotCompletedResult
+final x5 = t.evalCurrent("set")
+assert x5 instanceof ComputationNotCompletedResult
 
-mm = mm.make {
+final mm6 = mm5.make {
 	machine(name: "EmptyMachine") {
 		variable "x"
 		invariant i1: "x : NAT"
@@ -88,20 +89,20 @@ mm = mm.make {
 	}
 }
 
-final m6 = mm.getModel()
-s = m6.load(m6.EmptyMachine)
-t = s as Trace
+final m6 = mm6.getModel()
+final s6 = m6.load(m6.EmptyMachine)
+t = s6 as Trace
 t = t.$initialise_machine()
 t = t.inc("y = 4")
 t = t.inc("y = 2")
-x = t.evalCurrent("x")
-assert x.value == "6"
+final x61 = t.evalCurrent("x")
+assert x61.value == "6"
 t = t.inc("y = 3")
-x = t.evalCurrent("x")
-assert x.value == "9"
+final x62 = t.evalCurrent("x")
+assert x62.value == "9"
 assert !t.canExecuteEvent("inc",["y = 1"])
 
-mm = mm.make {
+final mm7 = mm6.make {
 	machine(name: "EmptyMachine") {
 		event(name: "inc") {
 			removeParameter "y"
@@ -114,27 +115,27 @@ mm = mm.make {
 	}
 }
 
-final m7 = mm.getModel()
-s = m7.load(m7.EmptyMachine)
-t = s as Trace
+final m7 = mm7.model
+final s7 = m7.load(m7.EmptyMachine)
+t = s7 as Trace
 t = t.$initialise_machine().inc().inc().inc().inc()
-x = t.evalCurrent("x")
-assert x.value == "4"
+final x7 = t.evalCurrent("x")
+assert x7.value == "4"
 assert !t.canExecuteEvent("inc",[])
 
-mm = mm.make {
+final mm8 = mm7.make {
 	machine(name: "EmptyMachine") {
 		removeEvent "inc"
 	}
 }
 
-final m8 = mm.getModel()
-s = m8.load(m8.EmptyMachine)
-t = s as Trace
+final m8 = mm8.model
+final s8 = m8.load(m8.EmptyMachine)
+t = s8 as Trace
 t = t.$initialise_machine()
 assert !t.canExecuteEvent("inc", [])
 
-mm = mm.make {
+final mm9 = mm8.make {
 	machine(name: "EmptyMachine") {
 		removeVariable "x"
 		removeInvariant "i1"
@@ -144,14 +145,14 @@ mm = mm.make {
 		}
 	}
 }
-m9 = mm.getModel()
-s = m9.load(m9.EmptyMachine)
-t = s as Trace
+final m9 = mm9.model
+final s9 = m9.load(m9.EmptyMachine)
+t = s9 as Trace
 t = t.$initialise_machine()
-x = t.evalCurrent("x")
-assert x instanceof ComputationNotCompletedResult
+final x9 = t.evalCurrent("x")
+assert x9 instanceof ComputationNotCompletedResult
 
-mm = mm.make {
+final mm10 = mm9.make {
 	machine(name: "EmptyMachine") {
 		variable "x"
 		invariant "x : NAT"
@@ -168,12 +169,12 @@ mm = mm.make {
 	}
 }
 
-m10 = mm.getModel()
-s = m10.load(m10.EmptyMachine)
-t = s as Trace
+final m10 = mm10.model
+final s10 = m10.load(m10.EmptyMachine)
+t = s10 as Trace
 t = t.$initialise_machine()
 t = t.hehe().hehe()
-x = t.evalCurrent("x")
-assert x.value == "5"
+final x10 = t.evalCurrent("x")
+assert x10.value == "5"
 
 "the model API works correctly"

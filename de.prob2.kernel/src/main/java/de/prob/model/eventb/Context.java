@@ -13,10 +13,7 @@ public class Context extends AbstractElement {
 	private final String name;
 
 	public Context(final String name) {
-		this(
-				name,
-				PersistentHashMap
-				.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
+		this(name, PersistentHashMap.emptyMap());
 	}
 
 	private Context(
@@ -66,7 +63,7 @@ public class Context extends AbstractElement {
 	}
 
 	public ModelElementList<EventBAxiom> getAllAxioms() {
-		ModelElementList<EventBAxiom> axms = new ModelElementList<EventBAxiom>();
+		ModelElementList<EventBAxiom> axms = new ModelElementList<>();
 		for (Context ctx : getExtends()) {
 			axms = axms.addMultiple(ctx.getAllAxioms());
 		}

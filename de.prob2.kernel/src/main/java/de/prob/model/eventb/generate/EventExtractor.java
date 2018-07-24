@@ -1,12 +1,8 @@
 package de.prob.model.eventb.generate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.eventb.core.ast.extension.IFormulaExtension;
-
-import com.google.common.base.Joiner;
+import java.util.stream.Collectors;
 
 import de.be4.eventbalg.core.parser.node.AAction;
 import de.be4.eventbalg.core.parser.node.AAnticipatedConvergence;
@@ -19,6 +15,8 @@ import de.be4.eventbalg.core.parser.node.AParameter;
 import de.be4.eventbalg.core.parser.node.ARefinesEventRefinement;
 import de.be4.eventbalg.core.parser.node.AWitness;
 import de.be4.eventbalg.core.parser.node.TComment;
+import de.be4.eventbalg.core.parser.node.Token;
+
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Event.EventType;
 import de.prob.model.eventb.EventBMachine;
@@ -26,10 +24,11 @@ import de.prob.model.eventb.EventModifier;
 import de.prob.model.eventb.ModelGenerationException;
 import de.prob.model.representation.ModelElementList;
 
+import org.eventb.core.ast.extension.IFormulaExtension;
+
 public class EventExtractor extends ElementExtractor {
 
 	private EventModifier eventM;
-	private boolean initialisation;
 	private ModelElementList<EventBMachine> machineRefines;
 
 	public EventExtractor(final Event event,
@@ -37,8 +36,7 @@ public class EventExtractor extends ElementExtractor {
 			Set<IFormulaExtension> typeEnv, String comment) {
 		super(typeEnv);
 		this.machineRefines = machineRefines;
-		initialisation = event.getName() == "INITIALISATION";
-		eventM = new EventModifier(event, initialisation, typeEnv);
+		eventM = new EventModifier(event, "INITIALISATION".equals(event.getName()), typeEnv);
 		eventM = eventM.addComment(comment);
 	}
 
@@ -146,10 +144,6 @@ public class EventExtractor extends ElementExtractor {
 	}
 
 	public String getComment(List<TComment> comments) {
-		List<String> cmts = new ArrayList<String>();
-		for (TComment tComment : comments) {
-			cmts.add(tComment.getText());
-		}
-		return Joiner.on("\n").join(cmts);
+		return comments.stream().map(Token::getText).collect(Collectors.joining("\n"));
 	}
 }

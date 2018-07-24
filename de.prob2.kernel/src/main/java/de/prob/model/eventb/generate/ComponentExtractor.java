@@ -1,16 +1,16 @@
 package de.prob.model.eventb.generate;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.google.common.base.Joiner;
+import java.util.stream.Collectors;
 
 import de.be4.eventbalg.core.parser.node.AContextParseUnit;
 import de.be4.eventbalg.core.parser.node.AMachineParseUnit;
 import de.be4.eventbalg.core.parser.node.AProcedureParseUnit;
 import de.be4.eventbalg.core.parser.node.TComment;
 import de.be4.eventbalg.core.parser.node.TIdentifierLiteral;
+import de.be4.eventbalg.core.parser.node.Token;
+
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.ContextModifier;
 import de.prob.model.eventb.EventBMachine;
@@ -43,7 +43,7 @@ public class ComponentExtractor extends ElementExtractor {
 		String name = node.getName().getText();
 		MachineModifier machineM = new MachineModifier(new EventBMachine(name),
 				typeEnv);
-		ModelElementList<Context> seen = new ModelElementList<Context>();
+		ModelElementList<Context> seen = new ModelElementList<>();
 		for (TIdentifierLiteral contextName : node.getSeenNames()) {
 			String cName = contextName.getText();
 			AbstractElement context = getContext(cName);
@@ -128,10 +128,6 @@ public class ComponentExtractor extends ElementExtractor {
 	}
 
 	public String getComment(final List<TComment> comments) {
-		List<String> cmts = new ArrayList<String>();
-		for (TComment tComment : comments) {
-			cmts.add(tComment.getText());
-		}
-		return Joiner.on("\n").join(cmts);
+		return comments.stream().map(Token::getText).collect(Collectors.joining("\n"));
 	}
 }

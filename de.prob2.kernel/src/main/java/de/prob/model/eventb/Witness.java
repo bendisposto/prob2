@@ -2,11 +2,12 @@ package de.prob.model.eventb;
 
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class Witness extends AbstractElement {
 
@@ -16,7 +17,7 @@ public class Witness extends AbstractElement {
 
 	public Witness(final String name, final String code,
 			final Set<IFormulaExtension> typeEnv) {
-		this(name, new EventB(code, typeEnv), "");
+		this(name, new EventB(code, typeEnv, FormulaExpand.EXPAND), "");
 	}
 
 	public Witness(final String name, EventB predicate, String comment) {
@@ -34,7 +35,7 @@ public class Witness extends AbstractElement {
 	}
 
 	public IEvalElement getFormula() {
-		return predicate;
+		return this.getPredicate();
 	}
 
 	public String getComment() {

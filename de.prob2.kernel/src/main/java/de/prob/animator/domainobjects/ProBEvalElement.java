@@ -26,7 +26,9 @@ public class ProBEvalElement extends AbstractEvalElement {
 	 * 
 	 * @param ast see {@link #ProBEvalElement(PrologTerm, String, FormulaExpand)}
 	 * @param code see {@link #ProBEvalElement(PrologTerm, String, FormulaExpand)}
+	 * @deprecated Use {@link #ProBEvalElement(PrologTerm, String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
 	 */
+	@Deprecated
 	public ProBEvalElement(final PrologTerm ast, final String code) {
 		this(ast, code, FormulaExpand.TRUNCATE);
 	}

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import de.prob.animator.command.GetMachineIdentifiersCommand;
 import de.prob.animator.command.GetMachineOperationInfos;
-import de.prob.animator.command.GetMachineOperationInfos.OperationInfo;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 
 public class LoadedMachine {
@@ -18,9 +18,11 @@ public class LoadedMachine {
 	private Map<String, OperationInfo> machineOperationInfos;
 	private List<String> variableNames;
 	private List<String> constantNames;
+	private List<String> setNames;
 
 	private List<IEvalElement> variableEvalElements;
 	private List<IEvalElement> constantEvalElements;
+	private List<IEvalElement> setEvalElements;
 
 	public LoadedMachine(StateSpace stateSpace) {
 		this.stateSpace = stateSpace;
@@ -62,7 +64,7 @@ public class LoadedMachine {
 		if (variableEvalElements == null) {
 			variableEvalElements = new ArrayList<>();
 			for (String string : getVariableNames()) {
-				variableEvalElements.add(stateSpace.getModel().parseFormula(string));
+				variableEvalElements.add(stateSpace.getModel().parseFormula(string, FormulaExpand.EXPAND));
 			}
 		}
 		return variableEvalElements;
@@ -82,10 +84,29 @@ public class LoadedMachine {
 		if (constantEvalElements == null) {
 			constantEvalElements = new ArrayList<>();
 			for (String string : getConstantNames()) {
-				constantEvalElements.add(stateSpace.getModel().parseFormula(string));
+				constantEvalElements.add(stateSpace.getModel().parseFormula(string, FormulaExpand.EXPAND));
 			}
 		}
 		return constantEvalElements;
 	}
-	
+
+	public List<String> getSetNames() {
+		if (this.setNames == null) {
+			GetMachineIdentifiersCommand command = new GetMachineIdentifiersCommand(
+					GetMachineIdentifiersCommand.Category.SETS);
+			this.stateSpace.execute(command);
+			this.setNames = command.getIdentifiers();
+		}
+		return new ArrayList<>(this.setNames);
+	}
+
+	public List<IEvalElement> getSetEvalElements() {
+		if (setEvalElements == null) {
+			setEvalElements = new ArrayList<>();
+			for (String string : getSetNames()) {
+				setEvalElements.add(stateSpace.getModel().parseFormula(string, FormulaExpand.EXPAND));
+			}
+		}
+		return setEvalElements;
+	}
 }

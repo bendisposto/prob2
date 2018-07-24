@@ -2,12 +2,13 @@ package de.prob.model.eventb.theory;
 
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.AbstractElement;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class RewriteRuleRHS extends AbstractElement {
 
@@ -18,8 +19,8 @@ public class RewriteRuleRHS extends AbstractElement {
 	public RewriteRuleRHS(final String name, final String predicate,
 			final String formula, final Set<IFormulaExtension> typeEnv) {
 		this.name = name;
-		this.predicate = new EventB(predicate, typeEnv);
-		this.formula = new EventB(formula, typeEnv);
+		this.predicate = new EventB(predicate, typeEnv, FormulaExpand.EXPAND);
+		this.formula = new EventB(formula, typeEnv, FormulaExpand.EXPAND);
 	}
 
 	public String getName() {

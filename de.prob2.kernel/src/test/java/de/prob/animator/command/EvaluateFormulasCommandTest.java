@@ -1,28 +1,27 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Collection;
 
-import org.junit.Test;
-
+import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 public class EvaluateFormulasCommandTest {
 
 	@Test
 	public void testWriteCommand() throws Exception {
-		IEvalElement element = new ClassicalB("1<3");
+		IEvalElement element = new ClassicalB("1<3", FormulaExpand.EXPAND);
 
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		EvaluateFormulaCommand command = new EvaluateFormulaCommand(element,
@@ -47,7 +46,7 @@ public class EvaluateFormulasCommandTest {
 	@Test
 	public void testProcessResult() throws Exception {
 
-		IEvalElement element = new ClassicalB("1<3");
+		IEvalElement element = new ClassicalB("1<3", FormulaExpand.EXPAND);
 
 		final CompoundPrologTerm lpt = mk_result("true");
 		ISimplifiedROMap<String, PrologTerm> m1 = new ISimplifiedROMap<String, PrologTerm>() {

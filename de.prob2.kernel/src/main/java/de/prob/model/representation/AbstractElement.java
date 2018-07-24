@@ -5,6 +5,8 @@ import java.util.Set;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
 
+import groovy.lang.GroovyObjectSupport;
+
 /**
  * This class is the subclass of all model elements (Models, Machines, Contexts,
  * Variables, etc.)
@@ -12,7 +14,7 @@ import com.github.krukow.clj_lang.PersistentHashMap;
  * @author joy
  *
  */
-public abstract class AbstractElement {
+public abstract class AbstractElement extends GroovyObjectSupport {
 
 	/**
 	 * Maps from a subclass of {@link AbstractElement} to a set containing all
@@ -21,7 +23,7 @@ public abstract class AbstractElement {
 	protected final PersistentHashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children;
 
 	public AbstractElement() {
-		this(PersistentHashMap.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>emptyMap());
+		this(PersistentHashMap.emptyMap());
 	}
 
 	public AbstractElement(

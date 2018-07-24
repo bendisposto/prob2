@@ -17,6 +17,7 @@ final class ConsoleListener implements Runnable {
 		this.logger = logger;
 	}
 
+	@SuppressWarnings("try") // don't warn about unused resource in try
 	public void run() {
 		try (final BufferedReader ignored = this.stream) {
 			logLines();

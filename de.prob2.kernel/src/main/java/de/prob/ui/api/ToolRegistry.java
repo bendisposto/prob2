@@ -11,16 +11,15 @@ import com.google.inject.Singleton;
 @Singleton
 public class ToolRegistry {
 
-	private final Map<String, ITool> tools = new HashMap<String, ITool>();
-	List<WeakReference<IToolListener>> listeners = new ArrayList<WeakReference<IToolListener>>();
+	private final Map<String, ITool> tools = new HashMap<>();
+	private final List<WeakReference<IToolListener>> listeners = new ArrayList<>();
 
 	public void registerListener(final IToolListener listener) {
-		listeners.add(new WeakReference<IToolListener>(listener));
+		listeners.add(new WeakReference<>(listener));
 	}
 
 	public void register(final String name, final ITool stateprovider) {
 		tools.put(name, stateprovider);
-		// notifyToolChange(stateprovider);
 	}
 
 	public void unregister(final String name) {
@@ -30,8 +29,9 @@ public class ToolRegistry {
 	public void notifyToolChange(String trigger, final ITool tool) {
 		for (WeakReference<IToolListener> wr : listeners) {
 			IToolListener listener = wr.get();
-			if (listener != null)
+			if (listener != null) {
 				listener.animationChange(trigger, tool);
+			}
 		}
 	}
 

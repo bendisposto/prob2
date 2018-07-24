@@ -1,13 +1,9 @@
-import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
 import de.prob.model.eventb.translate.ModelToXML
-import de.prob.statespace.*
 
-// You can change the model you are testing here.
-mm = new ModelModifier().make {
-	
+final mm = new ModelModifier().make {
 	context(name: "c1_ModelElements") {
 		set "STATES"
 		set "INVARIANTS"
@@ -26,7 +22,7 @@ mm = new ModelModifier().make {
 			constant "s${it}"
 		}
 		axiom "partition(STATES,{root},"+(0..5).collect { "{s${it}}"}.iterator().join(",") +")"
-	   	(0..4).each {
+		(0..4).each {
 			constant "i${it}"
 		}
 		axiom "partition(INVARIANTS,"+(0..4).collect { "{i${it}}" }.iterator().join(",")+")"
@@ -35,19 +31,19 @@ mm = new ModelModifier().make {
 	context(name: "c5_CorrectStateSpace", extends: "c4_AnimationStateSpace") {
 		axiom "truth = STATES ** INVARIANTS"
 		axiom "transitions = {root|->s0,"+
-		        (0..4).collect { "s${it}|->s${it+1},s${it+1}|->s${it}" }.iterator().join(",") + "}"
+			(0..4).collect { "s${it}|->s${it+1},s${it+1}|->s${it}" }.iterator().join(",") + "}"
 	}
 	
 	context(name: "c6_InvKOStateSpace", extends: "c4_AnimationStateSpace") {
 		axiom "truth = (STATES ** INVARIANTS) \\ {s4|->i3}"
 		axiom "transitions = {root|->s0,"+
-				(0..4).collect { "s${it}|->s${it+1},s${it+1}|->s${it}" }.iterator().join(",") + "}"
+			(0..4).collect { "s${it}|->s${it+1},s${it+1}|->s${it}" }.iterator().join(",") + "}"
 	}
 	
 	context(name: "c7_DeadlockStateSpace", extends: "c4_AnimationStateSpace") {
 		axiom "truth = STATES ** INVARIANTS"
 		axiom "transitions = {root|->s0,"+
-				(0..4).collect { "s${it}|->s${it+1}" }.iterator().join(",") + "}"
+			(0..4).collect { "s${it}|->s${it+1}" }.iterator().join(",") + "}"
 	}
 	
 	procedure(name: "dequeue", seen: "c1_ModelElements") {
@@ -147,9 +143,9 @@ mm = new ModelModifier().make {
 		
 		precondition "TRUE=TRUE"
 		postcondition "(result = mc_ok => state = root) &"+
-					  "(result = counter_example => (#i.i : INVARIANTS & state|->i /: truth)) &"+
-					  "(result = deadlock => {t | state|->t : transitions} = {})"
-					  
+					"(result = counter_example => (#i.i : INVARIANTS & state|->i /: truth)) &"+
+					"(result = deadlock => {t | state|->t : transitions} = {})"
+		
 		implementation {
 			var "queue", "queue : POW(STATES)", "queue := {root}"
 			var "known", "known : POW(STATES)", "known := {root}"
@@ -198,12 +194,11 @@ mm = new ModelModifier().make {
 	}
 }
 
-m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
+final m = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 
-mtx = new ModelToXML()
+final mtx = new ModelToXML()
 //d = mtx.writeToRodin(m, "ModelCheck", "/tmp")
 //d.deleteDir()
 
-//s.animator.cli.shutdown();
+//s.kill()
 "created model of model checking algorithm"

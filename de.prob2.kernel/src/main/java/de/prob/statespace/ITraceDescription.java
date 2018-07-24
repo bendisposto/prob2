@@ -30,5 +30,5 @@ public interface ITraceDescription {
 	 *             when the class is not able to create the specified
 	 *             {@link Trace}
 	 */
-	Trace getTrace(StateSpace s) throws RuntimeException;
+	Trace getTrace(StateSpace s);
 }

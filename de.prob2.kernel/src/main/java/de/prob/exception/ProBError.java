@@ -3,9 +3,10 @@ package de.prob.exception;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
-import de.be4.classicalb.core.parser.exceptions.BException;
+
 import de.prob.animator.domainobjects.ErrorItem;
 
 public class ProBError extends RuntimeException {
@@ -66,25 +67,13 @@ public class ProBError extends RuntimeException {
 	}
 
 	public ProBError(BCompoundException e) {
-		this(convertParserExceptionToErrorItems(e));
+		this(null, convertParserExceptionToErrorItems(e), e);
 	}
 
 	private static List<ErrorItem> convertParserExceptionToErrorItems(BCompoundException e) {
-		List<ErrorItem> errorItems = new ArrayList<>();
-		for (BException bException : e.getBExceptions()) {
-			List<ErrorItem.Location> errorItemlocations = new ArrayList<>();
-			if (bException.getFilename() != null && bException.getCause() != null) {
-				List<BException.Location> parserlocations = bException.getLocations();
-				for (BException.Location location : parserlocations) {
-					ErrorItem.Location loc = new ErrorItem.Location(bException.getFilename(), location.getStartLine(),
-						location.getStartColumn(), location.getEndLine(), location.getEndColumn());
-					errorItemlocations.add(loc);
-				}
-			}
-			ErrorItem item = new ErrorItem(bException.getMessage(), ErrorItem.Type.ERROR, errorItemlocations);
-			errorItems.add(item);
-		}
-		return errorItems;
+		return e.getBExceptions().stream()
+			.map(ErrorItem::fromParserException)
+			.collect(Collectors.toList());
 	}
 
 	public String getOriginalMessage() {

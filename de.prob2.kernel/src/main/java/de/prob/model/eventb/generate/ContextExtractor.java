@@ -1,21 +1,21 @@
 package de.prob.model.eventb.generate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.eventb.core.ast.extension.IFormulaExtension;
-
-import com.google.common.base.Joiner;
+import java.util.stream.Collectors;
 
 import de.be4.eventbalg.core.parser.node.AAxiom;
 import de.be4.eventbalg.core.parser.node.ACarrierSet;
 import de.be4.eventbalg.core.parser.node.AConstant;
 import de.be4.eventbalg.core.parser.node.ADerivedAxiom;
 import de.be4.eventbalg.core.parser.node.TComment;
+import de.be4.eventbalg.core.parser.node.Token;
+
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.ContextModifier;
 import de.prob.model.eventb.ModelGenerationException;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class ContextExtractor extends ElementExtractor {
 
@@ -74,11 +74,7 @@ public class ContextExtractor extends ElementExtractor {
 	}
 
 	public String getComment(List<TComment> comments) {
-		List<String> cmts = new ArrayList<String>();
-		for (TComment tComment : comments) {
-			cmts.add(tComment.getText());
-		}
-		return Joiner.on("\n").join(cmts);
+		return comments.stream().map(Token::getText).collect(Collectors.joining("\n"));
 	}
 
 }

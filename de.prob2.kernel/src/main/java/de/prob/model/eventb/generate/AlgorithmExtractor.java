@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import de.be4.eventbalg.core.parser.node.AAlgorithm;
 import de.be4.eventbalg.core.parser.node.AAssertStmt;
 import de.be4.eventbalg.core.parser.node.AAssignStmt;
@@ -22,9 +20,11 @@ import de.be4.eventbalg.core.parser.node.PId;
 import de.be4.eventbalg.core.parser.node.PLoopInvariant;
 import de.be4.eventbalg.core.parser.node.PLoopVariant;
 import de.be4.eventbalg.core.parser.node.PStmt;
+
 import de.prob.model.eventb.ModelGenerationException;
 import de.prob.model.eventb.algorithm.ast.Block;
-import de.prob.model.eventb.algorithm.ast.Statement;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class AlgorithmExtractor extends ElementExtractor {
 
@@ -38,7 +38,7 @@ public class AlgorithmExtractor extends ElementExtractor {
 	}
 
 	private Block extractStmts(final LinkedList<PStmt> block) {
-		Block b = new Block(new ArrayList<Statement>(), typeEnv);
+		Block b = new Block(new ArrayList<>(), typeEnv);
 		for (PStmt pStmt : block) {
 			try {
 				b = extractStmt(b, pStmt);
@@ -86,7 +86,7 @@ public class AlgorithmExtractor extends ElementExtractor {
 	}
 
 	private List<String> getIdList(LinkedList<PId> idL) {
-		List<String> idList = new ArrayList<String>();
+		List<String> idList = new ArrayList<>();
 		for (PId pId : idL) {
 			if (pId instanceof AId) {
 				idList.add(((AId) pId).getName().getText());

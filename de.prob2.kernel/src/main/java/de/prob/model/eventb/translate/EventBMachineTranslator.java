@@ -42,7 +42,7 @@ import de.prob.util.Tuple2;
 public class EventBMachineTranslator {
 
 	private final EventBMachine machine;
-	private final Map<Node, Tuple2<String, String>> nodeInfos = new HashMap<Node, Tuple2<String, String>>();
+	private final Map<Node, Tuple2<String, String>> nodeInfos = new HashMap<>();
 
 	public EventBMachineTranslator(final EventBMachine machine) {
 		this.machine = machine;
@@ -55,7 +55,7 @@ public class EventBMachineTranslator {
 	public Node translateMachine() {
 		AEventBModelParseUnit ast = new AEventBModelParseUnit();
 		ast.setName(new TIdentifierLiteral(machine.getName()));
-		List<PModelClause> clauses = new ArrayList<PModelClause>();
+		List<PModelClause> clauses = new ArrayList<>();
 
 		clauses.add(processContexts());
 
@@ -80,7 +80,7 @@ public class EventBMachineTranslator {
 
 	private ASeesModelClause processContexts() {
 		List<Context> sees = machine.getSees();
-		List<TIdentifierLiteral> contextNames = new ArrayList<TIdentifierLiteral>();
+		List<TIdentifierLiteral> contextNames = new ArrayList<>();
 		for (Context context : sees) {
 			contextNames.add(new TIdentifierLiteral(context.getName()));
 		}
@@ -97,7 +97,7 @@ public class EventBMachineTranslator {
 	}
 
 	private AVariablesModelClause processVariables() {
-		List<PExpression> identifiers = new ArrayList<PExpression>();
+		List<PExpression> identifiers = new ArrayList<>();
 		for (EventBVariable eventBVariable : machine.getVariables()) {
 			identifiers.add((PExpression) ((EventB) eventBVariable
 					.getExpression()).getAst());
@@ -107,16 +107,15 @@ public class EventBMachineTranslator {
 	}
 
 	private List<PModelClause> processInvariantsAndTheorems() {
-		List<PModelClause> invsAndTheorems = new ArrayList<PModelClause>();
-		List<PPredicate> invs = new ArrayList<PPredicate>();
-		List<PPredicate> thms = new ArrayList<PPredicate>();
+		List<PModelClause> invsAndTheorems = new ArrayList<>();
+		List<PPredicate> invs = new ArrayList<>();
+		List<PPredicate> thms = new ArrayList<>();
 
 		List<EventBInvariant> allInvs = machine.getInvariants();
 		for (EventBInvariant ebInv : allInvs) {
 			PPredicate ppred = (PPredicate) ((EventB) ebInv.getPredicate())
 					.getAst();
-			nodeInfos.put(ppred, new Tuple2<String, String>(machine.getName(),
-					ebInv.getName()));
+			nodeInfos.put(ppred, new Tuple2<>(machine.getName(), ebInv.getName()));
 			if (ebInv.isTheorem()) {
 				thms.add(ppred);
 			} else {
@@ -138,39 +137,36 @@ public class EventBMachineTranslator {
 	}
 
 	private AEventsModelClause processEvents() {
-		List<PEvent> events = new ArrayList<PEvent>();
+		List<PEvent> events = new ArrayList<>();
 		for (Event e : machine.getEvents()) {
 			AEvent event = new AEvent();
 			event.setEventName(new TIdentifierLiteral(e.getName()));
 			event.setStatus(extractEventStatus(e));
-			nodeInfos.put(event, new Tuple2<String, String>(machine.getName(),
-					e.getName()));
+			nodeInfos.put(event, new Tuple2<>(machine.getName(), e.getName()));
 
-			List<TIdentifierLiteral> refined = new ArrayList<TIdentifierLiteral>();
+			List<TIdentifierLiteral> refined = new ArrayList<>();
 			for (Event ref : e.getRefines()) {
 				refined.add(new TIdentifierLiteral(ref.getName()));
 			}
 			event.setRefines(refined);
 
-			List<PExpression> params = new ArrayList<PExpression>();
+			List<PExpression> params = new ArrayList<>();
 			for (EventParameter eventParameter : e.getParameters()) {
 				PExpression pExpression = (PExpression) eventParameter
 						.getExpression().getAst();
 				nodeInfos.put(pExpression,
-						new Tuple2<String, String>(machine.getName(),
-								eventParameter.getName()));
+					new Tuple2<>(machine.getName(), eventParameter.getName()));
 				params.add(pExpression);
 			}
 			event.setVariables(params);
 
-			List<PPredicate> guards = new ArrayList<PPredicate>();
-			List<PPredicate> thms = new ArrayList<PPredicate>();
+			List<PPredicate> guards = new ArrayList<>();
+			List<PPredicate> thms = new ArrayList<>();
 			for (EventBGuard eventBGuard : e.getGuards()) {
 				PPredicate ppred = (PPredicate) ((EventB) eventBGuard
 						.getPredicate()).getAst();
 				nodeInfos.put(ppred,
-						new Tuple2<String, String>(machine.getName(),
-								eventBGuard.getName()));
+					new Tuple2<>(machine.getName(), eventBGuard.getName()));
 				if (eventBGuard.isTheorem()) {
 					thms.add(ppred);
 				} else {
@@ -180,25 +176,23 @@ public class EventBMachineTranslator {
 			event.setGuards(guards);
 			event.setTheorems(thms);
 
-			List<PWitness> witnesses = new ArrayList<PWitness>();
+			List<PWitness> witnesses = new ArrayList<>();
 			for (Witness witness : e.getWitnesses()) {
 				PPredicate ppred = (PPredicate) witness.getPredicate().getAst();
 				nodeInfos.put(
 						ppred,
-						new Tuple2<String, String>(machine.getName(), witness
-								.getName()));
+					new Tuple2<>(machine.getName(), witness.getName()));
 				witnesses.add(new AWitness(new TIdentifierLiteral(witness
 						.getName()), ppred));
 			}
 			event.setWitness(witnesses);
 
-			List<PSubstitution> actions = new ArrayList<PSubstitution>();
+			List<PSubstitution> actions = new ArrayList<>();
 			for (EventBAction eventBAction : e.getActions()) {
 				PSubstitution psub = (PSubstitution) ((EventB) eventBAction
 						.getCode()).getAst();
 				nodeInfos.put(psub,
-						new Tuple2<String, String>(machine.getName(),
-								eventBAction.getName()));
+					new Tuple2<>(machine.getName(), eventBAction.getName()));
 				actions.add(psub);
 			}
 			event.setAssignments(actions);
@@ -208,20 +202,15 @@ public class EventBMachineTranslator {
 	}
 
 	private PEventstatus extractEventStatus(final Event e) {
-		PEventstatus result = null;
 		switch (e.getType()) {
-		case ORDINARY:
-			result = new AOrdinaryEventstatus();
-			break;
-		case ANTICIPATED:
-			result = new AAnticipatedEventstatus();
-			break;
-		case CONVERGENT:
-			result = new AConvergentEventstatus();
-			break;
-		default:
-			break;
+			case ORDINARY:
+				return new AOrdinaryEventstatus(); 
+			case ANTICIPATED:
+				return new AAnticipatedEventstatus(); 
+			case CONVERGENT:
+				return new AConvergentEventstatus(); 
+			default:
+				return null;
 		}
-		return result;
 	}
 }

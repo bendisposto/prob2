@@ -2,6 +2,11 @@ package de.prob.model.eventb.theory;
 
 import java.util.Set;
 
+import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.model.representation.AbstractElement;
+import de.prob.unicode.UnicodeTranslator;
+
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.ExtendedExpression;
 import org.eventb.core.ast.Predicate;
@@ -16,17 +21,13 @@ import org.eventb.core.ast.extension.ITypeMediator;
 import org.eventb.core.ast.extension.IWDMediator;
 import org.eventb.core.ast.extension.StandardGroup;
 
-import de.prob.animator.domainobjects.EventB;
-import de.prob.model.representation.AbstractElement;
-import de.prob.unicode.UnicodeTranslator;
-
 public class Type extends AbstractElement {
 
 	private final EventB identifier;
 	private IFormulaExtension ext;
 
 	public Type(final String identifier, final Set<IFormulaExtension> typeEnv) {
-		this.identifier = new EventB(identifier, typeEnv);
+		this.identifier = new EventB(identifier, typeEnv, FormulaExpand.EXPAND);
 	}
 
 	public EventB getIdentifier() {

@@ -1,14 +1,17 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import java.nio.file.Paths
 
-// You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-m = s as ClassicalBModel
-t = new Trace(s)
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.EvalResult
+import de.prob.model.classicalb.ClassicalBModel
+import de.prob.statespace.Trace
+
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
+final m = s as ClassicalBModel
+def t = new Trace(s)
 t = t.anyEvent()
-current = t.getCurrentState()
+final current = t.currentState
 
-f = "1 + 3" as ClassicalB
+final f = "1 + 3" as ClassicalB
 s.subscribe(m, f)
 current.explore()
 

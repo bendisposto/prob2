@@ -5,9 +5,9 @@ import java.util.List;
 public class TypeCheckResult {
 
 	private final String type;
-	private final List<String> errors;
+	private final List<ErrorItem> errors;
 
-	public TypeCheckResult(String type, List<String> errors) {
+	public TypeCheckResult(String type, List<ErrorItem> errors) {
 		this.type = type;
 		this.errors = errors;
 	}
@@ -16,7 +16,7 @@ public class TypeCheckResult {
 		return type;
 	}
 
-	public List<String> getErrors() {
+	public List<ErrorItem> getErrors() {
 		return errors;
 	}
 

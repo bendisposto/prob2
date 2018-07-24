@@ -1,21 +1,22 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import java.nio.file.Paths
 
-// You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-t = new Trace(s)
+import de.prob.animator.domainobjects.WDError
+import de.prob.statespace.Trace
+
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
+def t = new Trace(s)
 t = t.$initialise_machine()
 
 // expression
-wderror = t.evalCurrent("2 / 0")
-assert wderror instanceof WDError
-assert wderror.errors.size == 1
-assert wderror.errors[0].contains("division by zero")
+final wderror1 = t.evalCurrent("2 / 0")
+assert wderror1 instanceof WDError
+assert wderror1.errors.size == 1
+assert wderror1.errors[0].contains("division by zero")
 
 // predicate
-wderror = t.evalCurrent("3 / 0 = 1")
-assert wderror instanceof WDError
-assert wderror.errors.size == 1
-assert wderror.errors[0].contains("division by zero")
+final wderror2 = t.evalCurrent("3 / 0 = 1")
+assert wderror2 instanceof WDError
+assert wderror2.errors.size == 1
+assert wderror2.errors[0].contains("division by zero")
 
 "Evaluation errors can be caught and handled simply"

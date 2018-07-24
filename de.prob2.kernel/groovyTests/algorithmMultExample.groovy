@@ -1,13 +1,8 @@
-import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
-import de.prob.model.eventb.translate.*
-import de.prob.statespace.*
 
-
-mm = new ModelModifier().make {
-	
+final mm = new ModelModifier().make {
 	machine(name: "multiplication") {
 		variables "x", "x0"
 		var "y", "y : NAT1", "y :: NAT1"
@@ -29,7 +24,6 @@ mm = new ModelModifier().make {
 	}
 }
 
-m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT).run()
+final m = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().DEFAULT).run()
 
 "generating a model from an algorithm"

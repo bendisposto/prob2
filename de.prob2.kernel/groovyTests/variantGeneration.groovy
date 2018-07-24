@@ -1,11 +1,8 @@
-import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
-import de.prob.model.eventb.translate.*
-import de.prob.statespace.*
 
-mm = new ModelModifier().make {
+final mm = new ModelModifier().make {
 	machine(name: "MyLoop") {
 		var "x", "x : NAT", "x := 10"
 		algorithm {
@@ -17,7 +14,6 @@ mm = new ModelModifier().make {
 	}
 }
 
-
-m = new AlgorithmTranslator(mm.getModel(), new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
+final m = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().propagateAssertions(true).terminationAnalysis(true)).run()
 
 "it is possible to generate models to check the termination of loops"

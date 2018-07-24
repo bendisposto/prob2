@@ -17,7 +17,7 @@ public abstract class Guard extends AbstractFormulaElement {
 
 	@Override
 	public IEvalElement getFormula() {
-		return predicate;
+		return this.getPredicate();
 	}
 
 	@Override

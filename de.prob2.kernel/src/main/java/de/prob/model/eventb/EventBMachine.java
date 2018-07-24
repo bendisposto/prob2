@@ -12,10 +12,7 @@ import de.prob.model.representation.Variable;
 public class EventBMachine extends Machine {
 
 	public EventBMachine(final String name) {
-		super(
-				name,
-				PersistentHashMap
-				.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
+		super(name, PersistentHashMap.emptyMap());
 	}
 
 	private EventBMachine(
@@ -66,7 +63,7 @@ public class EventBMachine extends Machine {
 	}
 
 	public ModelElementList<EventBInvariant> getAllInvariants() {
-		ModelElementList<EventBInvariant> invs = new ModelElementList<EventBInvariant>();
+		ModelElementList<EventBInvariant> invs = new ModelElementList<>();
 		for (EventBMachine m : getRefines()) {
 			invs = invs.addMultiple(m.getAllInvariants());
 		}

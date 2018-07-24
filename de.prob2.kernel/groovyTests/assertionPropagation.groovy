@@ -1,20 +1,15 @@
-import de.prob.animator.domainobjects.*
 import de.prob.model.eventb.ModelModifier
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.AlgorithmTranslator
-import de.prob.model.eventb.translate.*
-import de.prob.statespace.*
 
-
-mm = new ModelModifier().make {
-	
+final mm = new ModelModifier().make {
 	context(name: "limits") {
 		constants "MAXINT", "NATURAL", "INTEGER"
-
+		
 		axioms "MAXINT : NAT",
 		 "NATURAL = 0..MAXINT",
 		"INTEGER = (-MAXINT)..MAXINT"
-    }
+	}
 	
 	context(name: "constants_correct", extends: "limits") {
 		constants "a", "aSize"
@@ -22,7 +17,7 @@ mm = new ModelModifier().make {
 		axioms "aSize : NATURAL",
 			"a : 0..aSize-1 --> INTEGER",
 			"!j,k.j : dom(a) & k : dom(a) & j < k => a(j) <= a(k)"
-			
+		
 		theorem "aSize <= MAXINT"
 		//theorem	"!x.x : dom(a) => (!j.j : x+1..aSize-1  => a(j)>a(x))"
 		//theorem	"!x.x : dom(a) => (!j.j : 0..x-1 => a(x) > a(j))"
@@ -46,11 +41,11 @@ mm = new ModelModifier().make {
 		
 		
 	}
-
+	
 	procedure(name: "binarySearch", seen: "constants_correct") {
 		argument "key","INTEGER"
 		result "pos","{-1}\\/dom(a)"
-        
+		
 		precondition "TRUE=TRUE"
 		postcondition "(pos = -1 => not(key : ran(a))) & (not(pos = -1) => pos : dom(a) & a(pos) = key)"
 		
@@ -59,7 +54,7 @@ mm = new ModelModifier().make {
 			var "high", "high : -1..aSize-1", "high := aSize - 1"
 			var "mid", "mid : NATURAL", "mid := 0"
 			var "midVar", "midVar : INTEGER", "midVar :: INTEGER"
-
+			
 			theorem  "low > high => 0..low-1 \\/ high+1..aSize-1 = 0..aSize-1"
 			
 			invariants "!x.x : 0..low-1 => x|->key /: a",
@@ -86,8 +81,8 @@ mm = new ModelModifier().make {
 						Then {
 							Assert("a[{mid}]={midVar} & midVar < key")
 							Assign("low := mid + 1")
-						} 
-						Else {		
+						}
+						Else {
 							If("a[{mid}]={midVar} & midVar > key") {
 								Then {
 									Assert("a[{mid}]={midVar} & midVar > key")
@@ -95,9 +90,9 @@ mm = new ModelModifier().make {
 								} 
 								Else {
 									Assert("a[{mid}]={midVar} & midVar = key")
-									Return("mid")							
+									Return("mid")
 								}
-							}		
+							}
 						}
 					}
 					//Assert("a[{mid}]={midVar}")
@@ -120,7 +115,7 @@ mm = new ModelModifier().make {
 			"!j.j : dom(a) & j < aSize-1 => a(j) <= a(j+1)",
 			"MAXINT = 4",
 			"aSize = MAXINT"
-			
+		
 	}
 	
 	procedure(name: "binarySearchFail", seen: "csts_fail") {
@@ -162,7 +157,6 @@ mm = new ModelModifier().make {
 	}*/
 }
 
-m = mm.getModel()
-m = new AlgorithmTranslator(m, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
+final m = new AlgorithmTranslator(mm.model, new AlgorithmGenerationOptions().DEFAULT.terminationAnalysis(true)).run()
 
 "generating a model of a binary search algorithm"

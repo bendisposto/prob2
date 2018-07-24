@@ -20,8 +20,12 @@ public abstract class AbstractEvalElement implements IEvalElement {
 		this.expansion = expansion;
 	}
 
+	/**
+	 * @deprecated Use {@link #AbstractEvalElement(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
 	protected AbstractEvalElement(final String code) {
-		this(code, FormulaExpand.TRUNCATE);
+		this(code, FormulaExpand.EXPAND);
 	}
 
 	@Override

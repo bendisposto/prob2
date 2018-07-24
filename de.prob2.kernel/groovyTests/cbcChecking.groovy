@@ -1,47 +1,55 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-import de.prob.check.*
+import java.nio.file.Paths
 
-s = api.eventb_load(dir + File.separator + "machines" + File.separator + "InvalidModel" + File.separator +"createErrors.bcm")
+import de.prob.animator.domainobjects.EventB
+import de.prob.animator.domainobjects.FormulaExpand
+import de.prob.check.CBCDeadlockChecker
+import de.prob.check.CBCDeadlockFound
+import de.prob.check.CBCInvariantChecker
+import de.prob.check.CBCInvariantViolationFound
+import de.prob.check.IModelCheckJob
+import de.prob.check.ModelCheckOk
+import de.prob.check.ModelChecker
 
-model_check = { job ->
-	def checker = new ModelChecker(job)
+final s1 = api.eventb_load(Paths.get(dir, "machines", "InvalidModel", "createErrors.bcm").toString())
+
+final modelCheck = {IModelCheckJob job ->
+	final checker = new ModelChecker(job)
 	checker.start()
-	checker.getResult()
+	checker.result
 }
 
-res = model_check(new CBCDeadlockChecker(s))
-assert res instanceof CBCDeadlockFound
-t_deadlock = res.getTrace(s)
-ops = t_deadlock.getTransitionList(true)
-assert ops.size() == 1
-assert ops[0].getName() == "deadlock_check"
+final res1 = modelCheck(new CBCDeadlockChecker(s1))
+assert res1 instanceof CBCDeadlockFound
+final tDeadlock = res1.getTrace(s1)
+final ops1 = tDeadlock.getTransitionList(true, FormulaExpand.EXPAND)
+assert ops1.size() == 1
+assert ops1[0].name == "deadlock_check"
 
-res = model_check(new CBCDeadlockChecker(s, "deadlocked = FALSE" as EventB))
-assert res instanceof ModelCheckOk // whoops!!! =)
-assert res.message == "No deadlock was found"
+final res2 = modelCheck(new CBCDeadlockChecker(s1, "deadlocked = FALSE" as EventB))
+assert res2 instanceof ModelCheckOk // whoops!!! =)
+assert res2.message == "No deadlock was found"
 
-res = model_check(new CBCInvariantChecker(s))
-assert res instanceof CBCInvariantViolationFound
-t_invV = res.getTrace(s)
-ops = t_invV.getTransitionList(true)
-assert ops.size() == 2
-assert ops[0].getName() == "invariant_check_violate_invariant"
-assert ops[1].getName() == "violate_invariant"
+final res3 = modelCheck(new CBCInvariantChecker(s1))
+assert res3 instanceof CBCInvariantViolationFound
+final tInvViolation1 = res3.getTrace(s1)
+final ops3 = tInvViolation1.getTransitionList(true, FormulaExpand.EXPAND)
+assert ops3.size() == 2
+assert ops3[0].name == "invariant_check_violate_invariant"
+assert ops3[1].name == "violate_invariant"
 
-res = model_check(new CBCInvariantChecker(s,["deadlock"]))
-assert res instanceof ModelCheckOk
-assert res.message == "No Invariant violation was found"
+final res4 = modelCheck(new CBCInvariantChecker(s1, ["deadlock"]))
+assert res4 instanceof ModelCheckOk
+assert res4.message == "No Invariant violation was found"
 
-s = api.eventb_load(dir + File.separator + "Time" + File.separator +"clock.bcm")
+final s2 = api.eventb_load(Paths.get(dir, "Time", "clock.bcm").toString())
 
-res = model_check(new CBCInvariantChecker(s))
-assert res instanceof CBCInvariantViolationFound
-t_inv = res.getTrace(s)
-ops = t_inv.getTransitionList(true)
-assert ops.size() == 2
-assert ops[0].getName() == "invariant_check_tock"
-assert ops[1].getName() == "tock"
-assert ops[1].getParams()[0].toInteger() >= 0
+final res5 = modelCheck(new CBCInvariantChecker(s2))
+assert res5 instanceof CBCInvariantViolationFound
+final tInvViolation2 = res5.getTrace(s2)
+final ops5 = tInvViolation2.getTransitionList(true, FormulaExpand.EXPAND)
+assert ops5.size() == 2
+assert ops5[0].name == "invariant_check_tock"
+assert ops5[1].name == "tock"
+assert ops5[1].parameterValues[0].toInteger() >= 0
 
 "constraint based deadlock and invariant checking works correctly"

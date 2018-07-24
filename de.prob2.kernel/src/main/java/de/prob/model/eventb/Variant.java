@@ -2,18 +2,19 @@ package de.prob.model.eventb;
 
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractFormulaElement;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class Variant extends AbstractFormulaElement {
 	private final IEvalElement expression;
 	private final String comment;
 
 	public Variant(final String code, final Set<IFormulaExtension> typeEnv) {
-		this(new EventB(code, typeEnv), "");
+		this(new EventB(code, typeEnv, FormulaExpand.EXPAND), "");
 	}
 
 	public Variant(EventB expression, String comment) {
@@ -31,6 +32,6 @@ public class Variant extends AbstractFormulaElement {
 
 	@Override
 	public IEvalElement getFormula() {
-		return expression;
+		return this.getExpression();
 	}
 }

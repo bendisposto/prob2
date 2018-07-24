@@ -1,6 +1,7 @@
 package de.prob.model.eventb;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.Constant;
 
 public class EventBConstant extends Constant {
@@ -17,7 +18,7 @@ public class EventBConstant extends Constant {
 
 	public EventBConstant(String name, final boolean isAbstract,
 			final String unit, String comment) {
-		super(new EventB(name));
+		super(new EventB(name, FormulaExpand.EXPAND));
 		this.name = name;
 		this.isAbstract = isAbstract;
 		this.unit = unit;

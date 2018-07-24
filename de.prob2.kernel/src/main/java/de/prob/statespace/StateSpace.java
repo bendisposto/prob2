@@ -30,7 +30,6 @@ import de.prob.animator.command.FindStateCommand;
 import de.prob.animator.command.FindTraceBetweenNodesCommand;
 import de.prob.animator.command.FormulaTypecheckCommand;
 import de.prob.animator.command.GetCurrentPreferencesCommand;
-import de.prob.animator.command.GetMachineOperationInfos.OperationInfo;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;
@@ -205,7 +204,7 @@ public class StateSpace implements IAnimator {
 	 * @throws IllegalArgumentException
 	 *             if a state with the specified id doesn't exist
 	 */
-	public Object getAt(final int stateId) {
+	public State getAt(final int stateId) {
 		return getState(stateId);
 	}
 
@@ -271,7 +270,7 @@ public class StateSpace implements IAnimator {
 	 */
 	public List<Transition> transitionFromPredicate(final State stateId, final String opName, final String predicate,
 			final int nrOfSolutions) {
-		final IEvalElement pred = model.parseFormula(predicate);
+		final IEvalElement pred = model.parseFormula(predicate, FormulaExpand.EXPAND);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), opName,
 				pred, nrOfSolutions);
 		execute(command);
@@ -308,7 +307,7 @@ public class StateSpace implements IAnimator {
 			}
 		}
 
-		final IEvalElement pred = model.parseFormula(predicate);
+		final IEvalElement pred = model.parseFormula(predicate, FormulaExpand.EXPAND);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), opName,
 				pred, nrOfSolutions);
 		execute(command);
@@ -333,7 +332,7 @@ public class StateSpace implements IAnimator {
 	 *         otherwise.
 	 */
 	public boolean isValidOperation(final State stateId, final String name, final String predicate) {
-		final ClassicalB pred = new ClassicalB(predicate);
+		final ClassicalB pred = new ClassicalB(predicate, FormulaExpand.EXPAND);
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), name, pred,
 				1);
 		execute(command);
@@ -365,7 +364,7 @@ public class StateSpace implements IAnimator {
 	 *            to be evaluated
 	 * @return a list of {@link AbstractEvalResult}s
 	 */
-	public List<AbstractEvalResult> eval(final State state, final List<IEvalElement> formulas) {
+	public List<AbstractEvalResult> eval(final State state, final List<? extends IEvalElement> formulas) {
 		return state.eval(formulas);
 	}
 

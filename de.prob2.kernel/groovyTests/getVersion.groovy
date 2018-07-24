@@ -1,18 +1,18 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import java.nio.file.Paths
 
-// You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+import de.prob.animator.command.GetVersionCommand
 
-cmd = new GetVersionCommand()
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
+
+final cmd = new GetVersionCommand()
 s.execute(cmd)
 
-assert cmd.getMajor() != ""
-assert cmd.getMinor() != ""
-assert cmd.getService() != ""
-assert cmd.getQualifier() != ""
-assert cmd.getSvnrevision() != ""
-assert cmd.getProloginfo() != ""
-assert cmd.getVersion() != null
+assert cmd.major != ""
+assert cmd.minor != ""
+assert cmd.service != ""
+assert cmd.qualifier != ""
+assert cmd.svnrevision != ""
+assert cmd.prologinfo != ""
+assert cmd.version != null
 
 "version accessed successfully"

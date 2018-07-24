@@ -1,19 +1,15 @@
-import de.prob.statespace.*
-import de.prob.animator.domainobjects.*;
+import java.nio.file.Paths
 
-/*
-  this tests ensures that a .bcc file can be loaded
-  and it does not result in an empty machine
-*/
+import de.prob.statespace.Trace
 
-s = api.eventb_load(dir+File.separator+"Lift"+File.separator+"levels.bcc")
-c = s as Trace
-assert c.getCurrentState() == s.root
-assert c.getCurrentState().toString() == "root"
+final s = api.eventb_load(Paths.get(dir, "Lift", "levels.bcc").toString())
+def c = s as Trace
+assert c.currentState == s.root
+assert c.currentState.toString() == "root"
 c = c.anyEvent()
-st = c.getCurrentState()
+final st = c.currentState
 assert st != s.root
 c = c.anyEvent()
-assert c.getCurrentState() != st
+assert c.currentState != st
 
-"A .bcc file can be loaded"
+"A .bcc file can be loaded and does not result in an empty machine"

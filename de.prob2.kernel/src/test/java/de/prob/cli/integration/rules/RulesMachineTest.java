@@ -175,7 +175,27 @@ public class RulesMachineTest {
 	}
 
 	@Test
-	public void testReplaces() {
+	public void testReplaces1() throws IOException {
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "Replaces.rmch");
+		assertEquals(false, rulesMachineRun.hasError());
+		assertTrue(rulesMachineRun.getErrorList().isEmpty());
+		assertEquals(null, rulesMachineRun.getFirstError());
+
+		RuleResults ruleResults = rulesMachineRun.getRuleResults();
+		ResultSummary summary = ruleResults.getSummary();
+		// summary is created only once
+		assertEquals(summary, ruleResults.getSummary());
+		assertEquals(1, ruleResults.getRuleResultList().size());
+
+		RuleResult rule1Result = ruleResults.getRuleResult("RULE_Rule1");
+		assertEquals(RuleStatus.FAIL, rule1Result.getRuleState());
+
+		// test existing computations
+		System.out.println(rulesMachineRun.getRulesProject().getOperationsMap());
+	}
+
+	@Test
+	public void testReplaces2() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
 				" COMPUTATION COMP_comp1 BODY DEFINE V_Value1 TYPE INTEGER DUMMY_VALUE 0 VALUE 10 END END",
 				" RULE RULE_BasedOnValue1 BODY RULE_FORALL x WHERE x : 1..V_Value1 EXPECT x <= 10 COUNTEREXAMPLE \"fail\" END END",

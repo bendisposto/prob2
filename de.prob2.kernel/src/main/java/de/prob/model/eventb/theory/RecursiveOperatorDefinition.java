@@ -2,11 +2,12 @@ package de.prob.model.eventb.theory;
 
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class RecursiveOperatorDefinition extends AbstractElement implements
 IOperatorDefinition {
@@ -16,8 +17,8 @@ IOperatorDefinition {
 
 	public RecursiveOperatorDefinition(final String inductiveArgument,
 			final Set<IFormulaExtension> typeEnv) {
-		this.inductiveArgument = new EventB(inductiveArgument, typeEnv);
-		this.cases = new ModelElementList<RecursiveDefinitionCase>();
+		this.inductiveArgument = new EventB(inductiveArgument, typeEnv, FormulaExpand.EXPAND);
+		this.cases = new ModelElementList<>();
 	}
 
 	private RecursiveOperatorDefinition(final EventB inductiveArgument, ModelElementList<RecursiveDefinitionCase> cases) {

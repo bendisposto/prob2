@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IBEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -45,9 +46,9 @@ public class UnsatMinimalCoreCommand extends UnsatCoreBaseCommand {
 				bindings.get(RESULT_VARIABLE), 0);
 		String code = compoundTerm.getFunctor();
 		if (pred instanceof EventB) {
-			core = new EventB(code);
+			core = new EventB(code, FormulaExpand.EXPAND);
 		} else {
-			core = new ClassicalB(code);
+			core = new ClassicalB(code, FormulaExpand.EXPAND);
 		}
 	}
 

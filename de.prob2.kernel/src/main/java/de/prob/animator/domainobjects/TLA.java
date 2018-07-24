@@ -19,10 +19,18 @@ public class TLA extends AbstractEvalElement implements IBEvalElement {
 	private final Start ast;
 	private final ClassicalB classicalB;
 
+	/**
+	 * @deprecated Use {@link #TLA(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
 	public TLA(String code) {
-		super(code);
+		this(code, FormulaExpand.EXPAND);
+	}
+
+	public TLA(String code, FormulaExpand expand) {
+		super(code, expand);
 		ast = fromTLA(code);
-		classicalB = new ClassicalB(ast);
+		classicalB = new ClassicalB(ast, expand);
 	}
 
 	private Start fromTLA(String code) {

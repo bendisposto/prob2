@@ -2,10 +2,9 @@ package de.prob.model.eventb.generate;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.eventb.core.ast.extension.IFormulaExtension;
 
 import de.be4.eventbalg.core.parser.node.APostcondition;
 import de.be4.eventbalg.core.parser.node.APrecondition;
@@ -19,8 +18,11 @@ import de.be4.eventbalg.core.parser.node.PPostcondition;
 import de.be4.eventbalg.core.parser.node.PPrecondition;
 import de.be4.eventbalg.core.parser.node.PSimplifiedMachine;
 import de.be4.eventbalg.core.parser.node.PTypingStmt;
+
 import de.prob.model.eventb.ModelGenerationException;
 import de.prob.model.eventb.algorithm.Procedure;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class ProcedureExtractor extends ElementExtractor {
 
@@ -76,8 +78,8 @@ public class ProcedureExtractor extends ElementExtractor {
 
 	private Map<String, String> getTypingInformation(
 			AProcedureParseUnit parseUnit) {
-		Map<String, String> typingInfo = new HashMap<String, String>();
-		LinkedList<PTypingStmt> typing = parseUnit.getTyping();
+		Map<String, String> typingInfo = new HashMap<>();
+		List<PTypingStmt> typing = parseUnit.getTyping();
 		for (PTypingStmt stmt : typing) {
 			if (stmt instanceof ATypingStmt) {
 				typingInfo.put(((ATypingStmt) stmt).getName().getText(),

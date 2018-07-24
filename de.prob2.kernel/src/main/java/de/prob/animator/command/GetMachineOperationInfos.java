@@ -1,6 +1,7 @@
 package de.prob.animator.command;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.OperationInfo;
 
 public class GetMachineOperationInfos extends AbstractCommand {
 	private static final String PROLOG_COMMAND_NAME = "get_machine_operation_infos";
@@ -20,17 +22,26 @@ public class GetMachineOperationInfos extends AbstractCommand {
 		super();
 	}
 
+	private static List<String> convertAtomicStringList(final PrologTerm list) {
+		if (list instanceof ListPrologTerm) {
+			return ((ListPrologTerm)list).stream().map(PrologTerm::atomicString).collect(Collectors.toList());
+		} else if ("unknown".equals(PrologTerm.atomicString(list))) {
+			return Collections.emptyList();
+		} else {
+			throw new AssertionError("Not a list or 'unknown': " + list);
+		}
+	}
+
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		for (PrologTerm prologTerm : BindingGenerator.getList(bindings, RESULT_VARIABLE)) {
 			final String opName = prologTerm.getArgument(1).getFunctor();
-			final List<String> outputParameterNames = ((ListPrologTerm)prologTerm.getArgument(2)).stream()
-				.map(PrologTerm::getFunctor)
-				.collect(Collectors.toList());
-			final List<String> parameterNames = ((ListPrologTerm)prologTerm.getArgument(3)).stream()
-				.map(PrologTerm::getFunctor)
-				.collect(Collectors.toList());
-			operationInfos.add(new OperationInfo(opName, parameterNames, outputParameterNames));
+			final List<String> outputParameterNames = convertAtomicStringList(prologTerm.getArgument(2));
+			final List<String> parameterNames = convertAtomicStringList(prologTerm.getArgument(3));
+			final List<String> readVariables = convertAtomicStringList(prologTerm.getArgument(6));
+			final List<String> writtenVariables = convertAtomicStringList(prologTerm.getArgument(7));
+			final List<String> nonDetWrittenVariables = convertAtomicStringList(prologTerm.getArgument(8));
+			operationInfos.add(new OperationInfo(opName, parameterNames, outputParameterNames, readVariables, writtenVariables, nonDetWrittenVariables));
 		}
 	}
 
@@ -42,37 +53,4 @@ public class GetMachineOperationInfos extends AbstractCommand {
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(RESULT_VARIABLE).closeTerm();
 	}
-
-	public class OperationInfo {
-		private final String operationName;
-		private final List<String> parameterNames;
-		private final List<String> outputParameterNames;
-
-		private OperationInfo(String opName, List<String> parameterNames, List<String> outputParameterNames) {
-			this.operationName = opName;
-			this.parameterNames = parameterNames;
-			this.outputParameterNames = outputParameterNames;
-		}
-
-		public String getOperationName() {
-			return operationName;
-		}
-
-		public List<String> getParameterNames() {
-			return parameterNames;
-		}
-
-		public List<String> getOutputParameterNames() {
-			return outputParameterNames;
-		}
-
-		@Override
-		public String toString() {
-			return String.format("[opName: %s, params: [%s], outputParams: [%s]]", operationName,
-					String.join(", ", parameterNames), String.join(", ", outputParameterNames));
-
-		}
-
-	}
-
 }

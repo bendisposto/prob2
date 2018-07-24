@@ -1,6 +1,10 @@
 package de.prob.visualization;
 
 public class HTMLResources {
+	private HTMLResources() {
+		throw new AssertionError("Utility class");
+	}
+
 	public static String getPredicateHTML(final String sessionId, final String w, final String h) {
 		if (w != null && h != null) {
 			String loadcmd = "createFormulaViz(\'" + sessionId + "\', \'body\', " + w + ", " + h + ")";
@@ -26,7 +30,6 @@ public class HTMLResources {
 			String loadcmd = "createSSGraph(\'" + sessionId + "\',\'body\',1,[]," + w + "," + h + ")";
 			return getHTML(loadcmd, "State Space Visualization", "statespace.css", "statespace.js");
 		}
-
 
 		String loadcmd = "initialize(\'" + sessionId + "\')";
 		return getHTML(loadcmd, "State Space Visualization", "statespace.css", "statespace.js");
@@ -76,15 +79,6 @@ public class HTMLResources {
 				"<!-- End Document\r\n\t\t  ================================================== -->\r\n\t\t" +
 				"</body>\r\n\t\t" +
 				"</html>";
-		//code.jquery.com/jquery-1.7.1.min.js"></script> -->\n
-		// <script src="../javascripts/jquery-1.9.1.min.js"></script>\n
-		// <script src="../javascripts/d3.v2.min.js"></script>\n
-		// <script src="../javascripts/viz.js"></script>\n
-		// <script src="../javascripts/prob_visualization.js"></script>\n
-		// <script src="../javascripts/" + javascript + ""></script>\n\n
-		// <!-- End Document\n		  ================================================== -->\n
-		// </body>\n
-		// </html>";
 	}
 
 }

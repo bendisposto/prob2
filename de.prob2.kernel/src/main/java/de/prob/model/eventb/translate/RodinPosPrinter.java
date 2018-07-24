@@ -11,7 +11,7 @@ import de.prob.util.Tuple2;
 public class RodinPosPrinter implements PositionPrinter {
 
 	private IPrologTermOutput pout;
-	private final Map<Node, Tuple2<String, String>> nodeInfos = new HashMap<Node, Tuple2<String, String>>();
+	private final Map<Node, Tuple2<String, String>> nodeInfos = new HashMap<>();
 
 	public void addNodeInfos(final Map<Node, Tuple2<String, String>> infos) {
 		nodeInfos.putAll(infos);

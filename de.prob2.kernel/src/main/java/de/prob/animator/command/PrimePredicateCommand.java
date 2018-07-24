@@ -2,6 +2,7 @@ package de.prob.animator.command;
 
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -30,9 +31,9 @@ public class PrimePredicateCommand extends AbstractCommand {
 		CompoundPrologTerm compoundTerm = BindingGenerator.getCompoundTerm(bindings.get(PRIMED_PREDICATE_VARIABLE), 0);
 		String code = compoundTerm.getFunctor();
 		if (evalElement instanceof EventB) {
-			result = new EventB(code);
+			result = new EventB(code, FormulaExpand.EXPAND);
 		} else {
-			result = new ClassicalB(code);
+			result = new ClassicalB(code, FormulaExpand.EXPAND);
 		}
 
 	}
