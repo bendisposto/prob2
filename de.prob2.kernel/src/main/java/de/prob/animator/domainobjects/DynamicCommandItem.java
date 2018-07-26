@@ -1,5 +1,7 @@
 package de.prob.animator.domainobjects;
 
+import java.util.Objects;
+
 public class DynamicCommandItem {
 
 	private final String command;
@@ -45,8 +47,24 @@ public class DynamicCommandItem {
 	}
 	
 	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final DynamicCommandItem other = (DynamicCommandItem)obj;
+		return Objects.equals(this.getCommand(), other.getCommand()) && this.getArity() == other.getArity();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.getCommand(), this.getArity());
+	}
+	
+	@Override
 	public String toString() {
 		return name;
 	}
-	
 }
