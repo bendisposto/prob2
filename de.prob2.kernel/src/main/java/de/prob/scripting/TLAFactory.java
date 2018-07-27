@@ -12,12 +12,11 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.ClassicalBModel;
+import de.tla2b.exceptions.TLA2BException;
+import de.tla2bAst.Translator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.tla2b.exceptions.TLA2BException;
-import de.tla2bAst.Translator;
 
 public class TLAFactory implements ModelFactory<ClassicalBModel> {
 
@@ -46,7 +45,7 @@ public class TLAFactory implements ModelFactory<ClassicalBModel> {
 			throw new ModelTranslationError("Translation Error: " + e.getMessage(), e);
 		}
 
-		BParser bparser = new BParser();
+		BParser bparser = new BParser(fileName);
 		bparser.getDefinitions().addDefinitions(translator.getBDefinitions());
 		try {
 			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
