@@ -144,9 +144,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	public Start parseFile(final File model, final BParser bparser) throws IOException {
 		try {
 			logger.trace("Parsing main file '{}'", model.getAbsolutePath());
-			Start ast = null;
-			ast = bparser.parseFile(model, false);
-			return ast;
+			return bparser.parseFile(model, false);
 		} catch (BCompoundException e) {
 			throw new ProBError(e);
 		}
@@ -155,9 +153,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	private Start parseString(final String model, final BParser bparser) {
 		try {
 			logger.trace("Parsing file");
-			Start ast = null;
-			ast = bparser.parse(model, false, new PlainFileContentProvider());
-			return ast;
+			return bparser.parse(model, false, new PlainFileContentProvider());
 		} catch (BCompoundException e) {
 			throw new ProBError(e);
 		}

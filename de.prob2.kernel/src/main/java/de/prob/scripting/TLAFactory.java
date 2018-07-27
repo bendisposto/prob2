@@ -93,9 +93,7 @@ public class TLAFactory implements ModelFactory<ClassicalBModel> {
 	 */
 	public Start parseFile(final File model, final BParser bparser) throws IOException, BCompoundException {
 		logger.trace("Parsing main file '{}'", model.getAbsolutePath());
-		Start ast = null;
-		ast = bparser.parseFile(model, false);
-		return ast;
+		return bparser.parseFile(model, false);
 	}
 
 }
