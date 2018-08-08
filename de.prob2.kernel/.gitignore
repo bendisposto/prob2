@@ -33,3 +33,4 @@ classmap.properties
 **/prob2preferences
 **/stateInspectorRepl
 **/ltl_graphdump.pl
+*.csp.pl
