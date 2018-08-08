@@ -1,12 +1,12 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.assertEquals;
+import de.prob.TestHelper;
+import de.prob.parser.ISimplifiedROMap;
+import de.prob.prolog.term.PrologTerm;
 
 import org.junit.Test;
 
-import test.TestHelper;
-import de.prob.parser.ISimplifiedROMap;
-import de.prob.prolog.term.PrologTerm;
+import static org.junit.Assert.*;
 
 public class SpecializedBooleanCheckersCommandTest {
 

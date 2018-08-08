@@ -1,9 +1,10 @@
-package test;
+package de.prob;
 
-import static org.mockito.Mockito.*;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+
+import static org.mockito.Mockito.*;
 
 public class TestHelper {
 
