@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 public class ProBInstanceProviderTest {
 
 	@Test
-	public void testExtractCliInformation() throws Exception {
+	public void testExtractCliInformation() {
 		ProBInstanceProvider factory = Main.getInjector().getInstance(
 				ProBInstanceProvider.class);
 
@@ -27,11 +27,9 @@ public class ProBInstanceProviderTest {
 		Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> info = factory
 				.extractCliInformation(reader);
 
-		AbstractCliPattern<?> p1 = info.get(InterruptRefPattern.class);
-		assertNotNull(p1);
+		assertNotNull(info.get(InterruptRefPattern.class));
 
-		AbstractCliPattern<?> p2 = info.get(PortPattern.class);
-		assertNotNull(p2);
+		assertNotNull(info.get(PortPattern.class));
 
 	}
 }

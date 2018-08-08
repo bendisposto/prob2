@@ -1,16 +1,14 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Collection;
-
-import org.junit.Test;
 
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class SetPreferenceCommandTest {
 
@@ -31,11 +29,11 @@ public class SetPreferenceCommandTest {
 
 		PrologTerm argument1 = t.getArgument(1);
 		assertTrue(argument1.isAtom());
-		assertEquals(argument1.toString(), "foo");
+		assertEquals("foo", argument1.toString());
 
 		PrologTerm argument2 = t.getArgument(2);
 		assertTrue(argument2.isAtom());
-		assertEquals(argument2.toString(), "bar");
+		assertEquals("bar", argument2.toString());
 	}
 
 }

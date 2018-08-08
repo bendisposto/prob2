@@ -6,7 +6,10 @@ import de.prob.prolog.term.PrologTerm;
 
 import static org.mockito.Mockito.*;
 
-public class TestHelper {
+public final class TestHelper {
+	private TestHelper() {
+		throw new AssertionError("Utility class");
+	}
 
 	public static ISimplifiedROMap<String, PrologTerm> mkAtomMock(
 			final String... strings) {

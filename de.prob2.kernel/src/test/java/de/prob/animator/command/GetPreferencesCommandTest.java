@@ -1,13 +1,7 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import java.util.Collection;
 import java.util.List;
-
-import org.junit.Test;
 
 import de.prob.animator.domainobjects.ProBPreference;
 import de.prob.parser.ISimplifiedROMap;
@@ -17,12 +11,18 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 public class GetPreferencesCommandTest {
 
 	@Test
 	public void testGetPreferences() {
 		GetDefaultPreferencesCommand gpc = new GetDefaultPreferencesCommand();
-		assertEquals(gpc.getPreferences(), null);
+		assertNull(gpc.getPreferences());
 	}
 
 	@Test
@@ -49,21 +49,21 @@ public class GetPreferencesCommandTest {
 
 		List<ProBPreference> prefs = command.getPreferences();
 
-		assertEquals(prefs.size(), 2);
+		assertEquals(2, prefs.size());
 
 		ProBPreference pref1 = prefs.get(0);
-		assertEquals(pref1.name, "tinker");
-		assertEquals(pref1.type.toString(), "tailor");
-		assertEquals(pref1.description, "soldier");
-		assertEquals(pref1.category, "sailor");
-		assertEquals(pref1.defaultValue, "foo");
+		assertEquals("tinker", pref1.name);
+		assertEquals("tailor", pref1.type.toString());
+		assertEquals("soldier", pref1.description);
+		assertEquals("sailor", pref1.category);
+		assertEquals("foo", pref1.defaultValue);
 
 		ProBPreference pref2 = prefs.get(1);
-		assertEquals(pref2.name, "richman");
-		assertEquals(pref2.type.toString(), "poorman");
-		assertEquals(pref2.description, "beggarman");
-		assertEquals(pref2.category, "thief");
-		assertEquals(pref2.defaultValue, "bar");
+		assertEquals("richman", pref2.name);
+		assertEquals("poorman", pref2.type.toString());
+		assertEquals("beggarman", pref2.description);
+		assertEquals("thief", pref2.category);
+		assertEquals("bar", pref2.defaultValue);
 	}
 
 	@Test

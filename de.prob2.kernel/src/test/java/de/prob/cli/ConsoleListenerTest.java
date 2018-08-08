@@ -1,10 +1,10 @@
 package de.prob.cli;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
 
 import org.junit.Test;
-
 import org.slf4j.Logger;
 
 import static org.junit.Assert.*;
@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 public class ConsoleListenerTest {
 
 	@Test
-	public void testMultiLineRead() throws Exception {
+	public void testMultiLineRead() throws IOException {
 		ProBInstance proBInstance = mock(ProBInstance.class);
 		BufferedReader reader = new BufferedReader(new StringReader("foo\nbar"));
 		Logger logger = mock(Logger.class);
@@ -28,7 +28,7 @@ public class ConsoleListenerTest {
 	}
 
 	@Test
-	public void testMultiLineReadAndTerminate() throws Exception {
+	public void testMultiLineReadAndTerminate() throws IOException {
 		ProBInstance proBInstance = mock(ProBInstance.class);
 		BufferedReader reader = new BufferedReader(new StringReader(
 				"foo\nbar\ngoo"));
@@ -43,7 +43,7 @@ public class ConsoleListenerTest {
 	}
 
 	@Test
-	public void testSingleLineRead() throws Exception {
+	public void testSingleLineRead() throws IOException {
 		ProBInstance proBInstance = mock(ProBInstance.class);
 		BufferedReader reader = new BufferedReader(new StringReader("foo"));
 		Logger logger = mock(Logger.class);
@@ -55,7 +55,7 @@ public class ConsoleListenerTest {
 	}
 
 	@Test
-	public void testTerminate() throws Exception {
+	public void testTerminate() throws IOException {
 		ProBInstance proBInstance = mock(ProBInstance.class);
 		BufferedReader reader = new BufferedReader(new StringReader("foo"));
 		when(proBInstance.isShuttingDown()).thenReturn(true);
@@ -67,7 +67,7 @@ public class ConsoleListenerTest {
 	}
 
 	@Test
-	public void testTerminateNull() throws Exception {
+	public void testTerminateNull() throws IOException {
 		ProBInstance proBInstance = mock(ProBInstance.class);
 		BufferedReader reader = new BufferedReader(new StringReader(""));
 		when(proBInstance.isShuttingDown()).thenReturn(true);
