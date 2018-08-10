@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 public class EvaluateFormulasCommandTest {
 
 	@Test
-	public void testWriteCommand() throws Exception {
+	public void testWriteCommand() {
 		IEvalElement element = new ClassicalB("1<3", FormulaExpand.EXPAND);
 
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
@@ -44,29 +44,22 @@ public class EvaluateFormulasCommandTest {
 	}
 
 	@Test
-	public void testProcessResult() throws Exception {
+	public void testProcessResult() {
 
 		IEvalElement element = new ClassicalB("1<3", FormulaExpand.EXPAND);
 
-		final CompoundPrologTerm lpt = mk_result("true");
-		ISimplifiedROMap<String, PrologTerm> m1 = new ISimplifiedROMap<String, PrologTerm>() {
-
-			@Override
-			public PrologTerm get(final String key) {
-				return lpt;
-			}
-
-		};
+		final CompoundPrologTerm lpt = mkResult("true");
+		ISimplifiedROMap<String, PrologTerm> m1 = key -> lpt;
 		EvaluateFormulaCommand command = new EvaluateFormulaCommand(element,
 				"root");
 		command.processResult(m1);
 
 		AbstractEvalResult value = command.getValue();
-		assertEquals(((EvalResult) value).getValue(), "true");
-		assertEquals(((EvalResult) value).getSolutions().get("a"), "3");
+		assertEquals("true", ((EvalResult) value).getValue());
+		assertEquals("3", ((EvalResult) value).getSolutions().get("a"));
 	}
 
-	private CompoundPrologTerm mk_result(final String r) {
+	private static CompoundPrologTerm mkResult(final String r) {
 		return new CompoundPrologTerm("result", new CompoundPrologTerm(r),
 				new ListPrologTerm(new CompoundPrologTerm("bind",
 						new CompoundPrologTerm("a"),

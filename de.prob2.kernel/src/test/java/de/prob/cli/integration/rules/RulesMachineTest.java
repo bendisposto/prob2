@@ -1,23 +1,17 @@
 package de.prob.cli.integration.rules;
 
-import static org.junit.Assert.*;
-import static de.prob.cli.integration.rules.RulesTestUtil.*;
-
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
-import static de.prob.model.brules.RuleStatus.*;
-
 import de.be4.classicalb.core.parser.rules.RuleOperation;
-import de.prob.model.brules.ComputationStatuses;
 import de.prob.model.brules.ComputationStatus;
+import de.prob.model.brules.ComputationStatuses;
 import de.prob.model.brules.RuleResult;
 import de.prob.model.brules.RuleResult.CounterExample;
 import de.prob.model.brules.RuleResults;
@@ -26,16 +20,23 @@ import de.prob.model.brules.RuleStatus;
 import de.prob.model.brules.RulesMachineRun;
 import de.prob.statespace.State;
 
+import org.junit.Test;
+
+import static de.prob.cli.integration.rules.RulesTestUtil.createRulesMachineFile;
+import static de.prob.cli.integration.rules.RulesTestUtil.startRulesMachineRun;
+import static de.prob.cli.integration.rules.RulesTestUtil.startRulesMachineRunWithOperations;
+import static org.junit.Assert.*;
+
 public class RulesMachineTest {
 
-	static final String dir = "src/test/resources/brules/";
+	private static final Path DIR = Paths.get("src", "test", "resources", "brules");
 
 	@Test
-	public void testSimpleRulesMachine() throws IOException {
-		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "SimpleRulesMachine.rmch");
-		assertEquals(false, rulesMachineRun.hasError());
+	public void testSimpleRulesMachine() {
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(DIR.resolve("SimpleRulesMachine.rmch").toFile());
+		assertFalse(rulesMachineRun.hasError());
 		assertTrue(rulesMachineRun.getErrorList().isEmpty());
-		assertEquals(null, rulesMachineRun.getFirstError());
+		assertNull(rulesMachineRun.getFirstError());
 
 		RuleResults ruleResults = rulesMachineRun.getRuleResults();
 		ResultSummary summary = ruleResults.getSummary();
@@ -55,14 +56,14 @@ public class RulesMachineTest {
 		String message = result2.getCounterExamples().get(0).getMessage();
 		assertEquals("ERROR2", message);
 
-		assertEquals(NOT_CHECKED, ruleResults.getRuleResult("Rule3").getRuleState());
+		assertEquals(RuleStatus.NOT_CHECKED, ruleResults.getRuleResult("Rule3").getRuleState());
 		assertEquals("Rule2", ruleResults.getRuleResult("Rule3").getFailedDependencies().get(0));
 	}
 
 	@Test
 	public void testRulesMachineExample() {
-		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "RulesMachineExample.rmch");
-		assertEquals(false, rulesMachineRun.hasError());
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(DIR.resolve("RulesMachineExample.rmch").toFile());
+		assertFalse(rulesMachineRun.hasError());
 		State finalState = rulesMachineRun.getExecuteRun().getExecuteModelCommand().getFinalState();
 		ComputationStatuses compResult = new ComputationStatuses(rulesMachineRun.getRulesProject(), finalState);
 		assertEquals(ComputationStatus.EXECUTED, compResult.getResult("COMP_comp1"));
@@ -72,7 +73,7 @@ public class RulesMachineTest {
 	public void testCounterExample() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
 				"RULE foo BODY RULE_FAIL ERROR_TYPE 1 COUNTEREXAMPLE \"error\"END END");
-		assertEquals(null, rulesMachineRun.getFirstError());
+		assertNull(rulesMachineRun.getFirstError());
 		RuleResult ruleResult = rulesMachineRun.getRuleResults().getRuleResult("foo");
 		List<CounterExample> counterExamples = ruleResult.getCounterExamples();
 		assertEquals(1, counterExamples.size());
@@ -81,7 +82,7 @@ public class RulesMachineTest {
 	}
 
 	@Test
-	public void testReuseStateSpace() throws IOException {
+	public void testReuseStateSpace() {
 		String ruleWithWDError = "RULE Rule1 BODY VAR xx IN xx := {1|->2}(3) END;RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END";
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(ruleWithWDError);
 		BigInteger numberAfterFirstRun = rulesMachineRun.getTotalNumberOfProBCliErrors();
@@ -155,11 +156,11 @@ public class RulesMachineTest {
 				"RULE Rule2 DEPENDS_ON_RULE Rule1 BODY RULE_FAIL WHEN 1=2 COUNTEREXAMPLE \"fail\" END END");
 		System.out.println(rulesMachineRun.getFirstError());
 		// @formatter:on
-		assertTrue(!rulesMachineRun.hasError());
+		assertFalse(rulesMachineRun.hasError());
 		System.out.println(rulesMachineRun.getRuleResults());
 		assertTrue(rulesMachineRun.getRuleResults().getRuleResult("Rule1").hasFailed());
-		assertEquals(FAIL, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getRuleState());
-		assertEquals(NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule2").getRuleState());
+		assertEquals(RuleStatus.FAIL, rulesMachineRun.getRuleResults().getRuleResult("Rule1").getRuleState());
+		assertEquals(RuleStatus.NOT_CHECKED, rulesMachineRun.getRuleResults().getRuleResult("Rule2").getRuleState());
 		assertEquals("Rule1", rulesMachineRun.getRuleResults().getRuleResult("Rule2").getFailedDependencies().get(0));
 	}
 
@@ -175,11 +176,11 @@ public class RulesMachineTest {
 	}
 
 	@Test
-	public void testReplaces1() throws IOException {
-		RulesMachineRun rulesMachineRun = startRulesMachineRun(dir + "Replaces.rmch");
-		assertEquals(false, rulesMachineRun.hasError());
+	public void testReplaces1() {
+		RulesMachineRun rulesMachineRun = startRulesMachineRun(DIR.resolve("Replaces.rmch").toFile());
+		assertFalse(rulesMachineRun.hasError());
 		assertTrue(rulesMachineRun.getErrorList().isEmpty());
-		assertEquals(null, rulesMachineRun.getFirstError());
+		assertNull(rulesMachineRun.getFirstError());
 
 		RuleResults ruleResults = rulesMachineRun.getRuleResults();
 		ResultSummary summary = ruleResults.getSummary();

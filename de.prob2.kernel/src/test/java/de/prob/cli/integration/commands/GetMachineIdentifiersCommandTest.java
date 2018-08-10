@@ -1,20 +1,19 @@
 package de.prob.cli.integration.commands;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.File;
 import java.io.IOException;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import java.nio.file.Paths;
 
 import de.prob.Main;
 import de.prob.animator.command.GetMachineIdentifiersCommand;
 import de.prob.scripting.Api;
 import de.prob.scripting.ModelTranslationError;
 import de.prob.statespace.StateSpace;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class GetMachineIdentifiersCommandTest {
 
@@ -30,8 +29,7 @@ public class GetMachineIdentifiersCommandTest {
 	public void testGetMachineIdentifiersCommand() throws IOException, ModelTranslationError {
 		System.out.println(Main.getProBDirectory());
 		System.out.println(api.getVersion());
-		s = api.b_load("src" + File.separator + "test" + File.separator + "resources" + File.separator + "b"
-				+ File.separator + "ExampleMachine.mch");
+		s = api.b_load(Paths.get("src", "test", "resources", "b", "ExampleMachine.mch").toString());
 		assertNotNull(s);
 		GetMachineIdentifiersCommand command = new GetMachineIdentifiersCommand(
 				GetMachineIdentifiersCommand.Category.VARIABLES);

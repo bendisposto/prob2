@@ -1,17 +1,16 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import org.junit.Test;
-
-import test.TestHelper;
-import de.prob.animator.command.CheckBooleanPropertyCommand;
+import de.prob.TestHelper;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class CheckBooleanPropertyCommandTest {
 

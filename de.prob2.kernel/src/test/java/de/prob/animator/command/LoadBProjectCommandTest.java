@@ -1,14 +1,10 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
-
-import org.junit.Test;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
@@ -18,12 +14,16 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.scripting.ClassicalBFactory;
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 public class LoadBProjectCommandTest {
 
 	@Test
-	public void testWriteCommand() throws Exception {
-		ClassLoader classLoader = getClass().getClassLoader();
-		URL resource = classLoader.getResource("examples/scheduler.mch");
+	public void testWriteCommand() throws URISyntaxException, IOException {
+		URL resource = this.getClass().getResource("/examples/scheduler.mch");
+		assertNotNull(resource);
 		File f =  new File(resource.toURI());
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		ClassicalBFactory factory = new ClassicalBFactory(null);

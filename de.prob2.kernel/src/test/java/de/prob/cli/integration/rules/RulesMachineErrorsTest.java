@@ -1,17 +1,18 @@
 package de.prob.cli.integration.rules;
 
-import static de.prob.cli.integration.rules.RulesTestUtil.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
+
+import de.be4.classicalb.core.parser.exceptions.BException;
+import de.prob.model.brules.RuleStatus;
+import de.prob.model.brules.RulesMachineRun;
+import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
 
 import org.junit.Test;
 
-import de.prob.model.brules.RuleStatus;
-import de.prob.model.brules.RulesMachineRun;
-import de.be4.classicalb.core.parser.exceptions.BException;
-import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
+import static de.prob.cli.integration.rules.RulesTestUtil.createRulesMachineFile;
+import static de.prob.cli.integration.rules.RulesTestUtil.startRulesMachineRun;
+import static de.prob.cli.integration.rules.RulesTestUtil.startRulesMachineRunWithOperations;
+import static org.junit.Assert.*;
 
 public class RulesMachineErrorsTest {
 
@@ -46,10 +47,10 @@ public class RulesMachineErrorsTest {
 	public void testEnumerationError() {
 		RulesMachineRun rulesMachineRun = startRulesMachineRunWithOperations(
 				"RULE foo BODY RULE_FORALL x WHERE 1=1 EXPECT x = \"foo\" COUNTEREXAMPLE x END END");
-		assertTrue(null != rulesMachineRun.getFirstError());
+		assertNotNull(rulesMachineRun.getFirstError());
 		assertEquals(ERROR_TYPES.PROB_ERROR, rulesMachineRun.getFirstError().getType());
 		assertTrue(rulesMachineRun.getTotalNumberOfProBCliErrors().intValue() > 0);
-		assertTrue(rulesMachineRun.getErrorList().size() > 0);
+		assertFalse(rulesMachineRun.getErrorList().isEmpty());
 	}
 
 	@Test

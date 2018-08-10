@@ -1,21 +1,21 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
-
-import org.junit.Test;
+import java.util.List;
 
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 public class ComposedCommandTest {
 
-	private static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			.toCharArray();
+	private static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
 	@Test
 	public void testWriteCommand()  {
@@ -31,7 +31,7 @@ public class ComposedCommandTest {
 	public void testWriteCommandAlternateConstructor()  {
 		AbstractCommand foo = mock(AbstractCommand.class);
 		AbstractCommand bar = mock(AbstractCommand.class);
-		ArrayList<AbstractCommand> list = new ArrayList<AbstractCommand>();
+		List<AbstractCommand> list = new ArrayList<>();
 		list.add(foo);
 		list.add(bar);
 		ComposedCommand cmd = new ComposedCommand(list);
@@ -53,34 +53,32 @@ public class ComposedCommandTest {
 	}
 
 	@Test
-	public void testPrefix() throws Exception {
+	public void testPrefix() {
 		ComposedCommand command = new ComposedCommand();
 		int i = 0;
-		char[] letters = LETTERS;
-		for (char c : letters) {
+		for (char c : LETTERS) {
 			String prefix = command.createPrefix(i);
-			assertEquals(prefix.charAt(0), c);
+			assertEquals(c, prefix.charAt(0));
 			assertEquals(1, prefix.length());
 			i++;
 		}
 	}
 
 	@Test
-	public void testMorePrefix() throws Exception {
+	public void testMorePrefix() {
 		ComposedCommand command = new ComposedCommand();
-		char[] letters = LETTERS;
-		int i = letters.length;
-		for (char c : letters) {
+		int i = LETTERS.length;
+		for (char c : LETTERS) {
 			String prefix = command.createPrefix(i);
-			assertEquals(prefix.charAt(0), c);
-			assertEquals(prefix.charAt(1), '1');
+			assertEquals(c, prefix.charAt(0));
+			assertEquals('1', prefix.charAt(1));
 			assertEquals(2, prefix.length());
 			i++;
 		}
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void testCommandNotKnown()  {
+	public void testCommandNotKnown() {
 		AbstractCommand foo = mock(AbstractCommand.class);
 		AbstractCommand bar = mock(AbstractCommand.class);
 		ComposedCommand cmd = new ComposedCommand(foo, bar);

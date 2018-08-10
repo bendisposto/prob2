@@ -1,7 +1,7 @@
 package de.prob.cli.integration.commands;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import de.prob.Main;
 import de.prob.animator.command.GetMachineOperationInfos;
@@ -30,8 +30,7 @@ public class GetMachineOperationInfosCommandTest {
 	public void testGetMachineOperationInfosCommand() throws IOException, ModelTranslationError {
 		System.out.println(Main.getProBDirectory());
 		System.out.println(api.getVersion());
-		s = api.b_load("src" + File.separator + "test" + File.separator + "resources" + File.separator + "b"
-				+ File.separator + "ExampleMachine.mch");
+		s = api.b_load(Paths.get("src", "test", "resources", "b", "ExampleMachine.mch").toString());
 		assertNotNull(s);
 		GetMachineOperationInfos command = new GetMachineOperationInfos();
 		s.execute(command);

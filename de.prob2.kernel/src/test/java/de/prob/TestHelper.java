@@ -1,11 +1,15 @@
-package test;
+package de.prob;
 
-import static org.mockito.Mockito.*;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class TestHelper {
+import static org.mockito.Mockito.*;
+
+public final class TestHelper {
+	private TestHelper() {
+		throw new AssertionError("Utility class");
+	}
 
 	public static ISimplifiedROMap<String, PrologTerm> mkAtomMock(
 			final String... strings) {

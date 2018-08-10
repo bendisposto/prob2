@@ -3,9 +3,6 @@ package de.prob.scripting;
 import java.io.File;
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -19,6 +16,9 @@ import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates new {@link ClassicalBModel} objects.
@@ -41,7 +41,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 		ClassicalBModel classicalBModel = modelCreator.get();
 
 		File f = new File(modelPath);
-		BParser bparser = new BParser();
+		BParser bparser = new BParser(modelPath);
 
 		Start ast = parseFile(f, bparser);
 		RecursiveMachineLoader rml = parseAllMachines(ast, f.getParent(), f, bparser.getContentProvider(), bparser);
@@ -62,7 +62,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 
 	public ExtractedModel<ClassicalBModel> create(final String name, final String model) {
 		ClassicalBModel classicalBModel = modelCreator.get();
-		BParser bparser = new BParser();
+		BParser bparser = new BParser(name);
 
 		Start ast = parseString(model, bparser);
 		final RecursiveMachineLoader rml = parseAllMachines(ast, ".", new File(name + ".mch"),
@@ -85,7 +85,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	
 	public ExtractedModel<ClassicalBModel> create(final String name, final Start model) {
 		ClassicalBModel classicalBModel = modelCreator.get();
-		BParser bparser = new BParser();
+		BParser bparser = new BParser(name);
 
 		final RecursiveMachineLoader rml = parseAllMachines(model, ".", new File(name + ".mch"),
 				new CachingDefinitionFileProvider(), bparser);
@@ -144,9 +144,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	public Start parseFile(final File model, final BParser bparser) throws IOException {
 		try {
 			logger.trace("Parsing main file '{}'", model.getAbsolutePath());
-			Start ast = null;
-			ast = bparser.parseFile(model, false);
-			return ast;
+			return bparser.parseFile(model, false);
 		} catch (BCompoundException e) {
 			throw new ProBError(e);
 		}
@@ -155,9 +153,7 @@ public class ClassicalBFactory implements ModelFactory<ClassicalBModel> {
 	private Start parseString(final String model, final BParser bparser) {
 		try {
 			logger.trace("Parsing file");
-			Start ast = null;
-			ast = bparser.parse(model, false, new PlainFileContentProvider());
-			return ast;
+			return bparser.parse(model, false, new PlainFileContentProvider());
 		} catch (BCompoundException e) {
 			throw new ProBError(e);
 		}
