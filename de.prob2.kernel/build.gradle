@@ -30,13 +30,13 @@ if (System.env.TRAVIS == 'true') {
 
 
 // IMPORTANT !!!
-project.version = '3.2.11-SNAPSHOT'
+project.version = '3.2.11'
 // Remember to release the cli
 //  - create a tag in the prob_prolog repository
 //  - enter this tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/cli_release/"
 //  - enter the same tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/crosscompile_release/"
 ext {
-	cli_version = '1.8.1-rc3'
+	cli_version = '1.8.2-beta2'
 }
 // IMPORTANT !!!
 
