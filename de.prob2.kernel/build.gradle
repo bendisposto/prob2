@@ -14,6 +14,8 @@ project.group = 'de.hhu.stups'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+final SOURCE_ENCODING = "UTF-8"
+
 
 if (System.env.TRAVIS == 'true') {
 	allprojects {
@@ -141,6 +143,21 @@ if (project.hasProperty("probHome")) {
 		}
 	}
 }
+
+tasks.withType(JavaCompile) {
+	options.encoding = SOURCE_ENCODING
+}
+
+tasks.withType(GroovyCompile) {
+	options.encoding = SOURCE_ENCODING
+}
+
+tasks.withType(Javadoc) {
+	options.encoding = SOURCE_ENCODING
+}
+
+// The Groovydoc encoding can't be set via the task, it depends on the file.encoding system property of the Gradle JVM.
+// FIXME This needs to be set in the gradle.properties, but the file is encrypted.
 
 sonarqube {
 	properties {
