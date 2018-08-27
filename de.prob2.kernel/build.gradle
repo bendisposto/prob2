@@ -112,7 +112,7 @@ dependencies {
 	compile group: "de.hhu.stups", name: "translator", version: parser_version, changing: true
 	compile group: "de.hhu.stups", name: "eventbalg", version: parser_version, changing: true
 
-	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.0.8', changing: true
+	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.0.10-SNAPSHOT', changing: true
 
 	compile group: 'de.hhu.stups', name: 'ltl-dsl', version: '0.1.1'
 
