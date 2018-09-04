@@ -9,10 +9,10 @@ import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
 
 import static java.io.File.separator;
 
@@ -21,7 +21,7 @@ public class MainConfiguration extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(CommandLineParser.class).to(PosixParser.class);
+		bind(CommandLineParser.class).to(DefaultParser.class);
 		bind(String.class).annotatedWith(Version.class).toInstance(Main.getVersion());
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader")).toInstance(Main.class.getClassLoader());
 
