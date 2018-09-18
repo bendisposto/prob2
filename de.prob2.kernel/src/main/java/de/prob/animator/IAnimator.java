@@ -1,7 +1,5 @@
 package de.prob.animator;
 
-import com.google.inject.ImplementedBy;
-
 import de.prob.animator.command.AbstractCommand;
 
 /**
@@ -14,7 +12,6 @@ import de.prob.animator.command.AbstractCommand;
  * @author joy
  * 
  */
-@ImplementedBy(AnimatorImpl.class)
 public interface IAnimator {
 	/**
 	 * Takes an {@link AbstractCommand} and executes it.
