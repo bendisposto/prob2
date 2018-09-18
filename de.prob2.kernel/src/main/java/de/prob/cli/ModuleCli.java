@@ -1,7 +1,5 @@
 package de.prob.cli;
 
-import static java.lang.annotation.RetentionPolicy.*;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -12,6 +10,8 @@ import java.util.Random;
 import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Provides;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 public class ModuleCli extends AbstractModule {
 
@@ -24,19 +24,19 @@ public class ModuleCli extends AbstractModule {
 
 	@Provides
 	@OsName
-	public String getOsName() {
+	private static String getOsName() {
 		return System.getProperty("os.name");
 	}
 
 	@Provides
 	@OsArch
-	public String getOsArch() {
+	private static String getOsArch() {
 		return System.getProperty("os.arch");
 	}
 
 	@Provides
 	@DebuggingKey
-	public String createDebuggingKey() {
+	private static String createDebuggingKey() {
 		Random random;
 		try {
 			random = SecureRandom.getInstance("SHA1PRNG");

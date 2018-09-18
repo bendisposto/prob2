@@ -30,7 +30,7 @@ public class MainConfiguration extends AbstractModule {
 	 */
 	@Provides
 	@Home
-	public final String getProBDirectory() {
+	private static String getProBDirectory() {
 		return Main.getProBDirectory();
 	}
 
@@ -39,7 +39,7 @@ public class MainConfiguration extends AbstractModule {
 	 *         options for ProB 2.0
 	 */
 	@Provides
-	public final Options getCommandlineOptions() {
+	private static Options getCommandlineOptions() {
 		Options options = new Options();
 		options.addOption(null, "maxCacheSize", true, "set the cache size for the states in the StateSpace");
 
