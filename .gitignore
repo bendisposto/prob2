@@ -1,21 +1,38 @@
-.gradle
+# Mac
+.DS_Store
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# IntelliJ
 .idea/
 *.iml
-*.ipr
-de.prob2.kernel/groovyTests/Lift/lift0.eventb
-figwheel_server.log
-system.properties
+
+# Gradle
+.gradle/
+build/
+
+# Downloaded/generated resources
+/de.prob2.kernel/src/main/resources/cli/
+prob2-build.properties
+
+# Logs
 prob_log.txt
 prob_test_log.txt
-ProB.log.*
-ProB.test.log.*
+*.log
+*.log.*
+
+# Junk created by tests
+/de.prob2.kernel/groovyTests/Lift/lift0.eventb
 prob2preferences
-*-init.clj
-de.prob2/src/cljs/de/prob2/generated
-de.prob2/src/clj/de/prob2/generated
-ltl_graphdump.pl
-*.cljs#
-.nrepl-history
-local.*
-prob2-build.properties
-de.prob2.kernel/doc
+stateInspectorRepl
+*.csp.pl
+*.dot
+*.prob
+
+# Temp/swap files
+*.swp
+*~
