@@ -179,7 +179,7 @@ def download(address, target) {
 	} else {
 		println("Downloading ${address} to ${target}")
 		connection.inputStream.withStream {inp ->
-			new BufferedOutputStream(new FileOutputStream(targetFile)).withStream {out ->
+			targetFile.withOutputStream {out ->
 				out << inp
 			}
 		}
