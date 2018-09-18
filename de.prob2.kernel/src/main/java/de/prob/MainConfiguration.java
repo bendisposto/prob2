@@ -5,7 +5,6 @@ import com.google.inject.Provides;
 import com.google.inject.name.Names;
 
 import de.prob.annotations.Home;
-import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 
 import org.apache.commons.cli.CommandLineParser;
@@ -13,8 +12,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-
-import static java.io.File.separator;
 
 public class MainConfiguration extends AbstractModule {
 	public MainConfiguration() {}
@@ -24,9 +21,6 @@ public class MainConfiguration extends AbstractModule {
 		bind(CommandLineParser.class).to(DefaultParser.class);
 		bind(String.class).annotatedWith(Version.class).toInstance(Main.getVersion());
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader")).toInstance(Main.class.getClassLoader());
-
-		// TODO: Should this property be set here? Should it be set at all?
-		System.setProperty("PROB_LOGFILE", getProBLogfile());
 	}
 
 	/**
@@ -40,20 +34,6 @@ public class MainConfiguration extends AbstractModule {
 	@Home
 	public final String getProBDirectory() {
 		return Main.getProBDirectory();
-	}
-
-	/**
-	 * Returns the path to the log file associated with ProB 2.0. This is
-	 * currently {@link Main#getProBDirectory()}logs/ProB.txt, but this is
-	 * subject to change. Binds this path to the {@link Logfile} annotation in
-	 * order to be able to inject it.
-	 *
-	 * @return the path to the fog file for ProB 2.0
-	 */
-	@Provides
-	@Logfile
-	public final String getProBLogfile() {
-		return getProBDirectory() + "logs" + separator + "ProB.txt";
 	}
 
 	/**
