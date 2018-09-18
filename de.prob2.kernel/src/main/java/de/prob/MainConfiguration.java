@@ -2,7 +2,6 @@ package de.prob;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.name.Names;
 
 import de.prob.annotations.Home;
 import de.prob.annotations.Version;
@@ -20,7 +19,6 @@ public class MainConfiguration extends AbstractModule {
 	protected void configure() {
 		bind(CommandLineParser.class).to(DefaultParser.class);
 		bind(String.class).annotatedWith(Version.class).toInstance(Main.getVersion());
-		bind(ClassLoader.class).annotatedWith(Names.named("Classloader")).toInstance(Main.class.getClassLoader());
 	}
 
 	/**
