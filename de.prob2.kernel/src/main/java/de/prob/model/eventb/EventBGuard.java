@@ -7,10 +7,11 @@ import com.google.common.base.Objects;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.Guard;
+import de.prob.model.representation.Named;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-public class EventBGuard extends Guard {
+public class EventBGuard extends Guard implements Named {
 
 	private final String name;
 	private final boolean theorem;
@@ -29,6 +30,7 @@ public class EventBGuard extends Guard {
 		this.comment = comment == null ? "" : comment;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

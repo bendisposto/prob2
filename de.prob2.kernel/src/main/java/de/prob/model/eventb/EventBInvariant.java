@@ -5,10 +5,11 @@ import java.util.Set;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.Invariant;
+import de.prob.model.representation.Named;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-public class EventBInvariant extends Invariant {
+public class EventBInvariant extends Invariant implements Named {
 
 	private final String name;
 	private final boolean theorem;
@@ -27,6 +28,7 @@ public class EventBInvariant extends Invariant {
 		this.comment = comment == null ? "" : comment;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

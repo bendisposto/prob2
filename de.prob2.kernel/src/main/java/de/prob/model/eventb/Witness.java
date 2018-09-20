@@ -6,10 +6,11 @@ import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractFormulaElement;
+import de.prob.model.representation.Named;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-public class Witness extends AbstractFormulaElement {
+public class Witness extends AbstractFormulaElement implements Named {
 
 	private final String name;
 	private final EventB predicate;
@@ -26,6 +27,7 @@ public class Witness extends AbstractFormulaElement {
 		this.predicate = predicate;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

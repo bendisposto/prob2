@@ -25,6 +25,7 @@ public class EventBConstant extends Constant {
 		this.comment = comment == null ? "" : comment;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

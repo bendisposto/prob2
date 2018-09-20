@@ -5,13 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import de.prob.model.representation.Named;
+
 /**
  * Defined {@link SyncedEvent}s can be used to synchronize animations with the
  * {@link SyncedTraces} object.
  *
  * @author joy
  */
-public class SyncedEvent {
+public class SyncedEvent implements Named {
 	/**
 	 * @param name   is a user defined name to specify this particular event.
 	 * @param synced is a mapping from the UUID of a Trace object to an {@link Event} object
@@ -42,6 +44,7 @@ public class SyncedEvent {
 		return new SyncedEvent(this.name, intNames);
 	}
 
+	@Override
 	public final String getName() {
 		return name;
 	}

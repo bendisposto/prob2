@@ -8,10 +8,11 @@ import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.AbstractFormulaElement;
 import de.prob.model.representation.ModelElementList;
+import de.prob.model.representation.Named;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-public class RewriteRule extends AbstractFormulaElement {
+public class RewriteRule extends AbstractFormulaElement implements Named {
 	private final String name;
 	private final String applicability;
 	private final boolean complete;
@@ -45,6 +46,7 @@ public class RewriteRule extends AbstractFormulaElement {
 		return rightHandSideRules;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

@@ -14,6 +14,7 @@ public class ClassicalBConstant extends Constant {
 		this.name = expression.getCode();
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

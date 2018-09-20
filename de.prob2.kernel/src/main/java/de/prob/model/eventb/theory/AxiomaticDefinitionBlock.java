@@ -5,8 +5,9 @@ import com.github.krukow.clj_lang.PersistentHashMap;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
+import de.prob.model.representation.Named;
 
-public class AxiomaticDefinitionBlock extends AbstractElement {
+public class AxiomaticDefinitionBlock extends AbstractElement implements Named {
 
 	private final String name;
 
@@ -23,6 +24,7 @@ public class AxiomaticDefinitionBlock extends AbstractElement {
 		return new AxiomaticDefinitionBlock(name, assoc(clazz, elements));
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

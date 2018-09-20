@@ -24,6 +24,7 @@ import de.prob.animator.command.LoadEventBFileCommand;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.translate.EventBDatabaseTranslator;
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.Named;
 import de.prob.statespace.StateSpace;
 
 import org.codehaus.groovy.runtime.ResourceGroovyMethods;
@@ -130,7 +131,7 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 		return tempdir;
 	}
 
-	private static class DummyElement extends AbstractElement {
+	private static class DummyElement extends AbstractElement implements Named {
 		private String name;
 
 		private DummyElement(final String name) {
@@ -142,6 +143,7 @@ public class EventBFactory implements ModelFactory<EventBModel> {
 			return name;
 		}
 
+		@Override
 		public String getName() {
 			return name;
 		}

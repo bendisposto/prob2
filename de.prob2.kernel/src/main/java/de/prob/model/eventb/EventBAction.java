@@ -5,10 +5,11 @@ import java.util.Set;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.Action;
+import de.prob.model.representation.Named;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-public class EventBAction extends Action {
+public class EventBAction extends Action implements Named {
 
 	private final String name;
 	private final String comment;

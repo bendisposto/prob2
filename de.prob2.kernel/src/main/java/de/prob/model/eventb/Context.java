@@ -6,9 +6,10 @@ import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Axiom;
 import de.prob.model.representation.Constant;
 import de.prob.model.representation.ModelElementList;
+import de.prob.model.representation.Named;
 import de.prob.model.representation.Set;
 
-public class Context extends AbstractElement {
+public class Context extends AbstractElement implements Named {
 
 	private final String name;
 
@@ -23,6 +24,7 @@ public class Context extends AbstractElement {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

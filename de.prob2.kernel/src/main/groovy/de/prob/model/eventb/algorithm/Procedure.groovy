@@ -1,5 +1,7 @@
 package de.prob.model.eventb.algorithm
 
+import de.prob.model.representation.Named
+
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
@@ -16,7 +18,7 @@ import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.representation.ModelElementList
 
-class Procedure extends AbstractModifier {
+class Procedure extends AbstractModifier implements Named {
 
 	public static String CONTEXT_SUFFIX = "_ctx";
 	public static String ABSTRACT_SUFFIX = "_abs";

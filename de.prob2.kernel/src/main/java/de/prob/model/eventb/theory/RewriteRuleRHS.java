@@ -7,10 +7,11 @@ import com.google.common.base.Objects;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.AbstractFormulaElement;
+import de.prob.model.representation.Named;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-public class RewriteRuleRHS extends AbstractFormulaElement {
+public class RewriteRuleRHS extends AbstractFormulaElement implements Named {
 
 	private final String name;
 	private final EventB predicate;
@@ -23,6 +24,7 @@ public class RewriteRuleRHS extends AbstractFormulaElement {
 		this.formula = new EventB(formula, typeEnv, FormulaExpand.EXPAND);
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
