@@ -11,7 +11,7 @@ contributor(context(ctype: "groovy.lang.Script", scope: scriptScope(), filetypes
 	property(name: "engine", type: "javax.script.ScriptEngine")
 	property(name: "inConsole", type: "boolean")
 	
-	// TODO There are some additional methods and classes defined in src/main/resources/initscript which are not yet listed here.
+	// TODO There are some additional methods and classes defined in de/prob/scripting/initscript.groovy which are not yet listed here.
 	// However none of the integration tests seem to use them, so it probably doesn't matter that they are missing.
 }
 
