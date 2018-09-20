@@ -6,12 +6,12 @@ import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
-import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractFormulaElement;
 import de.prob.model.representation.ModelElementList;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-public class RewriteRule extends AbstractElement {
+public class RewriteRule extends AbstractFormulaElement {
 	private final String name;
 	private final String applicability;
 	private final boolean complete;
@@ -61,6 +61,7 @@ public class RewriteRule extends AbstractElement {
 		return desc;
 	}
 
+	@Override
 	public EventB getFormula() {
 		return formula;
 	}

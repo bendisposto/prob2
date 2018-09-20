@@ -5,11 +5,11 @@ import java.util.Set;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractFormulaElement;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-public class Witness extends AbstractElement {
+public class Witness extends AbstractFormulaElement {
 
 	private final String name;
 	private final EventB predicate;
@@ -34,6 +34,7 @@ public class Witness extends AbstractElement {
 		return predicate;
 	}
 
+	@Override
 	public IEvalElement getFormula() {
 		return this.getPredicate();
 	}

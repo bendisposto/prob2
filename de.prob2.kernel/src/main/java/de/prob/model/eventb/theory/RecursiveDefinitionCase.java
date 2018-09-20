@@ -6,11 +6,11 @@ import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
-import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractFormulaElement;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-public class RecursiveDefinitionCase extends AbstractElement {
+public class RecursiveDefinitionCase extends AbstractFormulaElement {
 
 	private final String expressionString;
 	private final String formulaString;
@@ -26,6 +26,7 @@ public class RecursiveDefinitionCase extends AbstractElement {
 		return expression;
 	}
 
+	@Override
 	public EventB getFormula() {
 		return formula;
 	}
