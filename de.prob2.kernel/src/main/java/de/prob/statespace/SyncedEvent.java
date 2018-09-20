@@ -28,7 +28,7 @@ public class SyncedEvent implements Named {
 	 * @param name   is a user defined name to specify this particular event.
 	 */
 	public SyncedEvent(String name) {
-		this(name, new LinkedHashMap());
+		this(name, new LinkedHashMap<>());
 	}
 
 	/**
@@ -38,8 +38,7 @@ public class SyncedEvent implements Named {
 	 * @return a new {@link SyncedEvent} with this configuration added.
 	 */
 	public SyncedEvent sync(Trace trace, String name, List<String> parameters) {
-		LinkedHashMap intNames = new LinkedHashMap();
-		intNames.putAll(synced);
+		Map<UUID, Event> intNames = new LinkedHashMap<>(synced);
 		intNames.put(trace.getUUID(), new Event(name, parameters));
 		return new SyncedEvent(this.name, intNames);
 	}

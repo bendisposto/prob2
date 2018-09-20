@@ -49,7 +49,7 @@ public class SyncedTraces extends GroovyObjectSupport {
 		if (syncedEvents.getAt(name) == null) {
 			throw new IllegalArgumentException("No syncronized event is named " + name);
 		}
-		final SyncedEvent event = (SyncedEvent)syncedEvents.getAt(name);
+		final SyncedEvent event = syncedEvents.getAt(name);
 		final List<Trace> newTraces = traces.stream().map(t -> {
 			SyncedEvent.Event e = event.getSynced().get(t.getUUID());
 			return e != null ? t.execute(e.getName(), e.getParameters()) : t;
