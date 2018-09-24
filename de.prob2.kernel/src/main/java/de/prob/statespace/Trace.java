@@ -20,8 +20,6 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.util.Tuple2;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import groovy.lang.GroovyObjectSupport;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
@@ -37,7 +35,6 @@ public class Trace extends GroovyObjectSupport {
 	private final UUID uuid;
 	private final List<Transition> transitionList;
 
-	@SuppressFBWarnings(value = "RANGE_ARRAY_INDEX", justification = "False positive, Findbugs vs. Groovy")
 	public Trace(final StateSpace s) {
 		this(s.getRoot());
 	}
