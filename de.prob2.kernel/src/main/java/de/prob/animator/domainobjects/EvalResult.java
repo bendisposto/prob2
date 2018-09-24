@@ -19,6 +19,8 @@ import de.prob.translator.Translator;
 import de.prob.translator.types.BObject;
 import de.prob.unicode.UnicodeTranslator;
 
+import groovy.lang.MissingPropertyException;
+
 public class EvalResult extends AbstractEvalResult {
 
 	private static final  Map<String, String> EMPTY_MAP = Collections.emptyMap();
@@ -74,6 +76,19 @@ public class EvalResult extends AbstractEvalResult {
 	 */
 	public String getSolution(String name) {
 		return solutions.get(name);
+	}
+
+	@Override
+	public Object getProperty(final String property) {
+		try {
+			return super.getProperty(property);
+		} catch (MissingPropertyException e) {
+			if (this.getSolutions().containsKey(property)) {
+				return this.getSolution(property);
+			} else {
+				throw e;
+			}
+		}
 	}
 
 	public TranslatedEvalResult translate() throws BCompoundException {
@@ -172,5 +187,4 @@ public class EvalResult extends AbstractEvalResult {
 		}
 		throw new IllegalArgumentException("Unknown result type " + pt.toString());
 	}
-
 }

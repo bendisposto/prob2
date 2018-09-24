@@ -5,6 +5,8 @@ import java.util.Set;
 
 import de.prob.translator.types.BObject;
 
+import groovy.lang.MissingPropertyException;
+
 public class TranslatedEvalResult extends AbstractEvalResult {
 	private final BObject value;
 	private final Map<String, BObject> solutions;
@@ -27,6 +29,19 @@ public class TranslatedEvalResult extends AbstractEvalResult {
 	 */
 	public BObject getSolution(final String name) {
 		return solutions.get(name);
+	}
+
+	@Override
+	public Object getProperty(final String property) {
+		try {
+			return super.getProperty(property);
+		} catch (MissingPropertyException e) {
+			if (this.getSolutions().containsKey(property)) {
+				return this.getSolution(property);
+			} else {
+				throw e;
+			}
+		}
 	}
 
 	@Override

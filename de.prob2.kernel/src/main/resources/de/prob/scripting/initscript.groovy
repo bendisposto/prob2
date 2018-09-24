@@ -1,143 +1,80 @@
-/* This overwrites the asType method in String to allow the conversion from
-   a String to an EvalElement. Usage:
-       "..." as ClassicalB converts "..." to a ClassicalB evaluation element
-       "..." as EventB converts "..." to an EventB evaluation element
-*/
+import de.prob.animator.domainobjects.CSP
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.EvalResult
+import de.prob.animator.domainobjects.EventB
+import de.prob.statespace.TraceDecorator
 
-def oldStringAsType = String.metaClass.getMetaMethod("asType", [Class] as Class[])
-def oldArrayListAsType = ArrayList.metaClass.getMetaMethod("asType", [Class] as Class[])
-
-
-String.metaClass.asType = { Class type -> 
-       if (type == ClassicalB) return new ClassicalB(delegate) 
-       if (type == EventB) return new EventB(delegate) 
-       if (type == CSP) return new CSP(delegate)
-       oldStringAsType.invoke(delegate, [type] as Class[])
-}
-
-ArrayList.metaClass.to { Class type ->
-	def c = []
-	if (type == ClassicalB ) delegate.each { c << (it as ClassicalB) }
-	if (type == EventB ) delegate.each { c << (it as EventB) }
-	if (type == CSP) delegate.each { c << (it as CSP) }
-	return c
-}
-
-ArrayList.metaClass.asType = { Class type -> 
-		if (type == Tuple) return new Tuple(delegate[0],delegate[1]) 
-		def c = new Class[1]
-        c[0] = type
-        oldArrayListAsType.invoke(delegate, c)
-}
-
-/*Script.getMetaClass().transform = { a1,a2,a3=null ->
-	def x
-	if( a3 != null ) {
-		x = new DynamicTransformer(a1,a2).with a3
+// This extends String's as operator to allow creating EvalElements from strings.
+// For example, "x" as ClassicalB creates a ClassicalB object by parsing the formula "x".
+// The same works for the EventB and CSP types.
+final oldStringAsType = String.metaClass.getMetaMethod("asType", [Class] as Class<?>[])
+String.metaClass.asType = {Class<?> type -> 
+	if (type == ClassicalB) {
+		new ClassicalB(delegate)
+	} else if (type == EventB) {
+		new EventB(delegate)
+	} else if (type == CSP) {
+		new CSP(delegate)
 	} else {
-		if(a1 instanceof String) {
-			x = new Transformer(a1).with a2 
-		} else {
-			d = []
-			a1.each {
-				d << "#r"+it.getId()
-			}
-			def r = com.google.common.base.Joiner.on(",").join(a1)
-			x = new Transformer(r).with a2
-		}
+		oldStringAsType.invoke(delegate, [type] as Object[])
 	}
-	x
-}*/
-
-Script.getMetaClass().appendToTrace= { t,c ->
-  def proxy = new TraceDecorator(t)
-  c.resolveStrategy = Closure.DELEGATE_FIRST
-  c.delegate = proxy
-  c()
 }
 
-/* Redirect print and println to our own buffered console*/
+ArrayList.metaClass.to {Class<?> type ->
+	return delegate.collect {it.asType(type)}
+}
+
+final oldArrayListAsType = ArrayList.metaClass.getMetaMethod("asType", [Class] as Class<?>[])
+ArrayList.metaClass.asType = {Class<?> type -> 
+	if (type == Tuple) {
+		new Tuple(delegate[0], delegate[1])
+	} else {
+		// Note: we have to use a cast instead of the as operator here, to avoid infinite recursion
+		// (since we're currently in the implementation of ArrayList's as operator).
+		oldArrayListAsType.invoke(delegate, (Object[])[type])
+	}
+}
+
+def appendToTrace(t, c) {
+	c.resolveStrategy = Closure.DELEGATE_FIRST
+	c.delegate = new TraceDecorator(t)
+	c()
+}
+
+// Redirect print and println to our own buffered console
 inConsole = true
-Script.getMetaClass().print = { s -> __console.append(s.toString()); if (!inConsole) System.out.print(s) }
-Script.getMetaClass().println = { s -> __console.append(s.toString()+"\n"); if (!inConsole) System.out.println(s)}
-	
-class TraceDecorator {
-    private delegate
-    private mch 
-    def _ = null
-  
-    TraceDecorator(delegate) {
-        this.delegate = delegate
-        this.mch = delegate.getStateSpace().getMainComponent()
-    }
-    def invokeMethod(String name, args) {
-        def pred = ""
-        if (args.size() == 1 && args[0] instanceof Closure) {
-           pred =  args[0]()         
-        } 
-        else {
-           pred = make_predicate(mch.getOperations().find {it.name == name}.getParameters(),args)
-        }
-        
-        this.delegate = delegate.invokeMethod(name, [pred])   
-   }
-
-  def make_predicate(formal_params,actual_params) {
-   def  p = [formal_params,actual_params]
-      .transpose()
-      .findAll { a,b -> b != null }
-      .collect { a,b -> a.toString() + "=" + b.toString() }
-      .join(" & ")
-    p.isEmpty() ? "TRUE = TRUE" : p
-  }  
+void print(s) {
+	__console.print(s)
+	if (!inConsole) {
+		System.out.print(s)
+	}
+}
+void println(s) {
+	__console.println(s)
+	if (!inConsole) {
+		System.out.println(s)
+	}
 }
 
-def execTrace(t,c) {
-  proxy = new TraceDecorator(t)
-  c.resolveStrategy = Closure.DELEGATE_FIRST
-  c.delegate = proxy
-  c()
+def execTrace(t, c) {
+	final proxy = new TraceDecorator(t)
+	c.resolveStrategy = Closure.DELEGATE_FIRST
+	c.delegate = proxy
+	c()
 }
 
-
-EvalResult.getMetaClass().getProperty = {
-  name ->
-    if (name == "value") return delegate.getValue();
-    if (name == "solutions") return delegate.getSolutions();
-    if (delegate.getSolutions().containsKey(name)) {
-           delegate.getSolution(name)
-    }
-    else {
-         delegate.getMetaClass().getProperties()[name]
-    }
+final oldEvalResultAsType = EvalResult.metaClass.getMetaMethod("asType", [Class] as Class<?>[])
+EvalResult.getMetaClass().asType = {Class<?> clazz ->
+	if (clazz == Integer) {
+		Integer.valueOf(delegate.value)
+	} else if (clazz == Double) {
+		Double.valueOf(delegate.value)
+	} else if (clazz == String) {
+		delegate.value
+	} else {
+		oldEvalResultAsType.invoke(delegate, [clazz] as Object[])
+	}
 }
-
-TranslatedEvalResult.getMetaClass().getProperty = {
-  name ->
-    if (name == "value") return delegate.getValue();
-    if (name == "solutions") return delegate.getSolutions();
-    if (delegate.getSolutions().containsKey(name)) {
-           delegate.getSolution(name)
-    }
-    else {
-         delegate.getMetaClass().getProperties()[name]
-    }
-}
-
-EvalResult.getMetaClass().asType = {
-  className -> if (className == Integer) {
-			return Integer.valueOf(value)
-		}
-		if (className == Double) {
-			return Double.valueOf(value)
-		}
-		if (className == String) {
-			return value
-		}
-		throw new ClassCastException("Not able to convert EvalResult object to ${className}")
-}
-
-
 
 def eval(script) {
 	engine.eval(script)
