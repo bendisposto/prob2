@@ -55,7 +55,7 @@ public class EvalResult extends AbstractEvalResult {
 
 		return solutions.entrySet().stream()
 			.map(e -> e.getKey() + " = " + UnicodeTranslator.toUnicode(e.getValue()))
-			.collect(Collectors.joining(" & ", v + " (", ")"));
+			.collect(Collectors.joining(" ∧ ", v + " (", ")"));
 	}
 
 	/**
