@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.google.common.base.Joiner;
 
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.prob.parser.BindingGenerator;
@@ -56,13 +53,9 @@ public class EvalResult extends AbstractEvalResult {
 			return v;
 		}
 
-		Set<Entry<String, String>> sols = solutions.entrySet();
-		ArrayList<String> s = new ArrayList<>(sols.size());
-		for (Entry<String, String> e : sols) {
-			s.add(e.getKey() + " = " + e.getValue());
-		}
-
-		return v + " (" + UnicodeTranslator.toUnicode(Joiner.on(" & ").join(s)) + ")";
+		return solutions.entrySet().stream()
+			.map(e -> e.getKey() + " = " + UnicodeTranslator.toUnicode(e.getValue()))
+			.collect(Collectors.joining(" & ", v + " (", ")"));
 	}
 
 	/**
@@ -94,8 +87,8 @@ public class EvalResult extends AbstractEvalResult {
 	public TranslatedEvalResult translate() throws BCompoundException {
 		BObject val = Translator.translate(value);
 		Map<String, BObject> sols = new HashMap<>();
-		Set<Entry<String, String>> entrySet = solutions.entrySet();
-		for (Entry<String, String> entry : entrySet) {
+		Set<Map.Entry<String, String>> entrySet = solutions.entrySet();
+		for (Map.Entry<String, String> entry : entrySet) {
 			sols.put(entry.getKey(), Translator.translate(entry.getValue()));
 		}
 		return new TranslatedEvalResult(val, sols);
@@ -126,7 +119,7 @@ public class EvalResult extends AbstractEvalResult {
 				list.add(listP.get(i).getArgument(1).getFunctor());
 			}
 
-			return new ComputationNotCompletedResult(code, Joiner.on(",").join(list));
+			return new ComputationNotCompletedResult(code, String.join(",", list));
 		} else if (pt.getFunctor().intern().equals("result")) {
 			/*
 			 * If the formula in question was a predicate, the result term will

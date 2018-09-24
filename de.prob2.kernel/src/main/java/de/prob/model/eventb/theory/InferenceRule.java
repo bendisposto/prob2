@@ -1,8 +1,7 @@
 package de.prob.model.eventb.theory;
 
 import java.util.List;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
@@ -35,33 +34,16 @@ public class InferenceRule extends AbstractElement {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (obj == null || this.getClass() != obj.getClass()) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		InferenceRule other = (InferenceRule) obj;
-		if (given == null) {
-			if (other.given != null) {
-				return false;
-			}
-		} else if (!given.equals(other.given)) {
-			return false;
-		}
-		if (infer == null) {
-			if (other.infer != null) {
-				return false;
-			}
-		} else if (!infer.equals(other.infer)) {
-			return false;
-		}
-		return Objects.equal(given, other.getGiven())
-				&& Objects.equal(infer, other.getInfer());
+		final InferenceRule other = (InferenceRule)obj;
+		return Objects.equals(this.getGiven(), other.getGiven())
+				&& Objects.equals(this.getInfer(), other.getInfer());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(given, infer);
+		return Objects.hash(this.getGiven(), this.getInfer());
 	}
 }

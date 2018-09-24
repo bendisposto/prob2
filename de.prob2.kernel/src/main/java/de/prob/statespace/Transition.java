@@ -6,14 +6,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
-
 import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.formula.PredicateBuilder;
 import de.prob.model.classicalb.ClassicalBMachine;
+import de.prob.model.classicalb.Operation;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventParameter;
@@ -24,7 +23,6 @@ import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.translator.Translator;
 import de.prob.translator.types.BObject;
-import de.prob.model.classicalb.Operation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,8 +194,7 @@ public class Transition {
 		if (predicateString != null) {
 			return predicateString;
 		}
-		List<String> paramPreds = getParameterPredicates();
-		predicateString = paramPreds.isEmpty() ? "TRUE=TRUE" : Joiner.on(" & ").join(paramPreds);
+		predicateString = new PredicateBuilder().addList(getParameterPredicates()).toString();
 		return predicateString;
 	}
 
@@ -234,11 +231,13 @@ public class Transition {
 		if (formalismType.equals(FormalismType.CSP)) {
 			if (params.isEmpty()) {
 				return name;
+			} else {
+				return name + '.' + String.join(".", params);
 			}
-			return name + "." + Joiner.on(".").join(params);
+		} else {
+			String retVals = returnVals.isEmpty() ? "" : String.join(",", returnVals) + " <-- ";
+			return retVals + name + '(' + String.join(",", params) + ')';
 		}
-		String retVals = returnVals.isEmpty() ? "" : Joiner.on(",").join(returnVals) + " <-- ";
-		return retVals + name + "(" + Joiner.on(",").join(params) + ")";
 	}
 
 	public String getPrettyRep() {
@@ -258,20 +257,21 @@ public class Transition {
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == this) {
+		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof Transition) {
-			Transition that = (Transition) obj;
-			return getId().equals(that.getId()) && getSource().equals(that.getSource())
-					&& getDestination().equals(that.getDestination());
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
 		}
-		return false;
+		final Transition other = (Transition) obj;
+		return Objects.equals(this.getId(), other.getId())
+				&& Objects.equals(this.getSource(), other.getSource())
+				&& Objects.equals(this.getDestination(), other.getDestination());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(getId(), getSource().getId(), getDestination().getId());
+		return Objects.hash(this.getId(), this.getSource().getId(), this.getDestination().getId());
 	}
 
 	/**

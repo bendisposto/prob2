@@ -3,7 +3,6 @@ package de.prob.scripting;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
@@ -16,8 +15,6 @@ import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.io.ByteStreams;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -128,11 +125,8 @@ public final class Installer {
 		}
 		
 		fixPermissions(outcspmf);
-		try (
-			final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName);
-			final OutputStream os = Files.newOutputStream(outcspmf);
-		) {
-			ByteStreams.copy(is, os);
+		try (final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName)) {
+			Files.copy(is, outcspmf);
 		}
 		setExecutable(outcspmf, true);
 	}

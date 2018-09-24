@@ -13,11 +13,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -276,7 +274,7 @@ public class StateSpace implements IAnimator {
 		execute(command);
 		if (command.hasErrors()) {
 			throw new IllegalArgumentException("Executing operation " + opName + " with predicate " + predicate
-					+ " produced errors: " + Joiner.on(", ").join(command.getErrors()));
+					+ " produced errors: " + String.join(", ", command.getErrors()));
 		}
 		return command.getNewTransitions();
 	}
@@ -313,7 +311,7 @@ public class StateSpace implements IAnimator {
 		execute(command);
 		if (command.hasErrors()) {
 			throw new IllegalArgumentException("Executing operation " + opName + " with predicate " + predicate
-					+ " produced errors: " + Joiner.on(", ").join(command.getErrors()));
+					+ " produced errors: " + String.join(", ", command.getErrors()));
 		}
 		return command.getNewTransitions();
 	}

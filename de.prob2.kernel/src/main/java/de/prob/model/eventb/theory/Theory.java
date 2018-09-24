@@ -2,10 +2,10 @@ package de.prob.model.eventb.theory;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
-import com.google.common.base.Objects;
 
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.representation.AbstractElement;
@@ -99,15 +99,12 @@ public class Theory extends AbstractElement implements Named {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (obj == null || this.getClass() != obj.getClass()) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Theory other = (Theory) obj;
-		return Objects.equal(parentDirectory, other.parentDirectory)
-				&& Objects.equal(name, other.name);
+		final Theory other = (Theory)obj;
+		return Objects.equals(this.getParentDirectoryName(), other.getParentDirectoryName())
+				&& Objects.equals(this.getName(), other.getName());
 	}
 
 	public Collection<OperatorMapping> getProBMappings() {
@@ -116,7 +113,7 @@ public class Theory extends AbstractElement implements Named {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(parentDirectory, name);
+		return Objects.hash(this.getParentDirectoryName(), this.getName());
 	}
 
 	public Theory setTypeEnvironment(Set<IFormulaExtension> typeEnvironment) {

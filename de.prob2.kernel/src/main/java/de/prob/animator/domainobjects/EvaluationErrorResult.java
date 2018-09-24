@@ -2,8 +2,6 @@ package de.prob.animator.domainobjects;
 
 import java.util.List;
 
-import com.google.common.base.Joiner;
-
 public abstract class EvaluationErrorResult extends AbstractEvalResult {
 
 	private final String result;
@@ -25,7 +23,7 @@ public abstract class EvaluationErrorResult extends AbstractEvalResult {
 
 	@Override
 	public String toString() {
-		return this.result + ": "+Joiner.on(" ").join(errors);
+		return this.result + ": " + String.join(" ", errors);
 	}
 
 }

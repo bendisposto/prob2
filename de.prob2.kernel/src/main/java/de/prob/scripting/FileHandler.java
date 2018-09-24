@@ -2,13 +2,10 @@ package de.prob.scripting;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import com.google.common.io.ByteStreams;
 
 /**
  * Provides helper methods for handling files.
@@ -33,9 +30,7 @@ public final class FileHandler {
 				if (entry.isDirectory()) {
 					Files.createDirectories(dest);
 				} else {
-					try (final OutputStream output = Files.newOutputStream(dest)) {
-						ByteStreams.copy(inStream, output);
-					}
+					Files.copy(inStream, dest);
 				}
 			}
 		}

@@ -1,7 +1,5 @@
 package de.prob.animator.command;
 
-import com.google.common.base.Joiner;
-
 import de.prob.cli.CliVersionNumber;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -85,9 +83,10 @@ public class GetVersionCommand extends AbstractCommand {
 	}
 
 	public String getVersionString() {
-		return Joiner.on('.').join(major, minor, service) + "-" + qualifier
-				+ " (" + svnrevision + ")\nLast changed: " + lastchangeddate
-				+ "\nProlog: " + prologinfo;
+		return String.format(
+			"%s.%s.%s-%s (%s)\nLast changed: %s\nProlog: %s",
+			major, minor, service, qualifier, svnrevision, lastchangeddate, prologinfo
+		);
 	}
 
 }

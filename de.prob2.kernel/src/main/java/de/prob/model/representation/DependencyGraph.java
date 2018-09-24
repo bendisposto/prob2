@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.krukow.clj_lang.IPersistentMap;
 import com.github.krukow.clj_lang.PersistentHashMap;
 import com.github.krukow.clj_lang.PersistentHashSet;
-import com.google.common.base.Objects;
 
 /**
  * A simple graph implementation intended to display the relationships between
@@ -111,20 +111,22 @@ public class DependencyGraph {
 		}
 
 		@Override
-		public boolean equals(final Object that) {
-			if (this == that) {
+		public boolean equals(final Object obj) {
+			if (this == obj) {
 				return true;
 			}
-			if (that instanceof Edge) {
-				return getFrom().equals(((Edge) that).getFrom()) && getTo().equals(((Edge) that).getTo())
-						&& getRelationship().equals(((Edge) that).getRelationship());
+			if (obj == null || this.getClass() != obj.getClass()) {
+				return false;
 			}
-			return false;
+			final Edge other = (Edge)obj;
+			return Objects.equals(getFrom(), other.getFrom())
+					&& Objects.equals(getTo(), other.getTo())
+					&& Objects.equals(getRelationship(), other.getRelationship());
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hashCode(from, to, relationship);
+			return Objects.hash(this.getFrom(), this.getTo(), this.getRelationship());
 		}
 	}
 

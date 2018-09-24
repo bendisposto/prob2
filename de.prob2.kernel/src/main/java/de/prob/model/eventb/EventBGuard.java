@@ -1,8 +1,7 @@
 package de.prob.model.eventb;
 
+import java.util.Objects;
 import java.util.Set;
-
-import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
@@ -44,20 +43,20 @@ public class EventBGuard extends Guard implements Named {
 	}
 
 	@Override
-	public boolean equals(final Object that) {
-		if (that == this) {
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if (that instanceof EventBGuard) {
-			return this.theorem == ((EventBGuard) that).isTheorem()
-					&& getPredicate().getCode().equals(
-							((EventBGuard) that).getPredicate().getCode());
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
 		}
-		return false;
+		final EventBGuard other = (EventBGuard)obj;
+		return this.isTheorem() == other.isTheorem()
+				&& Objects.equals(this.getPredicate().getCode(), other.getPredicate().getCode());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.theorem, getPredicate().getCode());
+		return Objects.hash(this.isTheorem(), this.getPredicate().getCode());
 	}
 }

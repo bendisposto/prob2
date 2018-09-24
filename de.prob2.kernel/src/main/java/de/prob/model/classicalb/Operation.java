@@ -4,8 +4,6 @@ import java.util.List;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
 
-import com.google.common.base.Joiner;
-
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.ModelElementList;
@@ -54,16 +52,17 @@ public class Operation extends BEvent {
 
 		if (!output.isEmpty()) {
 			for (String string : output) {
-				sb.append(string + " <-- ");
+				sb.append(string);
+				sb.append(" <-- ");
 			}
 
 		}
 
 		sb.append(getName());
 		if (!parameters.isEmpty()) {
-			sb.append("(");
-			sb.append(Joiner.on(",").join(parameters.iterator()));
-			sb.append(")");
+			sb.append('(');
+			sb.append(String.join(",", parameters));
+			sb.append(')');
 		}
 
 		return sb.toString();

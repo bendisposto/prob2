@@ -1,8 +1,7 @@
 package de.prob.model.eventb.theory;
 
+import java.util.Objects;
 import java.util.Set;
-
-import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
@@ -36,7 +35,7 @@ public class OperatorArgument extends AbstractElement {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(identifier, type);
+		return Objects.hash(identifier, type);
 	}
 
 	@Override
@@ -44,15 +43,12 @@ public class OperatorArgument extends AbstractElement {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (obj == null || this.getClass() != obj.getClass()) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		OperatorArgument other = (OperatorArgument) obj;
-		return Objects.equal(identifier, other.getIdentifier())
-				&& Objects.equal(type, other.getType());
+		final OperatorArgument other = (OperatorArgument)obj;
+		return Objects.equals(this.getIdentifier(), other.getIdentifier())
+				&& Objects.equals(this.getType(), other.getType());
 	}
 
 }

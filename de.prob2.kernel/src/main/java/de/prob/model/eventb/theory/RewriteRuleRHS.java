@@ -1,8 +1,7 @@
 package de.prob.model.eventb.theory;
 
+import java.util.Objects;
 import java.util.Set;
-
-import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.FormulaExpand;
@@ -45,7 +44,7 @@ public class RewriteRuleRHS extends AbstractFormulaElement implements Named {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(name, formula, predicate);
+		return Objects.hash(this.getName(), this.getFormula(), this.getPredicate());
 	}
 
 	@Override
@@ -53,15 +52,12 @@ public class RewriteRuleRHS extends AbstractFormulaElement implements Named {
 		if (obj == this) {
 			return true;
 		}
-		if (obj == null) {
+		if (obj == null || this.getClass() != obj.getClass()) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		RewriteRuleRHS that = (RewriteRuleRHS) obj;
-		return Objects.equal(name, that.getName())
-				&& Objects.equal(formula, that.getFormula())
-				&& Objects.equal(predicate, that.getPredicate());
+		final RewriteRuleRHS other = (RewriteRuleRHS)obj;
+		return Objects.equals(this.getName(), other.getName())
+				&& Objects.equals(this.getFormula(), other.getFormula())
+				&& Objects.equals(this.getPredicate(), other.getPredicate());
 	}
 }
