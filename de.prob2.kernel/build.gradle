@@ -84,20 +84,23 @@ dependencies {
 
 	compile 'com.google.code.findbugs:jsr305:3.0.2'
 
-	compile 'com.google.guava:guava:19.0'// Apache Licence 2.0
-	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
+	compile 'com.google.guava:guava:26.0-jre'// Apache Licence 2.0
+	compile 'commons-cli:commons-cli:1.4' // Apache Licence 2.0
 
 	// Used for escaping HTML and Unicode symbols within Java strings
 	compile 'commons-lang:commons-lang:2.6'
 
-	compile 'org.codehaus.groovy:groovy-all:2.4.12' // Apache Licence 2.0
+	compile 'org.codehaus.groovy:groovy:2.5.2' // Apache Licence 2.0
+	compile 'org.codehaus.groovy:groovy-jsr223:2.5.2' // Apache Licence 2.0
+	compile 'org.codehaus.groovy:groovy-nio:2.5.2' // Apache Licence 2.0
+	compile 'org.codehaus.groovy:groovy-xml:2.5.2' // Apache Licence 2.0
 
-	compile 'com.google.inject:guice:4.0' // Apache Licence 2.0
-	compile 'org.slf4j:slf4j-api:1.7.21' // MIT
-	compile 'ch.qos.logback:logback-core:1.1.8' // EPL
-	compile 'ch.qos.logback:logback-classic:1.1.7' // EPL
+	compile 'com.google.inject:guice:4.2.1' // Apache Licence 2.0
+	compile 'org.slf4j:slf4j-api:1.7.25' // MIT
+	compile 'ch.qos.logback:logback-core:1.2.3' // EPL
+	compile 'ch.qos.logback:logback-classic:1.2.3' // EPL
 
-	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
+	compile 'com.google.code.gson:gson:2.8.5' // Apache Licence 2.0
 
 	compile(group: 'de.hhu.stups', name: 'rodin-eventb-ast', version: '3.2.0')
 
@@ -112,7 +115,7 @@ dependencies {
 	compile group: "de.hhu.stups", name: "translator", version: parser_version, changing: true
 	compile group: "de.hhu.stups", name: "eventbalg", version: parser_version, changing: true
 
-	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.0.10-SNAPSHOT', changing: true
+	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.1.0'
 
 	compile group: 'de.hhu.stups', name: 'ltl-dsl', version: '0.1.1'
 
@@ -123,9 +126,8 @@ dependencies {
 
 
 
-	compile 'junit:junit:4.8.2'
-	//	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
-	compile 'org.spockframework:spock-core:1.0-groovy-2.4'
+	compile 'junit:junit:4.12'
+	compile 'org.spockframework:spock-core:1.2-groovy-2.5'
 
 	compile 'com.github.krukow:clj-ds:0.0.4'
 
