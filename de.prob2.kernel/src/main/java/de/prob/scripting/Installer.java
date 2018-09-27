@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFileAttributes;
@@ -126,7 +127,7 @@ public final class Installer {
 		
 		fixPermissions(outcspmf);
 		try (final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName)) {
-			Files.copy(is, outcspmf);
+			Files.copy(is, outcspmf, StandardCopyOption.REPLACE_EXISTING);
 		}
 		setExecutable(outcspmf, true);
 	}
