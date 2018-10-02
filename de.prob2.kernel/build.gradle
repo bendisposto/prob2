@@ -46,10 +46,10 @@ ext {
 final parser_version
 final cliDownloadURL
 if (project.version.endsWith("-SNAPSHOT")) {
-	parser_version = '2.9.13-SNAPSHOT'
+	parser_version = '2.9.14-SNAPSHOT'
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/nightly"
 } else {
-	parser_version = '2.9.12'
+	parser_version = '2.9.13'
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/releases/${cli_version}"
 }
 
