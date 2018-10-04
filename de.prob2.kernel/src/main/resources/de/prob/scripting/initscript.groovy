@@ -24,17 +24,6 @@ ArrayList.metaClass.to {Class<?> type ->
 	return delegate.collect {it.asType(type)}
 }
 
-final oldArrayListAsType = ArrayList.metaClass.getMetaMethod("asType", [Class] as Class<?>[])
-ArrayList.metaClass.asType = {Class<?> type -> 
-	if (type == Tuple) {
-		new Tuple(delegate[0], delegate[1])
-	} else {
-		// Note: we have to use a cast instead of the as operator here, to avoid infinite recursion
-		// (since we're currently in the implementation of ArrayList's as operator).
-		oldArrayListAsType.invoke(delegate, (Object[])[type])
-	}
-}
-
 def appendToTrace(t, c) {
 	c.resolveStrategy = Closure.DELEGATE_FIRST
 	c.delegate = new TraceDecorator(t)
