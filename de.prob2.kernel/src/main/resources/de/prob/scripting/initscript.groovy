@@ -20,10 +20,6 @@ String.metaClass.asType = {Class<?> type ->
 	}
 }
 
-ArrayList.metaClass.to {Class<?> type ->
-	return delegate.collect {it.asType(type)}
-}
-
 def appendToTrace(t, c) {
 	c.resolveStrategy = Closure.DELEGATE_FIRST
 	c.delegate = new TraceDecorator(t)
