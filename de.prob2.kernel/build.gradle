@@ -87,9 +87,6 @@ dependencies {
 	compile 'com.google.guava:guava:26.0-jre'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.4' // Apache Licence 2.0
 
-	// Used for escaping HTML and Unicode symbols within Java strings
-	compile 'commons-lang:commons-lang:2.6'
-
 	compile 'org.codehaus.groovy:groovy:2.5.2' // Apache Licence 2.0
 	compile 'org.codehaus.groovy:groovy-jsr223:2.5.2' // Apache Licence 2.0
 	compile 'org.codehaus.groovy:groovy-nio:2.5.2' // Apache Licence 2.0

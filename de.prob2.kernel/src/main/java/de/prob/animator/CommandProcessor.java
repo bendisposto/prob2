@@ -17,8 +17,6 @@ import de.prob.parser.ProBResultParser;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
 
-import org.apache.commons.lang.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +25,11 @@ class CommandProcessor {
 	private ProBInstance cli;
 
 	private final Logger logger = LoggerFactory.getLogger(CommandProcessor.class);
+
+	private static String shorten(final String s) {
+		final String shortened = s.length() <= 200 ? s : (s.substring(0, 200) + "...");
+		return shortened.endsWith("\n") ? shortened.substring(0, shortened.length()-1) : shortened;
+	}
 
 	public IPrologResult sendCommand(final AbstractCommand command) {
 
@@ -43,14 +46,14 @@ class CommandProcessor {
 			query = pto.fullstop().toString();
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug(StringUtils.chomp(StringUtils.abbreviate(query, 200)));
+			logger.debug(shorten(query));
 		}
 		String result = cli.send(query);
 
 		final Start ast = parseResult(result);
 		IPrologResult extractResult = extractResult(ast);
 		if (logger.isDebugEnabled()) {
-			logger.debug(StringUtils.chomp(StringUtils.abbreviate(extractResult.toString(), 200)));
+			logger.debug(shorten(extractResult.toString()));
 		}
 		return extractResult;
 	}
