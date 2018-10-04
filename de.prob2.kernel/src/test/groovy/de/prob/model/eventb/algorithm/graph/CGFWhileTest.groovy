@@ -1,10 +1,11 @@
 package de.prob.model.eventb.algorithm.graph
 
-import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.FILLER
+import de.prob.model.eventb.algorithm.ast.Block
+
+import spock.lang.Specification
+
 import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.create
 import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.createSubgraph
-import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Block
 
 class CGFWhileTest extends Specification {
 
@@ -74,13 +75,8 @@ class CGFWhileTest extends Specification {
 		def g = createSubgraph(new Block().While("x < 10", { Assign("x := x + 1")}))
 
 		then:
-		g.representation() == [
-			[
-				"while0",
-				"assign0",
-				"filler"] as Set,
-			[enter_while0:"assign0", assign0: "while0", exit_while0: "filler"]
-		]
+		g.representation().first == ["while0", "assign0", "filler"] as Set
+		g.representation().second == [enter_while0: "assign0", assign0: "while0", exit_while0: "filler"]
 	}
 
 	def "while with an if"() {
@@ -95,16 +91,16 @@ class CGFWhileTest extends Specification {
 		}))
 
 		then:
-		g.representation() == [
-			[
-				"while0",
-				"if0",
-				"if1",
-				"assign0",
-				"assign1",
-				"filler"] as Set,
-			[enter_while0:"if0", if0_then: "if1", if0_else: "assign1",
-				if1_then: "assign0", if1_else: "while0",assign0: "while0", assign1: "while0", exit_while0: "filler" ]
+		g.representation().first == ["while0", "if0", "if1", "assign0", "assign1", "filler"] as Set
+		g.representation().second == [
+			enter_while0: "if0",
+			if0_then: "if1",
+			if0_else: "assign1",
+			if1_then: "assign0",
+			if1_else: "while0",
+			assign0: "while0",
+			assign1: "while0",
+			exit_while0: "filler",
 		]
 	}
 }

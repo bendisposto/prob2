@@ -82,8 +82,8 @@ class AssertionTranslator extends AlgorithmASTVisitor {
 			// only enter this loop when there are actually assertions to print. performance reasons
 			Set<Edge> allEdges = graph.edges
 			Set<List<EventB>> conds = [] as Set
-			allEdges.findAll { Edge e -> e.conditions.contains([stmt, stmt.condition]) }.each { Edge e ->
-				def i = e.conditions.indexOf([stmt, stmt.condition])
+			allEdges.findAll { Edge e -> e.conditions.contains(new Tuple2<Statement, EventB>(stmt, stmt.condition)) }.each { Edge e ->
+				def i = e.conditions.indexOf(new Tuple2<Statement, EventB>(stmt, stmt.condition))
 				def cond = e.conditions[0..i-1].collect { it.getSecond() }
 				if (!conds.contains(cond)) {
 					conds << cond

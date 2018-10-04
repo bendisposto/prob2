@@ -3,6 +3,7 @@ import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvalResult
 import de.prob.animator.domainobjects.EventB
 import de.prob.statespace.TraceDecorator
+import de.prob.util.Tuple2
 
 // This extends String's as operator to allow creating EvalElements from strings.
 // For example, "x" as ClassicalB creates a ClassicalB object by parsing the formula "x".
@@ -17,6 +18,24 @@ String.metaClass.asType = {Class<?> type ->
 		new CSP(delegate)
 	} else {
 		oldStringAsType.invoke(delegate, [type] as Object[])
+	}
+}
+
+final oldTuple2Equals = Tuple2.metaClass.getMetaMethod("equals", [Object] as Class<?>[])
+Tuple2.metaClass.equals = {Object other ->
+	if (other instanceof ArrayList<?>) {
+		return other.size() == 2 && delegate.first == other[0] && delegate.second == other[1]
+	} else {
+		return oldTuple2Equals.invoke(delegate, [other] as Object[])
+	}
+}
+
+final oldArrayListEquals = ArrayList.metaClass.getMetaMethod("equals", [Object] as Class<?>[])
+ArrayList.metaClass.equals = {Object other ->
+	if (other instanceof Tuple2<?, ?>) {
+		return delegate.size() == 2 && delegate[0] == other.first && delegate[1] == other.second
+	} else {
+		return oldArrayListEquals.invoke(delegate, [other] as Object[])
 	}
 }
 
