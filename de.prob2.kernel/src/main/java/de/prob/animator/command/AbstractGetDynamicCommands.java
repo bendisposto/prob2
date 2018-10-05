@@ -28,8 +28,13 @@ public abstract class AbstractGetDynamicCommands extends AbstractCommand {
 		final String name = PrologTerm.atomicString(commandTerm.getArgument(2));
 		final String description = PrologTerm.atomicString(commandTerm.getArgument(3));
 		final int arity = ((IntegerPrologTerm) commandTerm.getArgument(4)).getValue().intValue();
+		ListPrologTerm listTerm = (ListPrologTerm) commandTerm.getArgument(5);
+		final List<String> relevantPreferences = new ArrayList<>();
+		for(PrologTerm term : listTerm) {
+			relevantPreferences.add(PrologTerm.atomicString(term));
+		}
 		final String available = PrologTerm.atomicString(commandTerm.getArgument(6));
-		return new DynamicCommandItem(command, name, description, arity, available);
+		return new DynamicCommandItem(command, name, description, arity, relevantPreferences, available);
 	}
 
 	@Override
@@ -45,7 +50,7 @@ public abstract class AbstractGetDynamicCommands extends AbstractCommand {
 		ListPrologTerm res = (ListPrologTerm) bindings.get(LIST);
 		for (PrologTerm prologTerm : res) {
 			commands.add(toCommandItem(prologTerm));
-		}
+		}		
 	}
 
 	public List<DynamicCommandItem> getCommands() {

@@ -1,5 +1,6 @@
 package de.prob.animator.domainobjects;
 
+import java.util.List;
 import java.util.Objects;
 
 public class DynamicCommandItem {
@@ -12,13 +13,16 @@ public class DynamicCommandItem {
 	
 	private final int arity;
 	
+	private final List<String> relevantPreferences;
+	
 	private final String available;
 	
-	public DynamicCommandItem(String command, String name, String description, int arity, String available) {
+	public DynamicCommandItem(String command, String name, String description, int arity, List<String> relevantPreferences, String available) {
 		this.command = command;
 		this.name = name;
 		this.description = description;
 		this.arity = arity;
+		this.relevantPreferences = relevantPreferences;
 		this.available = available;
 	}
 	
@@ -36,6 +40,10 @@ public class DynamicCommandItem {
 	
 	public int getArity() {
 		return arity;
+	}
+	
+	public List<String> getRelevantPreferences() {
+		return relevantPreferences;
 	}
 	
 	public String getAvailable() {
