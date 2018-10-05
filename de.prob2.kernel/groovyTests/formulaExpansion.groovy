@@ -38,12 +38,12 @@ assert f11.children.size() == 2
 final f111 = f11.children[0]
 assert f111.label == "ready"
 assert f111.value == toUnicode("{}")
-assert f111.children == null
+assert f111.children.empty
 
 final f112 = f11.children[1]
 assert f112.label == "waiting"
 assert f112.value == toUnicode("{}")
-assert f112.children == null
+assert f112.children.empty
 
 final f2 = formula.children[1]
 assert f2.label == 'card(active) \u2264 1'
@@ -58,6 +58,6 @@ assert f21.children.size() == 1
 final f211 = f21.children[0]
 assert f211.label == 'active'
 assert f211.value == toUnicode('{}')
-assert f211.children == null
+assert f211.children.empty
 
 "expanding a B formula works"
