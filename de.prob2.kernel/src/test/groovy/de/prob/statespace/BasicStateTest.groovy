@@ -8,8 +8,6 @@ import de.prob.scripting.ClassicalBFactory
 
 import spock.lang.Specification
 
-import static org.mockito.Mockito.*
-
 class BasicStateTest extends Specification {
 
 	static StateSpace s
@@ -75,7 +73,7 @@ class BasicStateTest extends Specification {
 	def "equivalence in a state is based on id and state space"() {
 		when:
 		def sameroot = new State("root", s)
-		def otherroot = new State("root", mock(StateSpace))
+		def otherroot = new State("root", Mock(StateSpace))
 
 		then:
 		root == sameroot
@@ -92,7 +90,7 @@ class BasicStateTest extends Specification {
 	def "hashcode is based also on id and state space"() {
 		when:
 		def sameroot = new State("root", s)
-		def otherroot = new State("root", mock(StateSpace))
+		def otherroot = new State("root", Mock(StateSpace))
 
 		then:
 		root.hashCode() == sameroot.hashCode()

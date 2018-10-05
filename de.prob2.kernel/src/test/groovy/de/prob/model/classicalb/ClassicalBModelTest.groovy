@@ -1,12 +1,12 @@
 package de.prob.model.classicalb
 
-import static org.mockito.Mockito.*
-import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.representation.DependencyGraph
 import de.prob.model.representation.DependencyGraph.ERefType
+
+import spock.lang.Specification
 
 class ClassicalBModelTest extends Specification {
 
