@@ -1,13 +1,13 @@
 package de.prob.model.eventb
 
+import de.prob.model.representation.ElementComment
+
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import spock.lang.Specification
-import de.prob.model.representation.ElementComment
 
 class ContextModifierTest extends Specification {
-
-	ContextModifier modifier
+	private ContextModifier modifier
 
 	def setup() {
 		def context = new Context("MyContext")

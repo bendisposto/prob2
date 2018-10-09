@@ -1,5 +1,7 @@
 package de.prob.statespace
 
+import java.nio.file.Paths
+
 import de.prob.Main
 import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.animator.domainobjects.CSP
@@ -8,18 +10,18 @@ import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.CSPModel
 import de.prob.scripting.ClassicalBFactory
 
-import spock.lang.Specification
+import spock.lang.Specification 
 
 class StateSpaceEvaluationTest extends Specification {
+	private static StateSpace s
+	private static State root
+	private static State firstState
 
-	static StateSpace s
-	static State root
-	static State firstState
 	def setupSpec() {
-		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
-		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
+		final path = Paths.get("groovyTests", "machines", "scheduler.mch").toString()
+		final factory = Main.injector.getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
-		root = s.getRoot()
+		root = s.root
 		firstState = root.$initialise_machine()
 	}
 
@@ -30,6 +32,7 @@ class StateSpaceEvaluationTest extends Specification {
 	def setup() {
 		s.formulaRegistry.clear()
 	}
+
 	def "it is possible to evaluate formulas in a state"() {
 		expect:
 		s.eval(firstState, [

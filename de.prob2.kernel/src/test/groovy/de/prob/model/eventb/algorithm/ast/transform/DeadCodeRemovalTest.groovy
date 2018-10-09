@@ -1,13 +1,12 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
-import static org.junit.Assert.*
-import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Block;
-import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover;
-import de.prob.model.eventb.algorithm.graph.NodeNaming;
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.transform.DeadCodeRemover
+import de.prob.model.eventb.algorithm.graph.NodeNaming
 
-public class DeadCodeRemovalTest extends Specification {
+import spock.lang.Specification
+
+class DeadCodeRemovalTest extends Specification {
 
 	def Block astTrans(Closure cls) {
 		Block b = new Block().make(cls)
@@ -16,10 +15,6 @@ public class DeadCodeRemovalTest extends Specification {
 
 	def NodeNaming naming(Block ast) {
 		return new NodeNaming(ast)
-	}
-
-	def print(graph) {
-		println pcInfo(graph)
 	}
 
 	def "return cuts off dead code"() {

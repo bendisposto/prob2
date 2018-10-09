@@ -1,6 +1,5 @@
 package de.prob.model.eventb.algorithm.graph
 
-import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.FormulaUtil
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
@@ -11,6 +10,8 @@ import de.prob.model.eventb.algorithm.ast.transform.AddLoopEvents
 import de.prob.model.eventb.algorithm.ast.transform.VariantAssertion
 import de.prob.model.eventb.algorithm.ast.transform.VariantPropagator
 import de.prob.model.representation.ModelElementList
+
+import spock.lang.Specification
 
 class VariantTest extends Specification {
 
@@ -34,7 +35,6 @@ class VariantTest extends Specification {
 			]
 		}
 	}
-
 
 	def "ll parsing algorithm order"() {
 		when:

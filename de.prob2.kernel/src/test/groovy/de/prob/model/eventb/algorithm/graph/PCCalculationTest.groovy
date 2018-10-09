@@ -1,11 +1,10 @@
 package de.prob.model.eventb.algorithm.graph
 
-import static org.junit.Assert.*
-import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.Block
 
-public class PCCalculationTest extends Specification {
+import spock.lang.Specification
+
+class PCCalculationTest extends Specification {
 
 	def PCCalculator graph(Closure cls) {
 		Block b = new Block().make(cls).finish()

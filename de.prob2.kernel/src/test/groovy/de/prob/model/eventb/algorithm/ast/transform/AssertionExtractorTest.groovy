@@ -1,16 +1,16 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
-import static org.junit.Assert.*
-import spock.lang.Specification
 import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Block;
-import de.prob.model.eventb.algorithm.ast.If;
-import de.prob.model.eventb.algorithm.ast.Skip;
-import de.prob.model.eventb.algorithm.ast.Statement;
-import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor;
+import de.prob.model.eventb.algorithm.ast.Assignment
+import de.prob.model.eventb.algorithm.ast.Block
+import de.prob.model.eventb.algorithm.ast.If
+import de.prob.model.eventb.algorithm.ast.Skip
+import de.prob.model.eventb.algorithm.ast.Statement
+import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
 
-public class AssertionExtractorTest extends Specification {
+import spock.lang.Specification
+
+class AssertionExtractorTest extends Specification {
 
 	def run(Closure cls) {
 		Block b = new AddLoopEvents().transform(new Block().make(cls).finish())

@@ -1,16 +1,16 @@
 package de.prob.model.eventb
 
-import org.eventb.core.ast.extension.IFormulaExtension
-
-import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.ElementComment
 
-class EventModifierTest extends Specification {
+import org.eventb.core.ast.extension.IFormulaExtension
 
-	def Event event
-	def EventModifier modifier
+import spock.lang.Specification
+
+class EventModifierTest extends Specification {
+	private Event event
+	private EventModifier modifier
 
 	def setup() {
 		event = new Event("myEvent", EventType.ORDINARY, false)

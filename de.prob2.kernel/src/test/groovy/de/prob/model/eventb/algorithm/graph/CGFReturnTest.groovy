@@ -1,9 +1,10 @@
 package de.prob.model.eventb.algorithm.graph
 
-import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.FILLER
-import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.create
-import spock.lang.Specification
 import de.prob.model.eventb.algorithm.ast.Block
+
+import spock.lang.Specification
+
+import static de.prob.model.eventb.algorithm.graph.ControlFlowGraph.create
 
 class CGFReturnTest extends Specification {
 	def "correct return"() {

@@ -1,8 +1,9 @@
 package de.prob.model.eventb.algorithm
 
-import spock.lang.Specification
 import de.prob.model.eventb.algorithm.ast.Assignment
 import de.prob.model.eventb.algorithm.ast.Block
+
+import spock.lang.Specification
 
 class AssignmentConstruction extends Specification {
 

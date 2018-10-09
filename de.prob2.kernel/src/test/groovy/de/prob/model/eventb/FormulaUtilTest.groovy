@@ -8,7 +8,7 @@ import org.eventb.core.ast.FreeIdentifier
 import spock.lang.Specification
 
 class FormulaUtilTest extends Specification {
-	FormulaUtil fuu
+	private FormulaUtil fuu
 
 	def formulas(String... fs) {
 		fs.collect { new EventB(it) }

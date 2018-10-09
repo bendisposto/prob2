@@ -1,20 +1,18 @@
 package de.prob.model.eventb.algorithm
 
-import spock.lang.Specification
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBInvariant
 import de.prob.model.eventb.EventBMachine
-import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.MachineModifier
 import de.prob.model.eventb.ModelModifier
-import de.prob.model.representation.ModelElementList
+
+import spock.lang.Specification
 
 class NaiveAlgorithmTranslation extends Specification {
-	def MachineModifier mm
-	def EventBMachine m
+	private MachineModifier mm
 
 	def setup() {
-		m = new EventBMachine("algorithm")
+		final m = new EventBMachine("algorithm")
 		mm = new MachineModifier(m)
 	}
 

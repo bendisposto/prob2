@@ -1,11 +1,12 @@
 package de.prob.model.eventb
 
-import spock.lang.Specification
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.representation.ModelElementList
 
+import spock.lang.Specification
+
 class MachineModifierTest2 extends Specification {
-	def MachineModifier modifier
+	private MachineModifier modifier
 
 	def setup() {
 		def machine = new EventBMachine("myMachine")

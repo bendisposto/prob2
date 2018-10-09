@@ -1,14 +1,14 @@
 package de.prob.model.eventb.algorithm.graph
 
-import static org.junit.Assert.*
-import spock.lang.Specification
 import de.prob.model.eventb.algorithm.ast.Assertion
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.Skip
 import de.prob.model.eventb.algorithm.ast.Statement
 import de.prob.model.eventb.algorithm.ast.transform.AssertionExtractor
 
-public class MergedCGGConstructionTest extends Specification {
+import spock.lang.Specification
+
+class MergedCGGConstructionTest extends Specification {
 
 	def ControlFlowGraph graph(Closure cls) {
 		Block b = new Block().make(cls).finish()

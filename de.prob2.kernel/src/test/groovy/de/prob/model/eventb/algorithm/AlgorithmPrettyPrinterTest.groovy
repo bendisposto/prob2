@@ -1,12 +1,14 @@
 package de.prob.model.eventb.algorithm
 
-import static de.prob.unicode.UnicodeTranslator.toUnicode
-import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.Block
+
 import spock.lang.Specification
+
+import static de.prob.unicode.UnicodeTranslator.toUnicode
 
 class AlgorithmPrettyPrinterTest extends Specification {
 
-	def DEBUG = false
+	private final DEBUG = false
 
 	def evalAndPrint(Closure definition) {
 		def Block b = new Block().make(definition)

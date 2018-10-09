@@ -1,74 +1,76 @@
-package de.prob.model.classicalb;
+package de.prob.model.classicalb
 
-
-import spock.lang.Specification;
-import de.be4.classicalb.core.parser.BParser;
-import de.be4.classicalb.core.parser.node.Start;
+import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.util.PrettyPrinter
 
+import spock.lang.Specification 
 
-public class PrettyPrintTest extends Specification {
+class PrettyPrintTest extends Specification {
 	/*
 	 * TODO 
 	 * If the prettyprinter inserts a whitespace, this test will fail.
 	 * Thus, we should convert this test to a junit test and move it to the parser.
 	 */
 	def "test pretty printing"() {
+		given:
+		final ast = BParser.parse("#EXPRESSION" + a)
+		final prettyprinter = new PrettyPrinter()
+		prettyprinter.setup()
+
 		when:
-		Start parse = BParser.parse("#EXPRESSION" + a);
-		PrettyPrinter prettyprinter = new PrettyPrinter();
-		prettyprinter.setup();
-		parse.apply(prettyprinter);
-		String prettyPrint = prettyprinter.getPrettyPrint();
+		ast.apply(prettyprinter)
 
 		then:
-		prettyPrint == b
+		prettyprinter.prettyPrint == b
 
 		where:
-		a 	|   b
-		8   |   '8'
-		"a+(b*c)" | "a+b*c"
-		"(a+b)+c" | "a+b+c"
-		"a+(b+c)" | "a+(b+c)"
-		"(a-b)-c" | "a-b-c"
-		"a-(b-c)" | "a-(b-c)"
-		"a**b**c" | "a**b**c"
+		a           | b
+		8           | '8'
+		"a+(b*c)"   | "a+b*c"
+		"(a+b)+c"   | "a+b+c"
+		"a+(b+c)"   | "a+(b+c)"
+		"(a-b)-c"   | "a-b-c"
+		"a-(b-c)"   | "a-(b-c)"
+		"a**b**c"   | "a**b**c"
 		"a**(b**c)" | "a**b**c"
 		"(a**b)**c" | "(a**b)**c"
 	}
 
 	def "test pretty predicate printing"() {
+		given:
+		final ast = BParser.parse("#PREDICATE " + a)
+		final prettyprinter = new PrettyPrinter()
 
 		when:
-		Start parse = BParser.parse("#PREDICATE " + a);
-		PrettyPrinter prettyprinter = new PrettyPrinter();
-
-		parse.apply(prettyprinter);
-		String prettyPrint = prettyprinter.getPrettyPrint();
+		ast.apply(prettyprinter)
 
 		then:
-		prettyPrint == b
+		prettyprinter.prettyPrint == b
 
 		where:
-		a 	|   b
-		"x=1 => y=2" | "x=1 => y=2"
+		a                     | b
+		"x=1 => y=2"          | "x=1 => y=2"
 		"x=1 => y=2 => (z=3)" | "x=1 => y=2 => z=3"
 		"x=1 => (y=2 => z=3)" | "x=1 => (y=2 => z=3)"
 	}
 
 	def "test pretty printing for sets"() {
+		given:
+		final toParse = '''
+		MACHINE scheduler
+		SETS
+			PID = {PID1,PID2,PID3}
+		END
+		'''
+		final ast = BParser.parse(toParse)
+		final prettyprinter = new PrettyPrinter()
+		final setDef = ast.PParseUnit.machineClauses[0].setDefinitions[0]
+
 		when:
-		String toParse = '''MACHINE scheduler
-							SETS
-								PID = {PID1,PID2,PID3}
-							END'''
-		Start parse = BParser.parse(toParse);
-		PrettyPrinter prettyprinter = new PrettyPrinter();
-		def foo = parse.getPParseUnit().getMachineClauses().get(0).getSetDefinitions().get(0);
-		foo.apply(prettyprinter);
-		String prettyPrint = prettyprinter.getPrettyPrint();
+		setDef.apply(prettyprinter)
+
 		then:
-		prettyPrint == "PID={PID1,PID2,PID3}"
+		prettyprinter.prettyPrint == "PID={PID1,PID2,PID3}"
 	}
 }
 

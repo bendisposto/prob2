@@ -1,8 +1,9 @@
 package de.prob.model.eventb.algorithm
 
-import spock.lang.Specification
 import de.be4.classicalb.core.parser.node.Node
 import de.prob.animator.domainobjects.EventB
+
+import spock.lang.Specification
 
 class AssignmentIndependenceTest extends Specification {
 

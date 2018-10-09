@@ -1,11 +1,14 @@
 package de.prob.statespace
 
+import java.nio.file.Paths
+
 import de.prob.Main
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.ComputationNotCompletedResult
 import de.prob.animator.domainobjects.EnumerationWarning
 import de.prob.animator.domainobjects.EvalResult
 import de.prob.animator.domainobjects.EventB
+import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.animator.domainobjects.WDError
 import de.prob.scripting.ClassicalBFactory
@@ -14,13 +17,12 @@ import de.prob.scripting.EventBFactory
 import spock.lang.Specification
 
 class TraceEvaluationTest extends Specification {
-
-	static StateSpace s
-	Trace t
+	private static StateSpace s
+	private Trace t
 
 	def setupSpec() {
-		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
-		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
+		final path = Paths.get("groovyTests", "machines", "scheduler.mch").toString()
+		final factory = Main.injector.getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
 	}
 
@@ -34,7 +36,7 @@ class TraceEvaluationTest extends Specification {
 
 	def "when not initialised the result is IdentifierNotInitialised"() {
 		when:
-		def x = t.evalCurrent("waiting")
+		final x = t.evalCurrent("waiting", FormulaExpand.EXPAND)
 
 		then:
 		x instanceof IdentifierNotInitialised
@@ -42,7 +44,7 @@ class TraceEvaluationTest extends Specification {
 
 	def "evaluating infinite sets results in enumeration warning"() {
 		when:
-		def x = t.evalCurrent("card({x|x : NATURAL & x mod 2 = 0})")
+		final x = t.evalCurrent("card({x|x : NATURAL & x mod 2 = 0})", FormulaExpand.EXPAND)
 
 		then:
 		x instanceof EnumerationWarning
@@ -50,7 +52,7 @@ class TraceEvaluationTest extends Specification {
 
 	def "evaluating formulas with well-definedness problems results in WDError"() {
 		when:
-		def x = t.evalCurrent("1 / 0")
+		final x = t.evalCurrent("1 / 0", FormulaExpand.EXPAND)
 
 		then:
 		x instanceof WDError
@@ -58,33 +60,37 @@ class TraceEvaluationTest extends Specification {
 
 	def "evaluating formulas with type issues results in ComputationNotCompleted"() {
 		when:
-		def x = t.evalCurrent("1 + {}")
+		final x = t.evalCurrent("1 + {}", FormulaExpand.EXPAND)
 
 		then:
 		x instanceof ComputationNotCompletedResult
 	}
 
 	def "It is possible to evaluate (correct) formulas in the current state (if initialised)"() {
+		given:
+		final t = t.$initialise_machine()
+
 		when:
-		def Trace t = t.$initialise_machine()
-		def x = t.evalCurrent("x = waiting & y = card(x)")
+		final x = t.evalCurrent("x = waiting & y = card(x)", FormulaExpand.EXPAND)
 
 		then:
 		x instanceof EvalResult
-		x.getValue() == "TRUE"
-		x.getSolutions().get("x") == "{}"
-		x.getSolutions().get("y") == "0"
+		x.value == "TRUE"
+		x.solutions["x"] == "{}"
+		x.solutions["y"] == "0"
 	}
 
 	def "It is possible to evaluate a formula over the course of a Trace"() {
+		given:
+		final t = t.$initialise_machine().new("pp = PID1").new("pp = PID2")
+
 		when:
-		def Trace t = t.$initialise_machine().new("pp = PID1").new("pp = PID2")
-		def x = t.eval("waiting")
+		final x = t.eval("waiting", FormulaExpand.EXPAND)
 
 		then:
 		x.size() == 3
-		def sIds = t.getTransitionList().collect { it.getDestination().getId() }
-		def results = x.collect { [it.getFirst(), it.getSecond().getValue()]}
+		final sIds = t.transitionList.collect {it.destination.id}
+		final results = x.collect {[it.first, it.second.value]}
 
 		results[0] == [sIds[0], "{}"]
 		results[1] == [sIds[1], "{PID1}"]
@@ -92,14 +98,16 @@ class TraceEvaluationTest extends Specification {
 	}
 
 	def "It is possible to evaluate a parsed formula over the course of a Trace"() {
+		given:
+		final t = t.$initialise_machine().new("pp = PID1").new("pp = PID2")
+
 		when:
-		def Trace t = t.$initialise_machine().new("pp = PID1").new("pp = PID2")
-		def x = t.eval(new ClassicalB("waiting"))
+		final x = t.eval(new ClassicalB("waiting", FormulaExpand.EXPAND))
 
 		then:
 		x.size() == 3
-		def sIds = t.getTransitionList().collect { it.getDestination().getId() }
-		def results = x.collect { [it.getFirst(), it.getSecond().getValue()]}
+		final sIds = t.transitionList.collect {it.destination.id}
+		final results = x.collect {[it.first, it.second.getValue()]}
 
 		results[0] == [sIds[0], "{}"]
 		results[1] == [sIds[1], "{PID1}"]
@@ -107,18 +115,20 @@ class TraceEvaluationTest extends Specification {
 	}
 
 	def "Evaluating a formula over a trace also works for EventB"() {
-		when:
-		def path = System.getProperties().get("user.dir")+"/groovyTests/Lift/lift0.bcm"
-		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
-		StateSpace s = factory.extract(path).load([:])
+		given:
+		final path = Paths.get("groovyTests", "Lift", "lift0.bcm").toString()
+		final factory = Main.injector.getInstance(EventBFactory.class)
+		final s = factory.extract(path).load([:])
 		t = new Trace(s)
-		def Trace t = t.$setup_constants().$initialise_machine().up()
-		def x = t.eval(new EventB("level"))
+		final t2 = t.$setup_constants().$initialise_machine().up()
+
+		when:
+		final x = t2.eval(new EventB("level", FormulaExpand.EXPAND))
 
 		then:
 		x.size() == 2
-		x[0].getSecond().getValue() == "L0"
-		x[1].getSecond().getValue() == "L1"
+		x[0].second.value == "L0"
+		x[1].second.value == "L1"
 
 		cleanup:
 		if (s != null) {

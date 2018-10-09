@@ -1,8 +1,9 @@
 package de.prob.model.eventb
 
-import spock.lang.Specification
-import de.prob.model.representation.ElementComment
 import de.prob.model.representation.DependencyGraph.ERefType
+import de.prob.model.representation.ElementComment
+
+import spock.lang.Specification
 
 class ModelModifierTest extends Specification {
 

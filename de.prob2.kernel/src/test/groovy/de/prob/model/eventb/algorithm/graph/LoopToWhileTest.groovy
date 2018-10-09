@@ -1,9 +1,10 @@
 package de.prob.model.eventb.algorithm.graph
 
-import spock.lang.Specification
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions
 import de.prob.model.eventb.algorithm.ast.Block
 import de.prob.model.eventb.algorithm.ast.transform.AddLoopEvents
+
+import spock.lang.Specification
 
 class LoopToWhileTest extends Specification {
 	def nodeLoops(Closure cls) {

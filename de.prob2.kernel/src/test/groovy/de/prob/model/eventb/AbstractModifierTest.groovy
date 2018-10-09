@@ -1,10 +1,8 @@
 package de.prob.model.eventb
 
-import org.codehaus.groovy.runtime.typehandling.GroovyCastException
-
-import spock.lang.Specification
 import de.prob.model.representation.CSPElement
 
+import spock.lang.Specification 
 /**
  *
  * Test some of the util classes that are provided by AbstractModifier
@@ -12,8 +10,7 @@ import de.prob.model.representation.CSPElement
  *
  */
 class AbstractModifierTest extends Specification {
-
-	AbstractModifier am = new AbstractModifier(Collections.emptySet())
+	private AbstractModifier am = new AbstractModifier(Collections.emptySet())
 
 	def "validate properties type cannot be a list with one element"() {
 		when:
@@ -55,7 +52,7 @@ class AbstractModifierTest extends Specification {
 		])
 
 		then:
-		thrown(GroovyCastException)
+		thrown(ClassCastException)
 	}
 
 	def "validate optional property must have tuple with at least two elements"() {
@@ -95,7 +92,7 @@ class AbstractModifierTest extends Specification {
 		def prop = am.validateRequiredProperty([a: [1, 2, 3]],"a", Integer)
 
 		then:
-		thrown(GroovyCastException)
+		thrown(ClassCastException)
 	}
 
 	def "helper method to extract definition"() {

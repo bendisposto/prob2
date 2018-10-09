@@ -3,40 +3,38 @@ package de.prob.animator.domainobjects
 import spock.lang.Specification
 
 class EvalElementFactoryTest extends Specification {
-
-	def EventB eventB
-	def ClassicalB classicalB
-	def String eventBserialized
-	def String classicalBserialized
-	def factory
+	private EventB eventB
+	private ClassicalB classicalB
+	private String eventBSerialized
+	private String classicalBSerialized
+	private EvalElementFactory factory
 
 	def setup() {
 		eventB = new EventB("1+1")
 		classicalB = new ClassicalB("1+1")
-		eventBserialized = eventB.serialized()
-		classicalBserialized = classicalB.serialized()
-
+		eventBSerialized = eventB.serialized()
+		classicalBSerialized = classicalB.serialized()
 		factory = new EvalElementFactory()
 	}
 
 	def "Serialization works for EventB"() {
 		expect:
-		eventBserialized == "#EventB:1+1"
+		eventBSerialized == "#EventB:1+1"
 	}
 
 	def "Serialization works for ClassicalB"() {
 		expect:
-		classicalBserialized == "#ClassicalB:1+1"
+		classicalBSerialized == "#ClassicalB:1+1"
 	}
 
 	def "Deserialization works for EventB"() {
 		expect:
-		factory.deserialize(eventBserialized).getCode() == eventB.getCode()
+		factory.deserialize(eventBSerialized).code == eventB.code
 	}
 
 	def "Deserialization works for ClassicalB"() {
 		expect:
-		factory.deserialize(classicalBserialized).getCode() == classicalB.getCode()
+		factory.deserialize(classicalBSerialized).code == classicalB.code
 	}
 
 	//TODO: create integration test to test serialization and deserialization of CSP

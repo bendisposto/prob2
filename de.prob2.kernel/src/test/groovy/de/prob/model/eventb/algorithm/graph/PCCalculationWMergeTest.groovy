@@ -1,12 +1,10 @@
 package de.prob.model.eventb.algorithm.graph
 
-import static org.junit.Assert.*
-import groovy.lang.Closure;
-import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Block;
+import de.prob.model.eventb.algorithm.ast.Block
 
-public class PCCalculationWMergeTest extends Specification {
+import spock.lang.Specification
+
+class PCCalculationWMergeTest extends Specification {
 
 	def PCCalculator graph(Closure cls) {
 		Block b = new Block().make(cls).finish()

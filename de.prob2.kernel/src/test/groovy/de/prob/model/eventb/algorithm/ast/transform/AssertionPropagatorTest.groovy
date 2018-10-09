@@ -1,6 +1,5 @@
 package de.prob.model.eventb.algorithm.ast.transform
 
-import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.algorithm.Procedure
 import de.prob.model.eventb.algorithm.ast.Block
@@ -9,22 +8,12 @@ import de.prob.model.eventb.algorithm.graph.NodeNaming
 import de.prob.model.representation.ModelElementList
 import de.prob.util.Tuple2
 
+import spock.lang.Specification
+
 class AssertionPropagatorTest extends Specification {
 
 	def block(Closure input) {
 		new Block().make(input)
-	}
-
-	def block(String assertion, Closure input) {
-		List<Tuple2<List<EventB>, EventB>> toPropagate = [
-			new Tuple2<List<EventB>, EventB>([], new EventB(assertion))
-		]
-		new AssertionPropagator().traverseBlock(new Block().make(input), toPropagate)
-	}
-
-	def equal(Block input, Closure expected) {
-		Block e = new Block().make(expected)
-		new ASTEquivalence().assertEqual(input, e)
 	}
 
 	def assertions(Block b) {

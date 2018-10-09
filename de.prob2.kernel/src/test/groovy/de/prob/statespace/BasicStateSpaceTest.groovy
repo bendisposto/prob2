@@ -1,5 +1,7 @@
 package de.prob.statespace
 
+import java.nio.file.Paths
+
 import de.prob.Main
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
@@ -9,12 +11,11 @@ import de.prob.scripting.ClassicalBFactory
 import spock.lang.Specification
 
 class BasicStateSpaceTest extends Specification {
-
-	static StateSpace s
+	private static StateSpace s
 
 	def setupSpec() {
-		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
-		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
+		final path = Paths.get("groovyTests", "machines", "scheduler.mch").toString()
+		final factory = Main.injector.getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
 	}
 
@@ -24,17 +25,17 @@ class BasicStateSpaceTest extends Specification {
 
 	def "it is possible to cast a StateSpace to an AbstractModel"() {
 		expect:
-		s.getModel() == s as AbstractModel
+		s.model == s as AbstractModel
 	}
 
 	def "it is possible to cast a StateSpace to its own Model class"() {
 		expect:
-		s.getModel() == s as ClassicalBModel
+		s.model == s as ClassicalBModel
 	}
 
 	def "it is not possible to cast a StateSpace to its another Model class"() {
 		when:
-		s.getModel() == s as EventBModel
+		s.model == s as EventBModel
 
 		then:
 		thrown(ClassCastException)
@@ -42,7 +43,7 @@ class BasicStateSpaceTest extends Specification {
 
 	def "it is possible to cast a StateSpace to a Trace object"() {
 		expect:
-		(s as Trace).getStateSpace() == s
+		(s as Trace).stateSpace == s
 	}
 
 	def "it is not possible to cast a StateSpace to any other kind of class"() {
@@ -55,7 +56,7 @@ class BasicStateSpaceTest extends Specification {
 
 	def "the id of a state space is the id of its animator"() {
 		expect:
-		s.getId() == s.animator.getId()
+		s.id == s.animator.id
 	}
 
 	def "the to string method is implemented"() {
@@ -65,22 +66,22 @@ class BasicStateSpaceTest extends Specification {
 
 	def "it is possible to print the operations for a given state"() {
 		expect:
-		s.printOps(s.getRoot()) != null
+		s.printOps(s.root) != null
 	}
 
 	def "it is possible to print a state"() {
 		expect:
-		s.printState(s.getRoot()) != null
+		s.printState(s.root) != null
 	}
 
 	def "if states are not explored by default, not all transitions may be shown"() {
 		when:
-		s.getRoot().explored = false
+		s.root.explored = false
 
 		then:
-		s.printOps(s.getRoot()).contains("Possibly not all transitions shown.")
+		s.printOps(s.root).contains("Possibly not all transitions shown.")
 
 		cleanup:
-		s.getRoot().explored = true
+		s.root.explored = true
 	}
 }

@@ -1,12 +1,10 @@
 package de.prob.model.eventb.algorithm.graph
 
-import static org.junit.Assert.*
-import spock.lang.Specification
-import de.prob.model.eventb.algorithm.ast.Assignment;
-import de.prob.model.eventb.algorithm.ast.Block;
-import de.prob.model.eventb.algorithm.ast.Statement;
+import de.prob.model.eventb.algorithm.ast.Block
 
-public class NamingNodesTest extends Specification {
+import spock.lang.Specification
+
+class NamingNodesTest extends Specification {
 
 	def Set<String> name(Closure cls) {
 		Block b = new Block().make(cls)

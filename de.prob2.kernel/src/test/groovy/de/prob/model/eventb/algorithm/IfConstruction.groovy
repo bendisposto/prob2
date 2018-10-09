@@ -1,6 +1,7 @@
 package de.prob.model.eventb.algorithm
 
-import de.prob.model.eventb.algorithm.ast.If;
+import de.prob.model.eventb.algorithm.ast.If
+
 import spock.lang.Specification
 
 class IfConstruction extends Specification {
