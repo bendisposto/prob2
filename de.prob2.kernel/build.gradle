@@ -43,13 +43,13 @@ ext {
 // IMPORTANT !!!
 
 
-final parser_version
+final parserVersion
 final cliDownloadURL
 if (project.version.endsWith("-SNAPSHOT")) {
-	parser_version = '2.9.14-SNAPSHOT'
+	parserVersion = '2.9.14-SNAPSHOT'
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/nightly"
 } else {
-	parser_version = '2.9.13'
+	parserVersion = '2.9.13'
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/releases/${cli_version}"
 }
 
@@ -81,55 +81,54 @@ sourceSets.main.java.srcDirs = [] // i.e. there's no stand-alone java source
 
 
 dependencies {
+	// ProB parser dependencies (Eclipse Public License 1.0)
+	// These are marked as changing, because parserVersion may be a snapshot version.
+	compile group: "de.hhu.stups", name: "answerparser", version: parserVersion, changing: true
+	compile group: "de.hhu.stups", name: "bparser", version: parserVersion, changing: true
+	compile group: "de.hhu.stups", name: "cliparser", version: parserVersion, changing: true
+	compile group: "de.hhu.stups", name: "eventbalg", version: parserVersion, changing: true
+	compile group: "de.hhu.stups", name: "ltlparser", version: parserVersion, changing: true
+	compile group: "de.hhu.stups", name: "parserbase", version: parserVersion, changing: true
+	compile group: "de.hhu.stups", name: "prologlib", version: parserVersion, changing: true
+	compile group: "de.hhu.stups", name: "unicode", version: parserVersion, changing: true
+	compile group: "de.hhu.stups", name: "theorymapping", version: parserVersion, changing: true
+	compile group: "de.hhu.stups", name: "translator", version: parserVersion, changing: true
 
-	compile 'com.google.code.findbugs:jsr305:3.0.2'
+	// Groovy (Apache License 2.0)
+	final groovyVersion = "2.5.2"
+	compile group: "org.codehaus.groovy", name: "groovy", version: groovyVersion
+	compile group: "org.codehaus.groovy", name: "groovy-jsr223", version: groovyVersion
+	compile group: "org.codehaus.groovy", name: "groovy-nio", version: groovyVersion
+	compile group: "org.codehaus.groovy", name: "groovy-xml", version: groovyVersion
 
-	compile 'com.google.guava:guava:26.0-jre'// Apache Licence 2.0
-	compile 'commons-cli:commons-cli:1.4' // Apache Licence 2.0
+	// Logging
+	compile group: "ch.qos.logback", name: "logback-core", version: "1.2.3" // Eclipse Public License 1.0
+	compile group: "ch.qos.logback", name: "logback-classic", version: "1.2.3" // Eclipse Public License 1.0
+	compile group: "org.slf4j", name: "slf4j-api", version: "1.7.25" // MIT License
 
-	compile 'org.codehaus.groovy:groovy:2.5.2' // Apache Licence 2.0
-	compile 'org.codehaus.groovy:groovy-jsr223:2.5.2' // Apache Licence 2.0
-	compile 'org.codehaus.groovy:groovy-nio:2.5.2' // Apache Licence 2.0
-	compile 'org.codehaus.groovy:groovy-xml:2.5.2' // Apache Licence 2.0
-
-	compile 'com.google.inject:guice:4.2.1' // Apache Licence 2.0
-	compile 'org.slf4j:slf4j-api:1.7.25' // MIT
-	compile 'ch.qos.logback:logback-core:1.2.3' // EPL
-	compile 'ch.qos.logback:logback-classic:1.2.3' // EPL
-
-	compile 'com.google.code.gson:gson:2.8.5' // Apache Licence 2.0
-
-	compile(group: 'de.hhu.stups', name: 'rodin-eventb-ast', version: '3.2.0')
-
-	compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
-	compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
-	compile group: "de.hhu.stups", name: "cliparser", version: parser_version , changing: true
-	compile group: "de.hhu.stups", name: "ltlparser", version: parser_version , changing: true
-	compile group: "de.hhu.stups", name: "parserbase", version: parser_version , changing: true
-	compile group: "de.hhu.stups", name: "prologlib", version: parser_version , changing: true
-	compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
-	compile group: "de.hhu.stups", name: "theorymapping", version: parser_version, changing: true
-	compile group: "de.hhu.stups", name: "translator", version: parser_version, changing: true
-	compile group: "de.hhu.stups", name: "eventbalg", version: parser_version, changing: true
-
-	compile group: 'de.hhu.stups', name: 'tla2bAST', version: '1.1.0'
-
-	compile group: 'de.hhu.stups', name: 'ltl-dsl', version: '0.1.1'
-
+	// Misc dependencies
+	compile group: "com.github.krukow", name: "clj-ds", version: "0.0.4" // Eclipse Public License 1.0
+	compile group: "com.google.code.gson", name: "gson", version: "2.8.5" // Apache License 2.0
+	compile group: "com.google.guava", name: "guava", version: "26.0-jre" // Apache License 2.0
+	compile group: "com.google.inject", name: "guice", version: "4.2.1" // Apache License 2.0
+	compile group: "commons-cli", name: "commons-cli", version: "1.4" // Apache License 2.0
+	compile group: "de.hhu.stups", name: "ltl-dsl", version: "0.1.1" // Eclipse Public License 1.0
+	compile group: "de.hhu.stups", name: "rodin-eventb-ast", version: "3.2.0" // Eclipse Public License 1.0
+	compile group: "de.hhu.stups", name: "tla2bAST", version: "1.1.0" // Eclipse Public License 1.0
 
 	// The following dependencies are needed for FMI
-	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
-	compile group: 'de.hhu.stups', name: 'ptolemy-jfmi', version: '1.1.0'
+	compile group: "de.hhu.stups", name: "ptolemy-jfmi", version: "1.1.0" // Non-standard license (MIT/BSD-ish)
+	compile group: "net.java.dev.jna", name: "jna", version: "3.4.0" // GNU LGPL 2.1
 
+	// Annotations
+	compile group: "com.google.code.findbugs", name: "jsr305", version: "3.0.2" // Apache License 2.0
 
-
-	compile 'junit:junit:4.12'
-	compile 'org.spockframework:spock-core:1.2-groovy-2.5'
+	// Test dependencies
+	testCompile group: "junit", name: "junit", version: "4.12" // Eclipse Public License 1.0
+	testCompile group: "org.spockframework", name: "spock-core", version: "1.2-groovy-2.5" // Apache License 2.0
 	// Byte Buddy and Objenesis are needed by Spock to mock classes
-	compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.0' // Apache License 2.0
-	compile group: 'org.objenesis', name: 'objenesis', version: '2.6' // Apache License 2.0
-
-	compile 'com.github.krukow:clj-ds:0.0.4'
+	testRuntimeOnly group: "net.bytebuddy", name: "byte-buddy", version: "1.9.0" // Apache License 2.0
+	testRuntimeOnly group: "org.objenesis", name: "objenesis", version: "2.6" // Apache License 2.0
 }
 
 if (project.hasProperty("probHome")) {
