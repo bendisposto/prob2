@@ -47,14 +47,14 @@ def appendToTrace(t, c) {
 
 // Redirect print and println to our own buffered console
 inConsole = true
-void print(s) {
-	__console.print(s)
+Script.metaClass.print = {s ->
+	__console.append(s)
 	if (!inConsole) {
 		System.out.print(s)
 	}
 }
-void println(s) {
-	__console.println(s)
+Script.metaClass.println = {s ->
+	__console.append(s + "\n")
 	if (!inConsole) {
 		System.out.println(s)
 	}
