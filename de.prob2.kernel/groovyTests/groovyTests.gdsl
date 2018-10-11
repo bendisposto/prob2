@@ -51,9 +51,6 @@ contributor(context(ctype: "de.prob.model.eventb.EventBModel", scope: scriptScop
 	[
 		"CFarmer", // loadEventBFromZip.groovy
 		"MFarmer", // loadEventBFromZip.groovy
-		"UseSeq", // theoryIntegration.groovy
-		"bowl2", // bowlOfCherriesTest.groovy
-		"m1", // carsOnABridge.groovy
 	].each {
 		property(name: it, type: "de.prob.model.eventb.EventBMachine")
 	}
@@ -66,13 +63,6 @@ contributor(context(ctype: "de.prob.model.representation.ModelElementList", scop
 		"waiting", // schedulerTests.groovy
 	].each {
 		property(name: it, type: "de.prob.model.classicalb.ClassicalBVariable")
-	}
-	
-	[
-		"IL_in", // carsOnABridge.groovy
-		"IL_out", // carsOnABridge.groovy
-	].each {
-		property(name: it, type: "de.prob.model.eventb.Event")
 	}
 }
 
@@ -87,7 +77,6 @@ contributor(context(ctype: "de.prob.statespace.SyncedTraces", scope: scriptScope
 
 contributor(context(ctype: "de.prob.statespace.Trace", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
 	[
-		"\$add", // theoryIntegration.groovy
 		"\$initialise_machine", // many machines
 		"\$setup_constants", // many machines
 		"Crazy1", // MultipleExample.mch
