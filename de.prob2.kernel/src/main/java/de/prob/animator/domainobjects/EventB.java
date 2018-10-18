@@ -7,7 +7,6 @@ import java.util.Set;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
-
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.formula.TranslationVisitor;
@@ -19,15 +18,13 @@ import de.prob.translator.TranslatingVisitor;
 import de.prob.translator.types.BObject;
 import de.prob.unicode.UnicodeTranslator;
 
+import org.eventb.core.ast.ASTProblem;
 import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.extension.IFormulaExtension;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Representation of an Event-B formula
@@ -36,8 +33,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class EventB extends AbstractEvalElement implements IBEvalElement {
-
-	private static final Logger logger = LoggerFactory.getLogger(EventB.class);
 	private final FormulaUUID uuid = new FormulaUUID();
 
 	private EvalElementType kind;
@@ -103,13 +98,12 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 			}
 		}
 		if (parseResult.hasProblem()) {
-			for (String string : errors) {
-				logger.error("{}", string);
+			for (final ASTProblem problem : parseResult.getProblems()) {
+				errors.add(problem.getMessage().toString());
 			}
-			logger.error("Parsing of code failed. Ascii is: {}", this.getCode());
-			logger.error("Parsing of code failed. Unicode is: {}", unicode);
-			throw new EvaluationException("Was not able to parse code: " + this.getCode()
-					+ " See log for details.");
+			errors.add("Code: " + this.getCode());
+			errors.add("Unicode translation: " + unicode);
+			throw new EvaluationException("Could not parse formula:\n" + String.join("\n", errors));
 		}
 	}
 
@@ -119,8 +113,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		try {
 			assign.accept(visitor);
 		} catch (RuntimeException e) {
-			logger.error("Creation of ast failed for assignment {}", this.getCode(), e);
-			throw new EvaluationException("Could not create AST for assignment " + assign, e);
+			throw new EvaluationException("Could not create AST for assignment " + assign + "\nCode: " + this.getCode(), e);
 		}
 		return visitor.getSubstitution();
 	}
@@ -131,8 +124,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		try {
 			expr.accept(visitor);
 		} catch (RuntimeException e) {
-			logger.error("Creation of ast failed for expression {}", this.getCode(), e);
-			throw new EvaluationException("Could not create AST for expression " + expr, e);
+			throw new EvaluationException("Could not create AST for expression " + expr + "\nCode: " + this.getCode(), e);
 		}
 		return visitor.getExpression();
 	}
@@ -143,8 +135,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		try {
 			parsedPredicate.accept(visitor);
 		} catch (RuntimeException e) {
-			logger.error("Creation of ast failed for expression {}", this.getCode(), e);
-			throw new EvaluationException("Could not create AST for predicate " + parsedPredicate, e);
+			throw new EvaluationException("Could not create AST for predicate " + parsedPredicate + "\nCode: " + this.getCode(), e);
 		}
 		return visitor.getPredicate();
 	}
