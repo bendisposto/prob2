@@ -12,17 +12,19 @@ public class OsSpecificInfo {
 	private final String helperCmd;
 	private final String userInterruptCmd;
 	private final String name;
-	private final String fullname;
 	private final String dirName;
 
-	public OsSpecificInfo(final String cliName, final String helperCmd,
-			final String userInterruptCmd, final String name,
-			final String fullname, final String dirName) {
+	public OsSpecificInfo(
+		final String cliName,
+		final String helperCmd,
+		final String userInterruptCmd,
+		final String name,
+		final String dirName
+	) {
 		this.cliName = cliName;
 		this.helperCmd = helperCmd;
 		this.userInterruptCmd = userInterruptCmd;
 		this.name = name;
-		this.fullname = fullname;
 		this.dirName = dirName;
 	}
 
@@ -53,13 +55,6 @@ public class OsSpecificInfo {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * @return {@link System#getProperty(String)} with String key "os.arch"
-	 */
-	public String getFullname() {
-		return fullname;
 	}
 
 	/**
