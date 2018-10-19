@@ -1,12 +1,10 @@
 package de.prob.scripting;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -36,31 +34,6 @@ public final class Installer {
 	@Inject
 	private Installer(final OsSpecificInfo osInfo) {
 		this.osInfo = osInfo;
-	}
-
-	/**
-	 * Fix permissions of the given path (set user read and write bits). This is needed to fix a previous mistake that cleared the owner read/write bits on the cspmf binary.
-	 *
-	 * @param path the path of the file to fix
-	 */
-	private static void fixPermissions(final Path path) throws IOException {
-		try {
-			final Set<PosixFilePermission> perms = new HashSet<>(Files.readAttributes(path, PosixFileAttributes.class).permissions());
-			final PosixFileAttributeView view = Files.getFileAttributeView(path, PosixFileAttributeView.class);
-			if (view == null) {
-				// If the PosixFileAttributeView is not available, we're probably on Windows, so nothing needs to be done
-				logger.info("Could not get POSIX attribute view for {} (this is usually not an error)", path);
-				return;
-			}
-			perms.add(PosixFilePermission.OWNER_READ);
-			perms.add(PosixFilePermission.OWNER_WRITE);
-			view.setPermissions(perms);
-		} catch (FileNotFoundException | NoSuchFileException e) {
-			logger.info("Not fixing permissions of nonexistant file {}", path, e);
-		} catch (UnsupportedOperationException e) {
-			// If POSIX attributes are unsupported, we're probably on Windows, so nothing needs to be done
-			logger.info("Could not fix permissions of {} (this is usually not an error): {}", path, e);
-		}
 	}
 
 	/**
@@ -123,7 +96,6 @@ public final class Installer {
 			cspmfName = osInfo.getDirName() + "-cspmf";
 		}
 		
-		fixPermissions(outcspmf);
 		try (final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName)) {
 			Files.copy(is, outcspmf, StandardCopyOption.REPLACE_EXISTING);
 		}
