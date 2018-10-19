@@ -13,19 +13,22 @@ public class OsSpecificInfo {
 	private final String userInterruptCmd;
 	private final String name;
 	private final String dirName;
+	private final String cspmfName;
 
 	public OsSpecificInfo(
 		final String cliName,
 		final String helperCmd,
 		final String userInterruptCmd,
 		final String name,
-		final String dirName
+		final String dirName,
+		final String cspmfName
 	) {
 		this.cliName = cliName;
 		this.helperCmd = helperCmd;
 		this.userInterruptCmd = userInterruptCmd;
 		this.name = name;
 		this.dirName = dirName;
+		this.cspmfName = cspmfName;
 	}
 
 	/**
@@ -63,5 +66,9 @@ public class OsSpecificInfo {
 	 */
 	public String getDirName() {
 		return dirName;
+	}
+	
+	public String getCspmfName() {
+		return this.cspmfName;
 	}
 }

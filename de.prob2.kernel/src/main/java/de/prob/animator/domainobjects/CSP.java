@@ -1,9 +1,10 @@
 package de.prob.animator.domainobjects;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +15,6 @@ import com.google.gson.Gson;
 import de.prob.Main;
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
-import de.prob.cli.OsInfoProvider;
 import de.prob.cli.OsSpecificInfo;
 import de.prob.model.representation.CSPModel;
 import de.prob.model.representation.FormulaUUID;
@@ -35,7 +35,7 @@ public class CSP extends AbstractEvalElement {
 
 	private final FormulaUUID uuid;
 	private final String fileName;
-	private final String procname;
+	private final Path cspmfPath;
 
 	/**
 	 * When a new formula is entered, the entire model must be reparsed. For this reason,
@@ -49,15 +49,8 @@ public class CSP extends AbstractEvalElement {
 		
 		this.uuid = new FormulaUUID();
 		this.fileName = model.getModelFile().getAbsolutePath();
-		OsInfoProvider osInfoProvider = Main.getInjector().getInstance(OsInfoProvider.class);
-		//TODO: die methode get( wird nicht erkannt
-		OsSpecificInfo osInfo = osInfoProvider.get();
-		String target = "";
-		if (osInfo.getDirName().equals("win32")) {
-			target = ".exe";
-		}
-
-		this.procname = Main.getProBDirectory() + "lib" + File.separator + "cspmf" + target;
+		OsSpecificInfo osInfo = Main.getInjector().getInstance(OsSpecificInfo.class);
+		this.cspmfPath = Paths.get(Main.getProBDirectory(), osInfo.getCspmfName());
 	}
 
 	@Override
@@ -80,7 +73,7 @@ public class CSP extends AbstractEvalElement {
 	 */
 	private void callCSPMF(final IPrologTermOutput pout, final String... args) {
 		final List<String> cmd = new ArrayList<>();
-		cmd.add(this.procname);
+		cmd.add(this.cspmfPath.toString());
 		cmd.addAll(Arrays.asList(args));
 		try {
 			final Process process = new ProcessBuilder(cmd).start();

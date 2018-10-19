@@ -111,17 +111,15 @@ public final class Installer {
 	 */
 	private void installCspmf() throws IOException {
 		logger.trace("Installing cspmf");
-		final Path outcspmf;
+		final Path outcspmf = DEFAULT_HOME.resolve(osInfo.getCspmfName());
 		final String cspmfName;
 		if (osInfo.getDirName().startsWith("win")) {
 			final String bits = "win32".equals(osInfo.getDirName()) ? "32" : "64";
 			try (final InputStream is = this.getClass().getResourceAsStream("/cli/windowslib" + bits + ".zip")) {
 				FileHandler.extractZip(is, DEFAULT_HOME);
 			}
-			outcspmf = DEFAULT_HOME.resolve("lib").resolve("cspmf.exe");
 			cspmfName = "windows-cspmf.exe";
 		} else {
-			outcspmf = DEFAULT_HOME.resolve("lib").resolve("cspmf");
 			cspmfName = osInfo.getDirName() + "-cspmf";
 		}
 		
