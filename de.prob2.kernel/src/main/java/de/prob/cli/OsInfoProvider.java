@@ -33,27 +33,31 @@ public class OsInfoProvider implements Provider<OsSpecificInfo> {
 	}
 
 	private OsSpecificInfo whichOs(final String osString, final String osArch) {
-		String os = osString.toLowerCase();
+		final String os = osString.toLowerCase();
 		if (os.contains("win")) {
+			final String dirName;
 			if ("amd64".equals(osArch)) {
-				return new OsSpecificInfo("probcli.exe", null, "lib" + File.separator + "send_user_interrupt.exe",
-						"Windows", "win64");
+				dirName = "win64";
+			} else if ("i386".equals(osArch)) {
+				dirName = "win32";
 			} else {
-				return new OsSpecificInfo("probcli.exe", null, "lib" + File.separator + "send_user_interrupt.exe",
-						"Windows", "win32");
+				throw new UnsupportedOperationException("Unsupported architecture for Windows: " + osArch);
 			}
-		}
-		if (os.contains("mac")) {
+			return new OsSpecificInfo("probcli.exe", null, "lib" + File.separator + "send_user_interrupt.exe", "Windows", dirName);
+		} else if (os.contains("mac")) {
 			return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "MacOs", "leopard64");
-		}
-		if (os.contains("linux")) {
+		} else if (os.contains("linux")) {
+			final String dirName;
 			if ("i386".equals(osArch)) {
-				return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "Linux", "linux32");
+				dirName = "linux32";
+			} else if ("amd64".equals(osArch)) {
+				dirName = "linux64";
+			} else {
+				throw new UnsupportedOperationException("Unsupported architecture for Linux: " + osArch);
 			}
-			if ("amd64".equals(osArch)) {
-				return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "Linux", "linux64");
-			}
+			return new OsSpecificInfo("probcli.sh", "sh", "send_user_interrupt", "Linux", dirName);
+		} else {
+			throw new UnsupportedOperationException("Unsupported operating system: " + osString);
 		}
-		throw new UnsupportedOperationException("OS not supported");
 	}
 }
