@@ -283,4 +283,26 @@ public class Api {
 	public StateSpace csp_load(final String file) throws IOException, ModelTranslationError {
 		return csp_load(file, Collections.emptyMap());
 	}
+
+	/**
+	 * Load an XTL model from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @param prefs the preferences to use
+	 * @return the {@link StateSpace} for the loaded model
+	 */
+	public StateSpace xtl_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+		final XTLFactory cspFactory = modelFactoryProvider.getZFactory();
+		return cspFactory.extract(file).load(prefs);
+	}
+
+	/**
+	 * Load an XTL model from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @return the {@link StateSpace} for the loaded model
+	 */
+	public StateSpace xtl_load(final String file) throws IOException, ModelTranslationError {
+		return xtl_load(file, Collections.emptyMap());
+	}
 }

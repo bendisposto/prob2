@@ -19,15 +19,23 @@ public class FactoryProvider {
 	private final EventBFactory eventBFactory;
 	private final TLAFactory tlaFactory;
 	private final RulesModelFactory bRulesFactory;
+	private final XTLFactory xtlFactory;
 
 	@Inject
-	public FactoryProvider(final ClassicalBFactory bfactory, final CSPFactory cspFactory,
-			final EventBFactory eventBFactory, final TLAFactory tlaFactory, final RulesModelFactory bRulesFactory) {
+	public FactoryProvider(
+		final ClassicalBFactory bfactory,
+		final CSPFactory cspFactory,
+		final EventBFactory eventBFactory,
+		final TLAFactory tlaFactory,
+		final RulesModelFactory bRulesFactory,
+		final XTLFactory xtlFactory
+	) {
 		this.classicalBFactory = bfactory;
 		this.cspFactory = cspFactory;
 		this.eventBFactory = eventBFactory;
 		this.tlaFactory = tlaFactory;
 		this.bRulesFactory = bRulesFactory;
+		this.xtlFactory = xtlFactory;
 	}
 
 	public ClassicalBFactory getClassicalBFactory() {
@@ -50,4 +58,7 @@ public class FactoryProvider {
 		return bRulesFactory;
 	}
 
+	public XTLFactory getZFactory() {
+		return this.xtlFactory;
+	}
 }
