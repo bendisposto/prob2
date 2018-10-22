@@ -19,7 +19,7 @@ public class XTLFactory implements ModelFactory<XTLModel> {
 	@Override
 	public ExtractedModel<XTLModel> extract(final String modelPath) throws IOException, ModelTranslationError {
 		final File f = new File(modelPath);
-		final XTLModel zModel = modelCreator.get().create(f);
-		return new ExtractedModel<>(zModel, null);
+		final XTLModel xtlModel = modelCreator.get().create(f);
+		return new ExtractedModel<>(xtlModel, null);
 	}
 }

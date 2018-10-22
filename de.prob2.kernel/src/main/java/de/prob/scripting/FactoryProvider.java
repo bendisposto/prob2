@@ -58,7 +58,7 @@ public class FactoryProvider {
 		return bRulesFactory;
 	}
 
-	public XTLFactory getZFactory() {
+	public XTLFactory getXTLFactory() {
 		return this.xtlFactory;
 	}
 }

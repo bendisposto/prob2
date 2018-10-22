@@ -292,8 +292,8 @@ public class Api {
 	 * @return the {@link StateSpace} for the loaded model
 	 */
 	public StateSpace xtl_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
-		final XTLFactory cspFactory = modelFactoryProvider.getZFactory();
-		return cspFactory.extract(file).load(prefs);
+		final XTLFactory xtlFactory = modelFactoryProvider.getXTLFactory();
+		return xtlFactory.extract(file).load(prefs);
 	}
 
 	/**
