@@ -182,10 +182,11 @@ def download(address, target) {
 	}
 }
 
+final CLI_DOWNLOAD_DIR = file("src/main/resources/cli")
+
 task downloadCLIs {
 	doLast {
-		final targetDir = 'src/main/resources/cli'
-		file(targetDir).mkdirs()
+		CLI_DOWNLOAD_DIR.mkdirs()
 
 		final files = []
 		[
@@ -202,7 +203,7 @@ task downloadCLIs {
 		}
 
 		files.each {filename ->
-			download("${cliDownloadURL}/${filename}", "${targetDir}/${filename}")
+			download("${cliDownloadURL}/${filename}", new File(CLI_DOWNLOAD_DIR, filename))
 		}
 	}
 }
@@ -210,7 +211,6 @@ task downloadCLIs {
 task downloadCSPMFrontend {
 	doLast {
 		final cspmfDownloadURL = "https://www3.hhu.de/stups/downloads/cspmf"
-		final targetDir = 'src/main/resources/cli'
 		[
 			'darwin-64': 'leopard64',
 			'linux-32': 'linux32',
@@ -223,13 +223,18 @@ task downloadCSPMFrontend {
 			} else {
 				libName = "cspmf"
 			}
-			final target = "${targetDir}/${probPlatform}-${libName}"
+			final target = new File(CLI_DOWNLOAD_DIR, "${probPlatform}-${libName}")
 			download("${cspmfDownloadURL}/${cspmfPlatform}/${libName}", target)
-			file(target).executable = true
+			target.executable = true
 		}
 	}
 	dependsOn downloadCLIs
 }
+
+task cleanDownloads(type: Delete) {
+	delete(CLI_DOWNLOAD_DIR)
+}
+clean.dependsOn(cleanDownloads)
 
 def getCheckedOutGitCommitHash() {
 	def gitFolder = "$projectDir/../.git/"
