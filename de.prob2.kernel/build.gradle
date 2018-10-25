@@ -210,6 +210,8 @@ task downloadCLIs {
 
 task downloadCSPMFrontend {
 	doLast {
+		CLI_DOWNLOAD_DIR.mkdirs()
+
 		final cspmfDownloadURL = "https://www3.hhu.de/stups/downloads/cspmf"
 		[
 			'darwin-64': 'leopard64',
@@ -228,7 +230,6 @@ task downloadCSPMFrontend {
 			target.executable = true
 		}
 	}
-	dependsOn downloadCLIs
 }
 
 task cleanDownloads(type: Delete) {
@@ -245,25 +246,26 @@ def readCurrentGitCommit() {
 	return proc.in.readLines()[0]
 }
 
-task createBuildConstants  {
+final BUILD_PROPERTIES = file("src/main/resources/prob2-build.properties")
+
+task createBuildConstants {
 	doFirst {
-		def buildconstants_class = """
-version=${project.version}
-git=${readCurrentGitCommit()}"""
-		File f = file("src/main/resources/prob2-build.properties")
-		f.delete()
-		f << buildconstants_class
-	}
-	if (!project.hasProperty("probHome")) {
-		// Automatically download probcli/cspmf, unless a custom PROB_HOME is set
-		dependsOn(downloadCSPMFrontend)
+		BUILD_PROPERTIES.delete()
+		BUILD_PROPERTIES << "version=${project.version}\n"
+		BUILD_PROPERTIES << "git=${readCurrentGitCommit()}\n"
 	}
 }
+processResources.dependsOn(createBuildConstants)
 
-compileGroovy {
-	dependsOn = [createBuildConstants]
+task cleanBuildConstants(type: Delete) {
+	delete(BUILD_PROPERTIES)
 }
+clean.dependsOn(cleanBuildConstants)
 
+if (!project.hasProperty("probHome")) {
+	// Automatically download probcli/cspmf, unless a custom PROB_HOME is set
+	processResources.dependsOn(downloadCLIs, downloadCSPMFrontend)
+}
 
 test.doFirst {
 	systemProperties['integrationtest'] = 'true'
