@@ -36,7 +36,7 @@ public class XTLModel extends AbstractModel {
 
 	@Override
 	public FormalismType getFormalismType() {
-		return FormalismType.B;
+		return FormalismType.XTL;
 	}
 
 	@Override
