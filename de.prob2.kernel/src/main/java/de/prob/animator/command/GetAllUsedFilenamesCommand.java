@@ -3,7 +3,6 @@ package de.prob.animator.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.domainobjects.MachineFileInformation;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;

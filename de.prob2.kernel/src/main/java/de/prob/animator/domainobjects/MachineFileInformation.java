@@ -42,10 +42,7 @@ public class MachineFileInformation {
 			return false;
 		}
 		MachineFileInformation obj = (MachineFileInformation) o;
-		if(name.equals(obj.name) && extension.equals(obj.extension) && path.equals(obj.path)) {
-			return true;
-		}
-		return false;
+		return name.equals(obj.name) && extension.equals(obj.extension) && path.equals(obj.path);
 	}
 	
 	@Override
