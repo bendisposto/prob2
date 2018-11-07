@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.prob.animator.domainobjects.DynamicCommandItem;
+import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.IntegerPrologTerm;
@@ -24,6 +25,7 @@ public abstract class AbstractGetDynamicCommands extends AbstractCommand {
 	}
 
 	private static DynamicCommandItem toCommandItem(final PrologTerm commandTerm) {
+		BindingGenerator.getCompoundTerm(commandTerm, "command", 7);
 		final String command = PrologTerm.atomicString(commandTerm.getArgument(1));
 		final String name = PrologTerm.atomicString(commandTerm.getArgument(2));
 		final String description = PrologTerm.atomicString(commandTerm.getArgument(3));
@@ -33,8 +35,9 @@ public abstract class AbstractGetDynamicCommands extends AbstractCommand {
 		for(PrologTerm term : listTerm) {
 			relevantPreferences.add(PrologTerm.atomicString(term));
 		}
-		final String available = PrologTerm.atomicString(commandTerm.getArgument(6));
-		return new DynamicCommandItem(command, name, description, arity, relevantPreferences, available);
+		final List<PrologTerm> additionalInfo = BindingGenerator.getList(commandTerm.getArgument(6));
+		final String available = PrologTerm.atomicString(commandTerm.getArgument(7));
+		return new DynamicCommandItem(command, name, description, arity, relevantPreferences, additionalInfo, available);
 	}
 
 	@Override
