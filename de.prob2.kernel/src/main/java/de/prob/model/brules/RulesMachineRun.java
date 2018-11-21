@@ -18,6 +18,8 @@ import de.be4.classicalb.core.parser.rules.RulesProject;
 import de.prob.animator.command.GetTotalNumberOfErrorsCommand;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.exception.ProBError;
+import de.prob.model.brules.RulesMachineRun.ERROR_TYPES;
+import de.prob.model.brules.RulesMachineRun.Error;
 import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.util.StopWatch;
@@ -103,6 +105,7 @@ public class RulesMachineRun {
 			logger.info("Execute run finished. Time: {} ms", stopWatch.stop(Timer.EXECUTE_RUN));
 		} catch (ProBError e) {
 			logger.error("ProBError: {}", e.getMessage());
+			this.errors.add(new Error(ERROR_TYPES.PROB_ERROR, e.getMessage(), e));
 			if (executeRun.getExecuteModelCommand() != null) {
 				try {
 					State finalState = executeRun.getExecuteModelCommand().getFinalState();

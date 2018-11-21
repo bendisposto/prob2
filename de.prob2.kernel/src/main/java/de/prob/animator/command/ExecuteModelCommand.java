@@ -108,7 +108,11 @@ public class ExecuteModelCommand extends AbstractCommand implements IStateSpaceM
 	}
 
 	public State getFinalState() {
-		return resultTrace.get(resultTrace.size() - 1).getDestination();
+		if (resultTrace.isEmpty()) {
+			return this.startstate;
+		} else {
+			return resultTrace.get(resultTrace.size() - 1).getDestination();
+		}
 	}
 
 	@Override
