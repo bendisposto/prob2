@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.hhu.stups.alloy2b.translation.Alloy2BParser;
+import de.prob.exception.ProBError;
 import de.prob.model.representation.AlloyModel;
 import edu.mit.csail.sdg.alloy4.Err;
 
@@ -25,9 +26,8 @@ public class AlloyFactory implements ModelFactory<AlloyModel> {
 		try {
 			alloyModel = modelCreator.get().create(f, new Alloy2BParser().alloyToPrologTerm(f.getAbsolutePath()));
 			return new ExtractedModel<>(alloyModel, null);
-		} catch (final Err exceptions) {
-			// TODO: handle parse exception (lines and cols refer to the Alloy model)
+		} catch (final Err e) {
+			throw new ProBError(e);
 		}
-		return null;
 	}
 }
