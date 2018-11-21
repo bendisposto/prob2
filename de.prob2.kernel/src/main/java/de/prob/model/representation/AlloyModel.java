@@ -55,7 +55,7 @@ public class AlloyModel extends AbstractModel {
 
 	@Override
 	public StateSpace load(final AbstractElement mainComponent, final Map<String, String> preferences) {
-		return getStateSpaceProvider().loadFromCommand(this, mainComponent, preferences, new LoadAlloyTermCommand(this.term));
+		return getStateSpaceProvider().loadFromCommand(this, mainComponent, preferences, new LoadAlloyTermCommand(this.term, this.getModelFile().toString()));
 	}
 
 	@Override

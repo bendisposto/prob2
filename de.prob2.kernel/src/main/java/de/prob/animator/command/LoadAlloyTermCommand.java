@@ -2,15 +2,18 @@ package de.prob.animator.command;
 
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
 
 public class LoadAlloyTermCommand extends AbstractCommand implements IRawCommand {
 	private static final String PROLOG_COMMAND_NAME = "load_alloy_spec_from_term";
 
 	private final String term;
-
-	public LoadAlloyTermCommand(final String term) {
+	private final String alloyFileName;
+		
+	public LoadAlloyTermCommand(final String term, final String alloyFileName) {
 		this.term = term.endsWith(".") ? term.substring(0, term.length()-1) : term;
+		this.alloyFileName = alloyFileName;
 	}
 
 	@Override
@@ -25,6 +28,9 @@ public class LoadAlloyTermCommand extends AbstractCommand implements IRawCommand
 
 	@Override
 	public String getCommand() {
-		return PROLOG_COMMAND_NAME + "(" + this.term + ")";
+		// Convert the file name to an escaped Prolog atom
+		final IPrologTermOutput pto = new PrologTermStringOutput();
+		pto.printAtom(this.alloyFileName);
+		return PROLOG_COMMAND_NAME + "(" + this.term + "," + pto + ")";
 	}
 }
