@@ -1,16 +1,15 @@
 package de.prob.animator.command;
 
-import de.prob.animator.command.AbstractCommand;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class GetRightClickOptionsForStateVisualizationCommand extends AbstractCommand {
 
@@ -24,8 +23,8 @@ public class GetRightClickOptionsForStateVisualizationCommand extends AbstractCo
 
 	public GetRightClickOptionsForStateVisualizationCommand(String stateId, int row, int column) {
 		this.stateId = stateId;
-		this.row = row-1;
-		this.column = column+1;
+		this.row = row;
+		this.column = column;
 	}
 
 	@Override

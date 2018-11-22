@@ -1,6 +1,5 @@
 package de.prob.animator.command;
 
-import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -19,8 +18,8 @@ public class ExecuteRightClickCommand extends AbstractCommand {
 
 	public ExecuteRightClickCommand(String stateId, int row, int column, String option) {
 		this.stateId = stateId;
-		this.row = row-1;
-		this.column = column+1;
+		this.row = row;
+		this.column = column;
 		this.option = option;
 	}
 
