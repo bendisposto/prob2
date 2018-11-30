@@ -44,8 +44,8 @@ ext {
 // IMPORTANT !!!
 
 
-final parserVersion
-final cliDownloadURL
+def parserVersion
+def cliDownloadURL
 if (project.version.endsWith("-SNAPSHOT")) {
 	parserVersion = '2.9.14-SNAPSHOT'
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/nightly"
@@ -96,7 +96,7 @@ dependencies {
 	compile group: "de.hhu.stups", name: "translator", version: parserVersion, changing: true
 
 	// Groovy (Apache License 2.0)
-	final groovyVersion = "2.5.2"
+	final groovyVersion = "2.5.4"
 	compile group: "org.codehaus.groovy", name: "groovy", version: groovyVersion
 	compile group: "org.codehaus.groovy", name: "groovy-jsr223", version: groovyVersion
 	compile group: "org.codehaus.groovy", name: "groovy-nio", version: groovyVersion
@@ -196,7 +196,7 @@ task downloadCSPMFrontend {
 		'linux-64': 'linux64',
 		'windows': 'windows',
 	].collectEntries {cspmfPlatform, probPlatform ->
-		final libName
+		def libName
 		if (cspmfPlatform == "windows") {
 			libName = "cspmf.exe"
 		} else {
@@ -273,7 +273,7 @@ groovydoc {
 }
 
 wrapper {
-	gradleVersion = "4.9"
+	gradleVersion = "5.0"
 	distributionType = Wrapper.DistributionType.ALL
 }
 
