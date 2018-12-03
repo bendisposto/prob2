@@ -147,7 +147,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 				if (line == null) {
 					break;
 				}
-				logger.debug("Apply cli detection patterns to {}", line);
+				logger.info("Apply cli detection patterns to {}", line);
 				applyPatterns(patternsList, line);
 			} while (!patternsList.isEmpty() && !line.contains("starting command loop"));
 		} catch (IOException e) {
