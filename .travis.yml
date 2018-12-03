@@ -7,6 +7,9 @@ matrix:
     - jdk: openjdk10
     - jdk: openjdk11
 before_install:
+# Always use the system-wide certificates (OpenJDK doesn't include the certificates needed to connect to oss.sonatype.org)
+- rm "${JAVA_HOME}/lib/security/cacerts"
+- ln -s "/etc/ssl/certs/java/cacerts" "${JAVA_HOME}/lib/security/cacerts"
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out pubring.gpg -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in gradle.properties.enc -out de.prob2.kernel/gradle.properties -d
