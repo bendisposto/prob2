@@ -8,9 +8,6 @@ matrix:
       env: REPLACE_CACERTS=true
     - jdk: openjdk11
       env: REPLACE_CACERTS=true
-  allow_failures:
-    - jdk: openjdk10
-    - jdk: openjdk11
 before_install:
 # Always use the system-wide certificates (OpenJDK doesn't include the certificates needed to connect to oss.sonatype.org)
 - |
