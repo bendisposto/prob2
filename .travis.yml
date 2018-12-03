@@ -6,6 +6,9 @@ matrix:
     - jdk: oraclejdk9
     - jdk: openjdk10
     - jdk: openjdk11
+  allow_failures:
+    - jdk: openjdk10
+    - jdk: openjdk11
 before_install:
 # Always use the system-wide certificates (OpenJDK doesn't include the certificates needed to connect to oss.sonatype.org)
 - rm -f "${JAVA_HOME}/lib/security/cacerts"
