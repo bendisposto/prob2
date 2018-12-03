@@ -30,6 +30,5 @@ after_success:
 
 env:
   global:
-  - GRADLE_OPTS="-Xms128m"
   - secure: DtyDUbGXZOZzuYWvCnL8eSaKpM6fQXQqnDBQzwD5OoBaCv6S3ijGHvNmie2tGTe5c93siiRU/doaJNH5PN6JN8Fbw+nxBJRIzKpqjVFmLPy2hCwPXum1BI4Nsf4vH4fZ4eENK1mFUDUR4MWrTAk9Vl05jIjEvsNlkrusBnVWFmg=
   - secure: dLFmLpS4eeRw5LWHau65MoBXL5G4/TK+cepaSQrF3h+x8AziCRUPrPaCpDpjtV/qZC4/R96AhbLUxAxC79GX1Vc105KWEh7AmZvM+1y2IwS9A0NYl14Alz07MwNlD97slQRVt2gTyn9AUfy0QTm6DNNPfb0+D/yfzdecYtIeOG8=
