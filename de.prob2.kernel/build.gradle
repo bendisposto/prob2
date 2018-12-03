@@ -304,8 +304,8 @@ jacoco {
 	toolVersion = "0.8.2"
 }
 task codeCoverageReport(type: JacocoReport, dependsOn: ['allTests']) {
-	sourceDirectories = files([])
-	classDirectories = files('build/classes/groovy/main')
+	sourceDirectories.from([])
+	classDirectories.from('build/classes/groovy/main')
 	//onlyIf = {true}
 	reports {
 		xml.enabled false
