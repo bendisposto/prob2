@@ -21,6 +21,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Transition;
@@ -65,8 +66,10 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			result = res;
 			value = res;
 		} else if (term.hasFunctor("typeerror", 0)) {
-			LTLError res = new LTLError(ltlFormula,
-					"Type error discovered in formula");
+			ListPrologTerm errorTerm = (ListPrologTerm) bindings.get(VARIABLE_NAME_ERRORS);
+			LTLError res = new LTLError(ltlFormula, String.join("\n", errorTerm.stream()
+				.map(PrologTerm::atomicString)
+				.collect(Collectors.toList())));
 			result = res;
 			value = res;
 		} else if (term.hasFunctor("incomplete", 0)) {
