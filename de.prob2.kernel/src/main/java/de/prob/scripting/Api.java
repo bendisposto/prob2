@@ -305,4 +305,26 @@ public class Api {
 	public StateSpace xtl_load(final String file) throws IOException, ModelTranslationError {
 		return xtl_load(file, Collections.emptyMap());
 	}
+
+	/**
+	 * Load an Alloy model from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @param prefs the preferences to use
+	 * @return the {@link StateSpace} for the loaded model
+	 */
+	public StateSpace alloy_load(final String file, final Map<String, String> prefs) throws IOException, ModelTranslationError {
+		final AlloyFactory alloyFactory = modelFactoryProvider.getAlloyFactory();
+		return alloyFactory.extract(file).load(prefs);
+	}
+
+	/**
+	 * Load an Alloy model from the given file.
+	 *
+	 * @param file the path of the file to load
+	 * @return the {@link StateSpace} for the loaded model
+	 */
+	public StateSpace alloy_load(final String file) throws IOException, ModelTranslationError {
+		return alloy_load(file, Collections.emptyMap());
+	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.prob.animator.domainobjects.AnimationMatrixEntry;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -23,7 +24,7 @@ public final class GetAnimationMatrixForStateCommand extends AbstractCommand {
 	private static final String MAX_COL_VAR = "MaxCol";
 	
 	private final State state;
-	private List<List<Object>> matrix;
+	private List<List<AnimationMatrixEntry>> matrix;
 	
 	public GetAnimationMatrixForStateCommand(final State state) {
 		super();
@@ -60,7 +61,9 @@ public final class GetAnimationMatrixForStateCommand extends AbstractCommand {
 		
 		// Create a rows*columns 2D list filled with nulls.
 		// https://stackoverflow.com/a/5600690
-		this.matrix = Stream.generate(() -> new ArrayList<>(Collections.nCopies(columns, null))).limit(rows).collect(Collectors.toList());
+		this.matrix = Stream.generate(() -> new ArrayList<>(Collections.nCopies(columns, (AnimationMatrixEntry)null)))
+			.limit(rows)
+			.collect(Collectors.toList());
 		
 		BindingGenerator.getList(bindings.get(MATRIX_VAR))
 			.stream()
@@ -69,15 +72,17 @@ public final class GetAnimationMatrixForStateCommand extends AbstractCommand {
 				final int row = BindingGenerator.getInteger(term.getArgument(1)).getValue().intValueExact();
 				final int column = BindingGenerator.getInteger(term.getArgument(2)).getValue().intValueExact();
 				final PrologTerm valueTerm = term.getArgument(3);
-				final Object value;
+				final AnimationMatrixEntry value;
 				if ("image".equals(valueTerm.getFunctor())) {
 					// Animation image number
 					BindingGenerator.getCompoundTerm(valueTerm, 1);
-					value = ((IntegerPrologTerm)valueTerm.getArgument(1)).getValue().intValueExact();
+					final int imageNumber = ((IntegerPrologTerm)valueTerm.getArgument(1)).getValue().intValueExact();
+					value = new AnimationMatrixEntry.Image(row, column, imageNumber);
 				} else if ("text".equals(valueTerm.getFunctor())) {
 					// Literal string label
 					BindingGenerator.getCompoundTerm(valueTerm, 1);
-					value = PrologTerm.atomicString(valueTerm.getArgument(1));
+					final String text = PrologTerm.atomicString(valueTerm.getArgument(1));
+					value = new AnimationMatrixEntry.Text(row, column, text);
 				} else {
 					throw new IllegalArgumentException("Unknown animation matrix entry value (expected image/1 or text/1): " + valueTerm);
 				}
@@ -85,7 +90,7 @@ public final class GetAnimationMatrixForStateCommand extends AbstractCommand {
 			});
 	}
 	
-	public List<List<Object>> getMatrix() {
+	public List<List<AnimationMatrixEntry>> getMatrix() {
 		return this.matrix;
 	}
 }

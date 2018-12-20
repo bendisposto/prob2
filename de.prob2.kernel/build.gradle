@@ -1,4 +1,5 @@
 plugins {
+	id "de.undercouch.download" version "3.4.3"
 	id "org.sonarqube" version "2.6.2"
 }
 
@@ -43,8 +44,8 @@ ext {
 // IMPORTANT !!!
 
 
-final parserVersion
-final cliDownloadURL
+def parserVersion
+def cliDownloadURL
 if (project.version.endsWith("-SNAPSHOT")) {
 	parserVersion = '2.9.14-SNAPSHOT'
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/nightly"
@@ -95,7 +96,7 @@ dependencies {
 	compile group: "de.hhu.stups", name: "translator", version: parserVersion, changing: true
 
 	// Groovy (Apache License 2.0)
-	final groovyVersion = "2.5.2"
+	final groovyVersion = "2.5.4"
 	compile group: "org.codehaus.groovy", name: "groovy", version: groovyVersion
 	compile group: "org.codehaus.groovy", name: "groovy-jsr223", version: groovyVersion
 	compile group: "org.codehaus.groovy", name: "groovy-nio", version: groovyVersion
@@ -112,6 +113,7 @@ dependencies {
 	compile group: "com.google.guava", name: "guava", version: "26.0-jre" // Apache License 2.0
 	compile group: "com.google.inject", name: "guice", version: "4.2.1" // Apache License 2.0
 	compile group: "commons-cli", name: "commons-cli", version: "1.4" // Apache License 2.0
+	compile group: "de.hhu.stups", name: "alloy2b", version: "1.0-BETA", changing: true
 	compile group: "de.hhu.stups", name: "ltl-dsl", version: "0.1.1" // Eclipse Public License 1.0
 	compile group: "de.hhu.stups", name: "rodin-eventb-ast", version: "3.2.0" // Eclipse Public License 1.0
 	compile group: "de.hhu.stups", name: "tla2bAST", version: "1.1.0" // Eclipse Public License 1.0
@@ -164,69 +166,54 @@ sonarqube {
 	}
 }
 
-def download(address, target) {
-	final targetFile = file(target)
-	final connection = (HttpURLConnection)new URL(address).openConnection()
-	connection.ifModifiedSince = targetFile.lastModified()
-	connection.connect()
-	if (connection.responseCode == HttpURLConnection.HTTP_NOT_MODIFIED) {
-		println("Not redownloading ${address} because ${target} is up-to-date")
-	} else {
-		println("Downloading ${address} to ${target}")
-		connection.inputStream.withStream {inp ->
-			targetFile.withOutputStream {out ->
-				out << inp
-			}
-		}
-		targetFile.lastModified = connection.lastModified
-	}
-}
-
 final CLI_DOWNLOAD_DIR = file("src/main/resources/cli")
 
-task downloadCLIs {
-	doLast {
-		CLI_DOWNLOAD_DIR.mkdirs()
-
-		final files = []
-		[
-			'leopard64',
-			'linux32',
-			'linux64',
-			'win32',
-			'win64',
-		].each {platform ->
-			files << "probcli_${platform}.zip"
-		}
-		['32', '64'].each {bits ->
-			files << "windowslib${bits}.zip"
-		}
-
-		files.each {filename ->
-			download("${cliDownloadURL}/${filename}", new File(CLI_DOWNLOAD_DIR, filename))
-		}
+task downloadCLIs(type: Download) {
+	final files = []
+	[
+		'leopard64',
+		'linux32',
+		'linux64',
+		'win32',
+		'win64',
+	].each {platform ->
+		files << "probcli_${platform}.zip"
 	}
+	['32', '64'].each {bits ->
+		files << "windowslib${bits}.zip"
+	}
+
+	src(files.collect {"${cliDownloadURL}/${it}"})
+	dest(CLI_DOWNLOAD_DIR)
+	onlyIfModified(true)
 }
 
 task downloadCSPMFrontend {
+	final cspmfDownloadURL = "https://www3.hhu.de/stups/downloads/cspmf"
+	final files = [
+		'darwin-64': 'leopard64',
+		'linux-32': 'linux32',
+		'linux-64': 'linux64',
+		'windows': 'windows',
+	].collectEntries {cspmfPlatform, probPlatform ->
+		def libName
+		if (cspmfPlatform == "windows") {
+			libName = "cspmf.exe"
+		} else {
+			libName = "cspmf"
+		}
+		// Note: toString is used here to eagerly evaluate the GString (which is not hashed properly otherwise)
+		[("${cspmfDownloadURL}/${cspmfPlatform}/${libName}".toString()): new File(CLI_DOWNLOAD_DIR, "${probPlatform}-${libName}")]
+	}
+
 	doLast {
 		CLI_DOWNLOAD_DIR.mkdirs()
-
-		final cspmfDownloadURL = "https://www3.hhu.de/stups/downloads/cspmf"
-		[
-			'darwin-64': 'leopard64',
-			'linux-32': 'linux32',
-			'linux-64': 'linux64',
-			'windows': 'windows',
-		].each {cspmfPlatform, probPlatform ->
-			final libName
-			if (cspmfPlatform == "windows") {
-				libName = "cspmf.exe"
-			} else {
-				libName = "cspmf"
+		files.each {url, target ->
+			download {
+				src(url)
+				dest(target)
+				onlyIfModified(true)
 			}
-			final target = new File(CLI_DOWNLOAD_DIR, "${probPlatform}-${libName}")
-			download("${cspmfDownloadURL}/${cspmfPlatform}/${libName}", target)
 			target.executable = true
 		}
 	}
@@ -286,7 +273,7 @@ groovydoc {
 }
 
 wrapper {
-	gradleVersion = "4.9"
+	gradleVersion = "5.0"
 	distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -314,11 +301,11 @@ task cliIntegrationTests(type: Test, dependsOn: ['downloadCLIs','test']) {
 }
 
 jacoco {
-	toolVersion = "0.8.1"
+	toolVersion = "0.8.2"
 }
 task codeCoverageReport(type: JacocoReport, dependsOn: ['allTests']) {
-	sourceDirectories = files([])
-	classDirectories = files('build/classes/groovy/main')
+	sourceDirectories.from([])
+	classDirectories.from('build/classes/groovy/main')
 	//onlyIf = {true}
 	reports {
 		xml.enabled false

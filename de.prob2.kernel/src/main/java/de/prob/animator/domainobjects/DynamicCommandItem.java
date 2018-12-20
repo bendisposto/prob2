@@ -3,6 +3,8 @@ package de.prob.animator.domainobjects;
 import java.util.List;
 import java.util.Objects;
 
+import de.prob.prolog.term.PrologTerm;
+
 public class DynamicCommandItem {
 
 	private final String command;
@@ -15,14 +17,25 @@ public class DynamicCommandItem {
 	
 	private final List<String> relevantPreferences;
 	
+	private final List<PrologTerm> additionalInfo;
+	
 	private final String available;
 	
-	public DynamicCommandItem(String command, String name, String description, int arity, List<String> relevantPreferences, String available) {
+	public DynamicCommandItem(
+		String command,
+		String name,
+		String description,
+		int arity,
+		List<String> relevantPreferences,
+		List<PrologTerm> additionalInfo,
+		String available
+	) {
 		this.command = command;
 		this.name = name;
 		this.description = description;
 		this.arity = arity;
 		this.relevantPreferences = relevantPreferences;
+		this.additionalInfo = additionalInfo;
 		this.available = available;
 	}
 	
@@ -44,6 +57,10 @@ public class DynamicCommandItem {
 	
 	public List<String> getRelevantPreferences() {
 		return relevantPreferences;
+	}
+	
+	public List<PrologTerm> getAdditionalInfo() {
+		return additionalInfo;
 	}
 	
 	public String getAvailable() {
