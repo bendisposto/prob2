@@ -47,10 +47,10 @@ ext {
 def parserVersion
 def cliDownloadURL
 if (project.version.endsWith("-SNAPSHOT")) {
-	parserVersion = '2.9.14-SNAPSHOT'
+	parserVersion = '2.9.17-SNAPSHOT'
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/nightly"
 } else {
-	parserVersion = '2.9.13'
+	parserVersion = '2.9.14' // Should be 2.9.16, but uploading the parsers to Maven Central is currently broken
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/releases/${cli_version}"
 }
 
