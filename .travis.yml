@@ -16,8 +16,8 @@ before_install:
 - |
   if [[ "${REPLACE_CACERTS}" == "true" ]]
   then
-    rm -f "${JAVA_HOME}/lib/security/cacerts"
-    ln -s "/etc/ssl/certs/java/cacerts" "${JAVA_HOME}/lib/security/cacerts"
+    sudo rm -f "${JAVA_HOME}/lib/security/cacerts"
+    sudo ln -s "/etc/ssl/certs/java/cacerts" "${JAVA_HOME}/lib/security/cacerts"
   fi
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out pubring.gpg -d
