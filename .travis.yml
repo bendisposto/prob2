@@ -8,9 +8,11 @@ matrix:
         - DO_AFTER_SUCCESS=true
     - jdk: openjdk9
     - jdk: openjdk10
+      env:
+        - REPLACE_CACERTS=true
     - jdk: openjdk11
 before_install:
-# Always use the system-wide certificates (OpenJDK doesn't include the certificates needed to connect to oss.sonatype.org)
+# Use the system-wide certificates instead of the JDK's if needed (some OpenJDK builds don't include the certificates needed to connect to oss.sonatype.org)
 - |
   if [[ "${REPLACE_CACERTS}" == "true" ]]
   then
