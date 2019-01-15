@@ -45,7 +45,7 @@ import de.prob.model.representation.Variable;
 
 public class DomBuilder extends DepthFirstAdapter {
 
-	private static final EOF EOF = new EOF();
+	private final EOF EOF = new EOF();
 	private String name;
 	private final List<Parameter> parameters = new ArrayList<>();
 	private final List<Constraint> constraints = new ArrayList<>();
