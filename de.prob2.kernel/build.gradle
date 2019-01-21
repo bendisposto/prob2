@@ -114,7 +114,7 @@ dependencies {
 	compile group: "com.google.inject", name: "guice", version: "4.2.1" // Apache License 2.0
 	compile group: "commons-cli", name: "commons-cli", version: "1.4" // Apache License 2.0
 	compile group: "de.hhu.stups", name: "alloy2b", version: "1.0-BETA", changing: true
-	compile group: "de.hhu.stups", name: "ltl-dsl", version: "0.1.1" // Eclipse Public License 1.0
+	compile group: "de.hhu.stups", name: "ltl-dsl", version: "0.1.2-SNAPSHOT" // Eclipse Public License 1.0
 	compile group: "de.hhu.stups", name: "rodin-eventb-ast", version: "3.2.0" // Eclipse Public License 1.0
 	compile group: "de.hhu.stups", name: "tla2bAST", version: "1.1.0" // Eclipse Public License 1.0
 
