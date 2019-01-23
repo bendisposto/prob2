@@ -74,6 +74,14 @@ public class LoadedMachine {
 		return variableEvalElements.computeIfAbsent(expand, k -> namesToEvalElements(getVariableNames(), k));
 	}
 
+	/**
+	 * @deprecated Use {@link #getVariableEvalElements(FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
+	public List<IEvalElement> getVariableEvalElements() {
+		return getVariableEvalElements(FormulaExpand.EXPAND);
+	}
+
 	public List<String> getConstantNames() {
 		if (this.constantNames == null) {
 			GetMachineIdentifiersCommand command = new GetMachineIdentifiersCommand(
@@ -88,6 +96,14 @@ public class LoadedMachine {
 		return constantEvalElements.computeIfAbsent(expand, k -> namesToEvalElements(getConstantNames(), k));
 	}
 
+	/**
+	 * @deprecated Use {@link #getConstantEvalElements(FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
+	public List<IEvalElement> getConstatsEvalElements() {
+		return getConstantEvalElements(FormulaExpand.EXPAND);
+	}
+
 	public List<String> getSetNames() {
 		if (this.setNames == null) {
 			GetMachineIdentifiersCommand command = new GetMachineIdentifiersCommand(
@@ -100,5 +116,13 @@ public class LoadedMachine {
 
 	public List<IEvalElement> getSetEvalElements(final FormulaExpand expand) {
 		return setEvalElements.computeIfAbsent(expand, k -> namesToEvalElements(getSetNames(), k));
+	}
+
+	/**
+	 * @deprecated Use {@link #getSetEvalElements(FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
+	public List<IEvalElement> getSetEvalElements() {
+		return getSetEvalElements(FormulaExpand.EXPAND);
 	}
 }
