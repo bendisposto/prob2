@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.statespace.OperationInfo;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.EvalResult;
@@ -32,11 +33,11 @@ public class PersistentTransition {
 		final State destinationState = transition.getDestination();
 		if ("$setup_constants".equals(name)) {
 			if (storeDestinationState) {
-				addValuesToDestState(destinationState.getConstantValues());
+				addValuesToDestState(destinationState.getConstantValues(FormulaExpand.EXPAND));
 			}
 		} else {
 			if (storeDestinationState) {
-				addValuesToDestState(destinationState.getVariableValues());
+				addValuesToDestState(destinationState.getVariableValues(FormulaExpand.EXPAND));
 			}
 
 			if (!"$initialise_machine".equals(name)) {

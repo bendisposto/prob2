@@ -217,12 +217,12 @@ public class State extends GroovyObjectSupport {
 		return eval(Arrays.asList(formulas));
 	}
 
-	public Map<IEvalElement, AbstractEvalResult> getVariableValues() {
-		return evalFormulas(stateSpace.getLoadedMachine().getVariableEvalElements());
+	public Map<IEvalElement, AbstractEvalResult> getVariableValues(final FormulaExpand expand) {
+		return evalFormulas(stateSpace.getLoadedMachine().getVariableEvalElements(expand));
 	}
 
-	public Map<IEvalElement, AbstractEvalResult> getConstantValues() {
-		return evalFormulas(stateSpace.getLoadedMachine().getConstantEvalElements());
+	public Map<IEvalElement, AbstractEvalResult> getConstantValues(final FormulaExpand expand) {
+		return evalFormulas(stateSpace.getLoadedMachine().getConstantEvalElements(expand));
 	}
 
 	public Map<IEvalElement, AbstractEvalResult> evalFormulas(List<? extends IEvalElement> formulas) {

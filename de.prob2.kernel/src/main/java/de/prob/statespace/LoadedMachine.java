@@ -1,6 +1,7 @@
 package de.prob.statespace;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +21,15 @@ public class LoadedMachine {
 	private List<String> constantNames;
 	private List<String> setNames;
 
-	private List<IEvalElement> variableEvalElements;
-	private List<IEvalElement> constantEvalElements;
-	private List<IEvalElement> setEvalElements;
+	private final Map<FormulaExpand, List<IEvalElement>> variableEvalElements;
+	private final Map<FormulaExpand, List<IEvalElement>> constantEvalElements;
+	private final Map<FormulaExpand, List<IEvalElement>> setEvalElements;
 
 	public LoadedMachine(StateSpace stateSpace) {
 		this.stateSpace = stateSpace;
+		this.variableEvalElements = new EnumMap<>(FormulaExpand.class);
+		this.constantEvalElements = new EnumMap<>(FormulaExpand.class);
+		this.setEvalElements = new EnumMap<>(FormulaExpand.class);
 	}
 
 	public boolean containsOperations(String name) {
@@ -50,6 +54,12 @@ public class LoadedMachine {
 		return this.machineOperationInfos;
 	}
 
+	private List<IEvalElement> namesToEvalElements(final List<String> names, final FormulaExpand expand) {
+		return names.stream()
+			.map(name -> stateSpace.getModel().parseFormula(name, expand))
+			.collect(Collectors.toList());
+	}
+
 	public List<String> getVariableNames() {
 		if (this.variableNames == null) {
 			GetMachineIdentifiersCommand command = new GetMachineIdentifiersCommand(
@@ -60,14 +70,8 @@ public class LoadedMachine {
 		return new ArrayList<>(this.variableNames);
 	}
 
-	public List<IEvalElement> getVariableEvalElements() {
-		if (variableEvalElements == null) {
-			variableEvalElements = new ArrayList<>();
-			for (String string : getVariableNames()) {
-				variableEvalElements.add(stateSpace.getModel().parseFormula(string, FormulaExpand.EXPAND));
-			}
-		}
-		return variableEvalElements;
+	public List<IEvalElement> getVariableEvalElements(final FormulaExpand expand) {
+		return variableEvalElements.computeIfAbsent(expand, k -> namesToEvalElements(getVariableNames(), k));
 	}
 
 	public List<String> getConstantNames() {
@@ -80,14 +84,8 @@ public class LoadedMachine {
 		return new ArrayList<>(this.constantNames);
 	}
 
-	public List<IEvalElement> getConstantEvalElements() {
-		if (constantEvalElements == null) {
-			constantEvalElements = new ArrayList<>();
-			for (String string : getConstantNames()) {
-				constantEvalElements.add(stateSpace.getModel().parseFormula(string, FormulaExpand.EXPAND));
-			}
-		}
-		return constantEvalElements;
+	public List<IEvalElement> getConstantEvalElements(final FormulaExpand expand) {
+		return constantEvalElements.computeIfAbsent(expand, k -> namesToEvalElements(getConstantNames(), k));
 	}
 
 	public List<String> getSetNames() {
@@ -100,13 +98,7 @@ public class LoadedMachine {
 		return new ArrayList<>(this.setNames);
 	}
 
-	public List<IEvalElement> getSetEvalElements() {
-		if (setEvalElements == null) {
-			setEvalElements = new ArrayList<>();
-			for (String string : getSetNames()) {
-				setEvalElements.add(stateSpace.getModel().parseFormula(string, FormulaExpand.EXPAND));
-			}
-		}
-		return setEvalElements;
+	public List<IEvalElement> getSetEvalElements(final FormulaExpand expand) {
+		return setEvalElements.computeIfAbsent(expand, k -> namesToEvalElements(getSetNames(), k));
 	}
 }
