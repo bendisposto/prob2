@@ -32,7 +32,7 @@ import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;
 import de.prob.animator.command.GetStatesFromPredicate;
-import de.prob.animator.command.RegisterFormulaCommand;
+import de.prob.animator.command.RegisterFormulasCommand;
 import de.prob.animator.command.UnregisterFormulaCommand;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.CSP;
@@ -408,7 +408,7 @@ public class StateSpace implements IAnimator {
 	 */
 	public boolean subscribe(final Object subscriber, final Collection<? extends IEvalElement> formulas) {
 		boolean success = false;
-		List<AbstractCommand> subscribeCmds = new ArrayList<>();
+		List<IEvalElement> toSubscribe = new ArrayList<>();
 		for (IEvalElement formulaOfInterest : formulas) {
 			if (formulaOfInterest instanceof CSP) {
 				logger.info(
@@ -423,13 +423,13 @@ public class StateSpace implements IAnimator {
 					WeakHashMap<Object, Object> subscribers = new WeakHashMap<>();
 					subscribers.put(subscriber, new WeakReference<Object>(subscriber));
 					formulaRegistry.put(formulaOfInterest, subscribers);
-					subscribeCmds.add(new RegisterFormulaCommand(formulaOfInterest));
+					toSubscribe.add(formulaOfInterest);
 					success = true;
 				}
 			}
 		}
-		if (!subscribeCmds.isEmpty()) {
-			execute(new ComposedCommand(subscribeCmds));
+		if (!toSubscribe.isEmpty()) {
+			execute(new RegisterFormulasCommand(toSubscribe));
 		}
 		return success;
 	}
