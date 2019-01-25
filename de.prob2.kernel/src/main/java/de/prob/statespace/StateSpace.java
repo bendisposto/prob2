@@ -1,6 +1,5 @@
 package de.prob.statespace;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,7 +8,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -75,7 +73,7 @@ public class StateSpace implements IAnimator {
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 	private IAnimator animator;
 
-	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<>();
+	private final Map<IEvalElement, Set<Object>> formulaRegistry = new HashMap<>();
 
 	private LoadedMachine loadedMachine;
 
@@ -416,12 +414,11 @@ public class StateSpace implements IAnimator {
 						formulaOfInterest.getCode());
 			} else {
 				if (formulaRegistry.containsKey(formulaOfInterest)) {
-					formulaRegistry.get(formulaOfInterest).put(subscriber,
-							new WeakReference<Object>(formulaOfInterest));
+					formulaRegistry.get(formulaOfInterest).add(subscriber);
 					success = true;
 				} else {
-					WeakHashMap<Object, Object> subscribers = new WeakHashMap<>();
-					subscribers.put(subscriber, new WeakReference<Object>(subscriber));
+					Set<Object> subscribers = Collections.newSetFromMap(new WeakHashMap<>());
+					subscribers.add(subscriber);
 					formulaRegistry.put(formulaOfInterest, subscribers);
 					toSubscribe.add(formulaOfInterest);
 					success = true;
@@ -483,7 +480,7 @@ public class StateSpace implements IAnimator {
 		final List<AbstractCommand> unsubscribeCmds = new ArrayList<>();
 		for (IEvalElement formula : formulas) {
 			if (formulaRegistry.containsKey(formula)) {
-				final WeakHashMap<Object, Object> subscribers = formulaRegistry.get(formula);
+				final Set<Object> subscribers = formulaRegistry.get(formula);
 				subscribers.remove(subscriber);
 				if (subscribers.isEmpty() && unregister) {
 					unsubscribeCmds.add(new UnregisterFormulaCommand(formula));
@@ -517,8 +514,8 @@ public class StateSpace implements IAnimator {
 	 *         currently interested subscribers.
 	 */
 	public Set<IEvalElement> getSubscribedFormulas() {
-		HashSet<IEvalElement> result = new HashSet<>();
-		for (Entry<IEvalElement, WeakHashMap<Object, Object>> entry : formulaRegistry.entrySet()) {
+		Set<IEvalElement> result = new HashSet<>();
+		for (Map.Entry<IEvalElement, Set<Object>> entry : formulaRegistry.entrySet()) {
 			if (!entry.getValue().isEmpty()) {
 				result.add(entry.getKey());
 			}
@@ -618,8 +615,8 @@ public class StateSpace implements IAnimator {
 		sb.append("STATE: " + state + "\n\n");
 		sb.append("VALUES:\n");
 		Map<IEvalElement, AbstractEvalResult> currentState = state.getValues();
-		final Set<Entry<IEvalElement, AbstractEvalResult>> entrySet = currentState.entrySet();
-		for (final Entry<IEvalElement, AbstractEvalResult> entry : entrySet) {
+		final Set<Map.Entry<IEvalElement, AbstractEvalResult>> entrySet = currentState.entrySet();
+		for (final Map.Entry<IEvalElement, AbstractEvalResult> entry : entrySet) {
 			sb.append("  " + entry.getKey().getCode() + " -> " + entry.getValue().toString() + "\n");
 		}
 

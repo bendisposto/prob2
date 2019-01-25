@@ -50,7 +50,7 @@ class StateSpaceEvaluationTest extends Specification {
 		!before
 		success
 		s.formulaRegistry.containsKey(formula)
-		s.formulaRegistry[formula].containsKey(subscriber)
+		s.formulaRegistry[formula].contains(subscriber)
 	}
 	def "it is possible for multiple people to subscribe to the same formula"() {
 		when:
@@ -65,8 +65,8 @@ class StateSpaceEvaluationTest extends Specification {
 		success
 		success2
 		s.formulaRegistry.containsKey(formula)
-		s.formulaRegistry[formula].containsKey(subscriber1)
-		s.formulaRegistry[formula].containsKey(subscriber2)
+		s.formulaRegistry[formula].contains(subscriber1)
+		s.formulaRegistry[formula].contains(subscriber2)
 	}
 
 	def "csp formulas cannot be subscribed"() {
@@ -94,9 +94,9 @@ class StateSpaceEvaluationTest extends Specification {
 		!before2
 		success
 		s.formulaRegistry.containsKey(formula)
-		s.formulaRegistry[formula].containsKey(subscriber)
+		s.formulaRegistry[formula].contains(subscriber)
 		s.formulaRegistry.containsKey(formula2)
-		s.formulaRegistry[formula2].containsKey(subscriber)
+		s.formulaRegistry[formula2].contains(subscriber)
 	}
 	def "it is possible for multiple people to subscribe to the same multiple formulas"() {
 		when:
@@ -114,11 +114,11 @@ class StateSpaceEvaluationTest extends Specification {
 		success
 		success2
 		s.formulaRegistry.containsKey(formula)
-		s.formulaRegistry[formula].containsKey(subscriber1)
-		s.formulaRegistry[formula].containsKey(subscriber2)
+		s.formulaRegistry[formula].contains(subscriber1)
+		s.formulaRegistry[formula].contains(subscriber2)
 		s.formulaRegistry.containsKey(formula2)
-		s.formulaRegistry[formula2].containsKey(subscriber1)
-		s.formulaRegistry[formula2].containsKey(subscriber2)
+		s.formulaRegistry[formula2].contains(subscriber1)
+		s.formulaRegistry[formula2].contains(subscriber2)
 	}
 
 	def "multiple csp formulas cannot be subscribed"() {
@@ -160,7 +160,7 @@ class StateSpaceEvaluationTest extends Specification {
 		def formula = new ClassicalB('card(ready) + 1')
 		def success = s.subscribe(subscriber, formula)
 		def before = s.formulaRegistry.containsKey(formula)
-		def before2 = s.formulaRegistry[formula].containsKey(subscriber)
+		def before2 = s.formulaRegistry[formula].contains(subscriber)
 		subscriber = null
 		System.gc()
 		then:
@@ -168,7 +168,7 @@ class StateSpaceEvaluationTest extends Specification {
 		before
 		before2
 		s.formulaRegistry.containsKey(formula)
-		!s.formulaRegistry[formula].containsKey(subscriber)
+		!s.formulaRegistry[formula].contains(subscriber)
 	}
 
 	def "a formula that has not yet been subscribed should be recognized as subscribed"() {
