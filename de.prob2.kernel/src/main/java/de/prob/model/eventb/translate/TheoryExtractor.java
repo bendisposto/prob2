@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -393,6 +394,7 @@ public class TheoryExtractor extends DefaultHandler {
 				String name = path.substring(path.lastIndexOf('/') + 1,
 						path.lastIndexOf('.'));
 				SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+				parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 				SAXParser saxParser = parserFactory.newSAXParser();
 
 				TheoryExtractor extractor = new TheoryExtractor(workspacePath,

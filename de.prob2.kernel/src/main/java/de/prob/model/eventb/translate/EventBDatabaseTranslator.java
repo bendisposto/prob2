@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -30,6 +31,7 @@ public class EventBDatabaseTranslator {
 			final String fileName) throws FileNotFoundException {
 		try {
 			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+			parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			SAXParser saxParser = parserFactory.newSAXParser();
 
 			File modelFile = new File(fileName);

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -299,6 +300,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		} else {
 			try {
 				SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+				parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 				SAXParser saxParser = parserFactory.newSAXParser();
 
 				String fileName = directoryPath + File.separatorChar
