@@ -7,9 +7,8 @@ import java.util.stream.Collectors;
 
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 
+import de.hhu.stups.alloy2b.translation.Alloy2BParserErr;
 import de.prob.animator.domainobjects.ErrorItem;
-
-import edu.mit.csail.sdg.alloy4.Err;
 
 public class ProBError extends RuntimeException {
 	private static final long serialVersionUID = 1L;
@@ -72,7 +71,7 @@ public class ProBError extends RuntimeException {
 		this(null, convertParserExceptionToErrorItems(e), e);
 	}
 
-	public ProBError(Err e) {
+	public ProBError(Alloy2BParserErr e) {
 		this(null, convertAlloyExceptionToErrorItems(e), e);
 	}
 
@@ -82,10 +81,10 @@ public class ProBError extends RuntimeException {
 			.collect(Collectors.toList());
 	}
 
-	private static List<ErrorItem> convertAlloyExceptionToErrorItems(Err e) {
+	private static List<ErrorItem> convertAlloyExceptionToErrorItems(Alloy2BParserErr e) {
 		return Collections.singletonList(
-			new ErrorItem(e.msg, ErrorItem.Type.ERROR, Collections.singletonList(
-				new ErrorItem.Location(e.pos.filename, e.pos.y, e.pos.x, e.pos.y2, e.pos.x2)
+			new ErrorItem(e.getMessage(), ErrorItem.Type.ERROR, Collections.singletonList(
+				new ErrorItem.Location(e.getFilename(), e.getY(), e.getX(), e.getY2(), e.getX2())
 			))
 		);
 	}
