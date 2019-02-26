@@ -1,18 +1,14 @@
-package de.prob.testcasegeneration;
+package de.prob.testcasegeneration.mcdc;
 
 import de.be4.classicalb.core.parser.node.PPredicate;
-import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.util.PrettyPrinter;
-import de.be4.classicalb.core.parser.visualisation.ASTPrinter;
-import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.FormulaExpand;
 
-public class MCDCTestCase {
+public class ConcreteMCDCTestCase {
 
     private final PPredicate predicate;
     private final boolean truthValue;
 
-    public MCDCTestCase(PPredicate predicate, boolean truthValue) {
+    public ConcreteMCDCTestCase(PPredicate predicate, boolean truthValue) {
         this.predicate = (PPredicate) predicate.clone();
         this.truthValue = truthValue;
     }

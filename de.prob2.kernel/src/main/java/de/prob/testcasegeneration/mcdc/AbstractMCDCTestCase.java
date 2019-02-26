@@ -1,4 +1,4 @@
-package de.prob.testcasegeneration;
+package de.prob.testcasegeneration.mcdc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
