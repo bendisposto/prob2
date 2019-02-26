@@ -94,7 +94,8 @@ public class CBTestCaseGenerator {
     private TestTrace createNewTrace(List<Transition> transitions, TestCase t, TestTrace oldTrace) {
         List<PPredicate> newGuardList = new ArrayList<>(oldTrace.getGuards());
         newGuardList.add(t.getConcreteMCDCTestCase().getPredicate());
-        return new TestTrace(transitions, t.getOperation(), newGuardList, finalOperations.contains(t.getOperation()));
+        return new TestTrace(transitions, t.getOperation(), newGuardList,
+                (finalOperations.contains(t.getOperation()) || !t.getConcreteMCDCTestCase().getTruthValue()));
     }
 
     private ArrayList<TestCase> getMCDCTestCases(int maxLevel) {
@@ -116,9 +117,6 @@ public class CBTestCaseGenerator {
         if (criterion.startsWith("MCDC")) {
             targets = getMCDCTestCases(Integer.valueOf(criterion.split(":")[1]));
         }
-        targets = targets.stream()
-                .filter(t -> t.getConcreteMCDCTestCase().getTruthValue())
-                .collect(Collectors.toCollection(ArrayList::new));
 
         int depth = 0;
         ArrayList<TestTrace> traces = new ArrayList<>();
