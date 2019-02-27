@@ -12,7 +12,7 @@ public abstract class TestTrace {
     final List<String> allTransitionNames = new ArrayList<>();
     private final boolean isComplete;
 
-    public TestTrace(List<Transition> priorTransitions, String newTransition, boolean isComplete) {
+    TestTrace(List<Transition> priorTransitions, String newTransition, boolean isComplete) {
         this.priorTransitions = priorTransitions;
         if (!priorTransitions.isEmpty()) {
             priorTransitions.stream().skip(1).forEach(t -> allTransitionNames.add(t.getName()));

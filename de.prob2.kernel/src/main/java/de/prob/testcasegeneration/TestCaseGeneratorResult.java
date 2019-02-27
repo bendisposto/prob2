@@ -8,18 +8,25 @@ public class TestCaseGeneratorResult {
 
     private final ArrayList<TestTrace> testTraces;
     private final ArrayList<TestCase> uncoveredTargets;
+    private final ArrayList<String> infeasibleOperations;
 
-    public TestCaseGeneratorResult(ArrayList<TestTrace> testTraces, ArrayList<TestCase> uncoveredTargets) {
+    TestCaseGeneratorResult(ArrayList<TestTrace> testTraces, ArrayList<TestCase> uncoveredTargets,
+                                   ArrayList<String> infeasibleOperations) {
         this.testTraces = testTraces;
         this.uncoveredTargets = uncoveredTargets;
+        this.infeasibleOperations = infeasibleOperations;
     }
 
-    public ArrayList<TestTrace> getTestTraces() {
+    ArrayList<TestTrace> getTestTraces() {
         return testTraces;
     }
 
-    public ArrayList<TestCase> getUncoveredTargets() {
+    ArrayList<TestCase> getUncoveredTargets() {
         return uncoveredTargets;
+    }
+
+    public ArrayList<String> getInfeasibleOperations() {
+        return infeasibleOperations;
     }
 
 }

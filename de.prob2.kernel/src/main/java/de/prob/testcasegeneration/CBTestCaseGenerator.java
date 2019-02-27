@@ -6,10 +6,13 @@ import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.util.PrettyPrinter;
 import de.prob.animator.command.*;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.representation.Guard;
+import de.prob.model.representation.Invariant;
 import de.prob.statespace.StateSpace;
 import de.prob.testcasegeneration.mcdc.ConcreteMCDCTestCase;
 import de.prob.testcasegeneration.mcdc.MCDCIdentifier;
@@ -29,6 +32,9 @@ public class CBTestCaseGenerator {
     private String criterion;
     private int max_depth;
     private ArrayList<String> finalOperations;
+    private ArrayList<String> infeasibleOperations;
+    ArrayList<TestCase> targets;
+    ArrayList<TestCase> uncoveredTargets = new ArrayList<>();
 
     public CBTestCaseGenerator(ClassicalBModel model, StateSpace stateSpace, String criterion,
                                int max_depth, ArrayList<String> finalOperations) {
@@ -69,7 +75,9 @@ public class CBTestCaseGenerator {
     }
 
     private ArrayList<TestCase> filterTempTargets(ArrayList<String> operations, ArrayList<TestCase> tempTargets) {
-        tempTargets.forEach(t -> operations.remove(t.getOperation()));
+        for (TestCase t : tempTargets) {
+            operations.remove(t.getOperation());
+        }
         ArrayList<TestCase> artificialTestCases = new ArrayList<>();
         for (String operation : operations) {
             artificialTestCases.add(new TestCase(operation, getGuard(operation)));
@@ -79,7 +87,11 @@ public class CBTestCaseGenerator {
 
     private ArrayList<String> getAllOperationNames() {
         ArrayList<String> events = new ArrayList<>();
-        model.getMainMachine().getEvents().forEach(op -> events.add(op.getName()));
+        for (Operation operation : model.getMainMachine().getEvents()) {
+            if (!infeasibleOperations.contains(operation.getName())) {
+                events.add(operation.getName());
+            }
+        }
         return events;
     }
 
@@ -108,10 +120,58 @@ public class CBTestCaseGenerator {
         return targets;
     }
 
-    public TestCaseGeneratorResult generateTestCases() {
-        // TODO feasibility analysis
+    private ArrayList<IEvalElement> getInvariantPredicates(String operation) {
+        ArrayList<IEvalElement> iEvalElements = new ArrayList<>();
+        for (Invariant invariant : model.getMainMachine().getInvariants()) {
+            iEvalElements.add(invariant.getPredicate());
+        }
+        return iEvalElements;
+    }
 
-        ArrayList<TestCase> targets;
+
+    private ArrayList<IEvalElement> getGuardPredicates(String operation) {
+        ArrayList<IEvalElement> iEvalElements = new ArrayList<>();
+        for (Object guard : model.getMainMachine().getOperation(operation).getChildren().get(Guard.class)) {
+            iEvalElements.add(((Guard) guard).getPredicate());
+        }
+        return iEvalElements;
+    }
+
+    private ClassicalB conjoin(IEvalElement... elements) {
+        StringJoiner stringJoiner = new StringJoiner(" & ");
+        for (IEvalElement element : elements) {
+            stringJoiner.add("(" + element.getCode() + ")");
+        }
+        return new ClassicalB(stringJoiner.toString(), FormulaExpand.EXPAND);
+    }
+
+    private ArrayList<String> feasibilityAnalysis() {
+        ArrayList<String> infeasibleOperations = new ArrayList<>();
+        for (Operation operation : model.getMainMachine().getEvents()) {
+            ArrayList<IEvalElement> iEvalElements = new ArrayList<>();
+            iEvalElements.addAll(getInvariantPredicates(operation.getName()));
+            iEvalElements.addAll(getGuardPredicates(operation.getName()));
+
+            ClassicalB predicate = conjoin(iEvalElements.toArray(new IEvalElement[0]));
+            CbcSolveCommand cmd = new CbcSolveCommand(predicate);
+            stateSpace.execute(cmd);
+            if (!(((EvalResult) cmd.getValue()).getValue().equals("TRUE"))) {
+                infeasibleOperations.add(operation.getName());
+            }
+        }
+        return infeasibleOperations;
+    }
+
+    private void discardInfeasibleTargets() {
+        for (TestCase target : new ArrayList<>(targets)) {
+            if (infeasibleOperations.contains(target.getOperation())) {
+                uncoveredTargets.add(target);
+                targets.remove(target);
+            }
+        }
+    }
+
+    public TestCaseGeneratorResult generateTestCases() {
         ArrayList<TestTrace> traces = new ArrayList<>();
 
         if (criterion.startsWith("MCDC")) {
@@ -121,12 +181,14 @@ public class CBTestCaseGenerator {
             targets = getOperationCoverageTestCases();
             traces.add(new CoverageTestTrace(new ArrayList<>(), null, false));
         } else {
-            return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>());
+            return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         }
+
+        infeasibleOperations = feasibilityAnalysis();
+        discardInfeasibleTargets();
 
         int depth = 0;
         ArrayList<TestCase> tempTargets;
-
         while (true) {
             tempTargets = new ArrayList<>(targets);
             ArrayList<TestTrace> tracesOfCurrentDepth = filterDepthAndFinal(traces, depth);
@@ -154,6 +216,7 @@ public class CBTestCaseGenerator {
             }
             depth++;
         }
-        return new TestCaseGeneratorResult(traces, targets);
+        uncoveredTargets.addAll(targets);
+        return new TestCaseGeneratorResult(traces, uncoveredTargets, infeasibleOperations);
     }
 }
