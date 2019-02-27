@@ -1,5 +1,7 @@
 package de.prob.testcasegeneration;
 
+import de.prob.testcasegeneration.testtrace.TestTrace;
+
 import java.util.ArrayList;
 
 public class TestCaseGeneratorResult {

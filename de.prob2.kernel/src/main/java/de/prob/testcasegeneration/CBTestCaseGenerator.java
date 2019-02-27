@@ -11,12 +11,13 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.representation.Guard;
 import de.prob.statespace.StateSpace;
-import de.prob.statespace.Transition;
 import de.prob.testcasegeneration.mcdc.ConcreteMCDCTestCase;
 import de.prob.testcasegeneration.mcdc.MCDCIdentifier;
+import de.prob.testcasegeneration.testtrace.CoverageTestTrace;
+import de.prob.testcasegeneration.testtrace.MCDCTestTrace;
+import de.prob.testcasegeneration.testtrace.TestTrace;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -71,41 +72,38 @@ public class CBTestCaseGenerator {
         tempTargets.forEach(t -> operations.remove(t.getOperation()));
         ArrayList<TestCase> artificialTestCases = new ArrayList<>();
         for (String operation : operations) {
-            PPredicate guard = getGuard(operation);
-            artificialTestCases.add(new TestCase(operation, new ConcreteMCDCTestCase(guard, true)));
+            artificialTestCases.add(new TestCase(operation, getGuard(operation)));
         }
         return artificialTestCases;
     }
 
-    private ArrayList<String> getAllEventNames() {
+    private ArrayList<String> getAllOperationNames() {
         ArrayList<String> events = new ArrayList<>();
         model.getMainMachine().getEvents().forEach(op -> events.add(op.getName()));
         return events;
     }
 
-    private FindTestPathCommand solveConstraints(TestTrace trace, TestCase testCase) {
-        FindTestPathCommand cmd = new FindTestPathCommand(
-                trace.getTransitionNames(), stateSpace,
-                testCase.getConcreteMCDCTestCase().getPredicate());
+    private FindTestPathCommand findTestPath(TestTrace trace, TestCase testCase) {
+        FindTestPathCommand cmd = new FindTestPathCommand(trace.getTransitionNames(), stateSpace, testCase.getGuard());
         stateSpace.execute(cmd);
         return cmd;
     }
 
-    private TestTrace createNewTrace(List<Transition> transitions, TestCase t, TestTrace oldTrace) {
-        List<PPredicate> newGuardList = new ArrayList<>(oldTrace.getGuards());
-        newGuardList.add(t.getConcreteMCDCTestCase().getPredicate());
-        return new TestTrace(transitions, t.getOperation(), newGuardList,
-                (finalOperations.contains(t.getOperation()) || !t.getConcreteMCDCTestCase().getTruthValue()));
-    }
-
     private ArrayList<TestCase> getMCDCTestCases(int maxLevel) {
         ArrayList<TestCase> targets = new ArrayList<>();
-        MCDCIdentifier mcdcIdentifier = new MCDCIdentifier(model, maxLevel);
-        Map<Operation, ArrayList<ConcreteMCDCTestCase>> mcdcTestCases = mcdcIdentifier.identifyMCDC();
-        for (Operation operation : mcdcTestCases.keySet()) {
-            for (ConcreteMCDCTestCase concreteMCDCTestCase : mcdcTestCases.get(operation)) {
+        Map<Operation, ArrayList<ConcreteMCDCTestCase>> testCases = new MCDCIdentifier(model, maxLevel).identifyMCDC();
+        for (Operation operation : testCases.keySet()) {
+            for (ConcreteMCDCTestCase concreteMCDCTestCase : testCases.get(operation)) {
                 targets.add(new TestCase(operation.getName(), concreteMCDCTestCase));
             }
+        }
+        return targets;
+    }
+
+    private ArrayList<TestCase> getOperationCoverageTestCases() {
+        ArrayList<TestCase> targets = new ArrayList<>();
+        for (String operation: getAllOperationNames()) {
+            targets.add(new TestCase(operation, getGuard(operation)));
         }
         return targets;
     }
@@ -113,26 +111,32 @@ public class CBTestCaseGenerator {
     public TestCaseGeneratorResult generateTestCases() {
         // TODO feasibility analysis
 
-        ArrayList<TestCase> targets = new ArrayList<>();
+        ArrayList<TestCase> targets;
+        ArrayList<TestTrace> traces = new ArrayList<>();
+
         if (criterion.startsWith("MCDC")) {
             targets = getMCDCTestCases(Integer.valueOf(criterion.split(":")[1]));
+            traces.add(new MCDCTestTrace(new ArrayList<>(), null, new ArrayList<>(), false));
+        } else if (criterion.startsWith("OPERATION")) {
+            targets = getOperationCoverageTestCases();
+            traces.add(new CoverageTestTrace(new ArrayList<>(), null, false));
+        } else {
+            return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>());
         }
 
         int depth = 0;
-        ArrayList<TestTrace> traces = new ArrayList<>();
         ArrayList<TestCase> tempTargets;
 
-        traces.add(new TestTrace(new ArrayList<>(), null, new ArrayList<>(), false));
-
         while (true) {
-            tempTargets = new ArrayList<>(targets); // target' = target
+            tempTargets = new ArrayList<>(targets);
             ArrayList<TestTrace> tracesOfCurrentDepth = filterDepthAndFinal(traces, depth);
             for (TestTrace trace : tracesOfCurrentDepth) {
                 for (TestCase t : new ArrayList<>(targets)) {
-                    FindTestPathCommand cmd = solveConstraints(trace, t);
+                    FindTestPathCommand cmd = findTestPath(trace, t);
                     if (cmd.isFeasible()) {
                         targets.remove(t);
-                        traces.add(createNewTrace(cmd.getTransitions(), t, trace));
+                        traces.add(trace.createNewTrace(cmd.getTransitions(), t,
+                                (finalOperations.contains(t.getOperation()) || !t.isFeasible())));
                     }
                 }
             }
@@ -140,10 +144,11 @@ public class CBTestCaseGenerator {
                 break;
             }
             for (TestTrace trace : tracesOfCurrentDepth) {
-                for (TestCase t : filterTempTargets(getAllEventNames(), tempTargets)) {
-                    FindTestPathCommand cmd = solveConstraints(trace, t);
+                for (TestCase t : filterTempTargets(getAllOperationNames(), tempTargets)) {
+                    FindTestPathCommand cmd = findTestPath(trace, t);
                     if (cmd.isFeasible()) {
-                        traces.add(createNewTrace(cmd.getTransitions(), t, trace));
+                        traces.add(trace.createNewTrace(cmd.getTransitions(), t,
+                                (finalOperations.contains(t.getOperation()) || !t.isFeasible())));
                     }
                 }
             }
