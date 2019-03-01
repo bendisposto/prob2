@@ -85,11 +85,9 @@ public class CbcSolveCommand extends AbstractCommand {
 
 		if ("time_out".equals(functor)) {
 			result = new ComputationNotCompletedResult(evalElement.getCode(), "time out");
-		}
-		if ("contradiction_found".equals(functor)) {
+		} else if ("contradiction_found".equals(functor)) {
 			result = EvalResult.FALSE;
-		}
-		if ("solution".equals(functor)) {
+		} else if (prologTerm.hasFunctor("solution", 1)) {
 			ListPrologTerm solutionBindings = BindingGenerator.getList(prologTerm.getArgument(BINDINGS));
 
 			if (solutionBindings.isEmpty()) {
@@ -105,12 +103,12 @@ public class CbcSolveCommand extends AbstractCommand {
 			}
 
 			result = new EvalResult("TRUE", solutions);
-		}
-		if ("no_solution_found".equals(functor)) {
+		} else if (prologTerm.hasFunctor("no_solution_found", 1)) {
 			result = new ComputationNotCompletedResult(evalElement.getCode(),
-					"no solution found (but one might exist)");
+					"no solution found (but one might exist), reason: " + prologTerm.getArgument(1));
+		} else {
+			throw new AssertionError("Unhandled functor in result: " + prologTerm.getFunctor() + "/" + prologTerm.getArity());
 		}
-
 	}
 
 	@Override
