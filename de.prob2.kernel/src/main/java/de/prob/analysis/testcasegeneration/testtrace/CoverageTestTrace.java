@@ -1,7 +1,7 @@
-package de.prob.testcasegeneration.testtrace;
+package de.prob.analysis.testcasegeneration.testtrace;
 
 import de.prob.statespace.Transition;
-import de.prob.testcasegeneration.TestCase;
+import de.prob.analysis.testcasegeneration.TestCase;
 
 import java.util.List;
 import java.util.StringJoiner;

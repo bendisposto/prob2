@@ -1,9 +1,11 @@
-package de.prob.testcasegeneration;
+package de.prob.analysis.testcasegeneration;
 
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.util.PrettyPrinter;
+import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
+import de.prob.analysis.mcdc.MCDCIdentifier;
 import de.prob.animator.command.*;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalResult;
@@ -14,11 +16,9 @@ import de.prob.model.classicalb.Operation;
 import de.prob.model.representation.Guard;
 import de.prob.model.representation.Invariant;
 import de.prob.statespace.StateSpace;
-import de.prob.testcasegeneration.mcdc.ConcreteMCDCTestCase;
-import de.prob.testcasegeneration.mcdc.MCDCIdentifier;
-import de.prob.testcasegeneration.testtrace.CoverageTestTrace;
-import de.prob.testcasegeneration.testtrace.MCDCTestTrace;
-import de.prob.testcasegeneration.testtrace.TestTrace;
+import de.prob.analysis.testcasegeneration.testtrace.CoverageTestTrace;
+import de.prob.analysis.testcasegeneration.testtrace.MCDCTestTrace;
+import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
 
 import java.util.ArrayList;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package de.prob.testcasegeneration.mcdc;
+package de.prob.analysis.mcdc;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;

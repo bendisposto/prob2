@@ -1,9 +1,9 @@
-package de.prob.testcasegeneration.testtrace;
+package de.prob.analysis.testcasegeneration.testtrace;
 
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.util.PrettyPrinter;
 import de.prob.statespace.Transition;
-import de.prob.testcasegeneration.TestCase;
+import de.prob.analysis.testcasegeneration.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;

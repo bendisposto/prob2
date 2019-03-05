@@ -1,4 +1,4 @@
-package de.prob.testcasegeneration.mcdc;
+package de.prob.analysis.mcdc;
 
 import java.util.ArrayList;
 import java.util.HashMap;

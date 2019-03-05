@@ -1,6 +1,6 @@
-package de.prob.testcasegeneration;
+package de.prob.analysis.testcasegeneration;
 
-import de.prob.testcasegeneration.testtrace.TestTrace;
+import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
 
 import java.util.ArrayList;
 
@@ -11,17 +11,17 @@ public class TestCaseGeneratorResult {
     private final ArrayList<String> infeasibleOperations;
 
     TestCaseGeneratorResult(ArrayList<TestTrace> testTraces, ArrayList<TestCase> uncoveredTargets,
-                                   ArrayList<String> infeasibleOperations) {
+                            ArrayList<String> infeasibleOperations) {
         this.testTraces = testTraces;
         this.uncoveredTargets = uncoveredTargets;
         this.infeasibleOperations = infeasibleOperations;
     }
 
-    ArrayList<TestTrace> getTestTraces() {
+    public ArrayList<TestTrace> getTestTraces() {
         return testTraces;
     }
 
-    ArrayList<TestCase> getUncoveredTargets() {
+    public ArrayList<TestCase> getUncoveredTargets() {
         return uncoveredTargets;
     }
 

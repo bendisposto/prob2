@@ -1,7 +1,7 @@
-package de.prob.testcasegeneration;
+package de.prob.analysis.testcasegeneration;
 
 import de.be4.classicalb.core.parser.node.PPredicate;
-import de.prob.testcasegeneration.mcdc.ConcreteMCDCTestCase;
+import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
 
 public class TestCase {
 
