@@ -12,11 +12,11 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
     private int maxLevel;
     private int currentLevel;
 
-    public MCDCASTVisitor(int maxLevel) {
+    MCDCASTVisitor(int maxLevel) {
         this.maxLevel = maxLevel;
     }
 
-    public ArrayList<ConcreteMCDCTestCase> getMCDCTestCases(PPredicate node) {
+    ArrayList<ConcreteMCDCTestCase> getMCDCTestCases(PPredicate node) {
         currentLevel = -1;
         node.apply(this);
         return tempTestCases;

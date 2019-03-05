@@ -26,25 +26,25 @@ public class AbstractMCDCTestCase {
     private final boolean right;
     private final boolean truthValue;
 
-    public AbstractMCDCTestCase(boolean left, boolean right, boolean truthValue){
+    private AbstractMCDCTestCase(boolean left, boolean right, boolean truthValue){
         this.left = left;
         this.right = right;
         this.truthValue = truthValue;
     }
 
-    public boolean getTruthValue() {
+    boolean getTruthValue() {
         return truthValue;
     }
 
-    public boolean getLeft() {
+    boolean getLeft() {
         return left;
     }
 
-    public boolean getRight() {
+    boolean getRight() {
         return right;
     }
 
     public String toString() {
-        return String.valueOf(left).substring(0, 1) + String.valueOf(right).substring(0, 1) + " -> " + String.valueOf(truthValue);
+        return String.valueOf(left).substring(0, 1) + String.valueOf(right).substring(0, 1) + " -> " + truthValue;
     }
 }

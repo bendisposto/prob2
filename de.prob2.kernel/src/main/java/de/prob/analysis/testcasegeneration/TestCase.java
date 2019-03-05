@@ -9,13 +9,13 @@ public class TestCase {
     private PPredicate guard;
     private boolean feasible;
 
-    public TestCase(String operation, ConcreteMCDCTestCase concreteMCDCTestCase) {
+    TestCase(String operation, ConcreteMCDCTestCase concreteMCDCTestCase) {
         this.operation = operation;
         this.guard = concreteMCDCTestCase.getPredicate();
         this.feasible = concreteMCDCTestCase.getTruthValue();
     }
 
-    public TestCase(String operation, PPredicate guard) {
+    TestCase(String operation, PPredicate guard) {
         this.operation = operation;
         this.guard = guard;
         this.feasible = true;
@@ -29,8 +29,8 @@ public class TestCase {
         return guard;
     }
 
-    public boolean isFeasible() {
-        return feasible;
+    boolean isInfeasible() {
+        return !feasible;
     }
 
     public String toString() {

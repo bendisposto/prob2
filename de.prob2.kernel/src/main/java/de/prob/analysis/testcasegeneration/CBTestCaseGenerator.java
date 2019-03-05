@@ -33,8 +33,8 @@ public class CBTestCaseGenerator {
     private int max_depth;
     private ArrayList<String> finalOperations;
     private ArrayList<String> infeasibleOperations;
-    ArrayList<TestCase> targets;
-    ArrayList<TestCase> uncoveredTargets = new ArrayList<>();
+    private ArrayList<TestCase> targets;
+    private ArrayList<TestCase> uncoveredTargets = new ArrayList<>();
 
     public CBTestCaseGenerator(ClassicalBModel model, StateSpace stateSpace, String criterion,
                                int max_depth, ArrayList<String> finalOperations) {
@@ -114,13 +114,13 @@ public class CBTestCaseGenerator {
 
     private ArrayList<TestCase> getOperationCoverageTestCases() {
         ArrayList<TestCase> targets = new ArrayList<>();
-        for (String operation: getAllOperationNames()) {
+        for (String operation : getAllOperationNames()) {
             targets.add(new TestCase(operation, getGuard(operation)));
         }
         return targets;
     }
 
-    private ArrayList<IEvalElement> getInvariantPredicates(String operation) {
+    private ArrayList<IEvalElement> getInvariantPredicates() {
         ArrayList<IEvalElement> iEvalElements = new ArrayList<>();
         for (Invariant invariant : model.getMainMachine().getInvariants()) {
             iEvalElements.add(invariant.getPredicate());
@@ -147,9 +147,9 @@ public class CBTestCaseGenerator {
 
     private ArrayList<String> feasibilityAnalysis() {
         ArrayList<String> infeasibleOperations = new ArrayList<>();
+        ArrayList<IEvalElement> invariantPredicates = getInvariantPredicates();
         for (Operation operation : model.getMainMachine().getEvents()) {
-            ArrayList<IEvalElement> iEvalElements = new ArrayList<>();
-            iEvalElements.addAll(getInvariantPredicates(operation.getName()));
+            ArrayList<IEvalElement> iEvalElements = new ArrayList<>(invariantPredicates);
             iEvalElements.addAll(getGuardPredicates(operation.getName()));
 
             ClassicalB predicate = conjoin(iEvalElements.toArray(new IEvalElement[0]));
@@ -198,7 +198,7 @@ public class CBTestCaseGenerator {
                     if (cmd.isFeasible()) {
                         targets.remove(t);
                         traces.add(trace.createNewTrace(cmd.getTransitions(), t,
-                                (finalOperations.contains(t.getOperation()) || !t.isFeasible())));
+                                (finalOperations.contains(t.getOperation()) || t.isInfeasible())));
                     }
                 }
             }
@@ -210,7 +210,7 @@ public class CBTestCaseGenerator {
                     FindTestPathCommand cmd = findTestPath(trace, t);
                     if (cmd.isFeasible()) {
                         traces.add(trace.createNewTrace(cmd.getTransitions(), t,
-                                (finalOperations.contains(t.getOperation()) || !t.isFeasible())));
+                                (finalOperations.contains(t.getOperation()) || t.isInfeasible())));
                     }
                 }
             }

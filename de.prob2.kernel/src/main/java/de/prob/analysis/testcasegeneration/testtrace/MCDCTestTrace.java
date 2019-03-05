@@ -18,7 +18,7 @@ public class MCDCTestTrace extends TestTrace {
         this.guards = guards;
     }
 
-    public List<PPredicate> getGuards() {
+    private List<PPredicate> getGuards() {
         return guards;
     }
 

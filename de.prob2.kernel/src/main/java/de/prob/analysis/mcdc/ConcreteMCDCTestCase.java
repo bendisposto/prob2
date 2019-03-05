@@ -8,7 +8,7 @@ public class ConcreteMCDCTestCase {
     private final PPredicate predicate;
     private final boolean truthValue;
 
-    public ConcreteMCDCTestCase(PPredicate predicate, boolean truthValue) {
+    ConcreteMCDCTestCase(PPredicate predicate, boolean truthValue) {
         this.predicate = (PPredicate) predicate.clone();
         this.truthValue = truthValue;
     }
