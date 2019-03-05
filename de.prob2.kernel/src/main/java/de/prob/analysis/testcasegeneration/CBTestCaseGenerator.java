@@ -4,6 +4,7 @@ import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.util.PrettyPrinter;
+import de.prob.analysis.FeasibilityAnalysis;
 import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
 import de.prob.analysis.mcdc.MCDCIdentifier;
 import de.prob.animator.command.*;
@@ -45,132 +46,6 @@ public class CBTestCaseGenerator {
         this.finalOperations = finalOperations;
     }
 
-    /**
-     * Filters paths that are of the right length and are not tagged as complete due to a final operation.
-     *
-     * @param traces All built traces
-     * @param depth  The current trace length
-     * @return List of paths that can be extended
-     */
-    private ArrayList<TestTrace> filterDepthAndFinal(ArrayList<TestTrace> traces, int depth) {
-        return traces.stream()
-                .filter(x -> x.getDepth() == depth && !x.isComplete())
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private String prettyPrintGuardConjunct(Object guard) {
-        PrettyPrinter prettyPrinter = new PrettyPrinter();
-        Start ast = ((ClassicalB) ((Guard) guard).getPredicate()).getAst();
-        ((APredicateParseUnit) ast.getPParseUnit()).getPredicate().apply(prettyPrinter);
-        return prettyPrinter.getPrettyPrint();
-    }
-
-    private PPredicate getGuard(String operation) {
-        StringJoiner stringJoiner = new StringJoiner(" & ");
-        for (Object guard : model.getMainMachine().getOperation(operation).getChildren().get(Guard.class)) {
-            stringJoiner.add("(" + prettyPrintGuardConjunct(guard) + ")");
-        }
-        Start ast = (new ClassicalB(stringJoiner.toString(), FormulaExpand.EXPAND)).getAst();
-        return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
-    }
-
-    private ArrayList<TestCase> filterTempTargets(ArrayList<String> operations, ArrayList<TestCase> tempTargets) {
-        for (TestCase t : tempTargets) {
-            operations.remove(t.getOperation());
-        }
-        ArrayList<TestCase> artificialTestCases = new ArrayList<>();
-        for (String operation : operations) {
-            artificialTestCases.add(new TestCase(operation, getGuard(operation)));
-        }
-        return artificialTestCases;
-    }
-
-    private ArrayList<String> getAllOperationNames() {
-        ArrayList<String> events = new ArrayList<>();
-        for (Operation operation : model.getMainMachine().getEvents()) {
-            if (!infeasibleOperations.contains(operation.getName())) {
-                events.add(operation.getName());
-            }
-        }
-        return events;
-    }
-
-    private FindTestPathCommand findTestPath(TestTrace trace, TestCase testCase) {
-        FindTestPathCommand cmd = new FindTestPathCommand(trace.getTransitionNames(), stateSpace, testCase.getGuard());
-        stateSpace.execute(cmd);
-        return cmd;
-    }
-
-    private ArrayList<TestCase> getMCDCTestCases(int maxLevel) {
-        ArrayList<TestCase> targets = new ArrayList<>();
-        Map<Operation, ArrayList<ConcreteMCDCTestCase>> testCases = new MCDCIdentifier(model, maxLevel).identifyMCDC();
-        for (Operation operation : testCases.keySet()) {
-            for (ConcreteMCDCTestCase concreteMCDCTestCase : testCases.get(operation)) {
-                targets.add(new TestCase(operation.getName(), concreteMCDCTestCase));
-            }
-        }
-        return targets;
-    }
-
-    private ArrayList<TestCase> getOperationCoverageTestCases() {
-        ArrayList<TestCase> targets = new ArrayList<>();
-        for (String operation : getAllOperationNames()) {
-            targets.add(new TestCase(operation, getGuard(operation)));
-        }
-        return targets;
-    }
-
-    private ArrayList<IEvalElement> getInvariantPredicates() {
-        ArrayList<IEvalElement> iEvalElements = new ArrayList<>();
-        for (Invariant invariant : model.getMainMachine().getInvariants()) {
-            iEvalElements.add(invariant.getPredicate());
-        }
-        return iEvalElements;
-    }
-
-
-    private ArrayList<IEvalElement> getGuardPredicates(String operation) {
-        ArrayList<IEvalElement> iEvalElements = new ArrayList<>();
-        for (Object guard : model.getMainMachine().getOperation(operation).getChildren().get(Guard.class)) {
-            iEvalElements.add(((Guard) guard).getPredicate());
-        }
-        return iEvalElements;
-    }
-
-    private ClassicalB conjoin(IEvalElement... elements) {
-        StringJoiner stringJoiner = new StringJoiner(" & ");
-        for (IEvalElement element : elements) {
-            stringJoiner.add("(" + element.getCode() + ")");
-        }
-        return new ClassicalB(stringJoiner.toString(), FormulaExpand.EXPAND);
-    }
-
-    private ArrayList<String> feasibilityAnalysis() {
-        ArrayList<String> infeasibleOperations = new ArrayList<>();
-        ArrayList<IEvalElement> invariantPredicates = getInvariantPredicates();
-        for (Operation operation : model.getMainMachine().getEvents()) {
-            ArrayList<IEvalElement> iEvalElements = new ArrayList<>(invariantPredicates);
-            iEvalElements.addAll(getGuardPredicates(operation.getName()));
-
-            ClassicalB predicate = conjoin(iEvalElements.toArray(new IEvalElement[0]));
-            CbcSolveCommand cmd = new CbcSolveCommand(predicate);
-            stateSpace.execute(cmd);
-            if (!(((EvalResult) cmd.getValue()).getValue().equals("TRUE"))) {
-                infeasibleOperations.add(operation.getName());
-            }
-        }
-        return infeasibleOperations;
-    }
-
-    private void discardInfeasibleTargets() {
-        for (TestCase target : new ArrayList<>(targets)) {
-            if (infeasibleOperations.contains(target.getOperation())) {
-                uncoveredTargets.add(target);
-                targets.remove(target);
-            }
-        }
-    }
-
     public TestCaseGeneratorResult generateTestCases() {
         ArrayList<TestTrace> traces = new ArrayList<>();
 
@@ -184,7 +59,7 @@ public class CBTestCaseGenerator {
             return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         }
 
-        infeasibleOperations = feasibilityAnalysis();
+        infeasibleOperations = new FeasibilityAnalysis(model, stateSpace).analyseFeasibility();
         discardInfeasibleTargets();
 
         int depth = 0;
@@ -218,5 +93,89 @@ public class CBTestCaseGenerator {
         }
         uncoveredTargets.addAll(targets);
         return new TestCaseGeneratorResult(traces, uncoveredTargets, infeasibleOperations);
+    }
+
+    private ArrayList<TestCase> getMCDCTestCases(int maxLevel) {
+        ArrayList<TestCase> targets = new ArrayList<>();
+        Map<Operation, ArrayList<ConcreteMCDCTestCase>> testCases = new MCDCIdentifier(model, maxLevel).identifyMCDC();
+        for (Operation operation : testCases.keySet()) {
+            for (ConcreteMCDCTestCase concreteMCDCTestCase : testCases.get(operation)) {
+                targets.add(new TestCase(operation.getName(), concreteMCDCTestCase));
+            }
+        }
+        return targets;
+    }
+
+    private ArrayList<TestCase> getOperationCoverageTestCases() {
+        ArrayList<TestCase> targets = new ArrayList<>();
+        for (String operation : getAllOperationNames()) {
+            targets.add(new TestCase(operation, getGuard(operation)));
+        }
+        return targets;
+    }
+
+    private void discardInfeasibleTargets() {
+        for (TestCase target : new ArrayList<>(targets)) {
+            if (infeasibleOperations.contains(target.getOperation())) {
+                uncoveredTargets.add(target);
+                targets.remove(target);
+            }
+        }
+    }
+
+    /**
+     * Returns test traces that are of the specified depth and are not tagged as complete due to a final operation.
+     *
+     * @param traces All built traces
+     * @param depth  The current trace length
+     * @return List of paths that can be extended
+     */
+    private ArrayList<TestTrace> filterDepthAndFinal(ArrayList<TestTrace> traces, int depth) {
+        return traces.stream()
+                .filter(x -> x.getDepth() == depth && !x.isComplete())
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private ArrayList<TestCase> filterTempTargets(ArrayList<String> operations, ArrayList<TestCase> tempTargets) {
+        for (TestCase t : tempTargets) {
+            operations.remove(t.getOperation());
+        }
+        ArrayList<TestCase> artificialTestCases = new ArrayList<>();
+        for (String operation : operations) {
+            artificialTestCases.add(new TestCase(operation, getGuard(operation)));
+        }
+        return artificialTestCases;
+    }
+
+    private String prettyPrintGuardConjunct(Object guard) {
+        PrettyPrinter prettyPrinter = new PrettyPrinter();
+        Start ast = ((ClassicalB) ((Guard) guard).getPredicate()).getAst();
+        ((APredicateParseUnit) ast.getPParseUnit()).getPredicate().apply(prettyPrinter);
+        return prettyPrinter.getPrettyPrint();
+    }
+
+    private PPredicate getGuard(String operation) {
+        StringJoiner stringJoiner = new StringJoiner(" & ");
+        for (Object guard : model.getMainMachine().getOperation(operation).getChildren().get(Guard.class)) {
+            stringJoiner.add("(" + prettyPrintGuardConjunct(guard) + ")");
+        }
+        Start ast = (new ClassicalB(stringJoiner.toString(), FormulaExpand.EXPAND)).getAst();
+        return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
+    }
+
+    private ArrayList<String> getAllOperationNames() {
+        ArrayList<String> events = new ArrayList<>();
+        for (Operation operation : model.getMainMachine().getEvents()) {
+            if (!infeasibleOperations.contains(operation.getName())) {
+                events.add(operation.getName());
+            }
+        }
+        return events;
+    }
+
+    private FindTestPathCommand findTestPath(TestTrace trace, TestCase testCase) {
+        FindTestPathCommand cmd = new FindTestPathCommand(trace.getTransitionNames(), stateSpace, testCase.getGuard());
+        stateSpace.execute(cmd);
+        return cmd;
     }
 }
