@@ -1,6 +1,6 @@
 package de.prob.analysis.testcasegeneration.testtrace;
 
-import de.prob.analysis.testcasegeneration.TestCase;
+import de.prob.analysis.testcasegeneration.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,5 +30,5 @@ public abstract class TestTrace {
         return isComplete;
     }
 
-    public abstract TestTrace createNewTrace(List<String> transitions, TestCase t, boolean isComplte);
+    public abstract TestTrace createNewTrace(List<String> transitions, Target t, boolean isComplete);
 }

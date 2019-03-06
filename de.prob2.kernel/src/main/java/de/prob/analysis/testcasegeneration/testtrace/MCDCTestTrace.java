@@ -2,7 +2,7 @@ package de.prob.analysis.testcasegeneration.testtrace;
 
 import de.be4.classicalb.core.parser.util.PrettyPrinter;
 import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
-import de.prob.analysis.testcasegeneration.TestCase;
+import de.prob.analysis.testcasegeneration.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class MCDCTestTrace extends TestTrace {
         return MCDCTestCases;
     }
 
-    public MCDCTestTrace createNewTrace(List<String> priorTransitions, TestCase t, boolean isComplete) {
+    public MCDCTestTrace createNewTrace(List<String> priorTransitions, Target t, boolean isComplete) {
         List<ConcreteMCDCTestCase> newTestCaseList = new ArrayList<>(getMCDCTestCases());
         newTestCaseList.add(new ConcreteMCDCTestCase(t.getGuard(), t.getFeasible()));
         return new MCDCTestTrace(priorTransitions, t.getOperation(), newTestCaseList, isComplete);

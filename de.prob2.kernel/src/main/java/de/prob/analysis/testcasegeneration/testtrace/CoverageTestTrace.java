@@ -1,6 +1,6 @@
 package de.prob.analysis.testcasegeneration.testtrace;
 
-import de.prob.analysis.testcasegeneration.TestCase;
+import de.prob.analysis.testcasegeneration.Target;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -11,7 +11,7 @@ public class CoverageTestTrace extends TestTrace {
         super(priorTransitions, newTransition, isComplete);
     }
 
-    public CoverageTestTrace createNewTrace(List<String> transitions, TestCase t, boolean isComplete) {
+    public CoverageTestTrace createNewTrace(List<String> transitions, Target t, boolean isComplete) {
         return new CoverageTestTrace(transitions, t.getOperation(), isComplete);
     }
 

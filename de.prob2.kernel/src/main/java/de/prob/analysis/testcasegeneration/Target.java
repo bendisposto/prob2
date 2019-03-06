@@ -3,19 +3,19 @@ package de.prob.analysis.testcasegeneration;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
 
-public class TestCase {
+public class Target {
 
     private String operation;
     private PPredicate guard;
     private boolean feasible;
 
-    TestCase(String operation, ConcreteMCDCTestCase concreteMCDCTestCase) {
+    Target(String operation, ConcreteMCDCTestCase concreteMCDCTestCase) {
         this.operation = operation;
         this.guard = concreteMCDCTestCase.getPredicate();
         this.feasible = concreteMCDCTestCase.getTruthValue();
     }
 
-    TestCase(String operation, PPredicate guard) {
+    Target(String operation, PPredicate guard) {
         this.operation = operation;
         this.guard = guard;
         this.feasible = true;

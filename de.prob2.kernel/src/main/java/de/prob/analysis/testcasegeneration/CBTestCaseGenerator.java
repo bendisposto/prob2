@@ -38,8 +38,8 @@ public class CBTestCaseGenerator {
     private int max_depth;
     private ArrayList<String> finalOperations;
     private ArrayList<String> infeasibleOperations;
-    private ArrayList<TestCase> targets;
-    private ArrayList<TestCase> uncoveredTargets = new ArrayList<>();
+    private ArrayList<Target> targets;
+    private ArrayList<Target> uncoveredTargets = new ArrayList<>();
 
     public CBTestCaseGenerator(ClassicalBModel model, StateSpace stateSpace, String criterion,
                                int max_depth, ArrayList<String> finalOperations) {
@@ -59,10 +59,10 @@ public class CBTestCaseGenerator {
         ArrayList<TestTrace> traces = new ArrayList<>();
 
         if (criterion.startsWith("MCDC")) {
-            targets = getMCDCTestCases(Integer.valueOf(criterion.split(":")[1]));
+            targets = getMCDCTargets(Integer.valueOf(criterion.split(":")[1]));
             traces.add(new MCDCTestTrace(new ArrayList<>(), null, new ArrayList<>(), false));
         } else if (criterion.startsWith("OPERATION")) {
-            targets = getOperationCoverageTestCases();
+            targets = getOperationCoverageTargets();
             traces.add(new CoverageTestTrace(new ArrayList<>(), null, false));
         } else {
             return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
@@ -72,12 +72,12 @@ public class CBTestCaseGenerator {
         discardInfeasibleTargets();
 
         int depth = 0;
-        ArrayList<TestCase> tempTargets;
+        ArrayList<Target> tempTargets;
         while (true) {
             tempTargets = new ArrayList<>(targets);
             ArrayList<TestTrace> tracesOfCurrentDepth = filterDepthAndFinal(traces, depth);
             for (TestTrace trace : tracesOfCurrentDepth) {
-                for (TestCase t : new ArrayList<>(targets)) {
+                for (Target t : new ArrayList<>(targets)) {
                     FindTestPathCommand cmd = findTestPath(trace, t);
                     if (cmd.isFeasible()) {
                         targets.remove(t);
@@ -90,7 +90,7 @@ public class CBTestCaseGenerator {
                 break;
             }
             for (TestTrace trace : tracesOfCurrentDepth) {
-                for (TestCase t : filterTempTargets(getAllOperationNames(), tempTargets)) {
+                for (Target t : filterTempTargets(getAllOperationNames(), tempTargets)) {
                     FindTestPathCommand cmd = findTestPath(trace, t);
                     if (cmd.isFeasible()) {
                         traces.add(trace.createNewTrace(trace.getTransitionNames(), t,
@@ -110,12 +110,12 @@ public class CBTestCaseGenerator {
      * @param maxLevel The maximum level for MC/DC
      * @return The targets.
      */
-    private ArrayList<TestCase> getMCDCTestCases(int maxLevel) {
-        ArrayList<TestCase> targets = new ArrayList<>();
+    private ArrayList<Target> getMCDCTargets(int maxLevel) {
+        ArrayList<Target> targets = new ArrayList<>();
         Map<Operation, ArrayList<ConcreteMCDCTestCase>> testCases = new MCDCIdentifier(model, maxLevel).identifyMCDC();
         for (Operation operation : testCases.keySet()) {
             for (ConcreteMCDCTestCase concreteMCDCTestCase : testCases.get(operation)) {
-                targets.add(new TestCase(operation.getName(), concreteMCDCTestCase));
+                targets.add(new Target(operation.getName(), concreteMCDCTestCase));
             }
         }
         return targets;
@@ -127,10 +127,10 @@ public class CBTestCaseGenerator {
      *
      * @return The targets.
      */
-    private ArrayList<TestCase> getOperationCoverageTestCases() {
-        ArrayList<TestCase> targets = new ArrayList<>();
+    private ArrayList<Target> getOperationCoverageTargets() {
+        ArrayList<Target> targets = new ArrayList<>();
         for (String operation : getAllOperationNames()) {
-            targets.add(new TestCase(operation, getGuard(operation)));
+            targets.add(new Target(operation, getGuard(operation)));
         }
         return targets;
     }
@@ -139,7 +139,7 @@ public class CBTestCaseGenerator {
      * Removes the targets which can never be reached due to an infeasible operation.
      */
     private void discardInfeasibleTargets() {
-        for (TestCase target : new ArrayList<>(targets)) {
+        for (Target target : new ArrayList<>(targets)) {
             if (infeasibleOperations.contains(target.getOperation())) {
                 uncoveredTargets.add(target);
                 targets.remove(target);
@@ -167,15 +167,15 @@ public class CBTestCaseGenerator {
      * @param tempTargets The examined targets
      * @return The artificial targets to be examined next, one for each valid operation
      */
-    private ArrayList<TestCase> filterTempTargets(ArrayList<String> operations, ArrayList<TestCase> tempTargets) {
-        for (TestCase t : tempTargets) {
+    private ArrayList<Target> filterTempTargets(ArrayList<String> operations, ArrayList<Target> tempTargets) {
+        for (Target t : tempTargets) {
             operations.remove(t.getOperation());
         }
-        ArrayList<TestCase> artificialTestCases = new ArrayList<>();
+        ArrayList<Target> artificialTargets = new ArrayList<>();
         for (String operation : operations) {
-            artificialTestCases.add(new TestCase(operation, getGuard(operation)));
+            artificialTargets.add(new Target(operation, getGuard(operation)));
         }
-        return artificialTestCases;
+        return artificialTargets;
     }
 
     private String prettyPrintGuardConjunct(Object guard) {
@@ -216,11 +216,11 @@ public class CBTestCaseGenerator {
      * state that satisfies the guard of the regarded target.
      *
      * @param trace The prior trace
-     * @param testCase The regarded target
+     * @param target The regarded target
      * @return The command that contains the result of the ProB call
      */
-    private FindTestPathCommand findTestPath(TestTrace trace, TestCase testCase) {
-        FindTestPathCommand cmd = new FindTestPathCommand(trace.getTransitionNames(), stateSpace, testCase.getGuard());
+    private FindTestPathCommand findTestPath(TestTrace trace, Target target) {
+        FindTestPathCommand cmd = new FindTestPathCommand(trace.getTransitionNames(), stateSpace, target.getGuard());
         stateSpace.execute(cmd);
         return cmd;
     }

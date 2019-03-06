@@ -7,10 +7,10 @@ import java.util.ArrayList;
 public class TestCaseGeneratorResult {
 
     private final ArrayList<TestTrace> testTraces;
-    private final ArrayList<TestCase> uncoveredTargets;
+    private final ArrayList<Target> uncoveredTargets;
     private final ArrayList<String> infeasibleOperations;
 
-    TestCaseGeneratorResult(ArrayList<TestTrace> testTraces, ArrayList<TestCase> uncoveredTargets,
+    TestCaseGeneratorResult(ArrayList<TestTrace> testTraces, ArrayList<Target> uncoveredTargets,
                             ArrayList<String> infeasibleOperations) {
         this.testTraces = testTraces;
         this.uncoveredTargets = uncoveredTargets;
@@ -21,7 +21,7 @@ public class TestCaseGeneratorResult {
         return testTraces;
     }
 
-    public ArrayList<TestCase> getUncoveredTargets() {
+    public ArrayList<Target> getUncoveredTargets() {
         return uncoveredTargets;
     }
 
