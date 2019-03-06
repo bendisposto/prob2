@@ -7,16 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.check.CheckError;
-import de.prob.check.IModelCheckingResult;
-import de.prob.check.NotYetFinished;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
