@@ -75,7 +75,8 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         } else {
             ArrayList<ConcreteMCDCTestCase> leftChildTests = processOperatorPredicate(node.getLeft());
             ArrayList<ConcreteMCDCTestCase> rightChildTests = processOperatorPredicate(node.getRight());
-            addTestCases(leftChildTests, rightChildTests, AbstractMCDCTestCase.CONJUNCT);
+            addTestCases(leftChildTests, rightChildTests,
+                    AbstractMCDCTestCase.getAbstractMCDCTestCases("CONJUNCT"));
         }
         outAConjunctPredicate(node);
     }
@@ -88,7 +89,8 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         } else {
             ArrayList<ConcreteMCDCTestCase> leftChildTests = processOperatorPredicate(node.getLeft());
             ArrayList<ConcreteMCDCTestCase> rightChildTests = processOperatorPredicate(node.getRight());
-            addTestCases(leftChildTests, rightChildTests, AbstractMCDCTestCase.DISJUNCT);
+            addTestCases(leftChildTests, rightChildTests,
+                    AbstractMCDCTestCase.getAbstractMCDCTestCases("DISJUNCT"));
         }
         outADisjunctPredicate(node);
     }
@@ -102,7 +104,8 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         } else {
             ArrayList<ConcreteMCDCTestCase> leftChildTests = processOperatorPredicate(node.getLeft());
             ArrayList<ConcreteMCDCTestCase> rightChildTests = processOperatorPredicate(node.getRight());
-            addTestCases(leftChildTests, rightChildTests, AbstractMCDCTestCase.IMPLICATION);
+            addTestCases(leftChildTests, rightChildTests,
+                    AbstractMCDCTestCase.getAbstractMCDCTestCases("IMPLICATION"));
         }
         outAImplicationPredicate(node);
     }
@@ -116,7 +119,8 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         } else {
             ArrayList<ConcreteMCDCTestCase> leftChildTests = processOperatorPredicate(node.getLeft());
             ArrayList<ConcreteMCDCTestCase> rightChildTests = processOperatorPredicate(node.getRight());
-            addTestCases(leftChildTests, rightChildTests, AbstractMCDCTestCase.EQUIVALENCE);
+            addTestCases(leftChildTests, rightChildTests,
+                    AbstractMCDCTestCase.getAbstractMCDCTestCases("EQUIVALENCE"));
         }
         outAEquivalencePredicate(node);
     }
