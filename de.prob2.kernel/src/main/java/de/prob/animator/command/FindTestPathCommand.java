@@ -17,6 +17,10 @@ import de.prob.statespace.Transition;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Calls the ProB core to find a feasible path of a list of transitions {@link #givenTransitions} that ends in a
+ * state that satisfies a given predicate {@link #endPredicate}.
+ */
 public class FindTestPathCommand extends AbstractCommand {
 
     public enum ResultType {
@@ -29,12 +33,12 @@ public class FindTestPathCommand extends AbstractCommand {
 
     private ResultType result;
     private List<Transition> transitions;
-    private final List<String> events;
+    private final List<String> givenTransitions;
     private final StateSpace stateSpace;
     private final IEvalElement endPredicate;
 
-    public FindTestPathCommand(List<String> events, final StateSpace stateSpace, final PPredicate endPredicate) {
-        this.events = events;
+    public FindTestPathCommand(List<String> givenTransitions, final StateSpace stateSpace, final PPredicate endPredicate) {
+        this.givenTransitions = givenTransitions;
         this.stateSpace = stateSpace;
         PrettyPrinter prettyPrinter = new PrettyPrinter();
         endPredicate.apply(prettyPrinter);
@@ -58,7 +62,7 @@ public class FindTestPathCommand extends AbstractCommand {
         pto.openTerm(PROLOG_COMMAND_NAME);
 
         pto.openList();
-        for (String event : events) {
+        for (String event : givenTransitions) {
             pto.printAtom(event);
         }
         pto.closeList();

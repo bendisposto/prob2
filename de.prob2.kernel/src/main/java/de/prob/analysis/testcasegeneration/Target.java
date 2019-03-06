@@ -3,6 +3,14 @@ package de.prob.analysis.testcasegeneration;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
 
+/**
+ * A target that is to be fulfilled by the test case generation.
+ *
+ * The target consists of an {@link #operation}, a predicate {@link #guard} and a boolean {@link #feasible} indicating
+ * whether the target is actually to be executed or just reached.
+ * (For test case generation with MC/DC coverage, {@link #feasible} might be false, but for operation coverage it is
+ * always true.)
+ */
 public class Target {
 
     private String operation;

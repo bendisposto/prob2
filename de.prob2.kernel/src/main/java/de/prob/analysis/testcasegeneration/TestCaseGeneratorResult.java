@@ -4,6 +4,9 @@ import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
 
 import java.util.ArrayList;
 
+/**
+ * The result of the test case generation, wrapping the final test traces and the uncovered targets.
+ */
 public class TestCaseGeneratorResult {
 
     private final ArrayList<TestTrace> testTraces;
