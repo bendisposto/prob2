@@ -23,6 +23,13 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+/**
+ * Performs constraint-based test case generation.
+ *
+ * The generator can be executed with different coverage objectives. Currently available coverage options:
+ * - Operation Coverage
+ * - MC/DC Coverage
+ */
 public class CBTestCaseGenerator {
 
     private ClassicalBModel model;
@@ -43,6 +50,11 @@ public class CBTestCaseGenerator {
         this.finalOperations = finalOperations;
     }
 
+    /**
+     * Performs the test case generation.
+     *
+     * @return A {@link TestCaseGeneratorResult} containing the final test cases and the targets left uncovered.
+     */
     public TestCaseGeneratorResult generateTestCases() {
         ArrayList<TestTrace> traces = new ArrayList<>();
 
@@ -92,6 +104,12 @@ public class CBTestCaseGenerator {
         return new TestCaseGeneratorResult(traces, uncoveredTargets, infeasibleOperations);
     }
 
+    /**
+     * Determines the targets for the test case generation with MC/DC coverage.
+     *
+     * @param maxLevel The maximum level for MC/DC
+     * @return The targets.
+     */
     private ArrayList<TestCase> getMCDCTestCases(int maxLevel) {
         ArrayList<TestCase> targets = new ArrayList<>();
         Map<Operation, ArrayList<ConcreteMCDCTestCase>> testCases = new MCDCIdentifier(model, maxLevel).identifyMCDC();
@@ -103,6 +121,12 @@ public class CBTestCaseGenerator {
         return targets;
     }
 
+
+    /**
+     * Determines the targets for the test case generation with operation coverage, i.e. all feasible operations.
+     *
+     * @return The targets.
+     */
     private ArrayList<TestCase> getOperationCoverageTestCases() {
         ArrayList<TestCase> targets = new ArrayList<>();
         for (String operation : getAllOperationNames()) {
@@ -111,6 +135,9 @@ public class CBTestCaseGenerator {
         return targets;
     }
 
+    /**
+     * Removes the targets which can never be reached due to an infeasible operation.
+     */
     private void discardInfeasibleTargets() {
         for (TestCase target : new ArrayList<>(targets)) {
             if (infeasibleOperations.contains(target.getOperation())) {
@@ -133,6 +160,13 @@ public class CBTestCaseGenerator {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    /**
+     * Returns targets that have not yet been examined in the current iteration.
+     *
+     * @param operations All feasible operations of the machine
+     * @param tempTargets The examined targets
+     * @return The artificial targets to be examined next, one for each valid operation
+     */
     private ArrayList<TestCase> filterTempTargets(ArrayList<String> operations, ArrayList<TestCase> tempTargets) {
         for (TestCase t : tempTargets) {
             operations.remove(t.getOperation());
@@ -160,16 +194,31 @@ public class CBTestCaseGenerator {
         return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
     }
 
+    /**
+     * Returns the names of all feasible operations.
+     *
+     * @return Names of feasible operations.
+     */
     private ArrayList<String> getAllOperationNames() {
-        ArrayList<String> events = new ArrayList<>();
+        ArrayList<String> operations = new ArrayList<>();
         for (Operation operation : model.getMainMachine().getEvents()) {
             if (!infeasibleOperations.contains(operation.getName())) {
-                events.add(operation.getName());
+                operations.add(operation.getName());
             }
         }
-        return events;
+        return operations;
     }
 
+    /**
+     * Executes the {@link FindTestPathCommand}.
+     *
+     * The command calls the ProB core to find a feasible path, composed of the transitions of a trace, that ends in a
+     * state that satisfies the guard of the regarded target.
+     *
+     * @param trace The prior trace
+     * @param testCase The regarded target
+     * @return The command that contains the result of the ProB call
+     */
     private FindTestPathCommand findTestPath(TestTrace trace, TestCase testCase) {
         FindTestPathCommand cmd = new FindTestPathCommand(trace.getTransitionNames(), stateSpace, testCase.getGuard());
         stateSpace.execute(cmd);

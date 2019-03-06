@@ -3,6 +3,10 @@ package de.prob.analysis.mcdc;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * An abstract MCDC test case, specifying the truth values of the left and right child as well as the over-all
+ * truth value.
+ */
 public class AbstractMCDCTestCase {
 
     private final boolean left;
@@ -31,7 +35,7 @@ public class AbstractMCDCTestCase {
         return String.valueOf(left).substring(0, 1) + String.valueOf(right).substring(0, 1) + " -> " + truthValue;
     }
 
-    public static ArrayList<AbstractMCDCTestCase> getAbstractMCDCTestCases(String operator) {
+    static ArrayList<AbstractMCDCTestCase> getAbstractMCDCTestCases(String operator) {
         switch (operator) {
             case "CONJUNCT":
                 return new ArrayList<>(Arrays.asList(

@@ -6,6 +6,9 @@ import de.be4.classicalb.core.parser.node.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+/**
+ * Traverses the AST of a guard to recursively determine the MCDC test cases for this guard.
+ */
 public class MCDCASTVisitor extends DepthFirstAdapter {
 
     private ArrayList<ConcreteMCDCTestCase> tempTestCases = new ArrayList<>();

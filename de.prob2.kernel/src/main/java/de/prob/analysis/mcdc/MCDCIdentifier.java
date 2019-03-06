@@ -13,6 +13,10 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.representation.*;
 
+/**
+ * Determines the MCDC test cases for all guards of all operations of a given {@link #model} up to a
+ * specified {@link #maxLevel}.
+ */
 public class MCDCIdentifier {
 
     private ClassicalBModel model;
