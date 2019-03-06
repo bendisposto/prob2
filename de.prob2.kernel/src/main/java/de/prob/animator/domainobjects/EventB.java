@@ -99,7 +99,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		}
 		if (parseResult.hasProblem()) {
 			for (final ASTProblem problem : parseResult.getProblems()) {
-				errors.add(problem.getMessage().toString());
+				errors.add(problem.toString());
 			}
 			errors.add("Code: " + this.getCode());
 			errors.add("Unicode translation: " + unicode);
