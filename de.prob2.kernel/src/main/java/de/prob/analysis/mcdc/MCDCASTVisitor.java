@@ -178,4 +178,180 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         maxLevelOrLeafReached(node);
         outAGreaterEqualPredicate(node);
     }
+
+    @Override
+    public void caseAMemberPredicate(AMemberPredicate node)
+    {
+        inAMemberPredicate(node);
+        maxLevelOrLeafReached(node);
+        outAMemberPredicate(node);
+    }
+
+    @Override
+    public void caseADescriptionPredicate(ADescriptionPredicate node)
+    {
+        inADescriptionPredicate(node);
+        maxLevelOrLeafReached(node);
+        outADescriptionPredicate(node);
+    }
+
+    @Override
+    public void caseALabelPredicate(ALabelPredicate node)
+    {
+        inALabelPredicate(node);
+        maxLevelOrLeafReached(node);
+        outALabelPredicate(node);
+    }
+
+    @Override
+    public void caseASubstitutionPredicate(ASubstitutionPredicate node)
+    {
+        inASubstitutionPredicate(node);
+        maxLevelOrLeafReached(node);
+        outASubstitutionPredicate(node);
+    }
+
+    @Override
+    public void caseAForallPredicate(AForallPredicate node)
+    {
+        inAForallPredicate(node);
+        maxLevelOrLeafReached(node);
+        outAForallPredicate(node);
+    }
+
+    @Override
+    public void caseAExistsPredicate(AExistsPredicate node)
+    {
+        inAExistsPredicate(node);
+        maxLevelOrLeafReached(node);
+        outAExistsPredicate(node);
+    }
+
+    @Override
+    public void caseANotMemberPredicate(ANotMemberPredicate node)
+    {
+        inANotMemberPredicate(node);
+        maxLevelOrLeafReached(node);
+        outANotMemberPredicate(node);
+    }
+
+    @Override
+    public void caseASubsetPredicate(ASubsetPredicate node)
+    {
+        inASubsetPredicate(node);
+        maxLevelOrLeafReached(node);
+        outASubsetPredicate(node);
+    }
+
+    @Override
+    public void caseASubsetStrictPredicate(ASubsetStrictPredicate node)
+    {
+        inASubsetStrictPredicate(node);
+        maxLevelOrLeafReached(node);
+        outASubsetStrictPredicate(node);
+    }
+
+    @Override
+    public void caseANotSubsetPredicate(ANotSubsetPredicate node)
+    {
+        inANotSubsetPredicate(node);
+        maxLevelOrLeafReached(node);
+        outANotSubsetPredicate(node);
+    }
+
+    @Override
+    public void caseANotSubsetStrictPredicate(ANotSubsetStrictPredicate node)
+    {
+        inANotSubsetStrictPredicate(node);
+        maxLevelOrLeafReached(node);
+        outANotSubsetStrictPredicate(node);
+    }
+
+    @Override
+    public void caseATruthPredicate(ATruthPredicate node)
+    {
+        inATruthPredicate(node);
+        maxLevelOrLeafReached(node);
+        outATruthPredicate(node);
+    }
+
+    @Override
+    public void caseAFalsityPredicate(AFalsityPredicate node)
+    {
+        inAFalsityPredicate(node);
+        maxLevelOrLeafReached(node);
+        outAFalsityPredicate(node);
+    }
+
+    @Override
+    public void caseAFinitePredicate(AFinitePredicate node)
+    {
+        inAFinitePredicate(node);
+        maxLevelOrLeafReached(node);
+        outAFinitePredicate(node);
+    }
+
+    @Override
+    public void caseAPartitionPredicate(APartitionPredicate node)
+    {
+        inAPartitionPredicate(node);
+        maxLevelOrLeafReached(node);
+        outAPartitionPredicate(node);
+    }
+
+    @Override
+    public void caseADefinitionPredicate(ADefinitionPredicate node)
+    {
+        inADefinitionPredicate(node);
+        maxLevelOrLeafReached(node);
+        outADefinitionPredicate(node);
+    }
+
+    @Override
+    public void caseAPredicateIdentifierPredicate(APredicateIdentifierPredicate node)
+    {
+        inAPredicateIdentifierPredicate(node);
+        maxLevelOrLeafReached(node);
+        outAPredicateIdentifierPredicate(node);
+    }
+
+    @Override
+    public void caseAPredicateFunctionPredicate(APredicateFunctionPredicate node)
+    {
+        inAPredicateFunctionPredicate(node);
+        maxLevelOrLeafReached(node);
+        outAPredicateFunctionPredicate(node);
+    }
+
+    @Override
+    public void caseALetPredicatePredicate(ALetPredicatePredicate node)
+    {
+        inALetPredicatePredicate(node);
+        maxLevelOrLeafReached(node);
+        outALetPredicatePredicate(node);
+    }
+
+    @Override
+    public void caseAIfPredicatePredicate(AIfPredicatePredicate node)
+    {
+        inAIfPredicatePredicate(node);
+        maxLevelOrLeafReached(node);
+        outAIfPredicatePredicate(node);
+    }
+
+    @Override
+    public void caseAExtendedPredPredicate(AExtendedPredPredicate node)
+    {
+        inAExtendedPredPredicate(node);
+        maxLevelOrLeafReached(node);
+        outAExtendedPredPredicate(node);
+    }
+
+    @Override
+    public void caseAOperatorPredicate(AOperatorPredicate node)
+    {
+        inAOperatorPredicate(node);
+        maxLevelOrLeafReached(node);
+        outAOperatorPredicate(node);
+    }
 }
