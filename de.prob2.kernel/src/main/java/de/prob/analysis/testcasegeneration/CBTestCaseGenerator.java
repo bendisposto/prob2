@@ -3,16 +3,14 @@ package de.prob.analysis.testcasegeneration;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.Start;
-import de.be4.classicalb.core.parser.util.PrettyPrinter;
 import de.prob.analysis.FeasibilityAnalysis;
 import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
 import de.prob.analysis.mcdc.MCDCIdentifier;
 import de.prob.animator.command.*;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.animator.domainobjects.ExtractionLinkageProvider;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
-import de.prob.model.representation.Guard;
 import de.prob.statespace.StateSpace;
 import de.prob.analysis.testcasegeneration.testtrace.CoverageTestTrace;
 import de.prob.analysis.testcasegeneration.testtrace.MCDCTestTrace;
@@ -20,7 +18,6 @@ import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -130,7 +127,7 @@ public class CBTestCaseGenerator {
     private ArrayList<Target> getOperationCoverageTargets() {
         ArrayList<Target> targets = new ArrayList<>();
         for (String operation : getAllOperationNames()) {
-            targets.add(new Target(operation, getGuard(operation)));
+            targets.add(new Target(operation, getGuardAsPredicate(operation)));
         }
         return targets;
     }
@@ -173,24 +170,15 @@ public class CBTestCaseGenerator {
         }
         ArrayList<Target> artificialTargets = new ArrayList<>();
         for (String operation : operations) {
-            artificialTargets.add(new Target(operation, getGuard(operation)));
+            artificialTargets.add(new Target(operation, getGuardAsPredicate(operation)));
         }
         return artificialTargets;
     }
 
-    private String prettyPrintGuardConjunct(Object guard) {
-        PrettyPrinter prettyPrinter = new PrettyPrinter();
-        Start ast = ((ClassicalB) ((Guard) guard).getPredicate()).getAst();
-        ((APredicateParseUnit) ast.getPParseUnit()).getPredicate().apply(prettyPrinter);
-        return prettyPrinter.getPrettyPrint();
-    }
-
-    private PPredicate getGuard(String operation) {
-        StringJoiner stringJoiner = new StringJoiner(" & ");
-        for (Object guard : model.getMainMachine().getOperation(operation).getChildren().get(Guard.class)) {
-            stringJoiner.add("(" + prettyPrintGuardConjunct(guard) + ")");
-        }
-        Start ast = (new ClassicalB(stringJoiner.toString(), FormulaExpand.EXPAND)).getAst();
+    private PPredicate getGuardAsPredicate(String operation) {
+        Start ast = ((ClassicalB) ExtractionLinkageProvider
+                .conjoin(ExtractionLinkageProvider.getGuardPredicates(model, operation)))
+                .getAst();
         return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
     }
 
