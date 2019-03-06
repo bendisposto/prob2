@@ -3,6 +3,9 @@ package de.prob.animator.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
@@ -19,6 +22,8 @@ public class FindStateCommand extends AbstractCommand implements IStateSpaceModi
 	public enum ResultType {
 		STATE_FOUND, NO_STATE_FOUND, INTERRUPTED, ERROR
 	}
+	
+	private static final Logger logger = LoggerFactory.getLogger(FindStateCommand.class);
 
 	private static final String PROLOG_COMMAND_NAME = "find_state_for_predicate";
 	private static final String RESULT_VARIABLE = "R";
@@ -71,6 +76,8 @@ public class FindStateCommand extends AbstractCommand implements IStateSpaceModi
 		if (resultTerm.hasFunctor("no_valid_state_found", 0)) {
 			this.result = ResultType.NO_STATE_FOUND;
 		} else if (resultTerm.hasFunctor("errors", 1)) {
+			PrologTerm error = resultTerm.getArgument(1);
+			logger.error("Find state produced errors: {}", error);
 			this.result = ResultType.ERROR;
 		} else if (resultTerm.hasFunctor("interrupted", 0)) {
 			this.result = ResultType.INTERRUPTED;
