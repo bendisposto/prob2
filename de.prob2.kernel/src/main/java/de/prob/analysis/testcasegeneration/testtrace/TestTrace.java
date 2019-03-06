@@ -1,6 +1,5 @@
 package de.prob.analysis.testcasegeneration.testtrace;
 
-import de.prob.statespace.Transition;
 import de.prob.analysis.testcasegeneration.TestCase;
 
 import java.util.ArrayList;
@@ -8,30 +7,28 @@ import java.util.List;
 
 public abstract class TestTrace {
 
-    private final List<Transition> priorTransitions;
-    final List<String> allTransitionNames = new ArrayList<>();
+    final List<String> transitionNames = new ArrayList<>();
     private final boolean isComplete;
 
-    TestTrace(List<Transition> priorTransitions, String newTransition, boolean isComplete) {
-        this.priorTransitions = priorTransitions;
-        if (!priorTransitions.isEmpty()) {
-            priorTransitions.stream().skip(1).forEach(t -> allTransitionNames.add(t.getName()));
-            allTransitionNames.add(newTransition);
+    TestTrace(List<String> priorTransitions, String newTransition, boolean isComplete) {
+        transitionNames.addAll(priorTransitions);
+        if (newTransition != null) {
+            transitionNames.add(newTransition);
         }
         this.isComplete = isComplete;
     }
 
     public List<String> getTransitionNames() {
-        return allTransitionNames;
+        return transitionNames;
     }
 
     public int getDepth() {
-        return priorTransitions.size();
+        return transitionNames.size();
     }
 
     public boolean isComplete() {
         return isComplete;
     }
 
-    public abstract TestTrace createNewTrace(List<Transition> transitions, TestCase t, boolean isComplte);
+    public abstract TestTrace createNewTrace(List<String> transitions, TestCase t, boolean isComplte);
 }

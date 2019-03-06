@@ -9,13 +9,10 @@ import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
 import de.prob.analysis.mcdc.MCDCIdentifier;
 import de.prob.animator.command.*;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.FormulaExpand;
-import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.representation.Guard;
-import de.prob.model.representation.Invariant;
 import de.prob.statespace.StateSpace;
 import de.prob.analysis.testcasegeneration.testtrace.CoverageTestTrace;
 import de.prob.analysis.testcasegeneration.testtrace.MCDCTestTrace;
@@ -72,7 +69,7 @@ public class CBTestCaseGenerator {
                     FindTestPathCommand cmd = findTestPath(trace, t);
                     if (cmd.isFeasible()) {
                         targets.remove(t);
-                        traces.add(trace.createNewTrace(cmd.getTransitions(), t,
+                        traces.add(trace.createNewTrace(trace.getTransitionNames(), t,
                                 (finalOperations.contains(t.getOperation()) || t.isInfeasible())));
                     }
                 }
@@ -84,7 +81,7 @@ public class CBTestCaseGenerator {
                 for (TestCase t : filterTempTargets(getAllOperationNames(), tempTargets)) {
                     FindTestPathCommand cmd = findTestPath(trace, t);
                     if (cmd.isFeasible()) {
-                        traces.add(trace.createNewTrace(cmd.getTransitions(), t,
+                        traces.add(trace.createNewTrace(trace.getTransitionNames(), t,
                                 (finalOperations.contains(t.getOperation()) || t.isInfeasible())));
                     }
                 }

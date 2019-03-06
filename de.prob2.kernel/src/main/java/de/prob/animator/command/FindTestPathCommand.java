@@ -50,7 +50,7 @@ public class FindTestPathCommand extends AbstractCommand {
     }
 
     public List<Transition> getTransitions() {
-        return transitions;
+        return this.transitions;
     }
 
     @Override
