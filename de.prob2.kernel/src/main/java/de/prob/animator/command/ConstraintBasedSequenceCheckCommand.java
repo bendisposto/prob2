@@ -2,6 +2,7 @@ package de.prob.animator.command;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,6 @@ public class ConstraintBasedSequenceCheckCommand extends AbstractCommand impleme
 	
 	private final StateSpace s;
 	
-	private final String stateID;
-	
 	private final List<String> events;
 	
 	private final IEvalElement predicate;
@@ -44,18 +43,16 @@ public class ConstraintBasedSequenceCheckCommand extends AbstractCommand impleme
 	
 	private List<Transition> transitions;
 	
-	public ConstraintBasedSequenceCheckCommand(final StateSpace s, final String stateID, final List<String> events, final IEvalElement predicate) {
+	public ConstraintBasedSequenceCheckCommand(final StateSpace s, final List<String> events, final IEvalElement predicate) {
 		this.s = s;
-		this.stateID = stateID;
 		this.events = events;
 		this.predicate = predicate;
 		this.timeout = 200;
 		this.transitions = new ArrayList<>();
 	}
 	
-	public ConstraintBasedSequenceCheckCommand(final StateSpace s, final String stateID, final List<String> events, final IEvalElement predicate, final int timeout) {
+	public ConstraintBasedSequenceCheckCommand(final StateSpace s, final List<String> events, final IEvalElement predicate, final int timeout) {
 		this.s = s;
-		this.stateID = stateID;
 		this.events = events;
 		this.predicate = predicate;
 		this.timeout = timeout;
@@ -94,11 +91,11 @@ public class ConstraintBasedSequenceCheckCommand extends AbstractCommand impleme
 		} else if(resultTerm instanceof ListPrologTerm) {
 			ListPrologTerm list = (ListPrologTerm) resultTerm;
 			this.result = ResultType.PATH_FOUND;
-			List<Transition> ids = new ArrayList<>();
+			List<Transition> transitions = new ArrayList<>();
 			for(PrologTerm prologTerm : list) {
-				ids.add(Transition.createTransitionFromCompoundPrologTerm(s, (CompoundPrologTerm) prologTerm));
+				transitions.add(Transition.createTransitionFromCompoundPrologTerm(s, (CompoundPrologTerm) prologTerm));
 			}
-			this.transitions = ids;
+			this.transitions = transitions;
 		} else {
 			String msg = "unexpected result from sequence check: " + resultTerm;
 			logger.error(msg);
@@ -114,7 +111,9 @@ public class ConstraintBasedSequenceCheckCommand extends AbstractCommand impleme
 		if(transitions.isEmpty()) {
 			return null;
 		}
-		return s.getTrace(stateID).addTransitions(transitions);
+		return s.getTrace(transitions.stream()
+				.map(Transition::getId)
+				.collect(Collectors.toList()));
 	}
 
 	@Override
