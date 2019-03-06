@@ -29,6 +29,10 @@ public class TestCase {
         return guard;
     }
 
+    public boolean getFeasible() {
+        return feasible;
+    }
+
     boolean isInfeasible() {
         return !feasible;
     }
