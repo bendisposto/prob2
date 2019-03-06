@@ -2,7 +2,6 @@ package de.prob.animator.command;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,9 +110,7 @@ public class ConstraintBasedSequenceCheckCommand extends AbstractCommand impleme
 		if(transitions.isEmpty()) {
 			return null;
 		}
-		return s.getTrace(transitions.stream()
-				.map(Transition::getId)
-				.collect(Collectors.toList()));
+		return s.getTrace(s.getRoot().getId()).addTransitions(transitions);
 	}
 
 	@Override
