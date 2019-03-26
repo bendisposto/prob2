@@ -16,6 +16,7 @@ public class TestCaseGeneratorResult {
     TestCaseGeneratorResult(ArrayList<TestTrace> testTraces, ArrayList<Target> uncoveredTargets,
                             ArrayList<String> infeasibleOperations) {
         this.testTraces = testTraces;
+        this.testTraces.removeIf(t -> t.getTransitionNames().isEmpty());
         this.uncoveredTargets = uncoveredTargets;
         this.infeasibleOperations = infeasibleOperations;
     }
