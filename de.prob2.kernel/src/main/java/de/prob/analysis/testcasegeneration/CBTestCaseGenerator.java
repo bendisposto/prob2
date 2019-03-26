@@ -8,7 +8,8 @@ import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
 import de.prob.analysis.mcdc.MCDCIdentifier;
 import de.prob.animator.command.*;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.ExtractionLinkageProvider;
+import de.prob.model.representation.Extraction;
+import de.prob.animator.domainobjects.Join;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
 import de.prob.statespace.StateSpace;
@@ -176,8 +177,8 @@ public class CBTestCaseGenerator {
     }
 
     private PPredicate getGuardAsPredicate(String operation) {
-        Start ast = ((ClassicalB) ExtractionLinkageProvider
-                .conjoin(ExtractionLinkageProvider.getGuardPredicates(model, operation)))
+        Start ast = ((ClassicalB) Join
+                .conjunct(Extraction.getGuardPredicates(model, operation)))
                 .getAst();
         return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
     }

@@ -6,7 +6,8 @@ import java.util.Map;
 
 import de.be4.classicalb.core.parser.node.*;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.ExtractionLinkageProvider;
+import de.prob.model.representation.Extraction;
+import de.prob.animator.domainobjects.Join;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.representation.*;
@@ -29,8 +30,8 @@ public class MCDCIdentifier {
         Map<Operation, ArrayList<ConcreteMCDCTestCase>> testCases = new HashMap<>();
         ModelElementList<Operation> operations = model.getMainMachine().getEvents();
         for (Operation operation : operations) {
-            Start ast = ((ClassicalB) ExtractionLinkageProvider
-                    .conjoin(ExtractionLinkageProvider.getGuardPredicates(model, operation.getName())))
+            Start ast = ((ClassicalB) Join
+                    .conjunct(Extraction.getGuardPredicates(model, operation.getName())))
                     .getAst();
             PPredicate startNode = ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
             testCases.put(operation, getMCDCTestCases(startNode));
