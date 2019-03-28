@@ -114,7 +114,7 @@ public class CBTestCaseGenerator {
      */
     private List<Target> getMCDCTargets(int maxLevel) {
         List<Target> mcdcTargets = new ArrayList<>();
-        Map<Operation, List<ConcreteMCDCTestCase>> testCases = new MCDCIdentifier(model, maxLevel).identifyMCDC();
+        Map<Operation, List<ConcreteMCDCTestCase>> testCases = new MCDCIdentifier(model, stateSpace, maxLevel).identifyMCDC();
         for (Entry<Operation, List<ConcreteMCDCTestCase>> entry : testCases.entrySet()) {
             for (ConcreteMCDCTestCase concreteMCDCTestCase : entry.getValue()) {
                 mcdcTargets.add(new Target(entry.getKey().getName(), concreteMCDCTestCase));
@@ -122,7 +122,6 @@ public class CBTestCaseGenerator {
         }
         return mcdcTargets;
     }
-
 
     /**
      * Determines the {@link Target}s for the test case generation with operation coverage based on the selected operations.
