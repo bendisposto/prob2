@@ -1,7 +1,7 @@
 package de.prob.analysis.mcdc;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.be4.classicalb.core.parser.node.*;
@@ -14,7 +14,7 @@ import de.prob.model.representation.*;
 
 /**
  * Determines the MCDC test cases for all guards of all operations of a given {@link #model} up to a
- * specified {@link #maxLevel}.
+ * specified {@link #maxLevel} (levels start at 0).
  */
 public class MCDCIdentifier {
 
@@ -26,8 +26,8 @@ public class MCDCIdentifier {
         this.maxLevel = maxLevel;
     }
 
-    public Map<Operation, ArrayList<ConcreteMCDCTestCase>> identifyMCDC() {
-        Map<Operation, ArrayList<ConcreteMCDCTestCase>> testCases = new HashMap<>();
+    public Map<Operation, List<ConcreteMCDCTestCase>> identifyMCDC() {
+        Map<Operation, List<ConcreteMCDCTestCase>> testCases = new HashMap<>();
         ModelElementList<Operation> operations = model.getMainMachine().getEvents();
         for (Operation operation : operations) {
             Start ast = ((ClassicalB) Join
@@ -39,7 +39,7 @@ public class MCDCIdentifier {
         return testCases;
     }
 
-    private ArrayList<ConcreteMCDCTestCase> getMCDCTestCases(PPredicate node) {
+    private List<ConcreteMCDCTestCase> getMCDCTestCases(PPredicate node) {
         return new MCDCASTVisitor(maxLevel).getMCDCTestCases(node);
     }
 }

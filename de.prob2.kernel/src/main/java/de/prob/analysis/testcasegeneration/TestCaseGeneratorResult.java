@@ -2,34 +2,34 @@ package de.prob.analysis.testcasegeneration;
 
 import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The result of the test case generation, wrapping the final test traces and the uncovered targets.
  */
 public class TestCaseGeneratorResult {
 
-    private final ArrayList<TestTrace> testTraces;
-    private final ArrayList<Target> uncoveredTargets;
-    private final ArrayList<String> infeasibleOperations;
+    private final List<TestTrace> testTraces;
+    private final List<Target> uncoveredTargets;
+    private final List<String> infeasibleOperations;
 
-    TestCaseGeneratorResult(ArrayList<TestTrace> testTraces, ArrayList<Target> uncoveredTargets,
-                            ArrayList<String> infeasibleOperations) {
+    TestCaseGeneratorResult(List<TestTrace> testTraces, List<Target> uncoveredTargets,
+                            List<String> infeasibleOperations) {
         this.testTraces = testTraces;
         this.testTraces.removeIf(t -> t.getTransitionNames().isEmpty());
         this.uncoveredTargets = uncoveredTargets;
         this.infeasibleOperations = infeasibleOperations;
     }
 
-    public ArrayList<TestTrace> getTestTraces() {
+    public List<TestTrace> getTestTraces() {
         return testTraces;
     }
 
-    public ArrayList<Target> getUncoveredTargets() {
+    public List<Target> getUncoveredTargets() {
         return uncoveredTargets;
     }
 
-    public ArrayList<String> getInfeasibleOperations() {
+    public List<String> getInfeasibleOperations() {
         return infeasibleOperations;
     }
 

@@ -50,7 +50,7 @@ public class FindTestPathCommand extends AbstractCommand {
     }
 
     public boolean isFeasible() {
-        return !(result == ResultType.INFEASIBLE_PATH);
+        return (result != ResultType.INFEASIBLE_PATH);
     }
 
     public List<Transition> getTransitions() {

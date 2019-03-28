@@ -18,12 +18,14 @@ import de.prob.analysis.testcasegeneration.testtrace.MCDCTestTrace;
 import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
  * Performs constraint-based test case generation.
- *
+ * <p>
  * The generator can be executed with different coverage objectives. Currently available coverage options:
  * - Operation Coverage
  * - MC/DC Coverage
@@ -33,18 +35,18 @@ public class CBTestCaseGenerator {
     private ClassicalBModel model;
     private StateSpace stateSpace;
     private String criterion;
-    private int max_depth;
-    private ArrayList<String> finalOperations;
-    private ArrayList<String> infeasibleOperations;
-    private ArrayList<Target> targets;
-    private ArrayList<Target> uncoveredTargets = new ArrayList<>();
+    private int maxDepth;
+    private List<String> finalOperations;
+    private List<String> infeasibleOperations;
+    private List<Target> targets;
+    private List<Target> uncoveredTargets = new ArrayList<>();
 
     public CBTestCaseGenerator(ClassicalBModel model, StateSpace stateSpace, String criterion,
-                               int max_depth, ArrayList<String> finalOperations) {
+                               int maxDepth, List<String> finalOperations) {
         this.model = model;
         this.stateSpace = stateSpace;
         this.criterion = criterion;
-        this.max_depth = max_depth;
+        this.maxDepth = maxDepth;
         this.finalOperations = finalOperations;
     }
 
@@ -54,7 +56,7 @@ public class CBTestCaseGenerator {
      * @return A {@link TestCaseGeneratorResult} containing the final test cases and the targets left uncovered.
      */
     public TestCaseGeneratorResult generateTestCases() {
-        ArrayList<TestTrace> traces = new ArrayList<>();
+        List<TestTrace> traces = new ArrayList<>();
 
         if (criterion.startsWith("MCDC")) {
             targets = getMCDCTargets(Integer.valueOf(criterion.split(":")[1]));
@@ -70,10 +72,10 @@ public class CBTestCaseGenerator {
         discardInfeasibleTargets();
 
         int depth = 0;
-        ArrayList<Target> tempTargets;
+        List<Target> tempTargets;
         while (true) {
             tempTargets = new ArrayList<>(targets);
-            ArrayList<TestTrace> tracesOfCurrentDepth = filterDepthAndFinal(traces, depth);
+            List<TestTrace> tracesOfCurrentDepth = filterDepthAndFinal(traces, depth);
             for (TestTrace trace : tracesOfCurrentDepth) {
                 for (Target t : new ArrayList<>(targets)) {
                     FindTestPathCommand cmd = findTestPath(trace, t);
@@ -84,7 +86,7 @@ public class CBTestCaseGenerator {
                     }
                 }
             }
-            if (targets.size() == 0 || depth == max_depth) {
+            if (targets.isEmpty() || depth == maxDepth) {
                 break;
             }
             for (TestTrace trace : tracesOfCurrentDepth) {
@@ -108,15 +110,15 @@ public class CBTestCaseGenerator {
      * @param maxLevel The maximum level for MC/DC
      * @return The targets.
      */
-    private ArrayList<Target> getMCDCTargets(int maxLevel) {
-        ArrayList<Target> targets = new ArrayList<>();
-        Map<Operation, ArrayList<ConcreteMCDCTestCase>> testCases = new MCDCIdentifier(model, maxLevel).identifyMCDC();
-        for (Operation operation : testCases.keySet()) {
-            for (ConcreteMCDCTestCase concreteMCDCTestCase : testCases.get(operation)) {
-                targets.add(new Target(operation.getName(), concreteMCDCTestCase));
+    private List<Target> getMCDCTargets(int maxLevel) {
+        List<Target> mcdcTargets = new ArrayList<>();
+        Map<Operation, List<ConcreteMCDCTestCase>> testCases = new MCDCIdentifier(model, maxLevel).identifyMCDC();
+        for (Entry<Operation, List<ConcreteMCDCTestCase>> entry : testCases.entrySet()) {
+            for (ConcreteMCDCTestCase concreteMCDCTestCase : entry.getValue()) {
+                mcdcTargets.add(new Target(entry.getKey().getName(), concreteMCDCTestCase));
             }
         }
-        return targets;
+        return mcdcTargets;
     }
 
 
@@ -125,12 +127,12 @@ public class CBTestCaseGenerator {
      *
      * @return The targets.
      */
-    private ArrayList<Target> getOperationCoverageTargets() {
-        ArrayList<Target> targets = new ArrayList<>();
+    private List<Target> getOperationCoverageTargets() {
+        List<Target> opCoverageTargets = new ArrayList<>();
         for (String operation : getAllOperationNames()) {
-            targets.add(new Target(operation, getGuardAsPredicate(operation)));
+            opCoverageTargets.add(new Target(operation, getGuardAsPredicate(operation)));
         }
-        return targets;
+        return opCoverageTargets;
     }
 
     /**
@@ -152,7 +154,7 @@ public class CBTestCaseGenerator {
      * @param depth  The current trace length
      * @return List of paths that can be extended
      */
-    private ArrayList<TestTrace> filterDepthAndFinal(ArrayList<TestTrace> traces, int depth) {
+    private List<TestTrace> filterDepthAndFinal(List<TestTrace> traces, int depth) {
         return traces.stream()
                 .filter(x -> x.getDepth() == depth && !x.isComplete())
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -161,15 +163,15 @@ public class CBTestCaseGenerator {
     /**
      * Returns targets that have not yet been examined in the current iteration.
      *
-     * @param operations All feasible operations of the machine
+     * @param operations  All feasible operations of the machine
      * @param tempTargets The examined targets
      * @return The artificial targets to be examined next, one for each valid operation
      */
-    private ArrayList<Target> filterTempTargets(ArrayList<String> operations, ArrayList<Target> tempTargets) {
+    private List<Target> filterTempTargets(List<String> operations, List<Target> tempTargets) {
         for (Target t : tempTargets) {
             operations.remove(t.getOperation());
         }
-        ArrayList<Target> artificialTargets = new ArrayList<>();
+        List<Target> artificialTargets = new ArrayList<>();
         for (String operation : operations) {
             artificialTargets.add(new Target(operation, getGuardAsPredicate(operation)));
         }
@@ -188,8 +190,8 @@ public class CBTestCaseGenerator {
      *
      * @return Names of feasible operations.
      */
-    private ArrayList<String> getAllOperationNames() {
-        ArrayList<String> operations = new ArrayList<>();
+    private List<String> getAllOperationNames() {
+        List<String> operations = new ArrayList<>();
         for (Operation operation : model.getMainMachine().getEvents()) {
             if (!infeasibleOperations.contains(operation.getName())) {
                 operations.add(operation.getName());
@@ -200,11 +202,11 @@ public class CBTestCaseGenerator {
 
     /**
      * Executes the {@link FindTestPathCommand}.
-     *
+     * <p>
      * The command calls the ProB core to find a feasible path, composed of the transitions of a trace, that ends in a
      * state that satisfies the guard of the regarded target.
      *
-     * @param trace The prior trace
+     * @param trace  The prior trace
      * @param target The regarded target
      * @return The command that contains the result of the ProB call
      */

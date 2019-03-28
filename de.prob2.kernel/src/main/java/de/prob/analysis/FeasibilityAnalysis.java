@@ -8,6 +8,7 @@ import de.prob.model.representation.Extraction;
 import de.prob.statespace.StateSpace;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FeasibilityAnalysis {
 
@@ -19,11 +20,11 @@ public class FeasibilityAnalysis {
         this.stateSpace = stateSpace;
     }
 
-    public ArrayList<String> analyseFeasibility() {
-        ArrayList<String> infeasibleOperations = new ArrayList<>();
-        ArrayList<IEvalElement> invariantPredicates = Extraction.getInvariantPredicates(model);
+    public List<String> analyseFeasibility() {
+        List<String> infeasibleOperations = new ArrayList<>();
+        List<IEvalElement> invariantPredicates = Extraction.getInvariantPredicates(model);
         for (Operation operation : model.getMainMachine().getEvents()) {
-            ArrayList<IEvalElement> iEvalElements = new ArrayList<>(invariantPredicates);
+            List<IEvalElement> iEvalElements = new ArrayList<>(invariantPredicates);
             iEvalElements.addAll(Extraction.getGuardPredicates(model, operation.getName()));
 
             ClassicalB predicate = (ClassicalB) Join.conjunct(iEvalElements);

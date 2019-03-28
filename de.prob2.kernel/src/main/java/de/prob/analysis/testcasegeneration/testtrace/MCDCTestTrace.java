@@ -16,20 +16,20 @@ import java.util.StringJoiner;
  */
 public class MCDCTestTrace extends TestTrace {
 
-    private List<ConcreteMCDCTestCase> MCDCTargets;
+    private List<ConcreteMCDCTestCase> mcdcTargets;
 
-    public MCDCTestTrace(List<String> priorTransitions, String newTransition, List<ConcreteMCDCTestCase> MCDCTargets,
+    public MCDCTestTrace(List<String> priorTransitions, String newTransition, List<ConcreteMCDCTestCase> mcdcTargets,
                          boolean isComplete) {
         super(priorTransitions, newTransition, isComplete);
-        this.MCDCTargets = MCDCTargets;
+        this.mcdcTargets = mcdcTargets;
     }
 
-    private List<ConcreteMCDCTestCase> getMCDCTargets() {
-        return MCDCTargets;
+    private List<ConcreteMCDCTestCase> getMcdcTargets() {
+        return mcdcTargets;
     }
 
     public MCDCTestTrace createNewTrace(List<String> priorTransitions, Target t, boolean isComplete) {
-        List<ConcreteMCDCTestCase> newTestCaseList = new ArrayList<>(getMCDCTargets());
+        List<ConcreteMCDCTestCase> newTestCaseList = new ArrayList<>(getMcdcTargets());
         newTestCaseList.add(new ConcreteMCDCTestCase(t.getGuard(), t.getFeasible()));
         return new MCDCTestTrace(priorTransitions, t.getOperation(), newTestCaseList, isComplete);
     }
@@ -39,9 +39,9 @@ public class MCDCTestTrace extends TestTrace {
         StringJoiner stringJoiner = new StringJoiner(", ", "{", "}");
         for (int i = 0; i < transitionNames.size(); i++) {
             prettyPrinter = new PrettyPrinter();
-            MCDCTargets.get(i).getPredicate().apply(prettyPrinter);
+            mcdcTargets.get(i).getPredicate().apply(prettyPrinter);
             stringJoiner.add(transitionNames.get(i) + " [" + prettyPrinter.getPrettyPrint() + " -> "
-                    + MCDCTargets.get(i).getTruthValue() + "]");
+                    + mcdcTargets.get(i).getTruthValue() + "]");
         }
         return stringJoiner.toString();
     }
