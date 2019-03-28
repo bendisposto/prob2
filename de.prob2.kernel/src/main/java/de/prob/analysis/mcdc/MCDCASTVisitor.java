@@ -2,15 +2,23 @@ package de.prob.analysis.mcdc;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;
+import de.be4.classicalb.core.parser.util.PrettyPrinter;
+import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.Join;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  * Traverses the AST of a predicate to recursively determine the MCDC test cases for this predicate.
  */
 public class MCDCASTVisitor extends DepthFirstAdapter {
+
+    private final static Logger log = Logger.getLogger(MCDCASTVisitor.class.getName());
 
     private List<ConcreteMCDCTestCase> tempTestCases = new ArrayList<>();
     private int maxLevel;
@@ -142,6 +150,111 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         outANegationPredicate(node);
     }
 
+    public PPredicate predicateFromString(String predicateString) {
+        Start ast = new ClassicalB(predicateString, FormulaExpand.EXPAND).getAst();
+        return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
+    }
+
+    public ClassicalB classicalBFromString(String predicateString) {
+        return new ClassicalB(predicateString, FormulaExpand.EXPAND);
+    }
+
+    public PPredicate predicateFromClassicalB(ClassicalB classicalB) {
+        Start ast = classicalB.getAst();
+        return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
+    }
+
+    public PPredicate predicateFromPredicate(PPredicate predicate) {
+        PrettyPrinter pp = new PrettyPrinter();
+        predicate.apply(pp);
+        return predicateFromString(pp.getPrettyPrint());
+    }
+
+    public ArrayList<ClassicalB> getSubPredicates(PPredicate predicate) {
+        PrettyPrinter pp = new PrettyPrinter();
+        predicate.apply(pp);
+        ArrayList<ClassicalB> subPredicates = new ArrayList<>();
+        for (String subPredicateString : pp.getPrettyPrint().split(" & ")) {
+            subPredicates.add(classicalBFromString(subPredicateString));
+        }
+        return subPredicates;
+    }
+
+    @Override
+    public void caseAForallPredicate(AForallPredicate node) {
+        inAForallPredicate(node);
+        if (currentLevel == maxLevel) {
+            maxLevelOrLeafReached(node);
+        } else {
+            PPredicate leftImplicationPart = ((AImplicationPredicate) node.getImplication()).getLeft();
+            List<PExpression> identifiers = new ArrayList<>(node.getIdentifiers());
+
+            tempTestCases.clear();
+            List<ConcreteMCDCTestCase> testCases =
+                    processOperatorPredicate(((AImplicationPredicate) node.getImplication()).getRight());
+            tempTestCases.clear();
+
+            for (ConcreteMCDCTestCase testCase : testCases) {
+                PPredicate predicate = testCase.getPredicate();
+                if (predicate instanceof ANegationPredicate) {
+                    predicate = ((ANegationPredicate) predicate).getPredicate();
+                }
+
+                List<ClassicalB> subPredicates = getSubPredicates(predicate);
+                List<IEvalElement> trueChildTests = new ArrayList<>();
+                List<IEvalElement> falseChildTests = new ArrayList<>();
+                for (ClassicalB subPredicate : subPredicates) {
+                    if (predicateFromClassicalB(subPredicate) instanceof ANegationPredicate) {
+                        falseChildTests.add(subPredicate);
+                    } else {
+                        trueChildTests.add(subPredicate);
+                    }
+                }
+
+                AForallPredicate forAll = createForAll(identifiers, leftImplicationPart, trueChildTests);
+                AForallPredicate forAllSafe = null;
+                if (forAll != null) {
+                    forAllSafe = (AForallPredicate) predicateFromPredicate(forAll);
+                }
+
+                AExistsPredicate exists = createExists(identifiers, leftImplicationPart, falseChildTests);
+                AExistsPredicate existsSafe = null;
+                if (exists != null) {
+                    existsSafe = (AExistsPredicate) predicateFromPredicate(exists);
+                }
+
+                if ((forAllSafe != null) && (existsSafe != null)) {
+                    tempTestCases.add(new ConcreteMCDCTestCase(new AConjunctPredicate(forAllSafe, existsSafe),
+                            testCase.getTruthValue()));
+                } else if (forAllSafe != null) {
+                    tempTestCases.add(new ConcreteMCDCTestCase(forAllSafe, testCase.getTruthValue()));
+                } else if (existsSafe != null) {
+                    tempTestCases.add(new ConcreteMCDCTestCase(existsSafe, testCase.getTruthValue()));
+                } else {
+                    log.warning("Broken ForallPredicate");
+                }
+            }
+        }
+        outAForallPredicate(node);
+    }
+
+    private AForallPredicate createForAll(List<PExpression> identifiers, PPredicate leftImplicationPart, List<IEvalElement> elements) {
+        if (!elements.isEmpty()) {
+            IEvalElement forAll = Join.conjunct(elements);
+            return new AForallPredicate(identifiers, new AImplicationPredicate(leftImplicationPart, predicateFromClassicalB((ClassicalB) forAll)));
+        } else {
+            return null;
+        }
+    }
+
+    private AExistsPredicate createExists(List<PExpression> identifiers, PPredicate leftImplicationPart, List<IEvalElement> elements) {
+        if (!elements.isEmpty()) {
+            IEvalElement exists = Join.conjunct(elements);
+            return new AExistsPredicate(identifiers, new AConjunctPredicate(leftImplicationPart, predicateFromClassicalB((ClassicalB) exists)));
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public void caseAEqualPredicate(final AEqualPredicate node) {
@@ -211,13 +324,6 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         inASubstitutionPredicate(node);
         maxLevelOrLeafReached(node);
         outASubstitutionPredicate(node);
-    }
-
-    @Override
-    public void caseAForallPredicate(AForallPredicate node) {
-        inAForallPredicate(node);
-        maxLevelOrLeafReached(node);
-        outAForallPredicate(node);
     }
 
     @Override
