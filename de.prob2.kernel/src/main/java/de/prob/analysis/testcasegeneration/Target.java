@@ -8,8 +8,11 @@ import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
  *
  * The target consists of an {@link #operation}, a predicate {@link #guard} and a boolean {@link #feasible} indicating
  * whether the target is actually to be executed or just reached.
- * (For test case generation with MC/DC coverage, {@link #feasible} might be false, but for operation coverage it is
- * always true.)
+ *
+ * Use cases:
+ * For MC/DC coverage, the {@link #guard} may be different from the guard the operation has in the model. Additionally,
+ * {@link #feasible} might be false.
+ * For operation coverage, {@link #feasible} is always true and the {@link #guard} is always the same as in the model.
  */
 public class Target {
 

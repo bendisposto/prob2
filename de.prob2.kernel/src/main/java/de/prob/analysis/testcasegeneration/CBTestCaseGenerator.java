@@ -18,6 +18,7 @@ import de.prob.analysis.testcasegeneration.testtrace.MCDCTestTrace;
 import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,7 +63,8 @@ public class CBTestCaseGenerator {
             targets = getMCDCTargets(Integer.valueOf(criterion.split(":")[1]));
             traces.add(new MCDCTestTrace(new ArrayList<>(), null, new ArrayList<>(), false));
         } else if (criterion.startsWith("OPERATION")) {
-            targets = getOperationCoverageTargets();
+            List<String> selectedOperations = Arrays.asList(criterion.split(":")[1].split(","));
+            targets = getOperationCoverageTargets(selectedOperations);
             traces.add(new CoverageTestTrace(new ArrayList<>(), null, false));
         } else {
             return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
@@ -123,16 +125,29 @@ public class CBTestCaseGenerator {
 
 
     /**
-     * Determines the targets for the test case generation with operation coverage, i.e. all feasible operations.
+     * Determines the {@link Target}s for the test case generation with operation coverage based on the selected operations.
      *
-     * @return The targets.
+     * @param selectedOperations The list of selected operations
+     * @return The {@link Target}s
      */
-    private List<Target> getOperationCoverageTargets() {
-        List<Target> opCoverageTargets = new ArrayList<>();
-        for (String operation : getAllOperationNames()) {
-            opCoverageTargets.add(new Target(operation, getGuardAsPredicate(operation)));
+    private List<Target> getOperationCoverageTargets(List<String> selectedOperations) {
+        return createTargetsForOperations(selectedOperations);
+    }
+
+    /**
+     * Creates {@link Target}s for a list of operations.
+     * <p>
+     * Each target consists of the operation's name and guard.
+     *
+     * @param operations The list of operations
+     * @return The {@link Target}s
+     */
+    private List<Target> createTargetsForOperations(List<String> operations) {
+        List<Target> operationTargets = new ArrayList<>();
+        for (String operation : operations) {
+            operationTargets.add(new Target(operation, getGuardAsPredicate(operation)));
         }
-        return opCoverageTargets;
+        return operationTargets;
     }
 
     /**
@@ -171,11 +186,7 @@ public class CBTestCaseGenerator {
         for (Target t : tempTargets) {
             operations.remove(t.getOperation());
         }
-        List<Target> artificialTargets = new ArrayList<>();
-        for (String operation : operations) {
-            artificialTargets.add(new Target(operation, getGuardAsPredicate(operation)));
-        }
-        return artificialTargets;
+        return createTargetsForOperations(operations);
     }
 
     private PPredicate getGuardAsPredicate(String operation) {
