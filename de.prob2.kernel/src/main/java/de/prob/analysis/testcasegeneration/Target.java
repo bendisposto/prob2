@@ -1,6 +1,7 @@
 package de.prob.analysis.testcasegeneration;
 
 import de.be4.classicalb.core.parser.node.PPredicate;
+import de.be4.classicalb.core.parser.util.PrettyPrinter;
 import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
 
 /**
@@ -49,6 +50,8 @@ public class Target {
     }
 
     public String toString() {
-        return operation + " (" + guard + "->" + feasible + ")";
+        PrettyPrinter pp = new PrettyPrinter();
+        guard.apply(pp);
+        return operation + " (" + pp.getPrettyPrint() + "->" + feasible + ")";
     }
 }
