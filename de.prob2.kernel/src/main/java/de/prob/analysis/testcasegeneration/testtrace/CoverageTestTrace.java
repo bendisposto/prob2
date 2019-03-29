@@ -11,7 +11,7 @@ import java.util.StringJoiner;
 public class CoverageTestTrace extends TestTrace {
 
     public CoverageTestTrace(List<String> priorTransitions, String newTransition, boolean isComplete) {
-        super(priorTransitions, newTransition, isComplete);
+        super(priorTransitions, newTransition, isComplete, true);
     }
 
     public CoverageTestTrace createNewTrace(List<String> transitions, Target t, boolean isComplete) {

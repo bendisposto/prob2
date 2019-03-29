@@ -19,8 +19,8 @@ public class MCDCTestTrace extends TestTrace {
     private List<ConcreteMCDCTestCase> mcdcTargets;
 
     public MCDCTestTrace(List<String> priorTransitions, String newTransition, List<ConcreteMCDCTestCase> mcdcTargets,
-                         boolean isComplete) {
-        super(priorTransitions, newTransition, isComplete);
+                         boolean isComplete, boolean lastTransitionIsFeasible) {
+        super(priorTransitions, newTransition, isComplete, lastTransitionIsFeasible);
         this.mcdcTargets = mcdcTargets;
     }
 
@@ -31,7 +31,7 @@ public class MCDCTestTrace extends TestTrace {
     public MCDCTestTrace createNewTrace(List<String> priorTransitions, Target t, boolean isComplete) {
         List<ConcreteMCDCTestCase> newTestCaseList = new ArrayList<>(getMcdcTargets());
         newTestCaseList.add(new ConcreteMCDCTestCase(t.getGuard(), t.getFeasible()));
-        return new MCDCTestTrace(priorTransitions, t.getOperation(), newTestCaseList, isComplete);
+        return new MCDCTestTrace(priorTransitions, t.getOperation(), newTestCaseList, isComplete, t.getFeasible());
     }
 
     public String toString() {

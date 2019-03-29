@@ -61,7 +61,8 @@ public class ConstraintBasedTestCaseGenerator {
 
         if (criterion.startsWith("MCDC")) {
             targets = getMCDCTargets(Integer.valueOf(criterion.split(":")[1]));
-            traces.add(new MCDCTestTrace(new ArrayList<>(), null, new ArrayList<>(), false));
+            traces.add(new MCDCTestTrace(new ArrayList<>(), null, new ArrayList<>(), false,
+                    true));
         } else if (criterion.startsWith("OPERATION")) {
             List<String> selectedOperations = Arrays.asList(criterion.split(":")[1].split(","));
             targets = getOperationCoverageTargets(selectedOperations);
