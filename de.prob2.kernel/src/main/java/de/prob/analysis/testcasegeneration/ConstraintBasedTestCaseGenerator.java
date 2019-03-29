@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * - Operation Coverage
  * - MC/DC Coverage
  */
-public class CBTestCaseGenerator {
+public class ConstraintBasedTestCaseGenerator {
 
     private ClassicalBModel model;
     private StateSpace stateSpace;
@@ -42,8 +42,8 @@ public class CBTestCaseGenerator {
     private List<Target> targets;
     private List<Target> uncoveredTargets = new ArrayList<>();
 
-    public CBTestCaseGenerator(ClassicalBModel model, StateSpace stateSpace, String criterion,
-                               int maxDepth, List<String> finalOperations) {
+    public ConstraintBasedTestCaseGenerator(ClassicalBModel model, StateSpace stateSpace, String criterion,
+                                            int maxDepth, List<String> finalOperations) {
         this.model = model;
         this.stateSpace = stateSpace;
         this.criterion = criterion;
