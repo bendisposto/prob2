@@ -150,32 +150,39 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         outANegationPredicate(node);
     }
 
-    public PPredicate predicateFromString(String predicateString) {
+    private PPredicate predicateFromString(String predicateString) {
         Start ast = new ClassicalB(predicateString, FormulaExpand.EXPAND).getAst();
         return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
     }
 
-    public ClassicalB classicalBFromString(String predicateString) {
+    private ClassicalB classicalBFromString(String predicateString) {
         return new ClassicalB(predicateString, FormulaExpand.EXPAND);
     }
 
-    public PPredicate predicateFromClassicalB(ClassicalB classicalB) {
+    private PPredicate predicateFromClassicalB(ClassicalB classicalB) {
         Start ast = classicalB.getAst();
         return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
     }
 
-    public PPredicate predicateFromPredicate(PPredicate predicate) {
+    private PPredicate predicateFromPredicate(PPredicate predicate) {
         PrettyPrinter pp = new PrettyPrinter();
         predicate.apply(pp);
         return predicateFromString(pp.getPrettyPrint());
     }
 
-    public ArrayList<ClassicalB> getSubPredicates(PPredicate predicate) {
+    private IEvalElement classicalBFromPredicate(PPredicate predicate) {
         PrettyPrinter pp = new PrettyPrinter();
         predicate.apply(pp);
-        ArrayList<ClassicalB> subPredicates = new ArrayList<>();
-        for (String subPredicateString : pp.getPrettyPrint().split(" & ")) {
-            subPredicates.add(classicalBFromString(subPredicateString));
+        return new ClassicalB(pp.getPrettyPrint(), FormulaExpand.EXPAND);
+    }
+
+    private List<PPredicate> getSubPredicates(PPredicate predicate) {
+        List<PPredicate> subPredicates = new ArrayList<>();
+        if (predicate instanceof AConjunctPredicate) {
+            subPredicates.addAll(getSubPredicates(((AConjunctPredicate) predicate).getLeft()));
+            subPredicates.addAll(getSubPredicates(((AConjunctPredicate) predicate).getRight()));
+        } else {
+            subPredicates.add(predicate);
         }
         return subPredicates;
     }
@@ -200,14 +207,14 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
                     predicate = ((ANegationPredicate) predicate).getPredicate();
                 }
 
-                List<ClassicalB> subPredicates = getSubPredicates(predicate);
+                List<PPredicate> subPredicates = getSubPredicates(predicate);
                 List<IEvalElement> trueChildTests = new ArrayList<>();
                 List<IEvalElement> falseChildTests = new ArrayList<>();
-                for (ClassicalB subPredicate : subPredicates) {
-                    if (predicateFromClassicalB(subPredicate) instanceof ANegationPredicate) {
-                        falseChildTests.add(subPredicate);
+                for (PPredicate subPredicate : subPredicates) {
+                    if (subPredicate instanceof ANegationPredicate) {
+                        falseChildTests.add(classicalBFromPredicate(subPredicate));
                     } else {
-                        trueChildTests.add(subPredicate);
+                        trueChildTests.add(classicalBFromPredicate(subPredicate));
                     }
                 }
 
