@@ -2,9 +2,8 @@ package de.prob.analysis.mcdc;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;
-import de.be4.classicalb.core.parser.util.PrettyPrinter;
+import de.prob.analysis.Conversion;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.Join;
 
@@ -150,43 +149,6 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         outANegationPredicate(node);
     }
 
-    private PPredicate predicateFromString(String predicateString) {
-        Start ast = new ClassicalB(predicateString, FormulaExpand.EXPAND).getAst();
-        return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
-    }
-
-    private ClassicalB classicalBFromString(String predicateString) {
-        return new ClassicalB(predicateString, FormulaExpand.EXPAND);
-    }
-
-    private PPredicate predicateFromClassicalB(ClassicalB classicalB) {
-        Start ast = classicalB.getAst();
-        return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
-    }
-
-    private PPredicate predicateFromPredicate(PPredicate predicate) {
-        PrettyPrinter pp = new PrettyPrinter();
-        predicate.apply(pp);
-        return predicateFromString(pp.getPrettyPrint());
-    }
-
-    private IEvalElement classicalBFromPredicate(PPredicate predicate) {
-        PrettyPrinter pp = new PrettyPrinter();
-        predicate.apply(pp);
-        return new ClassicalB(pp.getPrettyPrint(), FormulaExpand.EXPAND);
-    }
-
-    private List<PPredicate> getSubPredicates(PPredicate predicate) {
-        List<PPredicate> subPredicates = new ArrayList<>();
-        if (predicate instanceof AConjunctPredicate) {
-            subPredicates.addAll(getSubPredicates(((AConjunctPredicate) predicate).getLeft()));
-            subPredicates.addAll(getSubPredicates(((AConjunctPredicate) predicate).getRight()));
-        } else {
-            subPredicates.add(predicate);
-        }
-        return subPredicates;
-    }
-
     @Override
     public void caseAForallPredicate(AForallPredicate node) {
         inAForallPredicate(node);
@@ -214,14 +176,14 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
                     // - truth value is 'true'? -> the not-case is true -> negation predicate
                     // While in the simple-condition-case the predicate is handled like all others, the
                     // negation-predicate-case requires special treatment.
-                    trueChildTests.add(classicalBFromPredicate(predicate));
+                    trueChildTests.add(Conversion.classicalBFromPredicate(predicate));
                 } else {
                     List<PPredicate> subPredicates = getSubPredicates(predicate);
                     for (PPredicate subPredicate : subPredicates) {
                         if (subPredicate instanceof ANegationPredicate) {
-                            falseChildTests.add(classicalBFromPredicate(subPredicate));
+                            falseChildTests.add(Conversion.classicalBFromPredicate(subPredicate));
                         } else {
-                            trueChildTests.add(classicalBFromPredicate(subPredicate));
+                            trueChildTests.add(Conversion.classicalBFromPredicate(subPredicate));
                         }
                     }
                 }
@@ -243,12 +205,23 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         outAForallPredicate(node);
     }
 
+    private List<PPredicate> getSubPredicates(PPredicate predicate) {
+        List<PPredicate> subPredicates = new ArrayList<>();
+        if (predicate instanceof AConjunctPredicate) {
+            subPredicates.addAll(getSubPredicates(((AConjunctPredicate) predicate).getLeft()));
+            subPredicates.addAll(getSubPredicates(((AConjunctPredicate) predicate).getRight()));
+        } else {
+            subPredicates.add(predicate);
+        }
+        return subPredicates;
+    }
+
     private AForallPredicate createForAll(List<PExpression> identifiers, PPredicate leftImplicationPart, List<IEvalElement> elements) {
         if (!elements.isEmpty()) {
             IEvalElement forAll = Join.conjunct(elements);
             AForallPredicate aForallPredicate = new AForallPredicate(identifiers,
-                    new AImplicationPredicate(leftImplicationPart, predicateFromClassicalB((ClassicalB) forAll)));
-            return (AForallPredicate) predicateFromPredicate(aForallPredicate);
+                    new AImplicationPredicate(leftImplicationPart, Conversion.predicateFromClassicalB((ClassicalB) forAll)));
+            return (AForallPredicate) Conversion.predicateFromPredicate(aForallPredicate);
         } else {
             return null;
         }
@@ -258,8 +231,8 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
         if (!elements.isEmpty()) {
             IEvalElement exists = Join.conjunct(elements);
             AExistsPredicate aExistsPredicate = new AExistsPredicate(identifiers,
-                    new AConjunctPredicate(leftImplicationPart, predicateFromClassicalB((ClassicalB) exists)));
-            return (AExistsPredicate) predicateFromPredicate(aExistsPredicate);
+                    new AConjunctPredicate(leftImplicationPart, Conversion.predicateFromClassicalB((ClassicalB) exists)));
+            return (AExistsPredicate) Conversion.predicateFromPredicate(aExistsPredicate);
         } else {
             return null;
         }

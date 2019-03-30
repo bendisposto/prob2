@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import de.be4.classicalb.core.parser.node.*;
-import de.be4.classicalb.core.parser.util.PrettyPrinter;
+import de.prob.analysis.Conversion;
 import de.prob.animator.command.CbcSolveCommand;
 import de.prob.animator.domainobjects.*;
 import de.prob.model.representation.Extraction;
@@ -55,7 +55,7 @@ public class MCDCIdentifier {
     private List<ConcreteMCDCTestCase> filterFeasible(List<ConcreteMCDCTestCase> testCases) {
         List<ConcreteMCDCTestCase> feasibleTestCases = new ArrayList<>();
         for (ConcreteMCDCTestCase t : testCases) {
-            CbcSolveCommand cmd = new CbcSolveCommand(classicalBFromPredicate(t.getPredicate()));
+            CbcSolveCommand cmd = new CbcSolveCommand(Conversion.classicalBFromPredicate(t.getPredicate()));
             stateSpace.execute(cmd);
             if (cmd.getValue() == EvalResult.FALSE) {
                 log.info("Infeasible: " + t.toString());
@@ -64,11 +64,5 @@ public class MCDCIdentifier {
             }
         }
         return feasibleTestCases;
-    }
-
-    private IEvalElement classicalBFromPredicate(PPredicate predicate) {
-        PrettyPrinter pp = new PrettyPrinter();
-        predicate.apply(pp);
-        return new ClassicalB(pp.getPrettyPrint(), FormulaExpand.EXPAND);
     }
 }
