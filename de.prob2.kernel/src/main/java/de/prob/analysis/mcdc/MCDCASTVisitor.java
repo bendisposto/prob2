@@ -202,41 +202,39 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
             tempTestCases.clear();
 
             for (ConcreteMCDCTestCase testCase : testCases) {
-                PPredicate predicate = testCase.getPredicate();
-                if (predicate instanceof ANegationPredicate) {
-                    predicate = ((ANegationPredicate) predicate).getPredicate();
-                }
-
-                List<PPredicate> subPredicates = getSubPredicates(predicate);
                 List<IEvalElement> trueChildTests = new ArrayList<>();
                 List<IEvalElement> falseChildTests = new ArrayList<>();
-                for (PPredicate subPredicate : subPredicates) {
-                    if (subPredicate instanceof ANegationPredicate) {
-                        falseChildTests.add(classicalBFromPredicate(subPredicate));
-                    } else {
-                        trueChildTests.add(classicalBFromPredicate(subPredicate));
+
+                PPredicate predicate = testCase.getPredicate();
+                if (predicate instanceof ANegationPredicate && testCase.getTruthValue()) {
+                    // In case of a negation predicate as root node in the test case, the original predicate was either
+                    // only one condition or a negation predicate with only one condition inside.
+                    // The difference between them is the truth value:
+                    // - truth value is 'false'? -> a simple condition
+                    // - truth value is 'true'? -> the not-case is true -> negation predicate
+                    // While in the simple-condition-case the predicate is handled like all others, the
+                    // negation-predicate-case requires special treatment.
+                    trueChildTests.add(classicalBFromPredicate(predicate));
+                } else {
+                    List<PPredicate> subPredicates = getSubPredicates(predicate);
+                    for (PPredicate subPredicate : subPredicates) {
+                        if (subPredicate instanceof ANegationPredicate) {
+                            falseChildTests.add(classicalBFromPredicate(subPredicate));
+                        } else {
+                            trueChildTests.add(classicalBFromPredicate(subPredicate));
+                        }
                     }
                 }
-
                 AForallPredicate forAll = createForAll(identifiers, leftImplicationPart, trueChildTests);
-                AForallPredicate forAllSafe = null;
-                if (forAll != null) {
-                    forAllSafe = (AForallPredicate) predicateFromPredicate(forAll);
-                }
-
                 AExistsPredicate exists = createExists(identifiers, leftImplicationPart, falseChildTests);
-                AExistsPredicate existsSafe = null;
-                if (exists != null) {
-                    existsSafe = (AExistsPredicate) predicateFromPredicate(exists);
-                }
 
-                if ((forAllSafe != null) && (existsSafe != null)) {
-                    tempTestCases.add(new ConcreteMCDCTestCase(new AConjunctPredicate(forAllSafe, existsSafe),
+                if ((forAll != null) && (exists != null)) {
+                    tempTestCases.add(new ConcreteMCDCTestCase(new AConjunctPredicate(forAll, exists),
                             testCase.getTruthValue()));
-                } else if (forAllSafe != null) {
-                    tempTestCases.add(new ConcreteMCDCTestCase(forAllSafe, testCase.getTruthValue()));
-                } else if (existsSafe != null) {
-                    tempTestCases.add(new ConcreteMCDCTestCase(existsSafe, testCase.getTruthValue()));
+                } else if (forAll != null) {
+                    tempTestCases.add(new ConcreteMCDCTestCase(forAll, testCase.getTruthValue()));
+                } else if (exists != null) {
+                    tempTestCases.add(new ConcreteMCDCTestCase(exists, testCase.getTruthValue()));
                 } else {
                     log.warning("Broken ForallPredicate");
                 }
@@ -248,7 +246,9 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
     private AForallPredicate createForAll(List<PExpression> identifiers, PPredicate leftImplicationPart, List<IEvalElement> elements) {
         if (!elements.isEmpty()) {
             IEvalElement forAll = Join.conjunct(elements);
-            return new AForallPredicate(identifiers, new AImplicationPredicate(leftImplicationPart, predicateFromClassicalB((ClassicalB) forAll)));
+            AForallPredicate aForallPredicate = new AForallPredicate(identifiers,
+                    new AImplicationPredicate(leftImplicationPart, predicateFromClassicalB((ClassicalB) forAll)));
+            return (AForallPredicate) predicateFromPredicate(aForallPredicate);
         } else {
             return null;
         }
@@ -257,7 +257,9 @@ public class MCDCASTVisitor extends DepthFirstAdapter {
     private AExistsPredicate createExists(List<PExpression> identifiers, PPredicate leftImplicationPart, List<IEvalElement> elements) {
         if (!elements.isEmpty()) {
             IEvalElement exists = Join.conjunct(elements);
-            return new AExistsPredicate(identifiers, new AConjunctPredicate(leftImplicationPart, predicateFromClassicalB((ClassicalB) exists)));
+            AExistsPredicate aExistsPredicate = new AExistsPredicate(identifiers,
+                    new AConjunctPredicate(leftImplicationPart, predicateFromClassicalB((ClassicalB) exists)));
+            return (AExistsPredicate) predicateFromPredicate(aExistsPredicate);
         } else {
             return null;
         }
