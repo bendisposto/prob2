@@ -244,15 +244,17 @@ public class Transition {
 		String rep = getRep();
 		if (name.equals("$initialise_machine")) {
 			rep = rep.replaceAll("\\$initialise_machine", "INITIALISATION");
-		}
-		if (name.equals("$setup_constants")) {
+		} else if (name.equals("$setup_constants")) {
 			rep = rep.replaceAll("\\$setup_constants", "SETUP_CONSTANTS");
+		} else if (name.equals("$partial_setup_constants")) {
+			rep = rep.replaceAll("\\$partial_setup_constants", "PARTIAL_SETUP_CONSTANTS");
 		}
 		return rep;
 	}
 
 	public boolean isArtificialTransition() {
-		return name.equals("$initialise_machine") || name.equals("$setup_constants");
+		return name.equals("$initialise_machine") || name.equals("$setup_constants")
+		        || name.equals("$partial_setup_constants") ;
 	}
 
 	@Override
