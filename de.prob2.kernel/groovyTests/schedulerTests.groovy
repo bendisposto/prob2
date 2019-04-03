@@ -27,9 +27,11 @@ h2 = h2.add 9
 
 s.subscribe(m, m.scheduler.variables.collect {it.formula})
 final varsAt6 = s[6].explore().values
-assert varsAt6[m.scheduler.variables.waiting.formula].value == "{}"
+res = varsAt6[m.scheduler.variables.waiting.formula].value
+assert res == "{}" || res == "\u2205"
 assert varsAt6[m.scheduler.variables.active.formula].value == "{PID2}"
-assert varsAt6[m.scheduler.variables.ready.formula].value == "{}"
+res2 = varsAt6[m.scheduler.variables.ready.formula].value
+assert res2 == "{}" || res2 == "\u2205"
 final f1 = "1+1=2" as ClassicalB
 s.subscribe(m, f1)
 assert s.valuesAt(h2.currentState).containsKey(f1)

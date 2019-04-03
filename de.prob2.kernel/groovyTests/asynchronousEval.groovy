@@ -20,7 +20,8 @@ s.execute(cmd2)
 final cmd3 = new EvaluateRegisteredFormulasCommand("3", [f, f2])
 s.execute(cmd3)
 assert cmd3.results[f].value == "2"
-assert cmd3.results[f2].value == "{}"
+res = cmd3.results[f2].value
+assert res == "{}" || res == "\u2205"
 final cmd4 = new EvaluateRegisteredFormulasCommand("root", [f, f2])
 s.execute(cmd4)
 assert cmd4.results[f].value == "2"
