@@ -66,6 +66,10 @@ class TraceEvaluationTest extends Specification {
 		x instanceof ComputationNotCompletedResult
 	}
 
+    private boolean isEmptySet(x) {
+      return (x=="{}" || x=="\u2205") // u2205 is Unicode emptyset
+    }
+    
 	def "It is possible to evaluate (correct) formulas in the current state (if initialised)"() {
 		given:
 		final t = t.$initialise_machine()
@@ -76,7 +80,7 @@ class TraceEvaluationTest extends Specification {
 		then:
 		x instanceof EvalResult
 		x.value == "TRUE"
-		x.solutions["x"] == "{}"
+		isEmptySet(x.solutions["x"])
 		x.solutions["y"] == "0"
 	}
 
@@ -92,7 +96,7 @@ class TraceEvaluationTest extends Specification {
 		final sIds = t.transitionList.collect {it.destination.id}
 		final results = x.collect {[it.first, it.second.value]}
 
-		results[0] == [sIds[0], "{}"]
+		results[0] == [sIds[0], "{}"] || results[0] == [sIds[0], "\u2205"]
 		results[1] == [sIds[1], "{PID1}"]
 		results[2] == [sIds[2], "{PID1,PID2}"]
 	}
@@ -109,7 +113,7 @@ class TraceEvaluationTest extends Specification {
 		final sIds = t.transitionList.collect {it.destination.id}
 		final results = x.collect {[it.first, it.second.getValue()]}
 
-		results[0] == [sIds[0], "{}"]
+		results[0] == [sIds[0], "{}"] || results[0] == [sIds[0], "\u2205"]
 		results[1] == [sIds[1], "{PID1}"]
 		results[2] == [sIds[2], "{PID1,PID2}"]
 	}

@@ -40,19 +40,21 @@ class StateEvaluationTest extends Specification {
 	}
 
 	def "it is possible to evaluate multiple IEvalElements"() {
+	    final res = secondState.eval(
+			        new ClassicalB("waiting", FormulaExpand.EXPAND),
+			        new ClassicalB("ready", FormulaExpand.EXPAND),
+		         ).collect {it.value}
 		expect:
-		secondState.eval(
-			new ClassicalB("waiting", FormulaExpand.EXPAND),
-			new ClassicalB("ready", FormulaExpand.EXPAND),
-		).collect {it.value} == ["{PID1}", "{}"]
+		res == ["{PID1}", "{}"] || res == ["{PID1}", "\u2205"] // u2205 is Unicode emptyset
 	}
 
 	def "it is possible to evaluate a list of IEvalElements"() {
-		expect:
-		secondState.eval([
+	    final res = secondState.eval([
 			new ClassicalB("waiting", FormulaExpand.EXPAND),
 			new ClassicalB("ready", FormulaExpand.EXPAND),
-		]).collect {it.value} == ["{PID1}", "{}"]
+		]).collect {it.value}
+		expect:
+		res == ["{PID1}", "{}"] || res == ["{PID1}", "\u2205"]
 	}
 
 	def "if a result is cached, prolog doesn't necessarily have to be contacted"() {
