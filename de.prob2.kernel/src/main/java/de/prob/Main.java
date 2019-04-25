@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import javax.script.ScriptException;
+
+import ch.qos.logback.classic.util.ContextInitializer;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -25,7 +28,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
 	private static int maxCacheSize = 100;
-	private static final Logger logger = LoggerFactory.getLogger(Main.class);
+	private static Logger logger;
 	private final CommandLineParser parser;
 	private final Options options;
 	private final Shell shell;
@@ -54,12 +56,12 @@ public class Main {
 		buildProperties = new Properties();
 		final InputStream is = Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE);
 		if (is == null) {
-			logger.error("Build properties not found, this should never happen!");
+			throw new IllegalStateException("Build properties not found, this should never happen!");
 		} else {
 			try (final Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 				buildProperties.load(r);
 			} catch (IOException e) {
-				logger.error("IOException while loading build properties, this should never happen!", e);
+				throw new UncheckedIOException("IOException while loading build properties, this should never happen!", e);
 			}
 		}
 	}
@@ -164,6 +166,10 @@ public class Main {
 	 *            command-line arguments
 	 */
 	public static void main(final String[] args) {
+		if (!System.getProperties().containsKey(ContextInitializer.CONFIG_FILE_PROPERTY)) {
+			System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "de/prob/logging/production.xml");
+		}
+		logger = LoggerFactory.getLogger(Main.class);
 		try {
 			Main main = getInjector().getInstance(Main.class);
 			Api api = getInjector().getInstance(Api.class);
