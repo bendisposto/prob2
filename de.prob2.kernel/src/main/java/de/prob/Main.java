@@ -49,12 +49,10 @@ public class Main {
 
 	private static Injector injector = null;
 
-	private static final String PROB2_BUILD_PROPERTIES_FILE = "/prob2-build.properties";
-
 	private static final Properties buildProperties;
 	static {
 		buildProperties = new Properties();
-		final InputStream is = Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE);
+		final InputStream is = Main.class.getResourceAsStream("build.properties");
 		if (is == null) {
 			throw new IllegalStateException("Build properties not found, this should never happen!");
 		} else {

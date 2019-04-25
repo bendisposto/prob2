@@ -233,7 +233,7 @@ def readCurrentGitCommit() {
 	return proc.in.readLines()[0]
 }
 
-final BUILD_PROPERTIES = file("src/main/resources/prob2-build.properties")
+final BUILD_PROPERTIES = file("src/main/resources/de/prob/build.properties")
 
 task createBuildConstants {
 	doFirst {
