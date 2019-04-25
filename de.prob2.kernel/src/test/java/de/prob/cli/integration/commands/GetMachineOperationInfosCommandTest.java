@@ -30,7 +30,7 @@ public class GetMachineOperationInfosCommandTest {
 	public void testGetMachineOperationInfosCommand() throws IOException, ModelTranslationError {
 		System.out.println(Main.getProBDirectory());
 		System.out.println(api.getVersion());
-		s = api.b_load(Paths.get("src", "test", "resources", "b", "ExampleMachine.mch").toString());
+		s = api.b_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "b", "ExampleMachine.mch").toString());
 		assertNotNull(s);
 		GetMachineOperationInfos command = new GetMachineOperationInfos();
 		s.execute(command);

@@ -25,14 +25,14 @@ public class SimpleLoadTest {
 
 	@Test
 	public void testLoadTLAFile() throws IOException, ModelTranslationError {
-		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "tla", "Foo.tla").toString());
+		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "Foo.tla").toString());
 		assertNotNull(s);
 		s.kill();
 	}
 
 	@Test
 	public void testLoadTLAFile2() throws IOException, ModelTranslationError {
-		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "tla", "Definitions.tla").toString());
+		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "Definitions.tla").toString());
 		assertNotNull(s);
 		Trace t = new Trace(s);
 		assertEquals(1, t.getNextTransitions().size());
@@ -41,7 +41,7 @@ public class SimpleLoadTest {
 
 	@Test
 	public void testClub() throws IOException, ModelTranslationError {
-		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "tla", "ForDistribution", "Club.tla").toString());
+		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "ForDistribution", "Club.tla").toString());
 		assertNotNull(s);
 		Trace t = new Trace(s);
 		assertEquals(1, t.getNextTransitions().size());
@@ -50,21 +50,21 @@ public class SimpleLoadTest {
 
 	@Test
 	public void testLoadBFile() throws IOException, ModelTranslationError {
-		StateSpace s = api.b_load(Paths.get("src", "test", "resources", "tla", "Foo.mch").toString());
+		StateSpace s = api.b_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "Foo.mch").toString());
 		assertNotNull(s);
 		s.kill();
 	}
 
 	@Test
 	public void testLoadTLAFileChoose() throws IOException, ModelTranslationError {
-		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "tla", "Choose.tla").toString());
+		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "Choose.tla").toString());
 		assertNotNull(s);
 		s.kill();
 	}
 
 	@Test
 	public void testLoadBRulesFile() throws IOException {
-		StateSpace s = api.brules_load(Paths.get("src", "test", "resources", "brules", "SimpleRulesMachine.rmch").toString());
+		StateSpace s = api.brules_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "brules", "SimpleRulesMachine.rmch").toString());
 		assertNotNull(s);
 		s.kill();
 	}
