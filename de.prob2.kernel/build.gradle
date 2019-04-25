@@ -166,7 +166,7 @@ sonarqube {
 	}
 }
 
-final CLI_DOWNLOAD_DIR = file("src/main/resources/cli")
+final CLI_DOWNLOAD_DIR = file("src/main/resources/de/prob/cli/binaries")
 
 task downloadCLIs(type: Download) {
 	final files = []

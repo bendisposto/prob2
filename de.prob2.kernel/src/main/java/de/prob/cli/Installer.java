@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 public final class Installer {
+	private static final String CLI_BINARIES_RESOURCE_PREFIX = "binaries/";
 	public static final Path DEFAULT_HOME = Paths.get(System.getProperty("user.home"), ".prob", "prob2-" + Main.getVersion());
 	private static final Path LOCK_FILE_PATH = DEFAULT_HOME.resolve("installer.lock");
 	private static final Logger logger = LoggerFactory.getLogger(Installer.class);
@@ -73,7 +74,7 @@ public final class Installer {
 	 */
 	private void installProbcli() throws IOException {
 		logger.trace("Installing probcli");
-		try (final InputStream is = this.getClass().getResourceAsStream("/cli/probcli_" + osInfo.getDirName() + ".zip")) {
+		try (final InputStream is = this.getClass().getResourceAsStream(CLI_BINARIES_RESOURCE_PREFIX + "probcli_" + osInfo.getDirName() + ".zip")) {
 			FileHandler.extractZip(is, DEFAULT_HOME);
 		}
 		logger.trace("Installed probcli");
@@ -88,7 +89,7 @@ public final class Installer {
 		final String cspmfName;
 		if (osInfo.getDirName().startsWith("win")) {
 			final String bits = "win32".equals(osInfo.getDirName()) ? "32" : "64";
-			try (final InputStream is = this.getClass().getResourceAsStream("/cli/windowslib" + bits + ".zip")) {
+			try (final InputStream is = this.getClass().getResourceAsStream(CLI_BINARIES_RESOURCE_PREFIX + "windowslib" + bits + ".zip")) {
 				FileHandler.extractZip(is, DEFAULT_HOME);
 			}
 			cspmfName = "windows-cspmf.exe";
@@ -96,7 +97,7 @@ public final class Installer {
 			cspmfName = osInfo.getDirName() + "-cspmf";
 		}
 		
-		try (final InputStream is = this.getClass().getResourceAsStream("/cli/" + cspmfName)) {
+		try (final InputStream is = this.getClass().getResourceAsStream(CLI_BINARIES_RESOURCE_PREFIX + cspmfName)) {
 			Files.copy(is, outcspmf, StandardCopyOption.REPLACE_EXISTING);
 		}
 		setExecutable(outcspmf, true);
