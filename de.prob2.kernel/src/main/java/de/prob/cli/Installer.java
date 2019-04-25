@@ -1,4 +1,4 @@
-package de.prob.scripting;
+package de.prob.cli;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.Main;
-import de.prob.cli.OsSpecificInfo;
+import de.prob.scripting.FileHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
