@@ -82,12 +82,6 @@ public class Main {
 	}
 
 	/**
-	 * String representing the ProB home directory. Calls method
-	 * {@link Main#getProBDirectory()}
-	 */
-	public static final String PROB_HOME = getProBDirectory();
-
-	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
 	 * should NOT be instantiated by hand.
 	 *
