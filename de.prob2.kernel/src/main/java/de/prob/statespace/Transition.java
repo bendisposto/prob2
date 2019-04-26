@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
+import de.hhu.stups.prob.translator.BValue;
+import de.hhu.stups.prob.translator.exceptions.TranslationException;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.formula.PredicateBuilder;
 import de.prob.model.classicalb.ClassicalBMachine;
@@ -21,8 +23,7 @@ import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.translator.Translator;
-import de.prob.translator.types.BObject;
+import de.hhu.stups.prob.translator.Translator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +53,8 @@ public class Transition {
 	private final State dest;
 	private List<String> params;
 	private List<String> returnValues;
-	private List<BObject> translatedParams;
-	private List<BObject> translatedRetV;
+	private List<BValue> translatedParams;
+	private List<BValue> translatedRetV;
 	private String rep;
 	private boolean evaluated;
 	private FormulaExpand formulaExpansion;
@@ -123,7 +124,7 @@ public class Transition {
 		return params;
 	}
 
-	public List<BObject> getTranslatedParams() throws BCompoundException {
+	public List<BValue> getTranslatedParams() throws TranslationException {
 		if (translatedParams != null) {
 			return translatedParams;
 		}
@@ -131,7 +132,7 @@ public class Transition {
 		return translatedParams;
 	}
 
-	private void translateParamsAndRetVals() throws BCompoundException {
+	private void translateParamsAndRetVals() throws TranslationException {
 		if (!evaluated || formulaExpansion != FormulaExpand.EXPAND) {
 			evaluate(FormulaExpand.EXPAND);
 		}
@@ -163,7 +164,7 @@ public class Transition {
 		return this.stateSpace;
 	}
 
-	public List<BObject> getTranslatedReturnValues() throws BCompoundException {
+	public List<BValue> getTranslatedReturnValues() throws TranslationException {
 		if (translatedRetV != null) {
 			return translatedRetV;
 		}

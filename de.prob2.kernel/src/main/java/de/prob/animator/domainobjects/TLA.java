@@ -2,11 +2,11 @@ package de.prob.animator.domainobjects;
 
 import de.be4.classicalb.core.parser.node.*;
 
+import de.hhu.stups.prob.translator.BValue;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
-import de.prob.translator.types.BObject;
 
 import de.tla2b.exceptions.ExpressionTranslationException;
 
@@ -75,7 +75,7 @@ public class TLA extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	@Override
-	public BObject translate() {
+	public BValue translate() {
 		return classicalB.translate();
 	}
 

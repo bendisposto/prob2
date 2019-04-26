@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.be4.classicalb.core.parser.exceptions.BCompoundException;
+import de.hhu.stups.prob.translator.BValue;
+import de.hhu.stups.prob.translator.Translator;
+import de.hhu.stups.prob.translator.exceptions.TranslationException;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.translator.Translator;
-import de.prob.translator.types.BObject;
 import de.prob.unicode.UnicodeTranslator;
 
 import groovy.lang.MissingPropertyException;
@@ -84,9 +84,9 @@ public class EvalResult extends AbstractEvalResult {
 		}
 	}
 
-	public TranslatedEvalResult translate() throws BCompoundException {
-		BObject val = Translator.translate(value);
-		Map<String, BObject> sols = new HashMap<>();
+	public TranslatedEvalResult translate() throws TranslationException {
+		BValue val = Translator.translate(value);
+		Map<String, BValue> sols = new HashMap<>();
 		Set<Map.Entry<String, String>> entrySet = solutions.entrySet();
 		for (Map.Entry<String, String> entry : entrySet) {
 			sols.put(entry.getKey(), Translator.translate(entry.getValue()));
