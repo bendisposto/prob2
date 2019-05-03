@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
 
 public class RulesMachineTest {
 
-	private static final Path DIR = Paths.get("src", "test", "resources", "brules");
+	private static final Path DIR = Paths.get("src", "test", "resources", "de", "prob", "testmachines", "brules");
 
 	@Test
 	public void testSimpleRulesMachine() {

@@ -20,7 +20,6 @@ import com.google.inject.Singleton;
 
 import de.prob.annotations.Home;
 import de.prob.exception.CliError;
-import de.prob.scripting.Installer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

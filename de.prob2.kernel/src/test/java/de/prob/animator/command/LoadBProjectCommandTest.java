@@ -22,7 +22,7 @@ public class LoadBProjectCommandTest {
 
 	@Test
 	public void testWriteCommand() throws URISyntaxException, IOException {
-		URL resource = this.getClass().getResource("/examples/scheduler.mch");
+		URL resource = this.getClass().getResource("/de/prob/testmachines/b/scheduler.mch");
 		assertNotNull(resource);
 		File f =  new File(resource.toURI());
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();

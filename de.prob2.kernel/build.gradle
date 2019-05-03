@@ -166,7 +166,7 @@ sonarqube {
 	}
 }
 
-final CLI_DOWNLOAD_DIR = file("src/main/resources/cli")
+final CLI_DOWNLOAD_DIR = file("src/main/resources/de/prob/cli/binaries")
 
 task downloadCLIs(type: Download) {
 	final files = []
@@ -233,7 +233,7 @@ def readCurrentGitCommit() {
 	return proc.in.readLines()[0]
 }
 
-final BUILD_PROPERTIES = file("src/main/resources/prob2-build.properties")
+final BUILD_PROPERTIES = file("src/main/resources/de/prob/build.properties")
 
 task createBuildConstants {
 	doFirst {
@@ -273,7 +273,7 @@ groovydoc {
 }
 
 wrapper {
-	gradleVersion = "5.2.1"
+	gradleVersion = "5.4"
 	distributionType = Wrapper.DistributionType.ALL
 }
 

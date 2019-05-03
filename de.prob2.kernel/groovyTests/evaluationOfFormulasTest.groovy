@@ -27,7 +27,7 @@ assert res.y == "1"
 
 final t = res.translate()
 assert t != null && t instanceof TranslatedEvalResult
-assert t.value == true
+assert t.value.value == true
 assert t.solutions.containsKey("x")
 assert t.solutions.containsKey("y")
 assert t.x == new Atom("PID2")

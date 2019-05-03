@@ -23,11 +23,11 @@ public class ParseErrorTest {
 
 	@Test(expected = ProBError.class)
 	public void testLoadBMachineWithParseError() throws IOException, ModelTranslationError {
-		api.b_load(Paths.get("src", "test", "resources", "b", "ParseError.mch").toString());
+		api.b_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "b", "ParseError.mch").toString());
 	}
 
 	@Test(expected = IOException.class)
 	public void testLoadBMachineButFileDoesNotExists() throws IOException, ModelTranslationError {
-		api.b_load(Paths.get("src", "test", "resources", "b", "FileDoesNotExists.mch").toString());
+		api.b_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "b", "FileDoesNotExists.mch").toString());
 	}
 }
