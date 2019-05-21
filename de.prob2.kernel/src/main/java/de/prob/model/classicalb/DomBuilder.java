@@ -16,17 +16,14 @@ import de.be4.classicalb.core.parser.node.ADescriptionExpression;
 import de.be4.classicalb.core.parser.node.AEnumeratedSetSet;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
-import de.be4.classicalb.core.parser.node.AInferredUnitExpression;
 import de.be4.classicalb.core.parser.node.AInvariantMachineClause;
 import de.be4.classicalb.core.parser.node.AMachineHeader;
-import de.be4.classicalb.core.parser.node.ANewUnitExpression;
 import de.be4.classicalb.core.parser.node.AOperation;
 import de.be4.classicalb.core.parser.node.APreconditionSubstitution;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
 import de.be4.classicalb.core.parser.node.ASelectSubstitution;
 import de.be4.classicalb.core.parser.node.ASubstitutionParseUnit;
-import de.be4.classicalb.core.parser.node.AUnitExpression;
 import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
 import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
@@ -220,12 +217,6 @@ public class DomBuilder extends DepthFirstAdapter {
 			identifierExpression = (AIdentifierExpression) pExpression;
 		} else if(pExpression instanceof ADescriptionExpression) {
 			identifierExpression = (AIdentifierExpression) ((ADescriptionExpression) pExpression).getExpression();
-		} else if(pExpression instanceof AUnitExpression) {
-			identifierExpression = (AIdentifierExpression) ((AUnitExpression) pExpression).getIdentifier();
-		} else if(pExpression instanceof ANewUnitExpression) {
-			identifierExpression = (AIdentifierExpression) ((ANewUnitExpression) pExpression).getIdentifier();
-		} else if(pExpression instanceof AInferredUnitExpression) {
-			identifierExpression = (AIdentifierExpression) ((AInferredUnitExpression) pExpression).getIdentifier();
 		} else {
 			throw new ProBError("Invalid expression for extracting identifier name");
 		}
