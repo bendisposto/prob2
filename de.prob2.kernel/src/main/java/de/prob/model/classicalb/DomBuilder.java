@@ -12,17 +12,21 @@ import de.be4.classicalb.core.parser.node.AAssertionsMachineClause;
 import de.be4.classicalb.core.parser.node.AConstantsMachineClause;
 import de.be4.classicalb.core.parser.node.AConstraintsMachineClause;
 import de.be4.classicalb.core.parser.node.ADeferredSetSet;
+import de.be4.classicalb.core.parser.node.ADescriptionExpression;
 import de.be4.classicalb.core.parser.node.AEnumeratedSetSet;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
+import de.be4.classicalb.core.parser.node.AInferredUnitExpression;
 import de.be4.classicalb.core.parser.node.AInvariantMachineClause;
 import de.be4.classicalb.core.parser.node.AMachineHeader;
+import de.be4.classicalb.core.parser.node.ANewUnitExpression;
 import de.be4.classicalb.core.parser.node.AOperation;
 import de.be4.classicalb.core.parser.node.APreconditionSubstitution;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
 import de.be4.classicalb.core.parser.node.ASelectSubstitution;
 import de.be4.classicalb.core.parser.node.ASubstitutionParseUnit;
+import de.be4.classicalb.core.parser.node.AUnitExpression;
 import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
 import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
@@ -35,6 +39,7 @@ import de.be4.classicalb.core.parser.node.Token;
 
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.exception.ProBError;
 import de.prob.model.representation.Action;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Constant;
@@ -127,8 +132,7 @@ public class DomBuilder extends DepthFirstAdapter {
 	public void outAVariablesMachineClause(final AVariablesMachineClause node) {
 		for (PExpression pExpression : node.getIdentifiers()) {
 			if (prefix != null) {
-				usedIds.add(((AIdentifierExpression) pExpression)
-						.getIdentifier().get(0).getText());
+				usedIds.add(extractIdentifierName(pExpression));
 			}
 			variables.add(new ClassicalBVariable(
 					createExpressionAST(pExpression)));
@@ -208,6 +212,24 @@ public class DomBuilder extends DepthFirstAdapter {
 		return nameL.stream()
 			.map(Token::getText)
 			.collect(Collectors.joining("."));
+	}
+	
+	private static String extractIdentifierName(PExpression pExpression) {
+		AIdentifierExpression identifierExpression = null;
+		if(pExpression instanceof AIdentifierExpression) {
+			identifierExpression = (AIdentifierExpression) pExpression;
+		} else if(pExpression instanceof ADescriptionExpression) {
+			identifierExpression = (AIdentifierExpression) ((ADescriptionExpression) pExpression).getExpression();
+		} else if(pExpression instanceof AUnitExpression) {
+			identifierExpression = (AIdentifierExpression) ((AUnitExpression) pExpression).getIdentifier();
+		} else if(pExpression instanceof ANewUnitExpression) {
+			identifierExpression = (AIdentifierExpression) ((ANewUnitExpression) pExpression).getIdentifier();
+		} else if(pExpression instanceof AInferredUnitExpression) {
+			identifierExpression = (AIdentifierExpression) ((AInferredUnitExpression) pExpression).getIdentifier();
+		} else {
+			throw new ProBError("Invalid expression for extracting identifier name");
+		}
+		return identifierExpression.getIdentifier().get(0).getText();
 	}
 
 	private static List<String> extractIdentifiers(final List<PExpression> identifiers) {
