@@ -1,10 +1,6 @@
 package de.prob.check.tracereplay;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.statespace.OperationInfo;
@@ -21,23 +17,25 @@ public class PersistentTransition {
 	private Map<String, String> params;
 	private Map<String, String> results;
 	private Map<String, String> destState;
+	private Set<String> destStateNotChanged;
 	private List<String> preds;
 
 	public PersistentTransition(Transition transition) {
-		this(transition, false);
+		this(transition, false, null);
 	}
 
-	public PersistentTransition(Transition transition, boolean storeDestinationState) {
+	public PersistentTransition(Transition transition, boolean storeDestinationState, PersistentTransition transitionAfter) {
 		this.name = transition.getName();
 		final LoadedMachine loadedMachine = transition.getStateSpace().getLoadedMachine();
 		final State destinationState = transition.getDestination();
 		if ("$setup_constants".equals(name)) {
 			if (storeDestinationState) {
-				addValuesToDestState(destinationState.getConstantValues(FormulaExpand.EXPAND));
+				addValuesToDestState(destinationState.getConstantValues(FormulaExpand.EXPAND), null);
 			}
 		} else {
 			if (storeDestinationState) {
-				addValuesToDestState(destinationState.getVariableValues(FormulaExpand.EXPAND));
+				addValuesToDestState(destinationState.getVariableValues(FormulaExpand.EXPAND), transitionAfter
+				);
 			}
 
 			if (!"$initialise_machine".equals(name)) {
@@ -56,14 +54,20 @@ public class PersistentTransition {
 		}
 	}
 
-	private void addValuesToDestState(Map<IEvalElement, AbstractEvalResult> map) {
+	private void addValuesToDestState(Map<IEvalElement, AbstractEvalResult> map, PersistentTransition transitionAfter) {
 		if (destState == null) {
 			destState = new HashMap<>();
+			destStateNotChanged = new HashSet<>();
 		}
 		for (Map.Entry<IEvalElement, AbstractEvalResult> entry : map.entrySet()) {
 			if (entry.getValue() instanceof EvalResult) {
-				EvalResult evalResult = (EvalResult) entry.getValue();
-				destState.put(entry.getKey().getCode(), evalResult.getValue());
+			    String name = entry.getKey().getCode();
+				String value = ((EvalResult) entry.getValue()).getValue();
+				destState.put(name, value);
+				if(transitionAfter != null && value.equals(transitionAfter.destState.get(name))) {
+				    transitionAfter.destState.remove(name);
+				    transitionAfter.destStateNotChanged.add(name);
+                }
 			}
 		}
 	}

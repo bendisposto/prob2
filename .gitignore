@@ -16,8 +16,8 @@ bin/
 build/
 
 # Downloaded/generated resources
-/de.prob2.kernel/src/main/resources/cli/
-prob2-build.properties
+/de.prob2.kernel/src/main/resources/de/prob/cli/binaries/
+/de.prob2.kernel/src/main/resources/de/prob/build.properties
 
 # Logs
 prob_log.txt

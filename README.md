@@ -13,8 +13,8 @@ The source code of the current ProB release is located at http://github.com/bend
 
 ## Documentation
 
-* Tutorial: http://stups.hhu.de/ProB/w/Tutorial13
-* Developer Handbook: [HTML](https://www3.hhu.de/stups/handbook/prob2/prob_developer.html) [PDF](https://www3.hhu.de/stups/handbook/prob2/prob_developer.pdf)
+* Tutorial: https://www3.hhu.de/stups/prob/index.php/Tutorial13
+* Developer Handbook: [HTML](https://www3.hhu.de/stups/handbook/prob2/prob_handbook.html) [PDF](https://www3.hhu.de/stups/handbook/prob2/prob_handbook.pdf)
 
 ## Bugs
 

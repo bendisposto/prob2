@@ -27,7 +27,8 @@ final b = h.currentState
 assert b == s[0]
 final values2 = s.valuesAt(b)
 assert values2.containsKey(formula)
-assert values2[formula].value == "{}"
+res = values2[formula].value
+assert res == "{}" || res == "\u2205"
 
 final f2 = "card(waiting)" as ClassicalB
 final before = b.values

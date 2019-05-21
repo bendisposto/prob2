@@ -12,7 +12,8 @@ h = h.add(0)
 h = h.add(3)
 assert h.currentState.id == "2"
 assert s.eval(s[3], ["2-1" as ClassicalB]).collect {it.toString()} == ['1']
-assert s.eval(s[0], ["waiting" as ClassicalB]).collect {it.value.toString()} == ['{}']
+res = s.eval(s[0], ["waiting" as ClassicalB]).collect {it.value.toString()}
+assert res == ['{}'] || res == ['\u2205']
 assert s.eval(s[2], ["waiting" as ClassicalB]).collect {it.toString()} == ['{PID2}']
 
 final formula = "x : waiting & x = PID2 & y : NAT & y = 1" as ClassicalB
@@ -26,7 +27,7 @@ assert res.y == "1"
 
 final t = res.translate()
 assert t != null && t instanceof TranslatedEvalResult
-assert t.value == true
+assert t.value.value == true
 assert t.solutions.containsKey("x")
 assert t.solutions.containsKey("y")
 assert t.x == new Atom("PID2")

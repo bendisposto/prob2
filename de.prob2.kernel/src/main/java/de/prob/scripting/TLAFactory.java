@@ -10,6 +10,7 @@ import com.google.inject.Provider;
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
+import de.be4.classicalb.core.parser.exceptions.PreParseException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.tla2b.exceptions.TLA2BException;
@@ -46,7 +47,11 @@ public class TLAFactory implements ModelFactory<ClassicalBModel> {
 		}
 
 		BParser bparser = new BParser(fileName);
-		bparser.getDefinitions().addDefinitions(translator.getBDefinitions());
+		try {
+			bparser.getDefinitions().addDefinitions(translator.getBDefinitions());
+		} catch (PreParseException e) {
+			throw new ModelTranslationError(e.getMessage(), e);
+		}
 		try {
 			final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 			classicalBModel = classicalBModel.create(ast, rml, f, bparser);

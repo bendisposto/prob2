@@ -8,9 +8,9 @@ import static de.prob.translator.Translator.translate
 
 assert translate("1") == 1
 
-assert translate("TRUE") == true
+assert translate("TRUE").value == true
 
-assert translate("FALSE") == false
+assert translate("FALSE").value == false
 
 final expected1 = new Set([Number.build(1), Number.build(2), Number.build(3)].toSet())
 assert translate("{1,2,3}") == expected1

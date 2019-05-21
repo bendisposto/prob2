@@ -33,12 +33,18 @@ class StateSpaceEvaluationTest extends Specification {
 		s.formulaRegistry.clear()
 	}
 
+    private boolean isEmptySet(x) {
+      return (x=="{}" || x=="\u2205") // u2205 is Unicode emptyset
+    }
+
 	def "it is possible to evaluate formulas in a state"() {
-		expect:
+	    final res = 
 		s.eval(firstState, [
 			new ClassicalB("waiting"),
 			new ClassicalB("ready")
-		]).collect { it.getValue() } == ["{}", "{}"]
+		]).collect { it.getValue() } 
+		expect:
+		 res == ["{}", "{}"] || res == ["\u2205", "\u2205"]
 	}
 	def "it is possible for someone to subscribe to a formula"() {
 		when:
@@ -244,7 +250,7 @@ class StateSpaceEvaluationTest extends Specification {
 		before
 		!s.getSubscribedFormulas().contains(formula)
 	}
-
+    
 	def "it is possible to evaluate multiple formulas in multiple states"() {
 		when:
 		def waiting = new ClassicalB("waiting")
@@ -265,9 +271,9 @@ class StateSpaceEvaluationTest extends Specification {
 		then:
 		result[root] == null // ignored because it is not initialised
 		def statesWOroot = states.findAll { it != root}
-		statesWOroot.collect { result[it][ready].getValue() }.inject(true) {acc, i -> acc && i == "{}"}
-		statesWOroot.collect { result[it][active].getValue() }.inject(true) {acc, i -> acc && i == "{}"}
-		result[firstState][waiting].getValue() == "{}"
+		statesWOroot.collect { result[it][ready].getValue() }.inject(true) {acc, i -> acc && isEmptySet(i)}
+		statesWOroot.collect { result[it][active].getValue() }.inject(true) {acc, i -> acc && isEmptySet(i)}
+		isEmptySet(result[firstState][waiting].getValue())
 		result[state2][waiting].getValue() == "{PID1}"
 		result[state3][waiting].getValue() == "{PID2}"
 		result[state4][waiting].getValue() == "{PID3}"

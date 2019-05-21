@@ -25,7 +25,7 @@ public class RulesCheckerTest {
 		api = Main.getInjector().getInstance(Api.class);
 	}
 
-	private static final Path DIR = Paths.get("src", "test", "resources", "brules");
+	private static final Path DIR = Paths.get("src", "test", "resources", "de", "prob", "testmachines", "brules");
 
 	@Test
 	public void testExecuteAllOperations() throws IOException {
