@@ -12,6 +12,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
 
 import java.util.ArrayList;
@@ -98,8 +99,17 @@ public class FindTestPathCommand extends AbstractCommand implements IStateSpaceM
         }
     }
 
+
 	@Override
 	public List<Transition> getNewTransitions() {
 		return transitions;
 	}
+
+    public Trace getTrace() {
+        if(transitions.isEmpty()) {
+            return null;
+        }
+        return stateSpace.getTrace(stateSpace.getRoot().getId()).addTransitions(transitions);
+    }
+
 }
