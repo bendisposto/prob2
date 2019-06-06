@@ -1,6 +1,7 @@
 package de.prob.analysis.testcasegeneration;
 
 import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
+import de.prob.statespace.Trace;
 
 import java.util.List;
 
@@ -9,16 +10,22 @@ import java.util.List;
  */
 public class TestCaseGeneratorResult {
 
+    private final List<Trace> traces;
     private final List<TestTrace> testTraces;
     private final List<Target> uncoveredTargets;
     private final List<String> infeasibleOperations;
 
-    TestCaseGeneratorResult(List<TestTrace> testTraces, List<Target> uncoveredTargets,
-                            List<String> infeasibleOperations) {
+    public TestCaseGeneratorResult(final List<Trace> traces, final List<TestTrace> testTraces, final List<Target> uncoveredTargets,
+                            final List<String> infeasibleOperations) {
+        this.traces = traces;
         this.testTraces = testTraces;
         this.testTraces.removeIf(t -> t.getTransitionNames().isEmpty());
         this.uncoveredTargets = uncoveredTargets;
         this.infeasibleOperations = infeasibleOperations;
+    }
+
+    public List<Trace> getTraces() {
+        return traces;
     }
 
     public List<TestTrace> getTestTraces() {

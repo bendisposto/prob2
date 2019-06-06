@@ -6,16 +6,17 @@ import de.be4.classicalb.core.parser.node.Start;
 import de.prob.analysis.FeasibilityAnalysis;
 import de.prob.analysis.mcdc.ConcreteMCDCTestCase;
 import de.prob.analysis.mcdc.MCDCIdentifier;
-import de.prob.animator.command.*;
-import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.model.representation.Extraction;
-import de.prob.animator.domainobjects.Join;
-import de.prob.model.classicalb.ClassicalBModel;
-import de.prob.model.classicalb.Operation;
-import de.prob.statespace.StateSpace;
 import de.prob.analysis.testcasegeneration.testtrace.CoverageTestTrace;
 import de.prob.analysis.testcasegeneration.testtrace.MCDCTestTrace;
 import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
+import de.prob.animator.command.FindTestPathCommand;
+import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.Join;
+import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.classicalb.Operation;
+import de.prob.model.representation.Extraction;
+import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,18 +58,19 @@ public class ConstraintBasedTestCaseGenerator {
      * @return A {@link TestCaseGeneratorResult} containing the final test cases and the targets left uncovered.
      */
     public TestCaseGeneratorResult generateTestCases() {
-        List<TestTrace> traces = new ArrayList<>();
+        List<Trace> traces = new ArrayList<>();
+        List<TestTrace> testTraces = new ArrayList<>();
 
         if (criterion.startsWith("MCDC")) {
             targets = getMCDCTargets(Integer.valueOf(criterion.split(":")[1]));
-            traces.add(new MCDCTestTrace(new ArrayList<>(), null, new ArrayList<>(), false,
+            testTraces.add(new MCDCTestTrace(new ArrayList<>(), null, new ArrayList<>(), false,
                     true));
         } else if (criterion.startsWith("OPERATION")) {
             List<String> selectedOperations = Arrays.asList(criterion.split(":")[1].split(","));
             targets = getOperationCoverageTargets(selectedOperations);
-            traces.add(new CoverageTestTrace(new ArrayList<>(), null, false));
+            testTraces.add(new CoverageTestTrace(new ArrayList<>(), null, false));
         } else {
-            return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         }
 
         infeasibleOperations = new FeasibilityAnalysis(model, stateSpace).analyseFeasibility();
@@ -78,14 +80,15 @@ public class ConstraintBasedTestCaseGenerator {
         List<Target> tempTargets;
         while (true) {
             tempTargets = new ArrayList<>(targets);
-            List<TestTrace> tracesOfCurrentDepth = filterDepthAndFinal(traces, depth);
+            List<TestTrace> tracesOfCurrentDepth = filterDepthAndFinal(testTraces, depth);
             for (TestTrace trace : tracesOfCurrentDepth) {
                 for (Target t : new ArrayList<>(targets)) {
                     FindTestPathCommand cmd = findTestPath(trace, t);
                     if (cmd.isFeasible()) {
                         targets.remove(t);
-                        traces.add(trace.createNewTrace(trace.getTransitionNames(), t,
+                        testTraces.add(trace.createNewTrace(trace.getTransitionNames(), t,
                                 (finalOperations.contains(t.getOperation()) || t.isInfeasible())));
+                        traces.add(cmd.getTrace());
                     }
                 }
             }
@@ -96,15 +99,16 @@ public class ConstraintBasedTestCaseGenerator {
                 for (Target t : filterTempTargets(getAllOperationNames(), tempTargets)) {
                     FindTestPathCommand cmd = findTestPath(trace, t);
                     if (cmd.isFeasible()) {
-                        traces.add(trace.createNewTrace(trace.getTransitionNames(), t,
+                        testTraces.add(trace.createNewTrace(trace.getTransitionNames(), t,
                                 (finalOperations.contains(t.getOperation()) || t.isInfeasible())));
+                        traces.add(cmd.getTrace());
                     }
                 }
             }
             depth++;
         }
         uncoveredTargets.addAll(targets);
-        return new TestCaseGeneratorResult(traces, uncoveredTargets, infeasibleOperations);
+        return new TestCaseGeneratorResult(traces, testTraces, uncoveredTargets, infeasibleOperations);
     }
 
     /**
