@@ -12,6 +12,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
 
 import java.util.List;
@@ -94,4 +95,12 @@ public class FindTestPathCommand extends AbstractCommand {
             throw new ProBError("unexpected result when trying to find a valid trace: " + resultTerm);
         }
     }
+
+    public Trace getTrace() {
+        if(transitions.isEmpty()) {
+            return null;
+        }
+        return stateSpace.getTrace(stateSpace.getRoot().getId()).addTransitions(transitions);
+    }
+
 }
