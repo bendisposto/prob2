@@ -79,13 +79,13 @@ public class FindTestPathCommand extends AbstractCommand implements IStateSpaceM
     public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
         final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
         if (resultTerm instanceof ListPrologTerm) {
-			ListPrologTerm list = (ListPrologTerm) resultTerm;
-			this.result = ResultType.STATE_FOUND;
-			List<Transition> transitions = new ArrayList<>();
-			for(PrologTerm prologTerm : list) {
-				transitions.add(Transition.createTransitionFromCompoundPrologTerm(stateSpace, (CompoundPrologTerm) prologTerm));
-			}
-			this.transitions = transitions;
+        	ListPrologTerm list = (ListPrologTerm) resultTerm;
+        	this.result = ResultType.STATE_FOUND;
+        	List<Transition> transitions = new ArrayList<>();
+        	for(PrologTerm prologTerm : list) {
+        		transitions.add(Transition.createTransitionFromCompoundPrologTerm(stateSpace, (CompoundPrologTerm) prologTerm));
+        	}
+        	this.transitions = transitions;
         } else if (resultTerm.hasFunctor("errors", 1)) {
             this.result = ResultType.ERROR;
         } else if (resultTerm.hasFunctor("interrupted", 0)) {
