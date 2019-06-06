@@ -6,22 +6,22 @@ import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.exception.ProBError;
-import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Transition;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Calls the ProB core to find a feasible path of a list of transitions {@link #givenTransitions} that ends in a
  * state that satisfies a given predicate {@link #endPredicate}.
  */
-public class FindTestPathCommand extends AbstractCommand {
+public class FindTestPathCommand extends AbstractCommand implements IStateSpaceModifier {
 
     public enum ResultType {
         STATE_FOUND, NO_STATE_FOUND, INTERRUPTED, ERROR, TIME_OUT, INFEASIBLE_PATH
@@ -78,10 +78,13 @@ public class FindTestPathCommand extends AbstractCommand {
     public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
         final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
         if (resultTerm instanceof ListPrologTerm) {
-            transitions = BindingGenerator.getList(resultTerm).stream()
-                    .map(pt -> Transition.createTransitionFromCompoundPrologTerm(
-                            stateSpace, BindingGenerator.getCompoundTerm(pt, 4)))
-                    .collect(Collectors.toList());
+			ListPrologTerm list = (ListPrologTerm) resultTerm;
+			this.result = ResultType.STATE_FOUND;
+			List<Transition> transitions = new ArrayList<>();
+			for(PrologTerm prologTerm : list) {
+				transitions.add(Transition.createTransitionFromCompoundPrologTerm(stateSpace, (CompoundPrologTerm) prologTerm));
+			}
+			this.transitions = transitions;
         } else if (resultTerm.hasFunctor("errors", 1)) {
             this.result = ResultType.ERROR;
         } else if (resultTerm.hasFunctor("interrupted", 0)) {
@@ -94,4 +97,9 @@ public class FindTestPathCommand extends AbstractCommand {
             throw new ProBError("unexpected result when trying to find a valid trace: " + resultTerm);
         }
     }
+
+	@Override
+	public List<Transition> getNewTransitions() {
+		return transitions;
+	}
 }
