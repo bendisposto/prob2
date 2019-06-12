@@ -14,14 +14,16 @@ public class TestCaseGeneratorResult {
     private final List<TestTrace> testTraces;
     private final List<Target> uncoveredTargets;
     private final List<String> infeasibleOperations;
+    private final boolean interrupted;
 
     public TestCaseGeneratorResult(final List<Trace> traces, final List<TestTrace> testTraces, final List<Target> uncoveredTargets,
-                            final List<String> infeasibleOperations) {
+                            final List<String> infeasibleOperations, final boolean interrupted) {
         this.traces = traces;
         this.testTraces = testTraces;
         this.testTraces.removeIf(t -> t.getTransitionNames().isEmpty());
         this.uncoveredTargets = uncoveredTargets;
         this.infeasibleOperations = infeasibleOperations;
+        this.interrupted = interrupted;
     }
 
     public List<Trace> getTraces() {
@@ -40,4 +42,7 @@ public class TestCaseGeneratorResult {
         return infeasibleOperations;
     }
 
+    public boolean isInterrupted() {
+        return interrupted;
+    }
 }

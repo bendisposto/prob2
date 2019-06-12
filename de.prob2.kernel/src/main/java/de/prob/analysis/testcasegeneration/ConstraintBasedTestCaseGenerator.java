@@ -58,6 +58,7 @@ public class ConstraintBasedTestCaseGenerator {
      * @return A {@link TestCaseGeneratorResult} containing the final test cases and the targets left uncovered.
      */
     public TestCaseGeneratorResult generateTestCases() {
+        boolean interrupted = false;
         List<Trace> traces = new ArrayList<>();
         List<TestTrace> testTraces = new ArrayList<>();
 
@@ -70,7 +71,7 @@ public class ConstraintBasedTestCaseGenerator {
             targets = getOperationCoverageTargets(selectedOperations);
             testTraces.add(new CoverageTestTrace(new ArrayList<>(), null, false));
         } else {
-            return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            return new TestCaseGeneratorResult(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), interrupted);
         }
 
         infeasibleOperations = new FeasibilityAnalysis(model, stateSpace).analyseFeasibility();
@@ -95,7 +96,7 @@ public class ConstraintBasedTestCaseGenerator {
                     }
                 }
             }
-            if (targets.isEmpty() || depth == maxDepth || Thread.currentThread().isInterrupted()) {
+            if (targets.isEmpty() || depth == maxDepth) {
                 break;
             }
             for (TestTrace trace : tracesOfCurrentDepth) {
@@ -112,9 +113,13 @@ public class ConstraintBasedTestCaseGenerator {
                 }
             }
             depth++;
+            if(Thread.currentThread().isInterrupted()) {
+                interrupted = true;
+                break;
+            }
         }
         uncoveredTargets.addAll(targets);
-        return new TestCaseGeneratorResult(traces, testTraces, uncoveredTargets, infeasibleOperations);
+        return new TestCaseGeneratorResult(traces, testTraces, uncoveredTargets, infeasibleOperations, interrupted);
     }
 
     /**
