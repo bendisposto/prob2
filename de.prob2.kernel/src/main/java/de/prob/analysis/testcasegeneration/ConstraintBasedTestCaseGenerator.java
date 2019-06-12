@@ -95,7 +95,7 @@ public class ConstraintBasedTestCaseGenerator {
                     }
                 }
             }
-            if (targets.isEmpty() || depth == maxDepth) {
+            if (targets.isEmpty() || depth == maxDepth || Thread.currentThread().isInterrupted()) {
                 break;
             }
             for (TestTrace trace : tracesOfCurrentDepth) {
