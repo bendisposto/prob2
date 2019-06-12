@@ -112,7 +112,7 @@ public class FindTestPathCommand extends AbstractCommand implements IStateSpaceM
 	}
 
     public Trace getTrace() {
-        if(transitions.isEmpty()) {
+        if(transitions == null || transitions.isEmpty()) {
             return null;
         }
         return stateSpace.getTrace(stateSpace.getRoot().getId()).addTransitions(transitions);
