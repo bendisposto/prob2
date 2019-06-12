@@ -15,6 +15,7 @@ import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,12 @@ public class FindTestPathCommand extends AbstractCommand {
         PrettyPrinter prettyPrinter = new PrettyPrinter();
         endPredicate.apply(prettyPrinter);
         this.endPredicate = new ClassicalB(prettyPrinter.getPrettyPrint(), FormulaExpand.EXPAND);
+    }
+
+    public FindTestPathCommand(final List<String> givenTransitions, final StateSpace stateSpace) {
+        this.givenTransitions = givenTransitions;
+        this.stateSpace = stateSpace;
+        this.endPredicate = new ClassicalB("1=1", FormulaExpand.EXPAND);
     }
 
     public ResultType getResult() {

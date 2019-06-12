@@ -88,7 +88,10 @@ public class ConstraintBasedTestCaseGenerator {
                         targets.remove(t);
                         testTraces.add(trace.createNewTrace(trace.getTransitionNames(), t,
                                 (finalOperations.contains(t.getOperation()) || t.isInfeasible())));
-                        traces.add(cmd.getTrace());
+                        if(finalOperations.contains(t.getOperation()) || t.isInfeasible()) {
+                            cmd = findTestPathWithTarget(trace, t);
+                            traces.add(cmd.getTrace());
+                        }
                     }
                 }
             }
@@ -101,7 +104,10 @@ public class ConstraintBasedTestCaseGenerator {
                     if (cmd.isFeasible()) {
                         testTraces.add(trace.createNewTrace(trace.getTransitionNames(), t,
                                 (finalOperations.contains(t.getOperation()) || t.isInfeasible())));
-                        traces.add(cmd.getTrace());
+                        if(finalOperations.contains(t.getOperation()) || t.isInfeasible()) {
+                            cmd = findTestPathWithTarget(trace, t);
+                            traces.add(cmd.getTrace());
+                        }
                     }
                 }
             }
@@ -227,6 +233,24 @@ public class ConstraintBasedTestCaseGenerator {
      */
     private FindTestPathCommand findTestPath(TestTrace trace, Target target) {
         FindTestPathCommand cmd = new FindTestPathCommand(trace.getTransitionNames(), stateSpace, target.getGuard());
+        stateSpace.execute(cmd);
+        return cmd;
+    }
+
+    /**
+     * Executes the {@link FindTestPathCommand}.
+     * <p>
+     * The command calls the ProB core to find a feasible path containing the target as final operation.
+     * This function is used after checking the feasibility of the prior trace and the final operation.
+     *
+     * @param trace  The prior trace
+     * @param target The regarded target
+     * @return The command that contains the result of the ProB call
+     */
+    private FindTestPathCommand findTestPathWithTarget(TestTrace trace, Target target) {
+        List<String> transitions = new ArrayList<>(trace.getTransitionNames());
+        transitions.add(target.getOperation());
+        FindTestPathCommand cmd = new FindTestPathCommand(transitions, stateSpace);
         stateSpace.execute(cmd);
         return cmd;
     }
