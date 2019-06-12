@@ -24,6 +24,7 @@ public final class Extraction {
 
     public static List<IEvalElement> getGuardPredicates(ClassicalBModel model, String operation) {
         List<IEvalElement> iEvalElements = new ArrayList<>();
+        //TODO: Fix possible NPE
         for (AbstractElement guard : model.getMainMachine().getOperation(operation).getChildren().get(Guard.class)) {
             iEvalElements.add(((Guard) guard).getPredicate());
         }

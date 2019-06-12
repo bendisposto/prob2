@@ -107,6 +107,7 @@ public class CbcSolveCommand extends AbstractCommand {
 			result = new ComputationNotCompletedResult(evalElement.getCode(),
 					"no solution found (but one might exist), reason: " + prologTerm.getArgument(1));
 		} else {
+			//TODO: handle error functor
 			throw new AssertionError("Unhandled functor in result: " + prologTerm.getFunctor() + "/" + prologTerm.getArity());
 		}
 	}

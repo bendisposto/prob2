@@ -38,6 +38,7 @@ public class MCDCIdentifier {
         Map<Operation, List<ConcreteMCDCTestCase>> testCases = new HashMap<>();
         ModelElementList<Operation> operations = model.getMainMachine().getEvents();
         for (Operation operation : operations) {
+            //TODO: Fix possible parse error in conjunct
             Start ast = ((ClassicalB) Join
                     .conjunct(Extraction.getGuardPredicates(model, operation.getName())))
                     .getAst();

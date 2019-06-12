@@ -30,6 +30,7 @@ public class FeasibilityAnalysis {
             ClassicalB predicate = (ClassicalB) Join.conjunct(iEvalElements);
             CbcSolveCommand cmd = new CbcSolveCommand(predicate);
             stateSpace.execute(cmd);
+            //TODO: Fix possible ClassCastException
             if (!(((EvalResult) cmd.getValue()).getValue().equals("TRUE"))) {
                 infeasibleOperations.add(operation.getName());
             }
