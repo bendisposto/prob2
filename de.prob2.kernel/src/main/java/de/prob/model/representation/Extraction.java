@@ -1,6 +1,7 @@
 package de.prob.model.representation;
 
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.model.classicalb.ClassicalBInvariant;
 import de.prob.model.classicalb.ClassicalBModel;
 
 import java.util.ArrayList;
@@ -16,6 +17,10 @@ public final class Extraction {
 
     public static List<IEvalElement> getInvariantPredicates(ClassicalBModel model) {
         List<IEvalElement> iEvalElements = new ArrayList<>();
+        ModelElementList<ClassicalBInvariant> invariants = model.getMainMachine().getInvariants();
+        if(invariants == null) {
+        	return iEvalElements;
+        }
         for (Invariant invariant : model.getMainMachine().getInvariants()) {
             iEvalElements.add(invariant.getPredicate());
         }
