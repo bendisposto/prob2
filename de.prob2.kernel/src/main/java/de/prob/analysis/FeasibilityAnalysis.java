@@ -34,8 +34,8 @@ public class FeasibilityAnalysis {
             }
             CbcSolveCommand cmd = new CbcSolveCommand(predicate);
             stateSpace.execute(cmd);
-            //TODO: Fix possible ClassCastException
-            if (!(((EvalResult) cmd.getValue()).getValue().equals("TRUE"))) {
+            
+            if (!(cmd.getValue() instanceof EvalResult) || !(((EvalResult) cmd.getValue()).getValue().equals("TRUE"))) {
                 infeasibleOperations.add(operation.getName());
             }
         }
