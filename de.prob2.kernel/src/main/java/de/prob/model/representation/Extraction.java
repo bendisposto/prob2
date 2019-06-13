@@ -3,6 +3,7 @@ package de.prob.model.representation;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.classicalb.ClassicalBInvariant;
 import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.classicalb.Operation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,13 @@ public final class Extraction {
         return iEvalElements;
     }
 
-    public static List<IEvalElement> getGuardPredicates(ClassicalBModel model, String operation) {
+    public static List<IEvalElement> getGuardPredicates(ClassicalBModel model, String operationName) {
         List<IEvalElement> iEvalElements = new ArrayList<>();
-        Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> map = model.getMainMachine().getOperation(operation).getChildren();
-        if(map == null || map.get(Guard.class) == null) {
+        Operation operation = model.getMainMachine().getOperation(operationName);
+        if(operation == null || operation.getChildren() == null || operation.getChildren().get(Guard.class) == null) {
         	return iEvalElements;
         }
-        for (AbstractElement guard : map.get(Guard.class)) {
+        for (AbstractElement guard : operation.getChildren().get(Guard.class)) {
             iEvalElements.add(((Guard) guard).getPredicate());
         }
         return iEvalElements;
