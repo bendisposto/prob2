@@ -6,6 +6,7 @@ import de.prob.model.classicalb.ClassicalBModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Contains methods for tidy access to different types of {@link IEvalElement}s.
@@ -29,11 +30,11 @@ public final class Extraction {
 
     public static List<IEvalElement> getGuardPredicates(ClassicalBModel model, String operation) {
         List<IEvalElement> iEvalElements = new ArrayList<>();
-        ModelElementList<? extends AbstractElement> guards = model.getMainMachine().getOperation(operation).getChildren().get(Guard.class);
-        if(guards == null) {
+        Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> map = model.getMainMachine().getOperation(operation).getChildren();
+        if(map == null || map.get(Guard.class) == null) {
         	return iEvalElements;
         }
-        for (AbstractElement guard : guards) {
+        for (AbstractElement guard : map.get(Guard.class)) {
             iEvalElements.add(((Guard) guard).getPredicate());
         }
         return iEvalElements;
