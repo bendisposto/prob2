@@ -11,6 +11,8 @@ import de.prob.analysis.testcasegeneration.testtrace.MCDCTestTrace;
 import de.prob.analysis.testcasegeneration.testtrace.TestTrace;
 import de.prob.animator.command.FindTestPathCommand;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.Join;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
@@ -205,9 +207,14 @@ public class ConstraintBasedTestCaseGenerator {
     }
 
     private PPredicate getGuardAsPredicate(String operation) {
-        Start ast = ((ClassicalB) Join
-                .conjunct(Extraction.getGuardPredicates(model, operation)))
-                .getAst();
+    	List<IEvalElement> guards = Extraction.getGuardPredicates(model, operation);
+        ClassicalB predicate = null;
+        if(guards.isEmpty()) {
+        	predicate = new ClassicalB("1=1", FormulaExpand.EXPAND);
+        } else {
+        	predicate = (ClassicalB) Join.conjunct(guards);
+        }
+        Start ast = predicate.getAst();
         return ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
     }
 

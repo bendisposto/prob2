@@ -276,13 +276,20 @@ public class State extends GroovyObjectSupport {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof State && this.id.equals(((State)obj).getId()) && this.getStateSpace().equals(((State)obj).getStateSpace());
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final State other = (State)obj;
+		return Objects.equals(this.getId(), other.getId()) && Objects.equals(this.getStateSpace(), other.getStateSpace());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, stateSpace);
+		return Objects.hash(this.getId(), this.getStateSpace());
 	}
 
 	public StateSpace getStateSpace() {

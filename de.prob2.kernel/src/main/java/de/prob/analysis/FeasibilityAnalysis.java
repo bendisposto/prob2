@@ -26,12 +26,16 @@ public class FeasibilityAnalysis {
         for (Operation operation : model.getMainMachine().getEvents()) {
             List<IEvalElement> iEvalElements = new ArrayList<>(invariantPredicates);
             iEvalElements.addAll(Extraction.getGuardPredicates(model, operation.getName()));
-
-            ClassicalB predicate = (ClassicalB) Join.conjunct(iEvalElements);
+            ClassicalB predicate = null;
+            if(iEvalElements.isEmpty()) {
+            	predicate = new ClassicalB("1=1", FormulaExpand.EXPAND);
+            } else {
+            	predicate = (ClassicalB) Join.conjunct(iEvalElements);
+            }
             CbcSolveCommand cmd = new CbcSolveCommand(predicate);
             stateSpace.execute(cmd);
-            //TODO: Fix possible ClassCastException
-            if (!(((EvalResult) cmd.getValue()).getValue().equals("TRUE"))) {
+            
+            if (!(cmd.getValue() instanceof EvalResult) || !(((EvalResult) cmd.getValue()).getValue().equals("TRUE"))) {
                 infeasibleOperations.add(operation.getName());
             }
         }

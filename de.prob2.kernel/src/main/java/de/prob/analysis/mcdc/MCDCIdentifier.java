@@ -38,10 +38,14 @@ public class MCDCIdentifier {
         Map<Operation, List<ConcreteMCDCTestCase>> testCases = new HashMap<>();
         ModelElementList<Operation> operations = model.getMainMachine().getEvents();
         for (Operation operation : operations) {
-            //TODO: Fix possible parse error in conjunct
-            Start ast = ((ClassicalB) Join
-                    .conjunct(Extraction.getGuardPredicates(model, operation.getName())))
-                    .getAst();
+        	List<IEvalElement> guards = Extraction.getGuardPredicates(model, operation.getName());
+            ClassicalB predicate = null;
+            if(guards.isEmpty()) {
+            	predicate = new ClassicalB("1=1", FormulaExpand.EXPAND);
+            } else {
+            	predicate = (ClassicalB) Join.conjunct(guards);
+            }
+            Start ast = predicate.getAst();
             PPredicate startNode = ((APredicateParseUnit) ast.getPParseUnit()).getPredicate();
             testCases.put(operation, getMCDCTestCases(startNode));
         }

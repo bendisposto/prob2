@@ -273,7 +273,7 @@ public class Transition {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getId(), this.getSource().getId(), this.getDestination().getId());
+		return Objects.hash(this.getId(), this.getSource(), this.getDestination());
 	}
 
 	/**
