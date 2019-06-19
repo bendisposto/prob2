@@ -97,6 +97,10 @@ public class ConstraintBasedTestCaseGenerator {
                         }
                     }
                 }
+                if(Thread.currentThread().isInterrupted()) {
+                    interrupted = true;
+                    break;
+                }
             }
             if (targets.isEmpty() || depth == maxDepth) {
                 break;
@@ -112,6 +116,10 @@ public class ConstraintBasedTestCaseGenerator {
                             traces.add(cmd.getTrace());
                         }
                     }
+                }
+                if(Thread.currentThread().isInterrupted()) {
+                    interrupted = true;
+                    break;
                 }
             }
             depth++;
