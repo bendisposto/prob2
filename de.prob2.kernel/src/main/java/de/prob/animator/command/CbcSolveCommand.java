@@ -10,6 +10,7 @@ import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.exception.ProBError;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -17,6 +18,9 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the values of Classical-B Predicates and Expressions.
@@ -30,6 +34,9 @@ public class CbcSolveCommand extends AbstractCommand {
 	}
 
 	private static final String PROLOG_COMMAND_NAME = "cbc_solve_with_opts";
+
+	private final Logger logger = LoggerFactory
+			.getLogger(CbcSolveCommand.class);
 
 	private static final int BINDINGS = 1;
 
@@ -106,8 +113,11 @@ public class CbcSolveCommand extends AbstractCommand {
 		} else if (prologTerm.hasFunctor("no_solution_found", 1)) {
 			result = new ComputationNotCompletedResult(evalElement.getCode(),
 					"no solution found (but one might exist), reason: " + prologTerm.getArgument(1));
+		} else if (prologTerm.hasFunctor("error",0)) {
+			String msg = "Unexpected result when solving command. See Log for details.";
+			logger.error(msg);
+			throw new ProBError(msg);
 		} else {
-			//TODO: handle error functor
 			throw new AssertionError("Unhandled functor in result: " + prologTerm.getFunctor() + "/" + prologTerm.getArity());
 		}
 	}
