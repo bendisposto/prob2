@@ -11,6 +11,7 @@ import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
 
@@ -47,6 +48,7 @@ public final class GetAnimationMatrixForStateCommand extends AbstractCommand {
 	
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		final ListPrologTerm prologMatrix = BindingGenerator.getList(bindings.get(MATRIX_VAR));
 		final int minRow = BindingGenerator.getInteger(bindings.get(MIN_ROW_VAR)).getValue().intValueExact();
 		final int maxRow = BindingGenerator.getInteger(bindings.get(MAX_ROW_VAR)).getValue().intValueExact();
 		final int minColumn = BindingGenerator.getInteger(bindings.get(MIN_COL_VAR)).getValue().intValueExact();
@@ -54,8 +56,9 @@ public final class GetAnimationMatrixForStateCommand extends AbstractCommand {
 		
 		final int rows = maxRow - minRow + 1;
 		final int columns = maxColumn - minColumn + 1;
-		if (rows <= 0 || columns <= 0) {
+		if (prologMatrix.isEmpty() || rows <= 0 || columns <= 0) {
 			// No animation function defined
+			this.matrix = Collections.emptyList();
 			return;
 		}
 		
@@ -65,8 +68,7 @@ public final class GetAnimationMatrixForStateCommand extends AbstractCommand {
 			.limit(rows)
 			.collect(Collectors.toList());
 		
-		BindingGenerator.getList(bindings.get(MATRIX_VAR))
-			.stream()
+		prologMatrix.stream()
 			.map(term -> BindingGenerator.getCompoundTerm(term, "entry", 3))
 			.forEach(term -> {
 				final int row = BindingGenerator.getInteger(term.getArgument(1)).getValue().intValueExact();
