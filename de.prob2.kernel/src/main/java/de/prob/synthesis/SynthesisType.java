@@ -1,6 +1,6 @@
 package de.prob.synthesis;
 
-public enum SynthesisType {
+enum SynthesisType {
   OPERATION, PREDICATE;
 
   @Override
