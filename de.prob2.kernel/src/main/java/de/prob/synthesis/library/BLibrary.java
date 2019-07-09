@@ -43,8 +43,8 @@ public class BLibrary {
    * library it will be added and its amount is set to be equal to the parameter addAmount.
    *
    * @param libraryComponentName A specific library component.
-   * @param addAmount The amount that is added to the component's amount (can be either positive or
-   *                  negative).
+   * @param addAmount            The amount that is added to the component's amount
+   *                             (can be either positive or negative).
    */
   public void updateComponentAmount(final LibraryComponentName libraryComponentName,
                                     final int addAmount) {
@@ -52,6 +52,22 @@ public class BLibrary {
     final Set<LibraryComponent> componentSet =
         getComponentSetForType(libraryComponent.getComponentType());
     updateComponentAmount(componentSet, libraryComponent, addAmount);
+  }
+
+  /**
+   * Explicitly set the amount of a specific component. If the component is currently not part of
+   * the library it will be added and its amount is set to be equal to the parameter amount.
+   *
+   * @param libraryComponentName A specific library component.
+   * @param amount               The amount that is added to the component's amount
+   *                             (can be either positive or negative).
+   */
+  public void setComponentAmount(final LibraryComponentName libraryComponentName,
+                                 final int amount) {
+    final LibraryComponent libraryComponent = new LibraryComponent(libraryComponentName, 0);
+    final Set<LibraryComponent> componentSet =
+        getComponentSetForType(libraryComponent.getComponentType());
+    setComponentAmount(componentSet, libraryComponent, amount);
   }
 
   private Set<LibraryComponent> getComponentSetForType(final LibraryComponentType componentType) {
@@ -85,6 +101,21 @@ public class BLibrary {
       return;
     }
     libraryComponent.setAmount(addAmount);
+    components.add(libraryComponent);
+  }
+
+  private void setComponentAmount(final Set<LibraryComponent> components,
+                                  final LibraryComponent libraryComponent,
+                                  final int amount) {
+    final Optional<LibraryComponent> optionalLibraryComponent = components.stream()
+        .filter(libraryComponent::equals).findFirst();
+    if (optionalLibraryComponent.isPresent()) {
+      final LibraryComponent existing = optionalLibraryComponent.get();
+      final int preAmount = existing.getAmount();
+      existing.setAmount(amount);
+      return;
+    }
+    libraryComponent.setAmount(amount);
     components.add(libraryComponent);
   }
 
