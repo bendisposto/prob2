@@ -94,9 +94,6 @@ dependencies {
 	compile group: "de.hhu.stups", name: "unicode", version: parserVersion, changing: true
 	compile group: "de.hhu.stups", name: "theorymapping", version: parserVersion, changing: true
 	compile group: "de.hhu.stups", name: "value-translator", version: "0.0.2", changing: true
-	// translator is deprecated
-	// dependency is present for downstream compatibility
-	compile group: "de.hhu.stups", name: "translator", version: parserVersion, changing: true
 
 	// Groovy (Apache License 2.0)
 	final groovyVersion = "2.5.6"
