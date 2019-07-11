@@ -126,7 +126,7 @@ class BSynthesisCommand extends AbstractCommand {
 
   /**
    * Either returns an {@link Example} or an {@link IOExample} depending on the  current
-   * command's {@link this#synthesisType}.
+   * command's {@link #synthesisType}.
    */
   public BSynthesisResult getDistinguishingExample() {
     if (synthesisType.isPredicate()) {
