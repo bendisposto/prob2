@@ -172,14 +172,12 @@ task downloadCLIs(type: Download) {
 	final files = []
 	[
 		'leopard64',
-		'linux32',
 		'linux64',
-		'win32',
 		'win64',
 	].each {platform ->
 		files << "probcli_${platform}.zip"
 	}
-	['32', '64'].each {bits ->
+	['64'].each {bits ->
 		files << "windowslib${bits}.zip"
 	}
 
@@ -192,7 +190,6 @@ task downloadCSPMFrontend {
 	final cspmfDownloadURL = "https://www3.hhu.de/stups/downloads/cspmf"
 	final files = [
 		'darwin-64': 'leopard64',
-		'linux-32': 'linux32',
 		'linux-64': 'linux64',
 		'windows': 'windows',
 	].collectEntries {cspmfPlatform, probPlatform ->
