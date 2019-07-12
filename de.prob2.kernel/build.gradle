@@ -33,13 +33,13 @@ if (System.env.TRAVIS == 'true') {
 
 
 // IMPORTANT !!!
-project.version = '3.2.12-SNAPSHOT'
+project.version = '3.9.9'
 // Remember to release the cli
 //  - create a tag in the prob_prolog repository
 //  - enter this tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/cli_release/"
 //  - enter the same tag into the jenkins job "http://alfred.cs.uni-duesseldorf.de/view/All/job/crosscompile_release/"
 ext {
-	cli_version = '1.8.2-beta2'
+	cli_version = '1.9.0'
 }
 // IMPORTANT !!!
 
@@ -47,10 +47,10 @@ ext {
 def parserVersion
 def cliDownloadURL
 if (project.version.endsWith("-SNAPSHOT")) {
-	parserVersion = '2.9.21-SNAPSHOT'
+	parserVersion = '2.9.23-SNAPSHOT'
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/nightly"
 } else {
-	parserVersion = '2.9.20'
+	parserVersion = '2.9.22'
 	cliDownloadURL = "https://www3.hhu.de/stups/downloads/prob/cli/releases/${cli_version}"
 }
 
