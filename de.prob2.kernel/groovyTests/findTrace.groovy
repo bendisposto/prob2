@@ -1,41 +1,46 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import java.nio.file.Paths
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-t = new Trace(s)
+import de.prob.animator.command.FindStateCommand
+import de.prob.animator.command.GetShortestTraceCommand
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.FormulaExpand
+import de.prob.statespace.Trace
 
-cmd = new GetShortestTraceCommand(s, "7")
-s.execute(cmd)
-assert !cmd.traceFound()
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
+def t = new Trace(s)
+
+final cmd1 = new GetShortestTraceCommand(s, "7")
+s.execute(cmd1)
+assert !cmd1.traceFound()
 
 t = t.randomAnimation(10)
 assert s[4] != null
-cmd = new GetShortestTraceCommand(s, "4")
-s.execute(cmd)
-ops = cmd.getNewTransitions()
+final cmd2 = new GetShortestTraceCommand(s, "4")
+s.execute(cmd2)
+final ops2 = cmd2.newTransitions
 
-assert ops != null
-assert !ops.isEmpty()
+assert ops2 != null
+assert !ops2.empty
 t = s.getTrace("4")
-opList = t.getTransitionList()
-assert !opList.isEmpty()
-assert ops.size() == opList.size()
-len = ops.size()
+final opList2 = t.transitionList
+assert !opList2.empty
+assert ops2.size() == opList2.size()
+final len = ops2.size()
 (0..(len-1)).each {
-	assert opList[it] == ops[it]
+	assert opList2[it] == ops2[it]
 }
 
-cmd = new FindValidStateCommand(s, "card(waiting) = 2" as ClassicalB)
-s.execute(cmd)
-t = cmd.getTrace(s)
-opList = t.getTransitionList(true)
-assert opList.size() == 1
-assert opList[0].getName() == "find_valid_state"
+final cmd3 = new FindStateCommand(s, "card(waiting) = 2" as ClassicalB, true)
+s.execute(cmd3)
+t = cmd3.getTrace(s)
+final opList3 = t.getTransitionList(true, FormulaExpand.EXPAND)
+assert opList3.size() == 1
+assert opList3[0].name == "find_valid_state"
 
 t = s.getTraceToState("pp : waiting" as ClassicalB)
 assert t != null
-ops = t.getTransitionList(true)
-assert opList.size() == 1
-assert opList[0].getName() == "find_valid_state"
+final ops3 = t.getTransitionList(true, FormulaExpand.EXPAND)
+assert opList3.size() == 1
+assert opList3[0].name == "find_valid_state"
 
 "Finding trace through current state space works"

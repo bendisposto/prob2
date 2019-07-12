@@ -3,7 +3,7 @@ package de.prob.model.representation;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.unicode.UnicodeTranslator;
 
-public class Set extends AbstractFormulaElement {
+public class Set extends AbstractFormulaElement implements Named {
 
 	private final IEvalElement formula;
 	private final String comment;
@@ -17,6 +17,7 @@ public class Set extends AbstractFormulaElement {
 		this.comment = comment == null ? "" : comment;
 	}
 
+	@Override
 	public String getName() {
 		return formula.getCode();
 	}

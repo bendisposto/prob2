@@ -1,5 +1,7 @@
 package de.prob.statespace
 
+import java.nio.file.Paths
+
 import de.prob.Main
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.StateError
@@ -8,20 +10,17 @@ import de.prob.scripting.ClassicalBFactory
 
 import spock.lang.Specification
 
-import static org.mockito.Mockito.*
-
 class BasicStateTest extends Specification {
-
-	static StateSpace s
-	static State root
-	static State firstState
-	static State secondState
+	private static StateSpace s
+	private static State root
+	private static State firstState
+	private static State secondState
 
 	def setupSpec() {
-		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
-		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
+		final path = Paths.get("groovyTests", "machines", "scheduler.mch").toString()
+		final factory = Main.injector.getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
-		root = s.getRoot()
+		root = s.root
 		firstState = root.$initialise_machine()
 		secondState = firstState.new("pp=PID1")
 	}
@@ -75,7 +74,7 @@ class BasicStateTest extends Specification {
 	def "equivalence in a state is based on id and state space"() {
 		when:
 		def sameroot = new State("root", s)
-		def otherroot = new State("root", mock(StateSpace))
+		def otherroot = new State("root", Mock(StateSpace))
 
 		then:
 		root == sameroot
@@ -92,7 +91,7 @@ class BasicStateTest extends Specification {
 	def "hashcode is based also on id and state space"() {
 		when:
 		def sameroot = new State("root", s)
-		def otherroot = new State("root", mock(StateSpace))
+		def otherroot = new State("root", Mock(StateSpace))
 
 		then:
 		root.hashCode() == sameroot.hashCode()

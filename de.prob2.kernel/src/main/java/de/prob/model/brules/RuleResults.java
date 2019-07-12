@@ -11,8 +11,8 @@ import java.util.Set;
 import de.be4.classicalb.core.parser.rules.*;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.brules.RuleResult.RESULT_ENUM;
 import de.prob.statespace.State;
 
 public class RuleResults {
@@ -22,25 +22,36 @@ public class RuleResults {
 	private ResultSummary summary;
 
 	public RuleResults(RulesProject project, State state, int maxNumberOfReportedCounterExamples) {
-		final Map<String, AbstractOperation> operationsMap = project.getOperationsMap();
+		this(getRuleOperations(project), state, maxNumberOfReportedCounterExamples);
+	}
+
+	private static Set<RuleOperation> getRuleOperations(RulesProject project) {
+		final Set<RuleOperation> result = new HashSet<>();
+		for (AbstractOperation operation : project.getOperationsMap().values()) {
+			if (operation instanceof RuleOperation) {
+				result.add((RuleOperation) operation);
+			}
+		}
+		return result;
+	}
+
+	public RuleResults(Set<RuleOperation> ruleOperations, State state, int maxNumberOfReportedCounterExamples) {
 		final ArrayList<RuleOperation> ruleList = new ArrayList<>();
 		final List<IEvalElement> evalElements = new ArrayList<>();
-		for (AbstractOperation operation : operationsMap.values()) {
-			if (operation instanceof RuleOperation) {
-				RuleOperation rule = (RuleOperation) operation;
-				ruleList.add(rule);
-				ClassicalB ruleObject = new ClassicalB(rule.getName());
-				evalElements.add(ruleObject);
-				// get number of counter examples
-				String numberOfCtsFormula = String.format("card(%s)", rule.getCounterExampleVariableName());
-				ClassicalB numberOfCtsFormulaObject = new ClassicalB(numberOfCtsFormula);
-				evalElements.add(numberOfCtsFormulaObject);
-				// get the (restricted) set of counter examples
-				String ctFormula = String.format("SORT(%s)[1..%s]", rule.getCounterExampleVariableName(),
-						maxNumberOfReportedCounterExamples);
-				ClassicalB counterExampleObject = new ClassicalB(ctFormula);
-				evalElements.add(counterExampleObject);
-			}
+		for (AbstractOperation operation : ruleOperations) {
+			RuleOperation rule = (RuleOperation) operation;
+			ruleList.add(rule);
+			ClassicalB ruleObject = new ClassicalB(rule.getName(), FormulaExpand.EXPAND);
+			evalElements.add(ruleObject);
+			// get number of counter examples
+			String numberOfCtsFormula = String.format("card(%s)", rule.getCounterExampleVariableName());
+			ClassicalB numberOfCtsFormulaObject = new ClassicalB(numberOfCtsFormula, FormulaExpand.EXPAND);
+			evalElements.add(numberOfCtsFormulaObject);
+			// get the (restricted) set of counter examples
+			String ctFormula = String.format("SORT(%s)[1..%s]", rule.getCounterExampleVariableName(),
+					maxNumberOfReportedCounterExamples);
+			ClassicalB counterExampleObject = new ClassicalB(ctFormula, FormulaExpand.EXPAND);
+			evalElements.add(counterExampleObject);
 		}
 		List<AbstractEvalResult> evalResults = state.eval(evalElements);
 		for (int i = 0; i < ruleList.size(); i++) {
@@ -62,10 +73,10 @@ public class RuleResults {
 		final Set<String> allNotCheckedRules = new HashSet<>();
 		final Set<RuleResult> allNotCheckedRulesObjects = new HashSet<>();
 		for (RuleResult ruleResult : ruleResultsMap.values()) {
-			RESULT_ENUM result = ruleResult.getResultEnum();
-			if (result == RESULT_ENUM.FAIL) {
+			RuleStatus result = ruleResult.getRuleState();
+			if (result == RuleStatus.FAIL) {
 				allFailingRules.add(ruleResult.getRuleName());
-			} else if (result == RESULT_ENUM.NOT_CHECKED) {
+			} else if (result == RuleStatus.NOT_CHECKED) {
 				allNotCheckedRules.add(ruleResult.getRuleName());
 				allNotCheckedRulesObjects.add(ruleResult);
 			}
@@ -82,7 +93,7 @@ public class RuleResults {
 		int numberOfRulesNotChecked = 0;
 		int numberOfRulesDisabled = 0;
 		for (RuleResult ruleResult : ruleResultsMap.values()) {
-			RESULT_ENUM resultEnum = ruleResult.getResultEnum();
+			RuleStatus resultEnum = ruleResult.getRuleState();
 			switch (resultEnum) {
 			case FAIL:
 				numberOfRulesFailed++;

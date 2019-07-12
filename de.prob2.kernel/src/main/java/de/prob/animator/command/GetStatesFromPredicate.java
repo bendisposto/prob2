@@ -8,22 +8,20 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.Transition;
 
 public class GetStatesFromPredicate extends AbstractCommand {
-
 	private static final String PROLOG_COMMAND_NAME = "get_states_for_predicate";
+	private static final String STATES = "States";
+	private static final String ERRORS = "Errors";
+
 	private final IEvalElement formula;
-	private final String STATES = "States";
-	private final String ERRORS = "Errors";
-	private final List<String> ids = new ArrayList<String>();
+	private final List<String> ids = new ArrayList<>();
 
 	public GetStatesFromPredicate(final IEvalElement e) {
 		if (!EvalElementType.PREDICATE.equals(e.getKind())) {
-			throw new IllegalArgumentException(
-					"Formula in GetStatesFromPredicate must be a predicate");
+			throw new IllegalArgumentException("Formula in GetStatesFromPredicate must be a predicate");
 		}
 		formula = e;
 	}
@@ -38,11 +36,8 @@ public class GetStatesFromPredicate extends AbstractCommand {
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		ListPrologTerm list = BindingGenerator.getList(bindings.get(STATES));
-
-		for (PrologTerm prologTerm : list) {
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
+		for (PrologTerm prologTerm : BindingGenerator.getList(bindings.get(STATES))) {
 			ids.add(Transition.getIdFromPrologTerm(prologTerm));
 		}
 
@@ -51,5 +46,4 @@ public class GetStatesFromPredicate extends AbstractCommand {
 	public List<String> getIds() {
 		return ids;
 	}
-
 }

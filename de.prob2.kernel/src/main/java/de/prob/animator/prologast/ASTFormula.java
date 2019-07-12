@@ -1,28 +1,53 @@
 package de.prob.animator.prologast;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
+
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.ProBEvalElement;
 import de.prob.prolog.term.PrologTerm;
 
-public class ASTFormula extends PrologASTNode{
-    private final PrologTerm formula;
+public final class ASTFormula extends PrologASTNode{
+	private final PrologTerm term;
+	private final String prettyPrint;
+	private final Map<FormulaExpand, ProBEvalElement> formulas;
 
-    ASTFormula(PrologTerm formula) {
-        super();
-        this.formula = formula;
-    }
+	public ASTFormula(PrologTerm term, String prettyPrint) {
+		super(Collections.emptyList());
 
-    public ProBEvalElement getFormula(FormulaExpand expand) {
-        PrologTerm term = this.formula.getArgument(1);
-        String prettyPrint = this.formula.getArgument(2).getFunctor();
-        return new ProBEvalElement(term, prettyPrint, expand);
-    }
+		Objects.requireNonNull(term, "term");
+		Objects.requireNonNull(prettyPrint, "prettyPrint");
 
-    public ProBEvalElement getFormula() {
-        return this.getFormula(FormulaExpand.TRUNCATE);
-    }
+		this.term = term;
+		this.prettyPrint = prettyPrint;
+		this.formulas = new EnumMap<>(FormulaExpand.class);
+	}
 
-    public String toString(){
-        return "\n[Formula] : " + this.formula;
-    }
+	public PrologTerm getTerm() {
+		return this.term;
+	}
+
+	public String getPrettyPrint() {
+		return this.prettyPrint;
+	}
+
+	public ProBEvalElement getFormula(FormulaExpand expand) {
+		return this.formulas.computeIfAbsent(expand, e -> new ProBEvalElement(this.getTerm(), this.getPrettyPrint(), e));
+	}
+
+	public ProBEvalElement getFormula() {
+		return this.getFormula(FormulaExpand.TRUNCATE);
+	}
+
+	@Override
+	public String toString(){
+		return MoreObjects.toStringHelper(this)
+			.add("term", this.getTerm())
+			.add("prettyPrint", this.getPrettyPrint())
+			.toString();
+	}
 }

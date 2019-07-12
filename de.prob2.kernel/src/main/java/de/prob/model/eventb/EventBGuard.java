@@ -1,15 +1,16 @@
 package de.prob.model.eventb;
 
+import java.util.Objects;
 import java.util.Set;
+
+import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.model.representation.Guard;
+import de.prob.model.representation.Named;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-import com.google.common.base.Objects;
-
-import de.prob.animator.domainobjects.EventB;
-import de.prob.model.representation.Guard;
-
-public class EventBGuard extends Guard {
+public class EventBGuard extends Guard implements Named {
 
 	private final String name;
 	private final boolean theorem;
@@ -17,7 +18,7 @@ public class EventBGuard extends Guard {
 
 	public EventBGuard(final String name, final String code,
 			final boolean theorem, final Set<IFormulaExtension> typeEnv) {
-		this(name, new EventB(code, typeEnv), theorem, "");
+		this(name, new EventB(code, typeEnv, FormulaExpand.EXPAND), theorem, "");
 	}
 
 	public EventBGuard(final String name, final EventB predicate,
@@ -28,6 +29,7 @@ public class EventBGuard extends Guard {
 		this.comment = comment == null ? "" : comment;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -41,20 +43,20 @@ public class EventBGuard extends Guard {
 	}
 
 	@Override
-	public boolean equals(final Object that) {
-		if (that == this) {
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if (that instanceof EventBGuard) {
-			return this.theorem == ((EventBGuard) that).isTheorem()
-					&& getPredicate().getCode().equals(
-							((EventBGuard) that).getPredicate().getCode());
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
 		}
-		return false;
+		final EventBGuard other = (EventBGuard)obj;
+		return this.isTheorem() == other.isTheorem()
+				&& Objects.equals(this.getPredicate().getCode(), other.getPredicate().getCode());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.theorem, getPredicate().getCode());
+		return Objects.hash(this.isTheorem(), this.getPredicate().getCode());
 	}
 }

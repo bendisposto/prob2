@@ -2,8 +2,6 @@ package de.prob.statespace
 
 import de.prob.model.representation.AbstractModel
 
-
-
 class TraceConverter {
 	def static File save(Trace trace, String fileName) {
 		final StringBuilder sb = new StringBuilder();
@@ -34,26 +32,26 @@ class TraceConverter {
 		file.newWriter()
 
 		file << '''{ m ->
-    def next = { h, hash, name, args, strict ->
-        def s = h as StateSpace
-        def oldh = h
-        def ns = s.getOutEdges(h.getCurrentState())
-        def n = (ns.grep {it.sha() == hash})
-	    if (n.isEmpty()) {
-            if (strict) {
-                assert false, 'Could not replay exact trace.'
-            } else {
-                println "Warning: Cannot find precise solution for nondeterministic assignments"
-                h = h.add(name,args)
-            }
-        } else {
-            h = h.add(n.first().id);
-        }
-        assert h != null, 'Could not find a sucessor state. Trace so far is ${oldh}. Missing successor state for ${name} with arguments ${args}'
-        h
-    }
+	def next = { h, hash, name, args, strict ->
+		def s = h as StateSpace
+		def oldh = h
+		def ns = s.getOutEdges(h.getCurrentState())
+		def n = (ns.grep {it.sha() == hash})
+		if (n.isEmpty()) {
+			if (strict) {
+				assert false, 'Could not replay exact trace.'
+			} else {
+				println "Warning: Cannot find precise solution for nondeterministic assignments"
+				h = h.add(name,args)
+			}
+		} else {
+			h = h.add(n.first().id);
+		}
+		assert h != null, 'Could not find a sucessor state. Trace so far is ${oldh}. Missing successor state for ${name} with arguments ${args}'
+		h
+	}
 
-    def h = m as Trace
+	def h = m as Trace
 '''
 
 		def trace = new XmlSlurper().parse(xmlFile)
@@ -120,14 +118,14 @@ class TestRunner extends ReplayTraceTest {
 		traceFiles.each {
 			sb.append("""    def "trace from ${it.name} can be replayed"(){
 		when:
-        def state = interpretLine(line)
+		def state = interpretLine(line)
 
-        then:
-        state != null
+		then:
+		state != null
 
-        where:
-        line << extractLines("${it.getAbsolutePath()}")
-    }
+		where:
+		line << extractLines("${it.getAbsolutePath()}")
+	}
 
 """)
 		}

@@ -6,8 +6,9 @@
 
 package de.prob.animator.command;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.prob.animator.domainobjects.LTL;
 import de.prob.check.IModelCheckingResult;
@@ -20,18 +21,18 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Transition;
 
 public final class LtlCheckingCommand extends EvaluationCommand implements
 		IStateSpaceModifier {
-
 	private static final String PROLOG_COMMAND_NAME = "prob2_do_ltl_modelcheck";
 	private static final String VARIABLE_NAME_RESULT = "R";
 	private static final String VARIABLE_NAME_ERRORS = "Errors";
 
-	public static enum PathType {
+	public enum PathType {
 		INFINITE, FINITE, REDUCED
 	}
 
@@ -40,8 +41,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 	private final LTL ltlFormula;
 	private final StateSpace s;
 
-	public LtlCheckingCommand(final StateSpace s, final LTL ltlFormula,
-			final int max) {
+	public LtlCheckingCommand(final StateSpace s, final LTL ltlFormula, final int max) {
 		super(ltlFormula, null);
 		this.s = s;
 		this.ltlFormula = ltlFormula;
@@ -53,8 +53,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		PrologTerm term = bindings.get(VARIABLE_NAME_RESULT);
 
 		if (term.hasFunctor("ok", 0)) {
@@ -67,8 +66,10 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			result = res;
 			value = res;
 		} else if (term.hasFunctor("typeerror", 0)) {
-			LTLError res = new LTLError(ltlFormula,
-					"Type error discovered in formula");
+			ListPrologTerm errorTerm = (ListPrologTerm) bindings.get(VARIABLE_NAME_ERRORS);
+			LTLError res = new LTLError(ltlFormula, String.join("\n", errorTerm.stream()
+				.map(PrologTerm::atomicString)
+				.collect(Collectors.toList())));
 			result = res;
 			value = res;
 		} else if (term.hasFunctor("incomplete", 0)) {
@@ -77,17 +78,12 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			value = res;
 		} else if (term.hasFunctor("counterexample", 3)) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(term, 3);
-			List<Transition> counterExample = new ArrayList<Transition>();
-			List<Transition> pathToCE = new ArrayList<Transition>();
-
-			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(1))) {
-				if (!pt.hasFunctor("none", 0)) {
-					counterExample.add(Transition
-							.createTransitionFromCompoundPrologTerm(s,
-									BindingGenerator.getCompoundTerm(pt, 4)));
-				}
-			}
-
+			List<Transition> counterExample = BindingGenerator.getList(cpt.getArgument(1)).stream()
+				.filter(pt -> !pt.hasFunctor("none", 0))
+				.map(pt -> Transition.createTransitionFromCompoundPrologTerm(
+					s, BindingGenerator.getCompoundTerm(pt, 4)))
+				.collect(Collectors.toList());
+			
 			PathType pathType;
 			int loopEntry;
 			PrologTerm loopStatus = cpt.getArgument(2);
@@ -107,19 +103,17 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 						"LTL model check returned unexpected loop status: "
 								+ loopStatus);
 			}
-
-			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(3))) {
-				pathToCE.add(Transition.createTransitionFromCompoundPrologTerm(
-						s, BindingGenerator.getCompoundTerm(pt, 4)));
-			}
-
-			LTLCounterExample res = new LTLCounterExample(ltlFormula, pathToCE,
-					counterExample, loopEntry, pathType);
+			
+			List<Transition> pathToCE = BindingGenerator.getList(cpt.getArgument(3)).stream()
+				.map(pt -> Transition.createTransitionFromCompoundPrologTerm(
+					s, BindingGenerator.getCompoundTerm(pt, 4)))
+				.collect(Collectors.toList());
+			
+			LTLCounterExample res = new LTLCounterExample(ltlFormula, pathToCE, counterExample, loopEntry, pathType);
 			result = res;
 			value = res;
 		} else {
-			throw new UnknownLtlResult("Unknown result from LTL checking: "
-					+ term.toString());
+			throw new UnknownLtlResult("Unknown result from LTL checking: " + term);
 		}
 	}
 
@@ -133,8 +127,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 		pto.closeTerm();
 	}
 
-	public static IModelCheckingResult modelCheck(final StateSpace s,
-			final LTL formula, final int max) {
+	public static IModelCheckingResult modelCheck(final StateSpace s, final LTL formula, final int max) {
 		LtlCheckingCommand cmd = new LtlCheckingCommand(s, formula, max);
 		s.execute(cmd);
 		return cmd.getResult();
@@ -142,11 +135,10 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 
 	@Override
 	public List<Transition> getNewTransitions() {
-		List<Transition> newOps = new ArrayList<Transition>();
 		if (result instanceof LTLCounterExample) {
-			newOps.addAll(((LTLCounterExample) result).getOpList());
+			return ((LTLCounterExample) result).getOpList();
+		} else {
+			return Collections.emptyList();
 		}
-		return newOps;
 	}
-
 }

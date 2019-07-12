@@ -2,6 +2,7 @@ package de.prob.model.classicalb;
 
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractFormulaElement;
 
@@ -10,7 +11,7 @@ public class Parameter extends AbstractFormulaElement {
 	private final ClassicalB expression;
 
 	public Parameter(final Start expression) {
-		this.expression = new ClassicalB(expression);
+		this.expression = new ClassicalB(expression, FormulaExpand.EXPAND);
 	}
 
 	public ClassicalB getExpression() {
@@ -19,7 +20,7 @@ public class Parameter extends AbstractFormulaElement {
 
 	@Override
 	public IEvalElement getFormula() {
-		return expression;
+		return this.getExpression();
 	}
 
 }

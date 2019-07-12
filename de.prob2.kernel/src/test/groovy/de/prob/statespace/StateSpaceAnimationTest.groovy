@@ -1,23 +1,25 @@
 package de.prob.statespace
 
+import java.nio.file.Paths
+
 import de.prob.Main
 import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.animator.domainobjects.IdentifierNotInitialised
 import de.prob.scripting.ClassicalBFactory
 
 import spock.lang.Specification
 
 class StateSpaceAnimationTest extends Specification {
-
-	static StateSpace s
-	static State root
-	static State firstState
+	private static StateSpace s
+	private static State root
+	private static State firstState
 
 	def setupSpec() {
-		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
-		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
+		final path = Paths.get("groovyTests", "machines", "scheduler.mch").toString()
+		ClassicalBFactory factory = Main.injector.getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
-		root = s.getRoot()
+		root = s.root
 		firstState = root.$initialise_machine()
 	}
 
@@ -25,41 +27,40 @@ class StateSpaceAnimationTest extends Specification {
 		s.kill()
 	}
 
-
 	def "it is possible to get states based on a given predicate"() {
 		when:
 		firstState.new("pp=PID1").new("pp=PID2")
-		def formula = new ClassicalB("card(waiting) > 0")
-		def states = s.getStatesFromPredicate(formula)
+		final formula = new ClassicalB("card(waiting) > 0", FormulaExpand.EXPAND)
+		final states = s.getStatesFromPredicate(formula)
 
 		then:
-		def evaluated =  states.collect { s.eval(it, [formula])[0] }
-		evaluated.inject(true) { result, i -> result && (i instanceof IdentifierNotInitialised ||  i.getValue() == "TRUE")}
+		final evaluated = states.collect {s.eval(it, [formula])[0]}
+		evaluated.every {it instanceof IdentifierNotInitialised || it.value == "TRUE"}
 	}
 
 	def "it is possible to calculate one transitions from a state and with a predicate"() {
 		when:
-		def transitions = s.transitionFromPredicate(firstState, "new", "pp=PID1", 1)
+		final transitions = s.transitionFromPredicate(firstState, "new", "pp=PID1", 1)
 
 		then:
 		transitions.size() == 1
-		transitions[0].getName() == "new"
-		transitions[0].getParams() == ["PID1"]
+		transitions[0].name == "new"
+		transitions[0].parameterValues == ["PID1"]
 	}
 
 	def "it is possible to calculate multiple transitions from a state with a predicate"() {
 		when:
-		def transitions = s.transitionFromPredicate(firstState, "new", "TRUE=TRUE", 3)
+		final transitions = s.transitionFromPredicate(firstState, "new", "TRUE=TRUE", 3)
 
 		then:
 		transitions.size() == 3
-		transitions.inject(true) { result, i -> result && (i.getName() == "new") }
-		transitions.collect {it.getParams().first()} as Set == ["PID1", "PID2", "PID3"] as Set
+		transitions.every {it.name == "new"}
+		transitions.collect {it.parameterValues.first()} as Set == ["PID1", "PID2", "PID3"] as Set
 	}
 
 	def "trying to calculate zero transitions results an error"() {
 		when:
-		def transitions = s.transitionFromPredicate(firstState, "new", "TRUE=TRUE", 0)
+		s.transitionFromPredicate(firstState, "new", "TRUE=TRUE", 0)
 
 		then:
 		thrown(IllegalArgumentException)
@@ -67,7 +68,7 @@ class StateSpaceAnimationTest extends Specification {
 
 	def "trying to calculate transitions with an incorrect predicate results an error"() {
 		when:
-		def transitions = s.transitionFromPredicate(firstState, "new", "TRUE=true", 1)
+		s.transitionFromPredicate(firstState, "new", "TRUE=true", 1)
 
 		then:
 		thrown(IllegalArgumentException)
@@ -90,67 +91,65 @@ class StateSpaceAnimationTest extends Specification {
 
 	def "it is possible to find a trace to a given state"() {
 		when:
-		State state = firstState.new("pp=PID1").new("pp=PID2").new("pp=PID3")
-		Trace t = s.getTrace(state.getId())
+		final state = firstState.new("pp=PID1").new("pp=PID2").new("pp=PID3")
+		final t = s.getTrace(state.id)
 
 		then:
 		t != null
-		t.getCurrentState() == state
+		t.currentState == state
 	}
 
 	def "it is possible to find a trace between two specified nodes"() {
 		when:
-		State state = firstState.new("pp=PID1").new("pp=PID2").new("pp=PID3")
-		Trace t = s.getTrace(firstState.getId(), state.getId())
+		final state = firstState.new("pp=PID1").new("pp=PID2").new("pp=PID3")
+		final t = s.getTrace(firstState.id, state.id)
 
 		then:
 		t != null
-		t.getTransitionList().first().getSource() == firstState
-		t.getCurrentState() == state
+		t.transitionList.first().source == firstState
+		t.currentState == state
 	}
 
 	def "it is possible to generate a trace from a list of transition ids"() {
-		when:
-		def transitions = []
+		given:
+		final transitions = []
 		def tr = root.findTransition("\$initialise_machine")
 		transitions << tr
-		tr = tr.getDestination().findTransition("new","pp=PID1")
+		tr = tr.destination.findTransition("new","pp=PID1")
 		transitions << tr
-		tr = tr.getDestination().findTransition("new","pp=PID2")
-		def Trace t = s.getTrace(transitions.collect { it.getId() })
+		tr = tr.destination.findTransition("new","pp=PID2")
+
+		when:
+		final t = s.getTrace(transitions.collect {it.id})
 
 		then:
 		t != null
-		t.getTransitionList().collect { it } == transitions
-	}
-
-	class MyTraceDescriptor implements ITraceDescription {
-
-		@Override
-		Trace getTrace(StateSpace s) throws RuntimeException {
-			return new Trace(s).$initialise_machine().new("pp=PID1")
-		}
+		t.transitionList.collect() == transitions
 	}
 
 	def "it is possible to create ITraceDescription to generate traces"() {
 		when:
-		Trace t = s.getTrace(new MyTraceDescriptor())
+		final t = s.getTrace(new ITraceDescription() {
+			@Override
+			Trace getTrace(StateSpace s) throws RuntimeException {
+				return new Trace(s).$initialise_machine().new("pp=PID1")
+			}
+		})
 
 		then:
 		t != null
-		t.getTransitionList().collect { it.getName() } == [
-			"\$initialise_machine",
-			"new"
-		]
+		t.transitionList.collect {it.name} == ["\$initialise_machine", "new"]
 	}
 
 	def "it is possible to generate a trace to a state in which a given predicate holds"() {
+		given:
+		final formula = new ClassicalB("waiting = {PID1,PID3}", FormulaExpand.EXPAND)
+
 		when:
-		def formula = new ClassicalB("waiting = {PID1,PID3}")
-		Trace t = s.getTraceToState(formula)
+		final t = s.getTraceToState(formula)
 
 		then:
 		t != null
-		t.evalCurrent(formula).getValue() == "TRUE"
+		t.evalCurrent(formula).value == "TRUE"
 	}
 }

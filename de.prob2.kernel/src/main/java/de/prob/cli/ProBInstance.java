@@ -6,8 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.base.MoreObjects;
 
-import com.google.inject.Inject;
-
 import de.prob.exception.CliError;
 
 import org.slf4j.Logger;
@@ -28,7 +26,6 @@ public class ProBInstance {
 
 	private AtomicInteger processCounter;
 
-	@Inject
 	public ProBInstance(final Process process, final BufferedReader stream, final Long userInterruptReference,
 			final ProBConnection connection, final String home, final OsSpecificInfo osInfo,
 			AtomicInteger processCounter) {
@@ -36,7 +33,7 @@ public class ProBInstance {
 		this.connection = connection;
 		this.processCounter = processCounter;
 		final String command = home + osInfo.getUserInterruptCmd();
-		interruptCommand = new String[] { command, Long.toString(userInterruptReference.longValue()) };
+		interruptCommand = new String[] { command, Long.toString(userInterruptReference) };
 		thread = makeOutputPublisher(stream);
 		thread.start();
 	}
@@ -47,7 +44,7 @@ public class ProBInstance {
 	}
 
 	public void shutdown() {
-		if (shuttingDown == false) {
+		if (!shuttingDown) {
 			processCounter.decrementAndGet();
 		}
 		shuttingDown = true;

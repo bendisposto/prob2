@@ -1,14 +1,14 @@
 package de.prob.model.eventb
 
-import org.codehaus.groovy.runtime.powerassert.PowerAssertionError
+import de.prob.animator.domainobjects.EventB
+
 import org.eventb.core.ast.Assignment
 import org.eventb.core.ast.FreeIdentifier
 
 import spock.lang.Specification
-import de.prob.animator.domainobjects.EventB
 
 class FormulaUtilTest extends Specification {
-	FormulaUtil fuu
+	private FormulaUtil fuu
 
 	def formulas(String... fs) {
 		fs.collect { new EventB(it) }
@@ -109,7 +109,7 @@ class FormulaUtilTest extends Specification {
 		def x = fuu.getIdentifier(new EventB("x + 1"))
 
 		then:
-		thrown PowerAssertionError
+		thrown AssertionError
 	}
 
 	def "getting identifier checks type 2"() {
@@ -117,7 +117,7 @@ class FormulaUtilTest extends Specification {
 		def x = fuu.getIdentifier(new EventB("x < 1"))
 
 		then:
-		thrown PowerAssertionError
+		thrown AssertionError
 	}
 
 	def "find formulas which contain an identifier"() {

@@ -3,7 +3,7 @@ package de.prob.model.representation;
 import com.github.krukow.clj_lang.PersistentHashMap;
 
 
-public abstract class BEvent extends AbstractElement {
+public abstract class BEvent extends AbstractElement implements Named {
 
 	protected final String name;
 
@@ -12,6 +12,7 @@ public abstract class BEvent extends AbstractElement {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

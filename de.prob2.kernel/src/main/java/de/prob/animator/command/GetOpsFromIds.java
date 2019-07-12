@@ -1,8 +1,8 @@
 package de.prob.animator.command;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.parser.ISimplifiedROMap;
@@ -12,18 +12,13 @@ import de.prob.statespace.GetOpFromId;
 import de.prob.statespace.Transition;
 
 public class GetOpsFromIds extends AbstractCommand {
-	List<GetOpFromId> cmds = new ArrayList<GetOpFromId>();
-	ComposedCommand allCommands;
+	private final ComposedCommand allCommands;
 
-	public GetOpsFromIds(final Collection<Transition> edges,
-			final FormulaExpand expansion) {
-		for (Transition opInfo : edges) {
-			if (opInfo.canBeEvaluated(expansion)) {
-				cmds.add(new GetOpFromId(opInfo, expansion));
-			}
-		}
-		List<AbstractCommand> cs = new ArrayList<AbstractCommand>(cmds);
-		allCommands = new ComposedCommand(cs);
+	public GetOpsFromIds(final Collection<Transition> edges, final FormulaExpand expansion) {
+		allCommands = new ComposedCommand(edges.stream()
+			.filter(opInfo -> opInfo.canBeEvaluated(expansion))
+			.map(opInfo -> new GetOpFromId(opInfo, expansion))
+			.collect(Collectors.toList()));
 	}
 
 	@Override
@@ -32,8 +27,7 @@ public class GetOpsFromIds extends AbstractCommand {
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		allCommands.processResult(bindings);
 	}
 
@@ -41,5 +35,4 @@ public class GetOpsFromIds extends AbstractCommand {
 	public List<AbstractCommand> getSubcommands() {
 		return allCommands.getSubcommands();
 	}
-
 }

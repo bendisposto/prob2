@@ -1,0 +1,129 @@
+package de.prob.cli;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import de.prob.Main;
+import de.prob.scripting.FileHandler;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Singleton
+public final class Installer {
+	private static final String CLI_BINARIES_RESOURCE_PREFIX = "binaries/";
+	public static final Path DEFAULT_HOME = Paths.get(System.getProperty("user.home"), ".prob", "prob2-" + Main.getVersion());
+	private static final Path LOCK_FILE_PATH = DEFAULT_HOME.resolve("installer.lock");
+	private static final Logger logger = LoggerFactory.getLogger(Installer.class);
+	private final OsSpecificInfo osInfo;
+
+	@Inject
+	private Installer(final OsSpecificInfo osInfo) {
+		this.osInfo = osInfo;
+	}
+
+	/**
+	 * Set or clear the executable bits of the given path.
+	 *
+	 * @param path the path of the file to make (non-)executable
+	 * @param executable whether the file should be executable
+	 */
+	private static void setExecutable(final Path path, final boolean executable) throws IOException {
+		logger.trace("Attempting to set executable status of {} to {}", path, executable);
+		try {
+			final Set<PosixFilePermission> perms = new HashSet<>(Files.readAttributes(path, PosixFileAttributes.class).permissions());
+			final PosixFileAttributeView view = Files.getFileAttributeView(path, PosixFileAttributeView.class);
+			if (view == null) {
+				// If the PosixFileAttributeView is not available, we're probably on Windows, so nothing needs to be done
+				logger.info("Could not get POSIX attribute view for {} (this is usually not an error)", path);
+				return;
+			}
+			if (executable) {
+				perms.add(PosixFilePermission.OWNER_EXECUTE);
+				perms.add(PosixFilePermission.GROUP_EXECUTE);
+				perms.add(PosixFilePermission.OTHERS_EXECUTE);
+			} else {
+				perms.remove(PosixFilePermission.OWNER_EXECUTE);
+				perms.remove(PosixFilePermission.GROUP_EXECUTE);
+				perms.remove(PosixFilePermission.OTHERS_EXECUTE);
+			}
+			view.setPermissions(perms);
+		} catch (UnsupportedOperationException e) {
+			// If POSIX attributes are unsupported, we're probably on Windows, so nothing needs to be done
+			logger.info("Could not set executable status of {} (this is usually not an error)", path, e);
+		}
+	}
+
+	/**
+	 * Install probcli and related libraries and files.
+	 */
+	private void installProbcli() throws IOException {
+		logger.trace("Installing probcli");
+		try (final InputStream is = this.getClass().getResourceAsStream(CLI_BINARIES_RESOURCE_PREFIX + "probcli_" + osInfo.getDirName() + ".zip")) {
+			FileHandler.extractZip(is, DEFAULT_HOME);
+		}
+		logger.trace("Installed probcli");
+	}
+
+	/**
+	 * Install the cspmf binary.
+	 */
+	private void installCspmf() throws IOException {
+		logger.trace("Installing cspmf");
+		final Path outcspmf = DEFAULT_HOME.resolve(osInfo.getCspmfName());
+		final String cspmfName;
+		if (osInfo.getDirName().startsWith("win")) {
+			final String bits = "win32".equals(osInfo.getDirName()) ? "32" : "64";
+			try (final InputStream is = this.getClass().getResourceAsStream(CLI_BINARIES_RESOURCE_PREFIX + "windowslib" + bits + ".zip")) {
+				FileHandler.extractZip(is, DEFAULT_HOME);
+			}
+			cspmfName = "windows-cspmf.exe";
+		} else {
+			cspmfName = osInfo.getDirName() + "-cspmf";
+		}
+		
+		try (final InputStream is = this.getClass().getResourceAsStream(CLI_BINARIES_RESOURCE_PREFIX + cspmfName)) {
+			Files.copy(is, outcspmf, StandardCopyOption.REPLACE_EXISTING);
+		}
+		setExecutable(outcspmf, true);
+	}
+
+	/**
+	 * Install all CLI binaries, if necessary.
+	 */
+	@SuppressWarnings("try") // don't warn about unused resource in try
+	public void ensureCLIsInstalled() {
+		if (System.getProperty("prob.home") != null) {
+			logger.info("prob.home is set. Not installing CLI from kernel resources.");
+			return;
+		}
+
+		logger.info("Attempting to install CLI binaries");
+		try (
+			final FileChannel lockFileChannel = FileChannel.open(LOCK_FILE_PATH, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+			final FileLock lock = lockFileChannel.lock();
+		) {
+			logger.debug("Acquired installer lock file");
+			installProbcli();
+			installCspmf();
+			logger.info("CLI binaries successfully installed");
+		} catch (IOException e) {
+			logger.error("Failed to install CLI binaries", e);
+		}
+	}
+}

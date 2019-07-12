@@ -30,13 +30,13 @@ public class LTL extends AbstractEvalElement {
 	
 	public LTL(final String code, ProBParserBase languageSpecificParser)
 			throws LtlParseException {
-		this.code = code;
+		super(code, FormulaExpand.EXPAND);
 		generatedTerm = new de.be4.ltl.core.parser.LtlParser(languageSpecificParser)
 							.generatePrologTerm(code, "root");
 	}
 	
 	public LTL(final String code, ProBParserBase languageSpecificParser, LtlParser parser) {
-		this.code = code;
+		super(code, FormulaExpand.EXPAND);
 		generatedTerm = parser.generatePrologTerm("root", languageSpecificParser);
 	}
 		
@@ -57,8 +57,7 @@ public class LTL extends AbstractEvalElement {
 	@Override
 	public String serialized() {
 		// FIXME, maybe?
-		Gson g = new Gson();
-		return "#LTL:" + g.toJson(this);
+		return "#LTL:" + new Gson().toJson(this);
 	}
 
 	@Override

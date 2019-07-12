@@ -1,63 +1,63 @@
-import com.sun.org.apache.bcel.internal.generic.F2D;
+import java.nio.file.Paths
 
-import de.prob.animator.command.InsertFormulaForVisualizationCommand;
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-import de.prob.unicode.UnicodeTranslator;
+import de.prob.animator.command.ExpandFormulaCommand
+import de.prob.animator.command.InsertFormulaForVisualizationCommand
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.ExpandedFormula
+import de.prob.statespace.Trace
 
-toUnicode = { str -> UnicodeTranslator.toUnicode(str) }
+import static de.prob.unicode.UnicodeTranslator.toUnicode
 
-// You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
-t = new Trace(s)
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
+def t = new Trace(s)
 t = t.$initialise_machine()
 
-f = "(ready /\\ waiting) = {} & card(active) <= 1" as ClassicalB
-cmd = new InsertFormulaForVisualizationCommand(f)
-s.execute(cmd)
-assert cmd.getFormulaId() != null
+final f = "(ready /\\ waiting) = {} & card(active) <= 1" as ClassicalB
+final cmd1 = new InsertFormulaForVisualizationCommand(f)
+s.execute(cmd1)
+assert cmd1.formulaId != null
 
-cmd = new ExpandFormulaCommand(cmd.getFormulaId(), t.getCurrentState())
-s.execute(cmd)
-assert cmd.getResult() != null && cmd.getResult() instanceof ExpandedFormula
-formula = cmd.getResult()
-assert formula.getLabel() == "ready \u2229 waiting = \u2205 \u2227 card(active) \u2264 1"
-assert formula.getValue() == true
+final cmd2 = new ExpandFormulaCommand(cmd1.formulaId, t.currentState)
+s.execute(cmd2)
+assert cmd2.result instanceof ExpandedFormula
+final formula = cmd2.result
+assert formula.label == "ready \u2229 waiting = \u2205 \u2227 card(active) \u2264 1"
+assert formula.value == true
 assert formula.children.size() == 2
 
-f1 = formula.getChildren()[0]
-assert f1.getLabel() == "ready \u2229 waiting = \u2205"
-assert f1.getValue() == true
+final f1 = formula.children[0]
+assert f1.label == "ready \u2229 waiting = \u2205"
+assert f1.value == true
 assert f1.children.size() == 1
 
-f11 = f1.getChildren()[0]
-assert f11.getLabel() == 'ready \u2229 waiting'
-assert f11.getValue() == toUnicode("{}")
-assert f11.getChildren().size() == 2
+final f11 = f1.children[0]
+assert f11.label == 'ready \u2229 waiting'
+assert f11.value == toUnicode("{}")
+assert f11.children.size() == 2
 
-f111 = f11.getChildren()[0]
-assert f111.getLabel() == "ready"
-assert f111.getValue() == toUnicode("{}")
-assert f111.getChildren() == null
+final f111 = f11.children[0]
+assert f111.label == "ready"
+assert f111.value == toUnicode("{}")
+assert f111.children.empty
 
-f112 = f11.getChildren()[1]
-assert f112.getLabel() == "waiting"
-assert f112.getValue() == toUnicode("{}")
-assert f112.getChildren() == null
+final f112 = f11.children[1]
+assert f112.label == "waiting"
+assert f112.value == toUnicode("{}")
+assert f112.children.empty
 
-f2 = formula.getChildren()[1]
-assert f2.getLabel() == 'card(active) \u2264 1'
-assert f2.getValue() == true
-assert f2.getChildren().size() == 1
+final f2 = formula.children[1]
+assert f2.label == 'card(active) \u2264 1'
+assert f2.value == true
+assert f2.children.size() == 1
 
-f21 = f2.getChildren()[0]
-assert f21.getLabel() == 'card(active)'
-assert f21.getValue() == '0'
-assert f21.getChildren().size() == 1
+final f21 = f2.children[0]
+assert f21.label == 'card(active)'
+assert f21.value == '0'
+assert f21.children.size() == 1
 
-f211 = f21.getChildren()[0]
-assert f211.getLabel() == 'active'
-assert f211.getValue() == toUnicode('{}')
-assert f211.getChildren() == null
+final f211 = f21.children[0]
+assert f211.label == 'active'
+assert f211.value == toUnicode('{}')
+assert f211.children.empty
 
 "expanding a B formula works"

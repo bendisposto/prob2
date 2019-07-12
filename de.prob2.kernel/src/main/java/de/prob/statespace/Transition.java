@@ -6,13 +6,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
-
 import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.formula.PredicateBuilder;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.eventb.Event;
@@ -30,16 +28,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>Stores the information for a given Operation. This includes operation id
+ * <p>
+ * Stores the information for a given Operation. This includes operation id
  * (id), operation name (name), the source state (src), and the destination
- * state (dest), as well as a list of parameters.</p>
+ * state (dest), as well as a list of parameters.
+ * </p>
  * 
- * <p>Note: This class retains a reference to the {@link StateSpace} object to
+ * <p>
+ * Note: This class retains a reference to the {@link StateSpace} object to
  * which it belongs. In order to ensure that the garbage collector works
  * correctly when cleaning up a {@link StateSpace} object make sure that all
- * {@link Transition} objects are correctly dereferenced.</p>
+ * {@link Transition} objects are correctly dereferenced.
+ * </p>
  * 
- * @author joy 
+ * @author joy
  */
 public class Transition {
 	public final StateSpace stateSpace;
@@ -60,8 +62,8 @@ public class Transition {
 
 	Logger logger = LoggerFactory.getLogger(Transition.class);
 
-	private Transition(final StateSpace stateSpace, final String id,
-			final String name, final State src, final State dest) {
+	private Transition(final StateSpace stateSpace, final String id, final String name, final State src,
+			final State dest) {
 		this.stateSpace = stateSpace;
 		this.id = id;
 		this.name = name;
@@ -107,10 +109,16 @@ public class Transition {
 	 * parameter list via the {@link #evaluate()} method.
 	 * 
 	 * @return list of values for the parameters represented as strings
+	 * @deprecated
 	 */
+	@Deprecated
 	public List<String> getParams() {
+		return getParameterValues();
+	}
+
+	public List<String> getParameterValues() {
 		if (!evaluated) {
-			evaluate();
+			evaluate(FormulaExpand.EXPAND);
 		}
 		return params;
 	}
@@ -127,11 +135,11 @@ public class Transition {
 		if (!evaluated || formulaExpansion != FormulaExpand.EXPAND) {
 			evaluate(FormulaExpand.EXPAND);
 		}
-		translatedParams = new ArrayList<BObject>();
+		translatedParams = new ArrayList<>();
 		for (String str : params) {
 			translatedParams.add(Translator.translate(str));
 		}
-		translatedRetV = new ArrayList<BObject>();
+		translatedRetV = new ArrayList<>();
 		for (String str : returnValues) {
 			translatedRetV.add(Translator.translate(str));
 		}
@@ -146,9 +154,13 @@ public class Transition {
 	 */
 	public List<String> getReturnValues() {
 		if (!evaluated) {
-			evaluate();
+			evaluate(FormulaExpand.EXPAND);
 		}
 		return returnValues;
+	}
+
+	public StateSpace getStateSpace() {
+		return this.stateSpace;
 	}
 
 	public List<BObject> getTranslatedReturnValues() throws BCompoundException {
@@ -182,9 +194,7 @@ public class Transition {
 		if (predicateString != null) {
 			return predicateString;
 		}
-		List<String> params = getParameterPredicates();
-		predicateString = params.isEmpty() ? "TRUE=TRUE" : Joiner.on(" & ")
-				.join(params);
+		predicateString = new PredicateBuilder().addList(getParameterPredicates()).toString();
 		return predicateString;
 	}
 
@@ -196,77 +206,74 @@ public class Transition {
 		if (isArtificialTransition()) {
 			return Collections.emptyList();
 		}
-		evaluate();
-		List<String> predicates = new ArrayList<String>();
+		evaluate(FormulaExpand.EXPAND);
+		List<String> predicates = new ArrayList<>();
 		AbstractElement mainComponent = stateSpace.getMainComponent();
-		List<String> params = new ArrayList<String>();
+		List<String> paramNames = new ArrayList<>();
 		if (mainComponent instanceof ClassicalBMachine) {
-			Operation op = ((ClassicalBMachine) mainComponent)
-					.getOperation(getName());
-			params = op.getParameters();
+			Operation op = ((ClassicalBMachine) mainComponent).getOperation(getName());
+			paramNames = op.getParameters();
 		} else if (mainComponent instanceof EventBMachine) {
 			Event event = ((EventBMachine) mainComponent).getEvent(getName());
 			for (EventParameter eventParameter : event.getParameters()) {
-				params.add(eventParameter.getName());
+				paramNames.add(eventParameter.getName());
 			}
 		}
-		if (params.size() == this.params.size()) {
-			for (int i = 0; i < params.size(); i++) {
-				predicates.add(params.get(i) + " = " + this.params.get(i));
+		if (paramNames.size() == this.params.size()) {
+			for (int i = 0; i < paramNames.size(); i++) {
+				predicates.add(paramNames.get(i) + " = " + this.params.get(i));
 			}
 		}
-
 		return predicates;
 	}
 
-	private String createRep(final String name, final List<String> params,
-			final List<String> returnVals) {
+	private String createRep(final String name, final List<String> params, final List<String> returnVals) {
 		if (formalismType.equals(FormalismType.CSP)) {
 			if (params.isEmpty()) {
 				return name;
+			} else {
+				return name + '.' + String.join(".", params);
 			}
-			return name + "." + Joiner.on(".").join(params);
+		} else {
+			String retVals = returnVals.isEmpty() ? "" : String.join(",", returnVals) + " <-- ";
+			return retVals + name + '(' + String.join(",", params) + ')';
 		}
-		String retVals = returnVals.isEmpty() ? "" : Joiner.on(",").join(
-				returnVals)
-				+ " <-- ";
-		return retVals + name + "(" + Joiner.on(",").join(params) + ")";
 	}
 
 	public String getPrettyRep() {
 		String rep = getRep();
 		if (name.equals("$initialise_machine")) {
 			rep = rep.replaceAll("\\$initialise_machine", "INITIALISATION");
-		}
-		if (name.equals("$setup_constants")) {
+		} else if (name.equals("$setup_constants")) {
 			rep = rep.replaceAll("\\$setup_constants", "SETUP_CONSTANTS");
+		} else if (name.equals("$partial_setup_constants")) {
+			rep = rep.replaceAll("\\$partial_setup_constants", "PARTIAL_SETUP_CONSTANTS");
 		}
 		return rep;
 	}
 
 	public boolean isArtificialTransition() {
-		return name.equals("$initialise_machine")
-				|| name.equals("$setup_constants");
+		return name.equals("$initialise_machine") || name.equals("$setup_constants")
+		        || name.equals("$partial_setup_constants") ;
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == this) {
+		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof Transition) {
-			Transition that = (Transition) obj;
-			return getId().equals(that.getId())
-					&& getSource().equals(that.getSource())
-					&& getDestination().equals(that.getDestination());
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
 		}
-		return false;
+		final Transition other = (Transition) obj;
+		return Objects.equals(this.getId(), other.getId())
+				&& Objects.equals(this.getSource(), other.getSource())
+				&& Objects.equals(this.getDestination(), other.getDestination());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(getId(), getSource().getId(), getDestination()
-				.getId());
+		return Objects.hash(this.getId(), this.getSource(), this.getDestination());
 	}
 
 	/**
@@ -277,9 +284,9 @@ public class Transition {
 	 *         equivalent
 	 */
 	public boolean isSame(final Transition that) {
-		evaluate();
-		that.evaluate();
-		return that.getName().equals(name) && that.getParams().equals(params);
+		evaluate(FormulaExpand.EXPAND);
+		that.evaluate(FormulaExpand.EXPAND);
+		return that.getName().equals(name) && that.getParameterValues().equals(params);
 	}
 
 	/**
@@ -289,33 +296,28 @@ public class Transition {
 	 * are set.
 	 * 
 	 * @return {@code this}
+	 * @deprecated Use {@link #evaluate(FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
 	 */
+	@Deprecated
 	public Transition evaluate() {
 		return evaluate(FormulaExpand.TRUNCATE);
 	}
 
 	public boolean canBeEvaluated(final FormulaExpand expansion) {
-		if (!evaluated) {
-			return true;
-		}
-		if (this.formulaExpansion == FormulaExpand.TRUNCATE
-				&& expansion == FormulaExpand.EXPAND) {
-			return true;
-		}
-		return false;
+		return !evaluated || this.formulaExpansion == FormulaExpand.TRUNCATE && expansion == FormulaExpand.EXPAND;
 	}
 
 	public Transition evaluate(final FormulaExpand expansion) {
 		if (canBeEvaluated(expansion)) {
 			GetOpFromId command = new GetOpFromId(this, expansion);
 			stateSpace.execute(command);
-			return this;
 		}
 		return this;
 	}
 
 	/**
 	 * Check whether this transition has been evaluated.
+	 * 
 	 * @return whether or not the name, parameters, and return values have yet
 	 *         been retrieved from ProB
 	 */
@@ -332,10 +334,11 @@ public class Transition {
 	 * state.
 	 * 
 	 * @return A SHA-1 hash of the target state in String format.
-	 * @throws NoSuchAlgorithmException if no SHA-1 provider is found
+	 * @throws NoSuchAlgorithmException
+	 *             if no SHA-1 provider is found
 	 */
 	public String sha() throws NoSuchAlgorithmException {
-		evaluate();
+		evaluate(FormulaExpand.EXPAND);
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		md.update(getDestination().getStateRep().getBytes());
 		return new BigInteger(1, md.digest()).toString(Character.MAX_RADIX);
@@ -351,8 +354,7 @@ public class Transition {
 	 * @param returnValues
 	 *            - {@link List} of {@link String} return values
 	 */
-	void setInfo(final FormulaExpand expansion, final List<String> params,
-			final List<String> returnValues) {
+	void setInfo(final FormulaExpand expansion, final List<String> params, final List<String> returnValues) {
 		this.formulaExpansion = expansion;
 		this.params = params;
 		this.returnValues = returnValues;
@@ -376,11 +378,9 @@ public class Transition {
 	 *            String id of destination node
 	 * @return {@link Transition} representation of given information
 	 */
-	public static Transition generateArtificialTransition(final StateSpace s,
-			final String transId, final String description, final String srcId,
-			final String destId) {
-		return new Transition(s, transId, description, s.addState(srcId),
-				s.addState(destId));
+	public static Transition generateArtificialTransition(final StateSpace s, final String transId,
+			final String description, final String srcId, final String destId) {
+		return new Transition(s, transId, description, s.addState(srcId), s.addState(destId));
 	}
 
 	/**
@@ -393,14 +393,12 @@ public class Transition {
 	 * @return {@link Transition} object representing the information about the
 	 *         operation
 	 */
-	public static Transition createTransitionFromCompoundPrologTerm(
-			final StateSpace s, final CompoundPrologTerm cpt) {
+	public static Transition createTransitionFromCompoundPrologTerm(final StateSpace s, final CompoundPrologTerm cpt) {
 		String opId = Transition.getIdFromPrologTerm(cpt.getArgument(1));
 		String name = BindingGenerator.getCompoundTerm(cpt.getArgument(2), 0).getFunctor().intern();
 		String srcId = Transition.getIdFromPrologTerm(cpt.getArgument(3));
 		String destId = Transition.getIdFromPrologTerm(cpt.getArgument(4));
-		return new Transition(s, opId, name, s.addState(srcId),
-				s.addState(destId));
+		return new Transition(s, opId, name, s.addState(srcId), s.addState(destId));
 	}
 
 	/**

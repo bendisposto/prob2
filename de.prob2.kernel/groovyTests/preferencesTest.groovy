@@ -1,29 +1,31 @@
-import de.prob.animator.command.GetCurrentPreferencesCommand;
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import java.nio.file.Paths
 
-// You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch", ["MAXINT":"10"])
+import de.prob.animator.command.GetCurrentPreferencesCommand
+import de.prob.animator.command.GetDefaultPreferencesCommand
+import de.prob.animator.command.GetPreferenceCommand
+import de.prob.animator.command.SetPreferenceCommand
 
-cmd = new GetDefaultPreferencesCommand()
-s.execute(cmd)
-ps = cmd.getPreferences()
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString(), ["MAXINT":"10"])
 
-prefs = [:]
-ps.each { prefs[it.name] = it.defaultValue }
+final cmd1 = new GetDefaultPreferencesCommand()
+s.execute(cmd1)
+final ps = cmd1.preferences
 
-assert prefs.size() > 0 // there are some preferences set
+final prefs1 = [:]
+ps.each { prefs1[it.name] = it.defaultValue }
 
-cmd = new GetCurrentPreferencesCommand()
-s.execute(cmd)
-prefs = cmd.getPreferences()
-assert prefs["MAXINT"] == "10"
+assert prefs1.size() > 0 // there are some preferences set
 
-cmd = new SetPreferenceCommand("MAXINT","12")
-s.execute(cmd)
+final cmd2 = new GetCurrentPreferencesCommand()
+s.execute(cmd2)
+final prefs2 = cmd2.preferences
+assert prefs2["MAXINT"] == "10"
 
-cmd = new GetPreferenceCommand("MAXINT")
-s.execute(cmd)
-assert cmd.getValue() == "12"
+final cmd3 = new SetPreferenceCommand("MAXINT","12")
+s.execute(cmd3)
+
+final cmd4 = new GetPreferenceCommand("MAXINT")
+s.execute(cmd4)
+assert cmd4.value == "12"
 
 "the preferences for a model are as expected"

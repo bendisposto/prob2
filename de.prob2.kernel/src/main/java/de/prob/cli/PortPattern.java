@@ -16,19 +16,18 @@ import org.slf4j.LoggerFactory;
  * @author plagge
  */
 class PortPattern extends AbstractCliPattern<Integer> {
-	int port;
+	private static final Logger logger = LoggerFactory.getLogger(PortPattern.class);
 
-	private final Logger logger = LoggerFactory.getLogger(PortPattern.class);
+	private int port;
 
-	public PortPattern() {
+	PortPattern() {
 		super("Port: (\\d+)$");
 	}
 
 	@Override
-	protected void setValue(final Matcher matcher)
-			throws IllegalArgumentException {
+	protected void setValue(final Matcher matcher) {
 		port = Integer.parseInt(matcher.group(1));
-		logger.info("Server has started and listens on port " + port);
+		logger.info("Server has started and listens on port {}", port);
 	}
 
 	/**

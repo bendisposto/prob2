@@ -1,16 +1,17 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import java.nio.file.Paths
 
-// You can change the model you are testing here.
-s = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
-t = new Trace(s)
+import de.prob.animator.domainobjects.FormulaExpand
+import de.prob.statespace.Trace
+
+final s = api.eventb_load(Paths.get(dir, "Lift", "lift0.bcm").toString())
+def t = new Trace(s)
 t = t.$setup_constants()
 t = t.$initialise_machine()
 t = t.up()
 
-list = t.getTransitionList(true)
-assert list.collect { it.getName() } == ["\$setup_constants", "\$initialise_machine","up"]
-assert list.collect { it.getRep() } == ["\$setup_constants()","\$initialise_machine()","up()"]
-assert list.collect { it.getPrettyRep() } == ["SETUP_CONSTANTS()", "INITIALISATION()", "up()"]
+final list = t.getTransitionList(true, FormulaExpand.EXPAND)
+assert list.collect {it.name} == ["\$setup_constants", "\$initialise_machine", "up"]
+assert list.collect {it.rep} == ["\$setup_constants()", "\$initialise_machine()", "up()"]
+assert list.collect {it.prettyRep} == ["SETUP_CONSTANTS()", "INITIALISATION()", "up()"]
 
 "a Transition has a pretty representation for internal ProB transition names"

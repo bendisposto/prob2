@@ -1,10 +1,12 @@
 package de.prob.model.eventb;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractFormulaElement;
+import de.prob.model.representation.Named;
 
-public class EventParameter extends AbstractElement {
+public class EventParameter extends AbstractFormulaElement implements Named {
 
 	private final String name;
 	private final EventB expression;
@@ -17,9 +19,10 @@ public class EventParameter extends AbstractElement {
 	public EventParameter(final String name, String comment) {
 		this.name = name;
 		this.comment = comment == null ? "" : comment;
-		expression = new EventB(name);
+		expression = new EventB(name, FormulaExpand.EXPAND);
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -37,21 +40,17 @@ public class EventParameter extends AbstractElement {
 		return expression;
 	}
 
+	@Override
 	public IEvalElement getFormula() {
-		return expression;
+		return this.getExpression();
 	}
 
 	@Override
 	public boolean equals(final Object that) {
-		if (that == this) {
-			return true;
-		}
-		if (that instanceof EventParameter
-				&& getExpression().getCode().equals(
-						((EventParameter) that).getExpression().getCode())) {
-			return true;
-		}
-		return false;
+		return that == this || (
+			that instanceof EventParameter
+			&& getExpression().getCode().equals(((EventParameter)that).getExpression().getCode())
+		);
 	}
 
 	@Override

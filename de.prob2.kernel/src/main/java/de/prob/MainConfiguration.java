@@ -1,45 +1,24 @@
 package de.prob;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.name.Names;
 
 import de.prob.annotations.Home;
-import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static java.io.File.separator;
 
 public class MainConfiguration extends AbstractModule {
-	private final Properties buildConstants;
-
-	private final Logger logger = LoggerFactory.getLogger(MainConfiguration.class);
-
-	public MainConfiguration() {
-		buildConstants = loadBuildConstants();
-	}
+	public MainConfiguration() {}
 
 	@Override
 	protected void configure() {
-		bind(CommandLineParser.class).to(PosixParser.class);
-		bind(String.class).annotatedWith(Version.class).toInstance(buildConstants.getProperty("version", "0.0.0"));
-		bind(ClassLoader.class).annotatedWith(Names.named("Classloader")).toInstance(Main.class.getClassLoader());
-
-		// TODO: Should this property be set here? Should it be set at all?
-		System.setProperty("PROB_LOGFILE", getProBLogfile());
+		bind(CommandLineParser.class).to(DefaultParser.class);
+		bind(String.class).annotatedWith(Version.class).toInstance(Main.getVersion());
 	}
 
 	/**
@@ -51,22 +30,8 @@ public class MainConfiguration extends AbstractModule {
 	 */
 	@Provides
 	@Home
-	public final String getProBDirectory() {
+	private static String getProBDirectory() {
 		return Main.getProBDirectory();
-	}
-
-	/**
-	 * Returns the path to the log file associated with ProB 2.0. This is
-	 * currently {@link Main#getProBDirectory()}logs/ProB.txt, but this is
-	 * subject to change. Binds this path to the {@link Logfile} annotation in
-	 * order to be able to inject it.
-	 *
-	 * @return the path to the fog file for ProB 2.0
-	 */
-	@Provides
-	@Logfile
-	public final String getProBLogfile() {
-		return getProBDirectory() + "logs" + separator + "ProB.txt";
 	}
 
 	/**
@@ -74,7 +39,7 @@ public class MainConfiguration extends AbstractModule {
 	 *         options for ProB 2.0
 	 */
 	@Provides
-	public final Options getCommandlineOptions() {
+	private static Options getCommandlineOptions() {
 		Options options = new Options();
 		options.addOption(null, "maxCacheSize", true, "set the cache size for the states in the StateSpace");
 
@@ -86,22 +51,5 @@ public class MainConfiguration extends AbstractModule {
 		options.addOptionGroup(mode);
 		
 		return options;
-	}
-
-	private Properties loadBuildConstants() {
-		InputStream stream = Main.class.getResourceAsStream(Main.PROB2_BUILD_PROPERTIES_FILE);
-		Properties properties = new Properties();
-		try {
-			properties.load(stream);
-		} catch (IOException e) {
-			logger.debug("Could not load prob2-build.properties.", e);
-		} finally {
-			try {
-				stream.close();
-			} catch (IOException e) {
-				logger.debug("Could not close stream.", e);
-			}
-		}
-		return properties;
 	}
 }

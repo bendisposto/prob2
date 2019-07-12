@@ -26,8 +26,6 @@ public interface IEvalElement {
 	 */
 	public abstract void printProlog(IPrologTermOutput pout);
 
-	// public void typecheck();
-
 	/**
 	 * @return The kind of the formula. For B formulas, this needs to be either formula or expression. For other formula types, new kinds need to be defined to recognize the formula.
 	 */

@@ -16,36 +16,27 @@ public class EventBParserBase implements ProBParserBase {
 	private static final String TRANS_WRAPPER = "btrans";
 
 	@Override
-	public void parseExpression(IPrologTermOutput pto, String expression,
-			boolean wrap) throws ProBParseException,
-			UnsupportedOperationException {
-		toPrologTerm(pto, new EventB(expression).getAst(), wrap, EXPR_WRAPPER);
+	public void parseExpression(IPrologTermOutput pto, String expression, boolean wrap) throws ProBParseException {
+		toPrologTerm(pto, new EventB(expression, FormulaExpand.EXPAND).getAst(), wrap, EXPR_WRAPPER);
 	}
 
 	@Override
-	public void parsePredicate(IPrologTermOutput pto, String predicate,
-			boolean wrap) throws ProBParseException,
-			UnsupportedOperationException {
-		toPrologTerm(pto, new EventB(predicate).getAst(), wrap, PRED_WRAPPER);
+	public void parsePredicate(IPrologTermOutput pto, String predicate, boolean wrap) throws ProBParseException {
+		toPrologTerm(pto, new EventB(predicate, FormulaExpand.EXPAND).getAst(), wrap, PRED_WRAPPER);
 	}
 
 	@Override
-	public void parseTransitionPredicate(IPrologTermOutput pto,
-			String transPredicate, boolean wrap) throws ProBParseException,
-			UnsupportedOperationException {
-		String formula = BParser.OPERATION_PATTERN_PREFIX + transPredicate;
-
+	public void parseTransitionPredicate(IPrologTermOutput pto, String transPredicate, boolean wrap) throws ProBParseException {
 		Start ast;
 		try {
-			ast = BParser.parse(formula);
+			ast = BParser.parse(BParser.OPERATION_PATTERN_PREFIX + transPredicate);
 		} catch (BCompoundException e) {
-			throw new ProBParseException(e.getLocalizedMessage());
+			throw (ProBParseException)new ProBParseException(e.getLocalizedMessage()).initCause(e);
 		}
 		toPrologTerm(pto, ast, wrap, TRANS_WRAPPER);
 	}
 
-	private void toPrologTerm(final IPrologTermOutput pto, final Node ast,
-			final boolean wrap, final String wrapper) throws ProBParseException {
+	private static void toPrologTerm(final IPrologTermOutput pto, final Node ast, final boolean wrap, final String wrapper) {
 		if (wrap) {
 			pto.openTerm(wrapper);
 		}

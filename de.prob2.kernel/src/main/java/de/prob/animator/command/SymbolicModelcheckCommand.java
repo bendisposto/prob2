@@ -5,8 +5,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
 public class SymbolicModelcheckCommand extends AbstractCommand {
-	
-	public static enum Algorithm {
+	public enum Algorithm {
 		BMC("bmc"),
 		KINDUCTION("kinduction"),
 		TINDUCTION("tinduction"),
@@ -23,15 +22,14 @@ public class SymbolicModelcheckCommand extends AbstractCommand {
 		}
 	}
 	
-	public static enum ResultType {
+	public enum ResultType {
 		SUCCESSFUL, INTERRUPTED, COUNTER_EXAMPLE, TIMEOUT;
-	};
+	}
 	
 	private static final String COMMAND_NAME = "symbolic_model_check";
 	private static final String RESULT_VARIABLE = "R";
 	
 	private ResultType result;
-	
 	private Algorithm algorithm;
 	
 	public SymbolicModelcheckCommand(Algorithm algorithm) {
@@ -63,5 +61,4 @@ public class SymbolicModelcheckCommand extends AbstractCommand {
 	public ResultType getResult() {
 		return result;
 	}
-	
 }

@@ -1,13 +1,13 @@
 package de.prob.model.eventb.theory;
 
+import java.util.Objects;
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
-import com.google.common.base.Objects;
-
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.model.representation.AbstractElement;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class OperatorArgument extends AbstractElement {
 
@@ -16,8 +16,8 @@ public class OperatorArgument extends AbstractElement {
 
 	public OperatorArgument(final String identifier, final String type,
 			final Set<IFormulaExtension> typeEnv) {
-		this.identifier = new EventB(identifier, typeEnv);
-		this.type = new EventB(type, typeEnv);
+		this.identifier = new EventB(identifier, typeEnv, FormulaExpand.EXPAND);
+		this.type = new EventB(type, typeEnv, FormulaExpand.EXPAND);
 	}
 
 	public EventB getIdentifier() {
@@ -35,7 +35,7 @@ public class OperatorArgument extends AbstractElement {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(identifier, type);
+		return Objects.hash(identifier, type);
 	}
 
 	@Override
@@ -43,15 +43,12 @@ public class OperatorArgument extends AbstractElement {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (obj == null || this.getClass() != obj.getClass()) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		OperatorArgument other = (OperatorArgument) obj;
-		return Objects.equal(identifier, other.getIdentifier())
-				&& Objects.equal(type, other.getType());
+		final OperatorArgument other = (OperatorArgument)obj;
+		return Objects.equals(this.getIdentifier(), other.getIdentifier())
+				&& Objects.equals(this.getType(), other.getType());
 	}
 
 }

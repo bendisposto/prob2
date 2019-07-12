@@ -2,9 +2,6 @@ package de.prob.animator;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
 import de.prob.cli.ProBInstance;
@@ -20,11 +17,19 @@ import de.prob.parser.ProBResultParser;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 class CommandProcessor {
 
 	private ProBInstance cli;
 
 	private final Logger logger = LoggerFactory.getLogger(CommandProcessor.class);
+
+	private static String shorten(final String s) {
+		final String shortened = s.length() <= 200 ? s : (s.substring(0, 200) + "...");
+		return shortened.endsWith("\n") ? shortened.substring(0, shortened.length()-1) : shortened;
+	}
 
 	public IPrologResult sendCommand(final AbstractCommand command) {
 
@@ -40,12 +45,18 @@ class CommandProcessor {
 			pto.printAtom("true");
 			query = pto.fullstop().toString();
 		}
-		logger.debug("SEND QUERY: {}", query);
+// comment out: 
+// de.prob.cli.ProBConnection.send(ProBConnection.java:55) already logs
+// 		if (logger.isDebugEnabled()) {
+// 			logger.debug(shorten(query));
+// 		}
 		String result = cli.send(query);
 
 		final Start ast = parseResult(result);
 		IPrologResult extractResult = extractResult(ast);
-		logger.debug(extractResult.toString());
+		if (logger.isDebugEnabled()) {
+			logger.debug(shorten(extractResult.toString()));
+		}
 		return extractResult;
 	}
 

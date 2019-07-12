@@ -1,19 +1,17 @@
 package de.prob;
 
-import static java.io.File.separator;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.script.ScriptException;
+
+import ch.qos.logback.classic.util.ContextInitializer;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -23,8 +21,15 @@ import com.google.inject.Stage;
 import de.prob.annotations.Home;
 import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.Api;
-import de.prob.scripting.FileHandler;
-import de.prob.scripting.Installer;
+import de.prob.cli.Installer;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Main class initializes ProB 2.0. This class should NOT be instantiated
@@ -33,25 +38,31 @@ import de.prob.scripting.Installer;
  * parameter, or started in a jetty server via {@code WebConsole.run()}.
  *
  * @author joy
- *
  */
 public class Main {
 
 	private static int maxCacheSize = 100;
-	private static final Logger logger = LoggerFactory.getLogger(Main.class);
+	private static Logger logger;
 	private final CommandLineParser parser;
 	private final Options options;
 	private final Shell shell;
 
 	private static Injector injector = null;
 
-	/**
-	 * Name of file in which the preferences are saved. Currently
-	 * "prob2preferences"
-	 */
-	public static final String PREFERENCE_FILE_NAME = "prob2preferences";
-
-	public static final String PROB2_BUILD_PROPERTIES_FILE = "/prob2-build.properties";
+	private static final Properties buildProperties;
+	static {
+		buildProperties = new Properties();
+		final InputStream is = Main.class.getResourceAsStream("build.properties");
+		if (is == null) {
+			throw new IllegalStateException("Build properties not found, this should never happen!");
+		} else {
+			try (final Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+				buildProperties.load(r);
+			} catch (IOException e) {
+				throw new UncheckedIOException("IOException while loading build properties, this should never happen!", e);
+			}
+		}
+	}
 
 	public static synchronized Injector getInjector() {
 		if (injector == null) {
@@ -66,23 +77,9 @@ public class Main {
 	 * @param i
 	 *            the new injector to use
 	 */
-	public static synchronized  void setInjector(final Injector i) {
+	public static synchronized void setInjector(final Injector i) {
 		injector = i;
 	}
-
-	/**
-	 * String representing the ProB home directory. Calls method
-	 * {@link Main#getProBDirectory()}
-	 */
-	public static final String PROB_HOME = getProBDirectory();
-
-	/**
-	 * String representing the log configuration file. This defaults to
-	 * "production.xml" if the System property "PROB_LOG_CONFIG" is not defined.
-	 * Otherwise, the system property is used.
-	 */
-	public static final String LOG_CONFIG = System.getProperty("PROB_LOG_CONFIG") == null ? "production.xml"
-			: System.getProperty("PROB_LOG_CONFIG");
 
 	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
@@ -106,8 +103,7 @@ public class Main {
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
-	private void run(final String[] args) throws Throwable {
-
+	private void run(final String[] args) throws IOException, ScriptException {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("maxCacheSize")) {
@@ -123,7 +119,8 @@ public class Main {
 				String value = line.getOptionValue("script");
 				shell.runScript(new File(value), false);
 			}
-		} catch (ParseException exp) {
+		} catch (ParseException e) {
+			logger.debug("Failed to parse CLI", e);
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("java -jar probcli.jar", options);
 			System.exit(-1);
@@ -142,32 +139,17 @@ public class Main {
 	public static String getProBDirectory() {
 		String homedir = System.getProperty("prob.home");
 		if (homedir != null) {
-			return homedir + separator;
+			return homedir + File.separator;
 		}
-		return Installer.DEFAULT_HOME;
+		return Installer.DEFAULT_HOME + File.separator;
 	}
 
-	public static Map<String, String> getGlobalPreferences(final Map<String, String> localPrefs) {
-		String preferenceFileName = Main.getProBDirectory() + PREFERENCE_FILE_NAME;
-		FileHandler handler = new FileHandler();
-		Map<String, String> prefs = handler.getMapOfStrings(preferenceFileName);
-		if (prefs == null) {
-			return localPrefs;
-		}
-		prefs.putAll(localPrefs);
-		return prefs;
+	public static String getVersion() {
+		return buildProperties.getProperty("version");
 	}
 
-	public static String getVersion() throws IOException {
-		Properties p = new Properties();
-		p.load(Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE));
-		return p.getProperty("version");
-	}
-
-	public static String getGitSha() throws IOException {
-		Properties p = new Properties();
-		p.load(Main.class.getResourceAsStream(PROB2_BUILD_PROPERTIES_FILE));
-		return p.getProperty("git");
+	public static String getGitSha() {
+		return buildProperties.getProperty("git");
 	}
 
 	public static int getMaxCacheSize() {
@@ -182,19 +164,21 @@ public class Main {
 	 *            command-line arguments
 	 */
 	public static void main(final String[] args) {
-
+		if (!System.getProperties().containsKey(ContextInitializer.CONFIG_FILE_PROPERTY)) {
+			System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "de/prob/logging/production.xml");
+		}
+		logger = LoggerFactory.getLogger(Main.class);
 		try {
-			System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
-
 			Main main = getInjector().getInstance(Main.class);
 			Api api = getInjector().getInstance(Api.class);
-		    logger.info("probcli version: {}",api.getVersion().toString());
+			logger.info("probcli version: {}", api.getVersion());
 
 			main.run(args);
-		} catch (Throwable e) {
-			getInjector().getInstance(ProBInstanceProvider.class).shutdownAll();
+		} catch (Exception e) {
 			logger.error("Unhandled exception", e);
 			System.exit(-1);
+		} finally {
+			getInjector().getInstance(ProBInstanceProvider.class).shutdownAll();
 		}
 		System.exit(0);
 	}

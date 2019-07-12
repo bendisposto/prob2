@@ -1,7 +1,7 @@
 <configuration>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>[%d, T+%relative] "%thread" %logger.%method\(%file:%line\): [%level] %msg%n%ex{full}</pattern>
+			<pattern>[%d, %relative ms] "%thread" [%level] %logger.%method\(%file:%line\): %msg%n%ex{full}</pattern>
 		</encoder>
 	</appender>
 	
@@ -21,7 +21,7 @@
 		</encoder>
 	</appender>
 	
-	<root level="DEBUG">
+	<root level="INFO">
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>

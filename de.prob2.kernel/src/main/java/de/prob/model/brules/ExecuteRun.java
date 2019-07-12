@@ -1,12 +1,8 @@
 package de.prob.model.brules;
 
 import java.util.Map;
-import java.util.Set;
-
-import com.google.inject.Provider;
 
 import de.prob.animator.command.ExecuteModelCommand;
-import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.ExtractedModel;
 import de.prob.scripting.StateSpaceProvider;
@@ -23,8 +19,7 @@ import org.slf4j.LoggerFactory;
  * 
  * <pre>
  * 1) loads an ExtractedModel 
- * 2) unsubscribes all formulas (reduces evaluation efforts) 
- * 3) run the execute command.
+ * 2) run the execute command.
  * </pre>
  * 
  * The final state of the probcli execute run is stored. Moreover, all errors
@@ -34,7 +29,6 @@ import org.slf4j.LoggerFactory;
  * 
  **/
 public class ExecuteRun {
-	private static StateSpace staticStateSpace;
 
 	private StateSpace stateSpace;
 	private int maxNumberOfStatesToBeExecuted = Integer.MAX_VALUE;
@@ -44,71 +38,50 @@ public class ExecuteRun {
 	private final Map<String, String> prefs;
 	private ExecuteModelCommand executeModelCommand;
 	private State rootState;
-	private final boolean reuseStateSpaceOfPreviousRun;
+
+	enum Timer {
+		LOAD_MODEL, EXECUTE_MODEL, EXECUTE
+	}
+
+	private final StopWatch<Timer> stopWatch = new StopWatch<>();
 
 	public ExecuteRun(final ExtractedModel<? extends AbstractModel> extractedModel, Map<String, String> prefs,
-			boolean reuseStateSpaceOfPreviousRun, boolean continueAfterErrors) {
+			boolean continueAfterErrors, StateSpace stateSpace) {
 		this.extractedModel = extractedModel;
 		this.continueAfterErrors = continueAfterErrors;
 		this.prefs = prefs;
-		this.reuseStateSpaceOfPreviousRun = reuseStateSpaceOfPreviousRun;
+		this.stateSpace = stateSpace;
 	}
 
 	public void start() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
-		final String loadStateSpaceTimer = "loadStateSpace";
-		StopWatch.start(loadStateSpaceTimer);
+		stopWatch.start(Timer.LOAD_MODEL);
 		getOrCreateStateSpace();
-		logger.info("Time to load statespace: {} ms", StopWatch.stop(loadStateSpaceTimer));
+		logger.info("Time to load model: {} ms", stopWatch.stop(Timer.LOAD_MODEL));
 
-		unsubscribeAllFormulas(this.stateSpace);
-
-		final String executeTimer = "executeTimer";
-		StopWatch.start(executeTimer);
+		stopWatch.start(Timer.EXECUTE_MODEL);
 		executeModel(this.stateSpace);
-		logger.info("Time run execute command: {} ms", StopWatch.stop(executeTimer));
+		logger.info("Time to run execute command: {} ms", stopWatch.stop(Timer.EXECUTE_MODEL));
 	}
 
 	private void getOrCreateStateSpace() {
-		if (staticStateSpace == null || staticStateSpace.isKilled() || !reuseStateSpaceOfPreviousRun) {
+		if (stateSpace == null || stateSpace.isKilled()) {
 			/*
 			 * create a new state space if there is no previous one or if the
 			 * previous state space has been killed due to a ProBError
 			 */
 			this.stateSpace = this.extractedModel.load(this.prefs);
-			setStaticStateSpace(stateSpace);
 		} else {
-			// reuse the previous state space
-			StateSpaceProvider ssProvider = new StateSpaceProvider(new Provider<StateSpace>() {
-				@Override
-				public StateSpace get() {
-					return staticStateSpace;
-				}
-			});
+			StateSpaceProvider ssProvider = new StateSpaceProvider(() -> stateSpace);
 			RulesModel model = (RulesModel) extractedModel.getModel();
 			ssProvider.loadFromCommand(model, null, prefs, model.getLoadCommand());
-			this.stateSpace = staticStateSpace;
-		}
-	}
-
-	private static void setStaticStateSpace(StateSpace stateSpace2) {
-		if (staticStateSpace != null) {
-			staticStateSpace.kill();
-		}
-		staticStateSpace = stateSpace2;
-	}
-
-	private void unsubscribeAllFormulas(StateSpace stateSpace) {
-		Set<IEvalElement> subscribedFormulas = stateSpace.getSubscribedFormulas();
-		for (IEvalElement iEvalElement : subscribedFormulas) {
-			stateSpace.unsubscribe(this, iEvalElement);
 		}
 	}
 
 	private void executeModel(final StateSpace stateSpace) {
-		final Trace t = new Trace(stateSpace);
+		Trace t = new Trace(stateSpace);
 		this.rootState = t.getCurrentState();
-		executeModelCommand = new ExecuteModelCommand(stateSpace, rootState, maxNumberOfStatesToBeExecuted,
+		executeModelCommand = new ExecuteModelCommand(stateSpace, t.getCurrentState(), maxNumberOfStatesToBeExecuted,
 				continueAfterErrors, timeout);
 		stateSpace.execute(executeModelCommand);
 	}

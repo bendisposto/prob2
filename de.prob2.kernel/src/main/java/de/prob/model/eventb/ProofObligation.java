@@ -3,10 +3,11 @@ package de.prob.model.eventb;
 import java.util.List;
 
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.Named;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.util.Tuple2;
 
-public class ProofObligation extends AbstractElement {
+public class ProofObligation extends AbstractElement implements Named {
 
 	private final String name;
 	private final boolean discharged;
@@ -24,6 +25,7 @@ public class ProofObligation extends AbstractElement {
 		this.elements = elements;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

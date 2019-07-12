@@ -12,18 +12,23 @@ public class OsSpecificInfo {
 	private final String helperCmd;
 	private final String userInterruptCmd;
 	private final String name;
-	private final String fullname;
 	private final String dirName;
+	private final String cspmfName;
 
-	public OsSpecificInfo(final String cliName, final String helperCmd,
-			final String userInterruptCmd, final String name,
-			final String fullname, final String dirName) {
+	public OsSpecificInfo(
+		final String cliName,
+		final String helperCmd,
+		final String userInterruptCmd,
+		final String name,
+		final String dirName,
+		final String cspmfName
+	) {
 		this.cliName = cliName;
 		this.helperCmd = helperCmd;
 		this.userInterruptCmd = userInterruptCmd;
 		this.name = name;
-		this.fullname = fullname;
 		this.dirName = dirName;
+		this.cspmfName = cspmfName;
 	}
 
 	/**
@@ -56,17 +61,14 @@ public class OsSpecificInfo {
 	}
 
 	/**
-	 * @return {@link System#getProperty(String)} with String key "os.arch"
-	 */
-	public String getFullname() {
-		return fullname;
-	}
-
-	/**
 	 * @return dirName Windows: "win32", Mac: "leopard64", Linux 32-Bit:
 	 *         "linux32", Linux 64-Bit: "linux64"
 	 */
 	public String getDirName() {
 		return dirName;
+	}
+	
+	public String getCspmfName() {
+		return this.cspmfName;
 	}
 }

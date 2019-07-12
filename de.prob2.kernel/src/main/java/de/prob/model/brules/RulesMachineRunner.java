@@ -10,13 +10,13 @@ import de.prob.Main;
 import de.prob.cli.CliVersionNumber;
 import de.prob.scripting.Api;
 import de.prob.scripting.ExtractedModel;
+import de.prob.statespace.StateSpace;
 
 public class RulesMachineRunner {
 
 	private static RulesMachineRunner rulesMachineRunner; // singleton
 	private final CliVersionNumber cliVersion;
 	private final RulesModelFactory rulesFactory;
-	private boolean reuseStateSpaceOfPreviousRun = false;
 
 	@Inject
 	public RulesMachineRunner(Api api) {
@@ -27,10 +27,8 @@ public class RulesMachineRunner {
 	public static RulesMachineRunner getInstance() {
 		if (rulesMachineRunner == null) {
 			rulesMachineRunner = Main.getInjector().getInstance(RulesMachineRunner.class);
-			return rulesMachineRunner;
-		} else {
-			return rulesMachineRunner;
 		}
+		return rulesMachineRunner;
 	}
 
 	public CliVersionNumber getVersion() {
@@ -38,14 +36,9 @@ public class RulesMachineRunner {
 	}
 
 	public ExecuteRun createRulesMachineExecuteRun(RulesProject rulesProject, File mainMachineFile,
-			Map<String, String> proBCorePreferences, boolean continueAfterErrors) {
-		ExtractedModel<RulesModel> extract;
-		extract = this.rulesFactory.extract(mainMachineFile, rulesProject);
-		return new ExecuteRun(extract, proBCorePreferences, this.reuseStateSpaceOfPreviousRun, continueAfterErrors);
-	}
-
-	public void setReuseStateSpace(boolean b) {
-		this.reuseStateSpaceOfPreviousRun = b;
+			Map<String, String> proBCorePreferences, boolean continueAfterErrors, StateSpace stateSpace) {
+		ExtractedModel<RulesModel> extract = this.rulesFactory.extract(mainMachineFile, rulesProject);
+		return new ExecuteRun(extract, proBCorePreferences, continueAfterErrors, stateSpace);
 	}
 
 }

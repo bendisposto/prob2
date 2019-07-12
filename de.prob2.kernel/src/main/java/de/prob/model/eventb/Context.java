@@ -6,17 +6,15 @@ import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Axiom;
 import de.prob.model.representation.Constant;
 import de.prob.model.representation.ModelElementList;
+import de.prob.model.representation.Named;
 import de.prob.model.representation.Set;
 
-public class Context extends AbstractElement {
+public class Context extends AbstractElement implements Named {
 
 	private final String name;
 
 	public Context(final String name) {
-		this(
-				name,
-				PersistentHashMap
-				.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
+		this(name, PersistentHashMap.emptyMap());
 	}
 
 	private Context(
@@ -26,6 +24,7 @@ public class Context extends AbstractElement {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -66,7 +65,7 @@ public class Context extends AbstractElement {
 	}
 
 	public ModelElementList<EventBAxiom> getAllAxioms() {
-		ModelElementList<EventBAxiom> axms = new ModelElementList<EventBAxiom>();
+		ModelElementList<EventBAxiom> axms = new ModelElementList<>();
 		for (Context ctx : getExtends()) {
 			axms = axms.addMultiple(ctx.getAllAxioms());
 		}

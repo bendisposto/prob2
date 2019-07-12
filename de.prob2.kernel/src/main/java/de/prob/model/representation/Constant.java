@@ -5,7 +5,7 @@ import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.statespace.Trace;
 import de.prob.unicode.UnicodeTranslator;
 
-public abstract class Constant extends AbstractFormulaElement {
+public abstract class Constant extends AbstractFormulaElement implements Named {
 
 	protected final IEvalElement expression;
 	protected AbstractEvalResult result;

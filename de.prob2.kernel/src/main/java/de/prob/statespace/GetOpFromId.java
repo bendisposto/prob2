@@ -40,7 +40,7 @@ public class GetOpFromId extends AbstractCommand {
 		ListPrologTerm plist = BindingGenerator.getList(bindings.get(PARAMETERS_VARIABLE));
 		params = Collections.emptyList();
 		if (!plist.isEmpty()) {
-			params = new ArrayList<String>();
+			params = new ArrayList<>();
 		}
 		for (PrologTerm p : plist) {
 			params.add(p.getFunctor().intern());
@@ -49,7 +49,7 @@ public class GetOpFromId extends AbstractCommand {
 		ListPrologTerm rlist = BindingGenerator.getList(bindings.get(RETURNVALUES_VARIABLE));
 		returnValues = Collections.emptyList();
 		if (!rlist.isEmpty()) {
-			returnValues = new ArrayList<String>();
+			returnValues = new ArrayList<>();
 		}
 		for (PrologTerm r : rlist) {
 			returnValues.add(r.getFunctor().intern());
@@ -58,23 +58,17 @@ public class GetOpFromId extends AbstractCommand {
 		op.setInfo(expansion, params, returnValues);
 	}
 
-	
 	/**
 	 * @deprecated Use getParameters() instead
 	 */
 	@Deprecated
 	public List<String> getParams() {
-		return params;
+		return this.getParameters();
 	}
-	
-	
-	
+
 	public List<String> getParameters() {
 		return params;
 	}
-	
-	
-	
 
 	public List<String> getReturnValues() {
 		return returnValues;

@@ -45,7 +45,7 @@ public class LTLCounterExample extends AbstractEvalResult implements IModelCheck
 	}
 
 	public List<Transition> getOpList() {
-		List<Transition> ops = new ArrayList<Transition>();
+		List<Transition> ops = new ArrayList<>();
 		ops.addAll(pathToCE);
 		ops.addAll(counterExample);
 		return ops;

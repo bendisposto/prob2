@@ -1,10 +1,10 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import java.nio.file.Paths
 
-// You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+import de.prob.statespace.Trace
 
-Trace trace = new Trace(s);
-trace.randomAnimation(10);
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
+
+final trace = new Trace(s)
+trace.randomAnimation(10)
 
 "AnimationSmokeTest passed"

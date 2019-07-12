@@ -7,8 +7,6 @@ import java.util.Map;
 
 import com.github.krukow.clj_lang.PersistentHashMap;
 
-import com.google.common.base.Joiner;
-
 import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.DependencyGraph.ERefType;
@@ -73,17 +71,18 @@ public abstract class AbstractModel extends AbstractElement {
 	 * @param formula to be parsed
 	 * @return a valid formula
 	 * @throws RuntimeException if parsing is not successful
+	 * @deprecated Use {@link #parseFormula(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
 	 */
+	@Deprecated
 	public IEvalElement parseFormula(String formula) {
-		return this.parseFormula(formula, FormulaExpand.TRUNCATE);
+		return this.parseFormula(formula, FormulaExpand.EXPAND);
 	}
 
 	/**
 	 * Will check the syntax of a formula to see if it is valid in the scope of
 	 * this model.
 	 *
-	 * @param formula
-	 *            to be checked
+	 * @param formula to be checked
 	 * @return whether or not the formula in question has valid syntax in the
 	 *         scope of this model
 	 */
@@ -99,6 +98,7 @@ public abstract class AbstractModel extends AbstractElement {
 		return stateSpaceProvider;
 	}
 
+	@Override
 	public Object getProperty(String name) {
 		if ("stateSpaceProvider".equals(name)) {
 			return getStateSpaceProvider();
@@ -119,14 +119,12 @@ public abstract class AbstractModel extends AbstractElement {
 		if (path.isEmpty()) {
 			return null;
 		}
-		String p = "x" + "." + Joiner.on(".").join(path);
-		return (AbstractElement) Eval.x(this, p);
+		return (AbstractElement) Eval.x(this, "x." + String.join(".", path));
 	}
 
 	public StateSpace load(AbstractElement mainComponent) {
-		return load(mainComponent, new HashMap<String, String>());
+		return load(mainComponent, new HashMap<>());
 	}
 
-	public abstract StateSpace load(AbstractElement mainComponent,
-			Map<String, String> preferences);
+	public abstract StateSpace load(AbstractElement mainComponent, Map<String, String> preferences);
 }

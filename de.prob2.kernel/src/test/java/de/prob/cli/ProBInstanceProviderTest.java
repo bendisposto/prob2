@@ -1,20 +1,19 @@
 package de.prob.cli;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Map;
 
+import de.prob.Main;
+
 import org.junit.Test;
 
-import de.prob.Main;
-import test.AbstractUnitTest;
+import static org.junit.Assert.*;
 
-public class ProBInstanceProviderTest extends AbstractUnitTest {
+public class ProBInstanceProviderTest {
 
 	@Test
-	public void testExtractCliInformation() throws Exception {
+	public void testExtractCliInformation() {
 		ProBInstanceProvider factory = Main.getInjector().getInstance(
 				ProBInstanceProvider.class);
 
@@ -28,11 +27,9 @@ public class ProBInstanceProviderTest extends AbstractUnitTest {
 		Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> info = factory
 				.extractCliInformation(reader);
 
-		AbstractCliPattern<?> p1 = info.get(InterruptRefPattern.class);
-		assertNotNull(p1);
+		assertNotNull(info.get(InterruptRefPattern.class));
 
-		AbstractCliPattern<?> p2 = info.get(PortPattern.class);
-		assertNotNull(p2);
+		assertNotNull(info.get(PortPattern.class));
 
 	}
 }

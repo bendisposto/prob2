@@ -1,0 +1,95 @@
+// This is a GroovyDSL definition file, which can be loaded in IntelliJ IDEA to inform it about additional globals, methods, etc. that are available in our Groovy integration test scripts. This improves the accuracy of usage search, refactoring, etc. in the Groovy integration tests.
+// To load this file in IntelliJ, it must be located in a source root. Right-click on the groovyTests folder in the file tree, then select "Mark Directory as" > "Test Sources Root". (You can also do this under "Modules" in the Project Structure window.)
+// Once this is done, a yellow banner will appear above the file saying "DSL descriptor file has been changed [...]". To load the file, click the "Activate back" link in the banner.
+
+final testPathRegexp = ".*/prob2/de.prob2.kernel/groovyTests/.*"
+
+contributor(context(ctype: "groovy.lang.Script", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
+	property(name: "animations", type: "de.prob.statespace.AnimationSelector")
+	property(name: "api", type: "de.prob.scripting.Api")
+	property(name: "dir", type: "java.lang.String")
+	property(name: "engine", type: "javax.script.ScriptEngine")
+	property(name: "inConsole", type: "boolean")
+	
+	// TODO There are some additional methods and classes defined in de/prob/scripting/initscript.groovy which are not yet listed here.
+	// However none of the integration tests seem to use them, so it probably doesn't matter that they are missing.
+}
+
+// The following properties and methods don't really exist, they are implemented using Groovy magic (getProperty, invokeMethod, etc.).
+// These lists are maintained manually and contain all dynamic property/method names used in the tests.
+// FIXME Is this a good idea?
+
+contributor(context(ctype: "de.prob.animator.domainobjects.EvalResult", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
+	[
+		"x",
+		"y",
+	].each {
+		property(name: it, type: "java.lang.String")
+	}
+}
+
+contributor(context(ctype: "de.prob.animator.domainobjects.TranslatedEvalResult", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
+	[
+		"x",
+		"y",
+	].each {
+		property(name: it, type: "de.prob.translator.types.BObject")
+	}
+}
+
+contributor(context(ctype: "de.prob.model.classicalb.ClassicalBModel", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
+	[
+		"B", // usedMachinesVariableScoping.groovy
+		"blah", // loadFromAst.groovy
+		"scheduler", // schedulerTests.groovy
+	].each {
+		property(name: it, type: "de.prob.model.classicalb.ClassicalBMachine")
+	}
+}
+
+contributor(context(ctype: "de.prob.model.eventb.EventBModel", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
+	[
+		"CFarmer", // loadEventBFromZip.groovy
+		"MFarmer", // loadEventBFromZip.groovy
+	].each {
+		property(name: it, type: "de.prob.model.eventb.EventBMachine")
+	}
+}
+
+contributor(context(ctype: "de.prob.model.representation.ModelElementList", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
+	[
+		"active", // schedulerTests.groovy
+		"ready", // schedulerTests.groovy
+		"waiting", // schedulerTests.groovy
+	].each {
+		property(name: it, type: "de.prob.model.classicalb.ClassicalBVariable")
+	}
+}
+
+contributor(context(ctype: "de.prob.statespace.SyncedTraces", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
+	[
+		"sync1", // syncedTraces.groovy
+		"sync2", // syncedTraces.groovy
+	].each {
+		method(name: it, type: "de.prob.statespace.SyncedTraces", params: [])
+	}
+}
+
+contributor(context(ctype: "de.prob.statespace.Trace", scope: scriptScope(), filetypes: ["groovy"], pathRegexp: testPathRegexp)) {
+	[
+		"\$initialise_machine", // many machines
+		"\$setup_constants", // many machines
+		"Crazy1", // MultipleExample.mch
+		"Crazy2", // MultipleExample.mch
+		"MA.set", // includes/M1.mch
+		"MB.set", // includes/M1.mch
+		"Set", // MultipleExample.mch
+		"del", // scheduler.mch
+		"new", // scheduler.mch
+		"read", // Simple.mch
+		"ready", // scheduler.mch
+		"up", // Lift0.bcm
+	].each {
+		method(name: it, type: "de.prob.statespace.Trace", params: [preds: "java.lang.String..."])
+	}
+}

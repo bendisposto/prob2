@@ -1,23 +1,25 @@
 package de.prob.statespace
 
+import java.nio.file.Paths
+
 import de.prob.Main
 import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.FormulaExpand
 import de.prob.scripting.ClassicalBFactory
 
 import spock.lang.Specification
 
 class StateAnimationTest extends Specification {
-
-	static StateSpace s
-	static State root
-	static State firstState
-	static State secondState
+	private static StateSpace s
+	private static State root
+	private static State firstState
+	private static State secondState
 
 	def setupSpec() {
-		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
-		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
+		final path = Paths.get("groovyTests", "machines", "scheduler.mch").toString()
+		final factory = Main.injector.getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
-		root = s.getRoot()
+		root = s.root
 		firstState = root.$initialise_machine()
 		secondState = firstState.new("pp=PID1")
 	}
@@ -60,14 +62,14 @@ class StateAnimationTest extends Specification {
 
 	def "you can find a transition that is outgoing from the current state vararg"() {
 		expect:
-		root.findTransition("\$initialise_machine").getName() == "\$initialise_machine"
-		firstState.findTransition("new", "pp=PID1").getName() == "new"
+		root.findTransition("\$initialise_machine").name == "\$initialise_machine"
+		firstState.findTransition("new", "pp=PID1").name == "new"
 	}
 
 	def "you can find a transition that is outgoing from the current state with a list of predicates"() {
 		expect:
-		root.findTransition("\$initialise_machine").getName() == "\$initialise_machine"
-		firstState.findTransition("new", "pp=PID1").getName() == "new"
+		root.findTransition("\$initialise_machine").name == "\$initialise_machine"
+		firstState.findTransition("new", "pp=PID1").name == "new"
 	}
 
 	def "you can't find an illegal transition"() {
@@ -77,7 +79,7 @@ class StateAnimationTest extends Specification {
 
 	def "transition that is cached will be simply returned if no predicates are given"() {
 		when:
-		def t = Transition.generateArtificialTransition(s, "blah", "blah", "blah", "blah")
+		final t = Transition.generateArtificialTransition(s, "blah", "blah", "blah", "blah")
 		root.transitions << t
 
 		then:
@@ -88,34 +90,34 @@ class StateAnimationTest extends Specification {
 	def "you can find transitions with or without a predicate"() {
 		expect:
 		firstState.findTransitions("new", [], 3).size() == 3
-		firstState.findTransitions("new", ["pp=PID1"], 1)[0].getParams() == ["PID1"]
+		firstState.findTransitions("new", ["pp=PID1"], 1)[0].params == ["PID1"]
 	}
 
 	def "can execute an event via the anyOperation method"() {
 		when:
-		State s2 = root.anyOperation()
-		State s3 = root.anyOperation().anyOperation("new")
-		State s4 = root.anyOperation().anyOperation(["new"])
-		State s5 = root.anyOperation("blah") // will return original state
+		final s2 = root.anyOperation()
+		final s3 = root.anyOperation().anyOperation("new")
+		final s4 = root.anyOperation().anyOperation(["new"])
+		final s5 = root.anyOperation("blah") // will return original state
 
 		then:
 		s2 == firstState
-		s3.eval("waiting").getValue() != "{}"
-		s4.eval("waiting").getValue() != "{}"
+		s3.eval("waiting", FormulaExpand.EXPAND).value != "{}"
+		s4.eval("waiting", FormulaExpand.EXPAND).value != "{}"
 		s5 == root
 	}
 
 	def "can execute an event via the anyEvent method"() {
 		when:
-		State s2 = root.anyEvent()
-		State s3 = root.anyEvent().anyEvent("new")
-		State s4 = root.anyEvent().anyEvent(["new"])
-		State s5 = root.anyEvent("blah") // will return original state
+		final s2 = root.anyEvent()
+		final s3 = root.anyEvent().anyEvent("new")
+		final s4 = root.anyEvent().anyEvent(["new"])
+		final s5 = root.anyEvent("blah") // will return original state
 
 		then:
 		s2 == firstState
-		s3.eval("waiting").getValue() != "{}"
-		s4.eval("waiting").getValue() != "{}"
+		s3.eval("waiting", FormulaExpand.EXPAND).value != "{}"
+		s4.eval("waiting", FormulaExpand.EXPAND).value != "{}"
 		s5 == root
 	}
 }

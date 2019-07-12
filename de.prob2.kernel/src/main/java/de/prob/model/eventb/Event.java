@@ -1,12 +1,12 @@
 package de.prob.model.eventb;
 
+import com.github.krukow.clj_lang.PersistentHashMap;
+
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Action;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Guard;
 import de.prob.model.representation.ModelElementList;
-
-import com.github.krukow.clj_lang.PersistentHashMap;
 
 public class Event extends BEvent {
 
@@ -18,12 +18,7 @@ public class Event extends BEvent {
 	}
 
 	public Event(final String name, final EventType type, final boolean extended) {
-		this(
-				name,
-				type,
-				extended,
-				PersistentHashMap
-						.<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> emptyMap());
+		this(name, type, extended, PersistentHashMap.emptyMap());
 	}
 
 	private Event(
@@ -77,7 +72,7 @@ public class Event extends BEvent {
 	}
 
 	public ModelElementList<EventBGuard> getAllGuards() {
-		ModelElementList<EventBGuard> acts = new ModelElementList<EventBGuard>();
+		ModelElementList<EventBGuard> acts = new ModelElementList<>();
 		for (Event e : getRefines()) {
 			acts = acts.addMultiple(e.getAllGuards());
 		}
@@ -89,7 +84,7 @@ public class Event extends BEvent {
 	}
 
 	public ModelElementList<EventBAction> getAllActions() {
-		ModelElementList<EventBAction> acts = new ModelElementList<EventBAction>();
+		ModelElementList<EventBAction> acts = new ModelElementList<>();
 		for (Event e : getRefines()) {
 			acts = acts.addMultiple(e.getAllActions());
 		}

@@ -1,18 +1,20 @@
 package de.prob.animator.command;
 
-import com.google.common.base.Joiner;
-
 import de.prob.cli.CliVersionNumber;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
 public class GetVersionCommand extends AbstractCommand {
-
 	private static final String PROLOG_COMMAND_NAME = "get_version";
 
-	private String major, minor, service, qualifier, svnrevision,
-			lastchangeddate, prologinfo;
+	private String major;
+	private String minor;
+	private String service;
+	private String qualifier;
+	private String svnrevision;
+	private String lastchangeddate;
+	private String prologinfo;
 
 	private static final String VAR_MAJOR = "Major";
 	private static final String VAR_MINOR = "Minor";
@@ -24,16 +26,19 @@ public class GetVersionCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm(PROLOG_COMMAND_NAME).printVariable(VAR_MAJOR)
-				.printVariable(VAR_MINOR).printVariable(VAR_SERVICE)
-				.printVariable(VAR_QUALIFIER).printVariable(VAR_REVISION)
-				.printVariable(VAR_CHANGEDATE).printVariable(VAR_PROLOGVERSION)
-				.closeTerm();
+		pto.openTerm(PROLOG_COMMAND_NAME)
+			.printVariable(VAR_MAJOR)
+			.printVariable(VAR_MINOR)
+			.printVariable(VAR_SERVICE)
+			.printVariable(VAR_QUALIFIER)
+			.printVariable(VAR_REVISION)
+			.printVariable(VAR_CHANGEDATE)
+			.printVariable(VAR_PROLOGVERSION)
+			.closeTerm();
 	}
 
 	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		// FIXME check for nullness
 		major = bindings.get(VAR_MAJOR).getFunctor();
 		minor = bindings.get(VAR_MINOR).getFunctor();
@@ -74,14 +79,14 @@ public class GetVersionCommand extends AbstractCommand {
 	}
 
 	public CliVersionNumber getVersion() {
-		return new CliVersionNumber(major, minor, service, qualifier,
-				svnrevision);
+		return new CliVersionNumber(major, minor, service, qualifier, svnrevision);
 	}
 
 	public String getVersionString() {
-		return Joiner.on('.').join(major, minor, service) + "-" + qualifier
-				+ " (" + svnrevision + ")\nLast changed: " + lastchangeddate
-				+ "\nProlog: " + prologinfo;
+		return String.format(
+			"%s.%s.%s-%s (%s)\nLast changed: %s\nProlog: %s",
+			major, minor, service, qualifier, svnrevision, lastchangeddate, prologinfo
+		);
 	}
 
 }

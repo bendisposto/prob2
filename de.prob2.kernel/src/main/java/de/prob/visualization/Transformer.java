@@ -10,9 +10,10 @@ import com.google.gson.Gson;
 /**
  * @deprecated This class will be removed unless you make a strong case for it!
  */
+@Deprecated
 public class Transformer {
 	public static final List<String> DEFAULT_STYLES = Collections.unmodifiableList(
-			Arrays.asList((String[]) new String[] { "fill", "font", "stroke", "stroke-dasharray", "stroke-width" }));
+			Arrays.asList("fill", "font", "stroke", "stroke-dasharray", "stroke-width"));
 
 	public final List<Attribute> attributes;
 	public final List<Style> styles;

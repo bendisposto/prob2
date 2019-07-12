@@ -2,19 +2,21 @@ package de.prob.model.eventb;
 
 import java.util.Set;
 
+import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.model.representation.Action;
+import de.prob.model.representation.Named;
+
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-import de.prob.animator.domainobjects.EventB;
-import de.prob.model.representation.Action;
-
-public class EventBAction extends Action {
+public class EventBAction extends Action implements Named {
 
 	private final String name;
 	private final String comment;
 
 	public EventBAction(final String name, final String code,
 			final Set<IFormulaExtension> typeEnv) {
-		this(name, new EventB(code, typeEnv), "");
+		this(name, new EventB(code, typeEnv, FormulaExpand.EXPAND), "");
 	}
 
 	public EventBAction(final String name, EventB code, String comment) {

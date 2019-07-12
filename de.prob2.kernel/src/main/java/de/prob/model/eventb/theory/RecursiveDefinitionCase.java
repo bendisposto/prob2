@@ -1,15 +1,15 @@
 package de.prob.model.eventb.theory;
 
+import java.util.Objects;
 import java.util.Set;
+
+import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.model.representation.AbstractFormulaElement;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-import com.google.common.base.Objects;
-
-import de.prob.animator.domainobjects.EventB;
-import de.prob.model.representation.AbstractElement;
-
-public class RecursiveDefinitionCase extends AbstractElement {
+public class RecursiveDefinitionCase extends AbstractFormulaElement {
 
 	private final String expressionString;
 	private final String formulaString;
@@ -25,25 +25,19 @@ public class RecursiveDefinitionCase extends AbstractElement {
 		return expression;
 	}
 
+	@Override
 	public EventB getFormula() {
 		return formula;
 	}
 
 	public void parseCase(final Set<IFormulaExtension> typeEnv) {
-		expression = new EventB(expressionString, typeEnv);
-		formula = new EventB(formulaString, typeEnv);
+		expression = new EventB(expressionString, typeEnv, FormulaExpand.EXPAND);
+		formula = new EventB(formulaString, typeEnv, FormulaExpand.EXPAND);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime
-				* result
-				+ ((expressionString == null) ? 0 : expressionString.hashCode());
-		result = prime * result
-				+ ((formulaString == null) ? 0 : formulaString.hashCode());
-		return result;
+		return Objects.hash(this.expressionString, this.formulaString);
 	}
 
 	@Override
@@ -51,15 +45,12 @@ public class RecursiveDefinitionCase extends AbstractElement {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (obj == null || this.getClass() != obj.getClass()) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		RecursiveDefinitionCase other = (RecursiveDefinitionCase) obj;
-		return Objects.equal(expressionString, other.expressionString)
-				&& Objects.equal(formulaString, other.formulaString);
+		final RecursiveDefinitionCase other = (RecursiveDefinitionCase)obj;
+		return Objects.equals(this.expressionString, other.expressionString)
+				&& Objects.equals(this.formulaString, other.formulaString);
 	}
 
 }

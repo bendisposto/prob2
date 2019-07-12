@@ -333,7 +333,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		final PExpression result;
 		switch (expression.getTag()) {
 		case Formula.MAPSTO:
-			result = new ACoupleExpression(Arrays.asList((PExpression[]) new PExpression[] { exL, exR }));
+			result = new ACoupleExpression(Arrays.asList(exL, exR));
 			break;
 		case Formula.REL:
 			result = new ARelationsExpression(exL, exR);
@@ -408,7 +408,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 			result = new APowerOfExpression(exL, exR);
 			break;
 		case Formula.FUNIMAGE:
-			result = new AFunctionExpression(exL, Arrays.asList((PExpression[]) new PExpression[] { exR }));
+			result = new AFunctionExpression(exL, Collections.singletonList(exR));
 			break;
 		case Formula.RELIMAGE:
 			result = new AImageExpression(exL, exR);
@@ -451,8 +451,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	}
 
 	private AIdentifierExpression createIdentifierExpression(final String name) {
-		return new AIdentifierExpression(
-				Arrays.asList((TIdentifierLiteral[]) new TIdentifierLiteral[] { new TIdentifierLiteral(name) }));
+		return new AIdentifierExpression(Collections.singletonList(new TIdentifierLiteral(name)));
 	}
 
 	@Override

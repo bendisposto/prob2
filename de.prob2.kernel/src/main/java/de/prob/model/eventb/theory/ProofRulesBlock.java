@@ -4,8 +4,9 @@ import com.github.krukow.clj_lang.PersistentHashMap;
 
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
+import de.prob.model.representation.Named;
 
-public class ProofRulesBlock extends AbstractElement {
+public class ProofRulesBlock extends AbstractElement implements Named {
 
 	private final String name;
 
@@ -34,6 +35,7 @@ public class ProofRulesBlock extends AbstractElement {
 		return getChildrenOfType(MetaVariable.class);
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

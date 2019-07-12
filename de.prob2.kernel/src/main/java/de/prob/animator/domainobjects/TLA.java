@@ -16,13 +16,21 @@ import util.ToolIO;
 
 public class TLA extends AbstractEvalElement implements IBEvalElement {
 
-	private ClassicalB classicalB;
-	private Start ast;
+	private final Start ast;
+	private final ClassicalB classicalB;
 
+	/**
+	 * @deprecated Use {@link #TLA(String, FormulaExpand)} with an explicit {@link FormulaExpand} argument instead
+	 */
+	@Deprecated
 	public TLA(String code) {
-		this.code = code;
+		this(code, FormulaExpand.EXPAND);
+	}
+
+	public TLA(String code, FormulaExpand expand) {
+		super(code, expand);
 		ast = fromTLA(code);
-		classicalB = new ClassicalB(ast);
+		classicalB = new ClassicalB(ast, expand);
 	}
 
 	private Start fromTLA(String code) {
@@ -48,7 +56,7 @@ public class TLA extends AbstractEvalElement implements IBEvalElement {
 
 	@Override
 	public String serialized() {
-		return "#TLA" + code;
+		return "#TLA" + getCode();
 	}
 
 	@Override

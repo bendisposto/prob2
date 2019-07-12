@@ -1,50 +1,56 @@
 package de.prob.cli;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import org.junit.Test;
 
-import test.AbstractUnitTest;
+import static org.junit.Assert.*;
 
-public class OsInfoProviderTest extends AbstractUnitTest {
-
-	static final HashMap<String, String> supported = new HashMap<String, String>();
-	static final String[] unsupported = { "OS/2", "Solaris	", "SunOS",
-			"MPE/iX", "HP-UX", "AIX	", "OS/390", "FreeBSD", "Irix",
-			"Digital Unix", "NetWare 4.11", "OSF1", "OpenVMS" };
+public class OsInfoProviderTest {
 	private static final String LINUX = "Linux";
 	private static final String MAC = "MacOs";
 	private static final String WIN = "Windows";
 
+	private static final Map<String, String> SUPPORTED = new HashMap<>();
 	static {
-		supported.put("Linux", LINUX);
-		supported.put("Mac OS", MAC);
-		supported.put("Mac OS X", MAC);
-		supported.put("Windows 95", WIN);
-		supported.put("Windows 98", WIN);
-		supported.put("Windows Me", WIN);
-		supported.put("Windows NT", WIN);
-		supported.put("Windows 2000", WIN);
-		supported.put("Windows 2003", WIN);
-		supported.put("Windows XP", WIN);
-		supported.put("Windows CE", WIN);
+		SUPPORTED.put("Linux", LINUX);
+		SUPPORTED.put("Mac OS", MAC);
+		SUPPORTED.put("Mac OS X", MAC);
+		SUPPORTED.put("Windows 95", WIN);
+		SUPPORTED.put("Windows 98", WIN);
+		SUPPORTED.put("Windows Me", WIN);
+		SUPPORTED.put("Windows NT", WIN);
+		SUPPORTED.put("Windows 2000", WIN);
+		SUPPORTED.put("Windows 2003", WIN);
+		SUPPORTED.put("Windows XP", WIN);
+		SUPPORTED.put("Windows CE", WIN);
 	}
+
+	private static final String[] UNSUPPORTED = {
+		"OS/2",
+		"Solaris",
+		"SunOS",
+		"MPE/iX",
+		"HP-UX",
+		"AIX",
+		"OS/390",
+		"FreeBSD",
+		"Irix",
+		"Digital Unix",
+		"NetWare 4.11",
+		"OSF1",
+		"OpenVMS",
+	};
 
 	@Test
 	public void testSupportedOS() {
-		for (Entry<String, String> entry : supported.entrySet()) {
-			assertEquals(entry.getValue(), new OsInfoProvider(entry.getKey(),
-					"i386").get().getName());
-		}
+		SUPPORTED.forEach((key, value) -> assertEquals(value, new OsInfoProvider(key, "i386").get().getName()));
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testUnsupportedOS() {
-		String[] unsupported2 = unsupported;
-		for (String string : unsupported2) {
+		for (String string : UNSUPPORTED) {
 			new OsInfoProvider(string, "i386").get();
 		}
 	}

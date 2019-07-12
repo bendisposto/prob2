@@ -22,7 +22,7 @@ public class ModelModule extends AbstractModule {
 
 	@Provides
 	@MaxCacheSize
-	public final int getMaxSizeForStateCache() {
+	private static int getMaxSizeForStateCache() {
 		return Main.getMaxCacheSize();
 	}
 }

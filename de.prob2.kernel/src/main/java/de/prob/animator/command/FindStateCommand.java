@@ -3,6 +3,9 @@ package de.prob.animator.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
@@ -16,10 +19,11 @@ import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
 public class FindStateCommand extends AbstractCommand implements IStateSpaceModifier, ITraceDescription {
-
-	public static enum ResultType {
+	public enum ResultType {
 		STATE_FOUND, NO_STATE_FOUND, INTERRUPTED, ERROR
 	}
+	
+	private static final Logger logger = LoggerFactory.getLogger(FindStateCommand.class);
 
 	private static final String PROLOG_COMMAND_NAME = "find_state_for_predicate";
 	private static final String RESULT_VARIABLE = "R";
@@ -33,8 +37,7 @@ public class FindStateCommand extends AbstractCommand implements IStateSpaceModi
 	private final boolean onlyValidState;
 
 	/**
-	 * @param predicate
-	 *            is a parsed predicate or <code>null</code>
+	 * @param predicate is a parsed predicate or {@code null}
 	 * @see ProBParserBase#parsePredicate(IPrologTermOutput, String, boolean)
 	 */
 	public FindStateCommand(final StateSpace s, final IEvalElement predicate, boolean onlyValidState) {
@@ -69,29 +72,28 @@ public class FindStateCommand extends AbstractCommand implements IStateSpaceModi
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		final ResultType result;
 
 		if (resultTerm.hasFunctor("no_valid_state_found", 0)) {
-			result = ResultType.NO_STATE_FOUND;
+			this.result = ResultType.NO_STATE_FOUND;
 		} else if (resultTerm.hasFunctor("errors", 1)) {
-			result = ResultType.ERROR;
+			PrologTerm error = resultTerm.getArgument(1);
+			logger.error("Find state produced errors: {}", error);
+			this.result = ResultType.ERROR;
 		} else if (resultTerm.hasFunctor("interrupted", 0)) {
-			result = ResultType.INTERRUPTED;
+			this.result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("state_found", 2)) {
 			CompoundPrologTerm term = (CompoundPrologTerm) resultTerm;
-			result = ResultType.STATE_FOUND;
+			this.result = ResultType.STATE_FOUND;
 			operation = Transition.createTransitionFromCompoundPrologTerm(s, (CompoundPrologTerm) term.getArgument(1));
 			stateId = term.getArgument(2).toString();
 		} else {
 			throw new ProBError("unexpected result when trying to find a valid state: " + resultTerm);
 		}
-
-		this.result = result;
 	}
 
 	@Override
 	public List<Transition> getNewTransitions() {
-		ArrayList<Transition> ops = new ArrayList<Transition>();
+		List<Transition> ops = new ArrayList<>();
 		if (operation != null) {
 			ops.add(operation);
 		}

@@ -1,6 +1,5 @@
 package de.prob.statespace;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,15 +8,12 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -34,7 +30,8 @@ import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;
 import de.prob.animator.command.GetStatesFromPredicate;
-import de.prob.animator.command.RegisterFormulaCommand;
+import de.prob.animator.command.RegisterFormulasCommand;
+import de.prob.animator.command.UnregisterFormulaCommand;
 import de.prob.animator.domainobjects.AbstractEvalResult;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
@@ -76,8 +73,9 @@ public class StateSpace implements IAnimator {
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 	private IAnimator animator;
 
-	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<>();
-	private final Set<IEvalElement> subscribedFormulas = new HashSet<>();
+	private final Map<IEvalElement, Set<Object>> formulaRegistry = new HashMap<>();
+
+	private LoadedMachine loadedMachine;
 
 	private final LoadingCache<String, State> states;
 
@@ -202,7 +200,7 @@ public class StateSpace implements IAnimator {
 	 * @throws IllegalArgumentException
 	 *             if a state with the specified id doesn't exist
 	 */
-	public Object getAt(final int stateId) {
+	public State getAt(final int stateId) {
 		return getState(stateId);
 	}
 
@@ -256,7 +254,7 @@ public class StateSpace implements IAnimator {
 	 *
 	 * @param stateId
 	 *            {@link State} from which the operation should be found
-	 * @param name
+	 * @param opName
 	 *            name of the operation that should be executed
 	 * @param predicate
 	 *            an additional guard for the operation. This usually describes
@@ -266,15 +264,52 @@ public class StateSpace implements IAnimator {
 	 *            predicate
 	 * @return list of operations calculated by ProB
 	 */
-	public List<Transition> transitionFromPredicate(final State stateId, final String name, final String predicate,
+	public List<Transition> transitionFromPredicate(final State stateId, final String opName, final String predicate,
 			final int nrOfSolutions) {
-		final IEvalElement pred = model.parseFormula(predicate);
-		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), name,
+		final IEvalElement pred = model.parseFormula(predicate, FormulaExpand.EXPAND);
+		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), opName,
 				pred, nrOfSolutions);
 		execute(command);
 		if (command.hasErrors()) {
-			throw new IllegalArgumentException("Executing operation " + name + " with predicate " + predicate
-					+ " produced errors: " + Joiner.on(", ").join(command.getErrors()));
+			throw new IllegalArgumentException("Executing operation " + opName + " with predicate " + predicate
+					+ " produced errors: " + String.join(", ", command.getErrors()));
+		}
+		return command.getNewTransitions();
+	}
+
+	public List<Transition> getTransitionsBasedOnParameterValues(final State stateId, final String opName,
+			final List<String> parameterValues, final int nrOfSolutions) {
+		String predicate = "1 = 1";// default value
+		if (!opName.equals("$initialise_machine") && !opName.equals("$setup_constants")) {
+			if (!getLoadedMachine().containsOperations(opName)) {
+				throw new IllegalArgumentException("Unknown operation '" + opName + "'");
+			}
+			OperationInfo machineOperationInfo = getLoadedMachine().getMachineOperationInfo(opName);
+			List<String> parameterNames = machineOperationInfo.getParameterNames();
+			StringBuilder sb = new StringBuilder();
+			if (!parameterNames.isEmpty()) {
+				if (parameterNames.size() != parameterValues.size()) {
+					throw new IllegalArgumentException("Cannot execute operation " + opName
+							+ " because the number of parameters does not match the number of provied values: "
+							+ parameterNames.size() + " vs " + parameterValues.size());
+				}
+				for (int i = 0; i < parameterNames.size(); i++) {
+					sb.append(parameterNames.get(i)).append(" = ").append(parameterValues.get(i));
+					if (i < parameterNames.size() - 1) {
+						sb.append(" & ");
+					}
+				}
+				predicate = sb.toString();
+			}
+		}
+
+		final IEvalElement pred = model.parseFormula(predicate, FormulaExpand.EXPAND);
+		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), opName,
+				pred, nrOfSolutions);
+		execute(command);
+		if (command.hasErrors()) {
+			throw new IllegalArgumentException("Executing operation " + opName + " with predicate " + predicate
+					+ " produced errors: " + String.join(", ", command.getErrors()));
 		}
 		return command.getNewTransitions();
 	}
@@ -293,7 +328,7 @@ public class StateSpace implements IAnimator {
 	 *         otherwise.
 	 */
 	public boolean isValidOperation(final State stateId, final String name, final String predicate) {
-		final ClassicalB pred = new ClassicalB(predicate);
+		final ClassicalB pred = new ClassicalB(predicate, FormulaExpand.EXPAND);
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(this, stateId.getId(), name, pred,
 				1);
 		execute(command);
@@ -325,7 +360,7 @@ public class StateSpace implements IAnimator {
 	 *            to be evaluated
 	 * @return a list of {@link AbstractEvalResult}s
 	 */
-	public List<AbstractEvalResult> eval(final State state, final List<IEvalElement> formulas) {
+	public List<AbstractEvalResult> eval(final State state, final List<? extends IEvalElement> formulas) {
 		return state.eval(formulas);
 	}
 
@@ -369,9 +404,9 @@ public class StateSpace implements IAnimator {
 	 * @return whether or not the subscription was successful (will return true
 	 *         if at least one of the formulas was successfully subscribed)
 	 */
-	public boolean subscribe(final Object subscriber, final List<IEvalElement> formulas) {
+	public boolean subscribe(final Object subscriber, final Collection<? extends IEvalElement> formulas) {
 		boolean success = false;
-		List<AbstractCommand> subscribeCmds = new ArrayList<>();
+		List<IEvalElement> toSubscribe = new ArrayList<>();
 		for (IEvalElement formulaOfInterest : formulas) {
 			if (formulaOfInterest instanceof CSP) {
 				logger.info(
@@ -379,21 +414,20 @@ public class StateSpace implements IAnimator {
 						formulaOfInterest.getCode());
 			} else {
 				if (formulaRegistry.containsKey(formulaOfInterest)) {
-					formulaRegistry.get(formulaOfInterest).put(subscriber,
-							new WeakReference<Object>(formulaOfInterest));
-					subscribedFormulas.add(formulaOfInterest);
+					formulaRegistry.get(formulaOfInterest).add(subscriber);
 					success = true;
 				} else {
-					WeakHashMap<Object, Object> subscribers = new WeakHashMap<>();
-					subscribers.put(subscriber, new WeakReference<Object>(subscriber));
+					Set<Object> subscribers = Collections.newSetFromMap(new WeakHashMap<>());
+					subscribers.add(subscriber);
 					formulaRegistry.put(formulaOfInterest, subscribers);
-					subscribeCmds.add(new RegisterFormulaCommand(formulaOfInterest));
-					subscribedFormulas.add(formulaOfInterest);
+					toSubscribe.add(formulaOfInterest);
 					success = true;
 				}
 			}
 		}
-		execute(new ComposedCommand(subscribeCmds));
+		if (!toSubscribe.isEmpty()) {
+			execute(new RegisterFormulasCommand(toSubscribe));
+		}
 		return success;
 	}
 
@@ -436,21 +470,30 @@ public class StateSpace implements IAnimator {
 	 * @return whether or not the unsubscription was successful (will return
 	 *         false if none of the formulas were subscribed to begin with)
 	 */
-	public boolean unsubscribe(final Object subscriber, final List<IEvalElement> formulas) {
+
+	public boolean unsubscribe(final Object subscriber, final Collection<? extends IEvalElement> formulas) {
+		return this.unsubscribe(subscriber, formulas, false);
+	}
+
+	public boolean unsubscribe(final Object subscriber, final Collection<? extends IEvalElement> formulas, boolean unregister) {
 		boolean success = false;
+		final List<AbstractCommand> unsubscribeCmds = new ArrayList<>();
 		for (IEvalElement formula : formulas) {
 			if (formulaRegistry.containsKey(formula)) {
-				final WeakHashMap<Object, Object> subscribers = formulaRegistry.get(formula);
+				final Set<Object> subscribers = formulaRegistry.get(formula);
 				subscribers.remove(subscriber);
-				if (subscribers.isEmpty()) {
-					subscribedFormulas.remove(formula);
+				if (subscribers.isEmpty() && unregister) {
+					unsubscribeCmds.add(new UnregisterFormulaCommand(formula));
 				}
 				success = true;
 			}
 		}
+		if (!unsubscribeCmds.isEmpty()) {
+			execute(new ComposedCommand(unsubscribeCmds));
+		}
 		return success;
 	}
-	
+
 	/**
 	 * If a subscribed class is no longer interested in the value of a
 	 * particular formula, then they can unsubscribe to that formula
@@ -471,15 +514,13 @@ public class StateSpace implements IAnimator {
 	 *         currently interested subscribers.
 	 */
 	public Set<IEvalElement> getSubscribedFormulas() {
-		List<IEvalElement> toRemove = new ArrayList<>();
-		for (IEvalElement e : subscribedFormulas) {
-			WeakHashMap<Object, Object> subscribers = formulaRegistry.get(e);
-			if (subscribers == null || subscribers.isEmpty()) {
-				toRemove.add(e);
+		Set<IEvalElement> result = new HashSet<>();
+		for (Map.Entry<IEvalElement, Set<Object>> entry : formulaRegistry.entrySet()) {
+			if (!entry.getValue().isEmpty()) {
+				result.add(entry.getKey());
 			}
 		}
-		subscribedFormulas.removeAll(toRemove);
-		return new HashSet<>(subscribedFormulas);
+		return result;
 	}
 
 	/**
@@ -527,6 +568,13 @@ public class StateSpace implements IAnimator {
 		return animator.getId();
 	}
 
+	public LoadedMachine getLoadedMachine() {
+		if (this.loadedMachine == null) {
+			loadedMachine = new LoadedMachine(this);
+		}
+		return this.loadedMachine;
+	}
+
 	/**
 	 * @param state
 	 *            whose operations are to be printed
@@ -544,7 +592,7 @@ public class StateSpace implements IAnimator {
 			sb.append("\n");
 		}
 
-		if (!Trace.getExploreStateByDefault()) {
+		if (!state.isExplored()) {
 			sb.append("\n Possibly not all transitions shown. ProB does not explore states by default");
 		}
 		return sb.toString();
@@ -567,8 +615,8 @@ public class StateSpace implements IAnimator {
 		sb.append("STATE: " + state + "\n\n");
 		sb.append("VALUES:\n");
 		Map<IEvalElement, AbstractEvalResult> currentState = state.getValues();
-		final Set<Entry<IEvalElement, AbstractEvalResult>> entrySet = currentState.entrySet();
-		for (final Entry<IEvalElement, AbstractEvalResult> entry : entrySet) {
+		final Set<Map.Entry<IEvalElement, AbstractEvalResult>> entrySet = currentState.entrySet();
+		for (final Map.Entry<IEvalElement, AbstractEvalResult> entry : entrySet) {
 			sb.append("  " + entry.getKey().getCode() + " -> " + entry.getValue().toString() + "\n");
 		}
 
@@ -630,7 +678,7 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
-	 * This allows developers to programmatically descripe a Trace that should
+	 * This allows developers to programmatically describe a Trace that should
 	 * be created. {@link ITraceDescription#getTrace(StateSpace)} will then be
 	 * called in order to generate the correct Trace.
 	 *

@@ -3,21 +3,20 @@ package de.prob.model.eventb.theory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+
+import de.prob.model.representation.AbstractElement;
+import de.prob.util.Tuple2;
 
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.GivenType;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.datatype.IConstructorBuilder;
-import org.eventb.core.ast.datatype.IDatatype;
 import org.eventb.core.ast.datatype.IDatatypeBuilder;
 import org.eventb.core.ast.extension.IFormulaExtension;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.prob.model.representation.AbstractElement;
-import de.prob.util.Tuple2;
 
 public class DataType extends AbstractElement {
 
@@ -50,7 +49,7 @@ public class DataType extends AbstractElement {
 			return true;
 		}
 		if (obj instanceof DataType) {
-			return identifierString.equals(((DataType) obj).toString());
+			return identifierString.equals(obj.toString());
 		}
 		return false;
 	}
@@ -65,7 +64,7 @@ public class DataType extends AbstractElement {
 	}
 
 	public Set<IFormulaExtension> getFormulaExtensions(final FormulaFactory ff) {
-		List<GivenType> types = new ArrayList<GivenType>();
+		List<GivenType> types = new ArrayList<>();
 		for (String type : typeArguments) {
 			IParseResult parseType = ff.parseType(type);
 			if (parseType.getParsedType() instanceof GivenType) {
@@ -78,10 +77,8 @@ public class DataType extends AbstractElement {
 		}
 		IDatatypeBuilder builder = ff.makeDatatypeBuilder(identifierString,
 				types.toArray(new GivenType[typeArguments.size()]));
-		for (Entry<String, List<Tuple2<String, String>>> entry : constructors
-				.entrySet()) {
-			IConstructorBuilder consBuilder = builder.addConstructor(entry
-					.getKey());
+		for (Map.Entry<String, List<Tuple2<String, String>>> entry : constructors.entrySet()) {
+			IConstructorBuilder consBuilder = builder.addConstructor(entry.getKey());
 			for (Tuple2<String, String> destructor : entry.getValue()) {
 				IParseResult parseType = ff.parseType(destructor.getSecond());
 				consBuilder.addArgument(destructor.getFirst(),
@@ -89,9 +86,7 @@ public class DataType extends AbstractElement {
 			}
 		}
 
-		IDatatype datatype = builder.finalizeDatatype();
-		Set<IFormulaExtension> extensions = datatype.getExtensions();
-		return extensions;
+		return builder.finalizeDatatype().getExtensions();
 	}
 
 	public List<String> getTypeArguments() {

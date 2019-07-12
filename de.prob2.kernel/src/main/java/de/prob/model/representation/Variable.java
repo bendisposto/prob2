@@ -3,7 +3,7 @@ package de.prob.model.representation;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.unicode.UnicodeTranslator;
 
-public abstract class Variable extends AbstractFormulaElement {
+public abstract class Variable extends AbstractFormulaElement implements Named {
 
 	protected final IEvalElement expression;
 
@@ -20,6 +20,7 @@ public abstract class Variable extends AbstractFormulaElement {
 		return expression;
 	}
 
+	@Override
 	public String getName() {
 		return expression.getCode();
 	}

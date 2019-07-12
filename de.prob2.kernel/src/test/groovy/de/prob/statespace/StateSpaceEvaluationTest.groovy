@@ -1,5 +1,7 @@
 package de.prob.statespace
 
+import java.nio.file.Paths
+
 import de.prob.Main
 import de.prob.animator.domainobjects.AbstractEvalResult
 import de.prob.animator.domainobjects.CSP
@@ -8,18 +10,18 @@ import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.CSPModel
 import de.prob.scripting.ClassicalBFactory
 
-import spock.lang.Specification
+import spock.lang.Specification 
 
 class StateSpaceEvaluationTest extends Specification {
+	private static StateSpace s
+	private static State root
+	private static State firstState
 
-	static StateSpace s
-	static State root
-	static State firstState
 	def setupSpec() {
-		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
-		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
+		final path = Paths.get("groovyTests", "machines", "scheduler.mch").toString()
+		final factory = Main.injector.getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
-		root = s.getRoot()
+		root = s.root
 		firstState = root.$initialise_machine()
 	}
 
@@ -29,14 +31,20 @@ class StateSpaceEvaluationTest extends Specification {
 
 	def setup() {
 		s.formulaRegistry.clear()
-		s.subscribedFormulas.clear()
 	}
+
+    private boolean isEmptySet(x) {
+      return (x=="{}" || x=="\u2205") // u2205 is Unicode emptyset
+    }
+
 	def "it is possible to evaluate formulas in a state"() {
-		expect:
+	    final res = 
 		s.eval(firstState, [
 			new ClassicalB("waiting"),
 			new ClassicalB("ready")
-		]).collect { it.getValue() } == ["{}", "{}"]
+		]).collect { it.getValue() } 
+		expect:
+		 res == ["{}", "{}"] || res == ["\u2205", "\u2205"]
 	}
 	def "it is possible for someone to subscribe to a formula"() {
 		when:
@@ -48,8 +56,7 @@ class StateSpaceEvaluationTest extends Specification {
 		!before
 		success
 		s.formulaRegistry.containsKey(formula)
-		s.formulaRegistry[formula].containsKey(subscriber)
-		s.subscribedFormulas.contains(formula)
+		s.formulaRegistry[formula].contains(subscriber)
 	}
 	def "it is possible for multiple people to subscribe to the same formula"() {
 		when:
@@ -64,9 +71,8 @@ class StateSpaceEvaluationTest extends Specification {
 		success
 		success2
 		s.formulaRegistry.containsKey(formula)
-		s.formulaRegistry[formula].containsKey(subscriber1)
-		s.formulaRegistry[formula].containsKey(subscriber2)
-		s.subscribedFormulas.contains(formula)
+		s.formulaRegistry[formula].contains(subscriber1)
+		s.formulaRegistry[formula].contains(subscriber2)
 	}
 
 	def "csp formulas cannot be subscribed"() {
@@ -79,7 +85,6 @@ class StateSpaceEvaluationTest extends Specification {
 		then:
 		!success
 		!s.formulaRegistry.containsKey(csp)
-		!s.subscribedFormulas.contains(csp)
 	}
 
 	def "it is possible for someone to subscribe to multiple formulas"() {
@@ -95,11 +100,9 @@ class StateSpaceEvaluationTest extends Specification {
 		!before2
 		success
 		s.formulaRegistry.containsKey(formula)
-		s.formulaRegistry[formula].containsKey(subscriber)
-		s.subscribedFormulas.contains(formula)
+		s.formulaRegistry[formula].contains(subscriber)
 		s.formulaRegistry.containsKey(formula2)
-		s.formulaRegistry[formula2].containsKey(subscriber)
-		s.subscribedFormulas.contains(formula2)
+		s.formulaRegistry[formula2].contains(subscriber)
 	}
 	def "it is possible for multiple people to subscribe to the same multiple formulas"() {
 		when:
@@ -117,13 +120,11 @@ class StateSpaceEvaluationTest extends Specification {
 		success
 		success2
 		s.formulaRegistry.containsKey(formula)
-		s.formulaRegistry[formula].containsKey(subscriber1)
-		s.formulaRegistry[formula].containsKey(subscriber2)
-		s.subscribedFormulas.contains(formula)
+		s.formulaRegistry[formula].contains(subscriber1)
+		s.formulaRegistry[formula].contains(subscriber2)
 		s.formulaRegistry.containsKey(formula2)
-		s.formulaRegistry[formula2].containsKey(subscriber1)
-		s.formulaRegistry[formula2].containsKey(subscriber2)
-		s.subscribedFormulas.contains(formula2)
+		s.formulaRegistry[formula2].contains(subscriber1)
+		s.formulaRegistry[formula2].contains(subscriber2)
 	}
 
 	def "multiple csp formulas cannot be subscribed"() {
@@ -138,9 +139,7 @@ class StateSpaceEvaluationTest extends Specification {
 		then:
 		!success
 		!s.formulaRegistry.containsKey(csp)
-		!s.subscribedFormulas.contains(csp)
 		!s.formulaRegistry.containsKey(csp2)
-		!s.subscribedFormulas.contains(csp2)
 	}
 
 	def "formulas should not be evaluated in the root state"() {
@@ -167,7 +166,7 @@ class StateSpaceEvaluationTest extends Specification {
 		def formula = new ClassicalB('card(ready) + 1')
 		def success = s.subscribe(subscriber, formula)
 		def before = s.formulaRegistry.containsKey(formula)
-		def before2 = s.formulaRegistry[formula].containsKey(subscriber)
+		def before2 = s.formulaRegistry[formula].contains(subscriber)
 		subscriber = null
 		System.gc()
 		then:
@@ -175,7 +174,7 @@ class StateSpaceEvaluationTest extends Specification {
 		before
 		before2
 		s.formulaRegistry.containsKey(formula)
-		!s.formulaRegistry[formula].containsKey(subscriber)
+		!s.formulaRegistry[formula].contains(subscriber)
 	}
 
 	def "a formula that has not yet been subscribed should be recognized as subscribed"() {
@@ -251,7 +250,7 @@ class StateSpaceEvaluationTest extends Specification {
 		before
 		!s.getSubscribedFormulas().contains(formula)
 	}
-
+    
 	def "it is possible to evaluate multiple formulas in multiple states"() {
 		when:
 		def waiting = new ClassicalB("waiting")
@@ -272,9 +271,9 @@ class StateSpaceEvaluationTest extends Specification {
 		then:
 		result[root] == null // ignored because it is not initialised
 		def statesWOroot = states.findAll { it != root}
-		statesWOroot.collect { result[it][ready].getValue() }.inject(true) {acc, i -> acc && i == "{}"}
-		statesWOroot.collect { result[it][active].getValue() }.inject(true) {acc, i -> acc && i == "{}"}
-		result[firstState][waiting].getValue() == "{}"
+		statesWOroot.collect { result[it][ready].getValue() }.inject(true) {acc, i -> acc && isEmptySet(i)}
+		statesWOroot.collect { result[it][active].getValue() }.inject(true) {acc, i -> acc && isEmptySet(i)}
+		isEmptySet(result[firstState][waiting].getValue())
 		result[state2][waiting].getValue() == "{PID1}"
 		result[state3][waiting].getValue() == "{PID2}"
 		result[state4][waiting].getValue() == "{PID3}"

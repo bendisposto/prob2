@@ -2,11 +2,12 @@ package de.prob.model.eventb.theory;
 
 import java.util.Set;
 
-import org.eventb.core.ast.extension.IFormulaExtension;
-
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractFormulaElement;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 public class DirectDefinition extends AbstractFormulaElement implements
 		IOperatorDefinition {
@@ -15,7 +16,7 @@ public class DirectDefinition extends AbstractFormulaElement implements
 
 	public DirectDefinition(final String formula,
 			final Set<IFormulaExtension> typeEnv) {
-		this.formula = new EventB(formula, typeEnv);
+		this.formula = new EventB(formula, typeEnv, FormulaExpand.EXPAND);
 	}
 
 	@Override

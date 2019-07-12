@@ -1,9 +1,6 @@
-import de.be4.classicalb.core.parser.BParser;
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-import de.prob.Main
+import de.prob.statespace.Trace
 
-modelString = """MACHINE blah
+final modelString = """MACHINE blah
 SETS
  MySet={a, b, c}
 VARIABLES x
@@ -15,15 +12,15 @@ OPERATIONS
 END"""
 
 
-modelFactory = api.modelFactoryProvider.classicalBFactory
+final modelFactory = api.modelFactoryProvider.classicalBFactory
 assert modelFactory != null 
 
-em = modelFactory.create(modelString)
-m = em.model
-s = em.load()
+final em = modelFactory.create("blah", modelString)
+final m = em.model
+final s = em.load()
 
 // Test that animation works correctly
-t = new Trace(s)
+def t = new Trace(s)
 t = t.anyEvent()
 
 assert m.blah != null

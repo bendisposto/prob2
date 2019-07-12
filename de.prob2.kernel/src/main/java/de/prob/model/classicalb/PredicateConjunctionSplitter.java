@@ -10,9 +10,8 @@ import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.PPredicate;
 
 public class PredicateConjunctionSplitter extends DepthFirstAdapter {
-
-	List<PPredicate> predicates = new ArrayList<PPredicate>();
-	boolean skip;
+	private final List<PPredicate> predicates = new ArrayList<>();
+	private boolean skip;
 
 	@Override
 	public void caseAConjunctPredicate(AConjunctPredicate node) {
@@ -22,27 +21,20 @@ public class PredicateConjunctionSplitter extends DepthFirstAdapter {
 		}
 	}
 
-
-	
 	@Override
 	public void defaultIn(Node node) {
 		if (node instanceof PPredicate) {
-			PPredicate p = (PPredicate) node;
-			predicates.add(p);
+			predicates.add((PPredicate) node);
 			skip = true; 
 		}
 	}
 
-	@Override
-	public void defaultCase(Node node) {
-		super.defaultCase(node);
-	}
-
 	private void process(PPredicate p) {
-		if (p instanceof AConjunctPredicate)
+		if (p instanceof AConjunctPredicate) {
 			p.apply(this);
-		else
+		} else {
 			predicates.add(p);
+		}
 	}
 
 	public List<PPredicate> getPredicates() {

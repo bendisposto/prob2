@@ -1,68 +1,65 @@
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
-
-caught = false
+def caught1 = false
 try {
 	s = api.b_load("blah.mch")
-} catch(FileNotFoundException e) {
-	caught = true
+} catch (FileNotFoundException e) {
+	caught1 = true
 }
-assert caught
+assert caught1
 
-caught = false
+def caught2 = false
 try {
 	s = api.b_load("blah.ref")
-} catch(FileNotFoundException e) {
-	caught = true
+} catch (FileNotFoundException e) {
+	caught2 = true
 }
-assert caught
+assert caught2
 
-caught = false
+def caught3 = false
 try {
 	s = api.eventb_load("blub.buc")
-} catch(FileNotFoundException e) {
-	caught = true
+} catch (FileNotFoundException e) {
+	caught3 = true
 }
-assert caught
+assert caught3
 
-caught = false
+def caught4 = false
 try {
 	s = api.eventb_load("blub.bum")
-} catch(FileNotFoundException e) {
-	caught = true
+} catch (FileNotFoundException e) {
+	caught4 = true
 }
-assert caught
+assert caught4
 
-caught = false
+def caught5 = false
 try {
 	s = api.eventb_load("blub.bcc")
-} catch(FileNotFoundException e) {
-	caught = true
+} catch (FileNotFoundException e) {
+	caught5 = true
 }
-assert caught
+assert caught5
 
-caught = false
+def caught6 = false
 try {
 	s = api.eventb_load("blub.bcm")
-} catch(FileNotFoundException e) {
-	caught = true
+} catch (FileNotFoundException e) {
+	caught6 = true
 }
-assert caught
+assert caught6
 
-caught = false
+def caught7 = false
 try {
 	s = api.csp_load("blub.csp")
-} catch(FileNotFoundException e) {
-	caught = true
+} catch (FileNotFoundException e) {
+	caught7 = true
 }
-assert caught
+assert caught7
 
-caught = false
+def caught8 = false
 try {
 	s = api.tla_load("blub.tla")
-} catch(FileNotFoundException e) {
-	caught = true
+} catch (FileNotFoundException e) {
+	caught8 = true
 }
-assert caught
+assert caught8
 
 "a FileNotFoundException is thrown if the specified model does not exist"

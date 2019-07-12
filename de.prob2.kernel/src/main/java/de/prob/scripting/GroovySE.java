@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
@@ -12,58 +14,47 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
+import com.google.common.io.CharStreams;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.io.CharStreams;
 
 public class GroovySE implements ScriptEngine {
 
 	private final ScriptEngine groovy;
 	private final Logger logger = LoggerFactory.getLogger(GroovySE.class);
 
-	private static volatile int varcount = 0;
-	private static final int BUFFER_SIZE = 1024;
-
-	public static int nextVar() {
-		return varcount++;
-	}
-
-	private static final String[] IMPORTS = new String[] {
-			"import de.prob.statespace.*;",
-			"import de.prob.model.representation.*;",
-			"import de.prob.model.classicalb.*;",
-			"import de.prob.model.eventb.*;",
-			"import de.prob.animator.domainobjects.*;",
-			"import de.prob.animator.command.*;",
-			"import de.prob.visualization.*;", "import de.prob.check.*;",
-			"import de.prob.bmotion.*;", "\n " };
-
-	private static final String IMPORTS_STATEMENT = Joiner.on("\n").join(IMPORTS);
+	private static final String IMPORTS =
+		"import de.prob.animator.command.*;"
+		+ "import de.prob.animator.domainobjects.*;"
+		+ "import de.prob.bmotion.*;"
+		+ "import de.prob.check.*;"
+		+ "import de.prob.model.classicalb.*;"
+		+ "import de.prob.model.eventb.*;"
+		+ "import de.prob.model.representation.*;"
+		+ "import de.prob.statespace.*;"
+		+ "import de.prob.visualization.*;"
+		+ '\n'
+	;
 
 	public GroovySE(final ScriptEngine engine) {
 		groovy = engine;
-		initialize();
-	}
 
-	private void initialize() {
-		ClassLoader classLoader = this.getClass().getClassLoader();
-		InputStream inputStream = classLoader.getResourceAsStream("initscript");
-
-		String initscript = "";
-		try {
-			initscript = CharStreams.toString(new InputStreamReader(
-					inputStream, Charsets.UTF_8));
+		final String initscript;
+		try (
+			final InputStream is = this.getClass().getResourceAsStream("/de/prob/scripting/initscript.groovy");
+			final Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+		) {
+			initscript = CharStreams.toString(reader);
 		} catch (IOException e) {
-			logger.error("Error reading from initscript.");
+			logger.error("Could not read initscript", e);
+			return;
 		}
 		try {
-			groovy.eval(IMPORTS_STATEMENT + "\n" + initscript);
+			groovy.eval(IMPORTS + initscript);
 		} catch (ScriptException e) {
-			logger.error("Error initializing groovy", e);
-		} // run init script
+			logger.error("initscript threw an exception", e);
+		}
 	}
 
 	@Override
@@ -73,14 +64,14 @@ public class GroovySE implements ScriptEngine {
 		if (groovy.get("__console") == null) {
 			groovy.put("__console", buff);
 		}
-		Object result = groovy.eval(IMPORTS_STATEMENT + "\n" + script, context);
+		Object result = groovy.eval(IMPORTS + script, context);
 		if (result == null) {
 			return "null";
 		}
 		if (buff.length() > 0) {
 			logger.error("Automatically captured prints from groovy. "
 					+ "Users of a groovy engine should provide a console. "
-					+ "Output was: {}", buff.toString());
+					+ "Output was: {}", buff);
 		}
 		return result;
 	}
@@ -139,27 +130,14 @@ public class GroovySE implements ScriptEngine {
 		groovy.put(key, value);
 	}
 
-	/**
-	 * Delegate to eval(String, ScriptContext)
-	 */
 	@Override
 	public Object eval(final Reader reader, final ScriptContext context)
 			throws ScriptException {
-		return eval(readFully(reader), context);
-	}
-
-	private String readFully(final Reader reader) throws ScriptException {
-		char[] arr = new char[8 * BUFFER_SIZE]; // 8K at a time
-		StringBuilder buf = new StringBuilder();
-		int numChars;
 		try {
-			while ((numChars = reader.read(arr, 0, arr.length)) > 0) {
-				buf.append(arr, 0, numChars);
-			}
-		} catch (IOException exp) {
-			throw new ScriptException(exp);
+			return eval(CharStreams.toString(reader), context);
+		} catch (IOException e) {
+			throw new ScriptException(e);
 		}
-		return buf.toString();
 	}
 
 	@Override
@@ -169,20 +147,25 @@ public class GroovySE implements ScriptEngine {
 
 	@Override
 	public Object eval(final Reader reader) throws ScriptException {
-		return eval(readFully(reader));
+		try {
+			return eval(CharStreams.toString(reader));
+		} catch (IOException e) {
+			throw new ScriptException(e);
+		}
 	}
 
 	@Override
-	public Object eval(final String script, final Bindings n)
-			throws ScriptException {
-		ScriptContext ctxt = getScriptContext(n);
-		return eval(script, ctxt);
+	public Object eval(final String script, final Bindings n) throws ScriptException {
+		return eval(script, getScriptContext(n));
 	}
 
 	@Override
-	public Object eval(final Reader reader, final Bindings n)
-			throws ScriptException {
-		return eval(readFully(reader), n);
+	public Object eval(final Reader reader, final Bindings n) throws ScriptException {
+		try {
+			return eval(CharStreams.toString(reader), n);
+		} catch (IOException e) {
+			throw new ScriptException(e);
+		}
 	}
 
 	protected ScriptContext getScriptContext(final Bindings nn) {
@@ -194,12 +177,8 @@ public class GroovySE implements ScriptEngine {
 			ctxt.setBindings(gs, ScriptContext.GLOBAL_SCOPE);
 		}
 
-		if (nn != null) {
-			ctxt.setBindings(nn, ScriptContext.ENGINE_SCOPE);
-		} else {
-			throw new NullPointerException(
-					"Engine scope Bindings may not be null.");
-		}
+		Objects.requireNonNull(nn, "Engine scope Bindings may not be null.");
+		ctxt.setBindings(nn, ScriptContext.ENGINE_SCOPE);
 
 		return ctxt;
 

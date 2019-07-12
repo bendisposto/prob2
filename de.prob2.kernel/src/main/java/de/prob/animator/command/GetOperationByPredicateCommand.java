@@ -39,8 +39,8 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	private final IEvalElement evalElement;
 	private final String stateId;
 	private final String name;
-	private final List<Transition> operations = new ArrayList<Transition>();
-	private final List<String> errors = new ArrayList<String>();
+	private final List<Transition> operations = new ArrayList<>();
+	private final List<String> errors = new ArrayList<>();
 	private final int nrOfSolutions;
 	private final StateSpace s;
 
@@ -96,8 +96,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 			operations.add(Transition.createTransitionFromCompoundPrologTerm(s, cpt));
 		}
 
-		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS_VARIABLE));
-		for (PrologTerm prologTerm : errors) {
+		for (PrologTerm prologTerm : BindingGenerator.getList(bindings.get(ERRORS_VARIABLE))) {
 			this.errors.add(prologTerm.getFunctor());
 		}
 	}

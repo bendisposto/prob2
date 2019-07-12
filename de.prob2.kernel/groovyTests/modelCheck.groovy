@@ -1,33 +1,36 @@
-import java.awt.image.RescaleOp;
+import java.nio.file.Paths
 
-import de.prob.animator.domainobjects.*
-import de.prob.statespace.*
+import de.prob.check.ConsistencyChecker
+import de.prob.check.ModelCheckErrorUncovered
+import de.prob.check.ModelCheckOk
+import de.prob.check.ModelChecker
+import de.prob.check.ModelCheckingOptions
 
-// You can change the model you are testing here.
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+final s1 = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 
-model_check = { job ->
-	checker = new ModelChecker(job)
+final modelCheck = { job ->
+	final checker = new ModelChecker(job)
 	checker.start()
-	checker
+	checker.result
 }
 
-checker = model_check(new ConsistencyChecker(s))
-res = checker.getResult()
-assert res instanceof ModelCheckOk
-coverage = checker.getCoverage()
+final checker = new ModelChecker(new ConsistencyChecker(s1))
+checker.start()
+final res1 = checker.result
+assert res1 instanceof ModelCheckOk
+final coverage = checker.coverage
 assert coverage != null
 
-s = api.eventb_load(dir+File.separator+"machines"+File.separator+"InvalidModel"+File.separator+"createErrors.bcm")
+final s2 = api.eventb_load(Paths.get(dir, "machines", "InvalidModel", "createErrors.bcm").toString())
 
-res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkInvariantViolations(true))).getResult()
-assert res instanceof ModelCheckErrorUncovered
-assert res.getMessage() == "Invariant violation found."
-assert res.getTrace(s) != null
+final res2 = modelCheck(new ConsistencyChecker(s2, new ModelCheckingOptions().checkInvariantViolations(true)))
+assert res2 instanceof ModelCheckErrorUncovered
+assert res2.getMessage() == "Invariant violation found."
+assert res2.getTrace(s2) != null
 
-res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkDeadlocks(true))).getResult()
-assert res instanceof ModelCheckErrorUncovered
-assert res.getMessage() == "Deadlock found."
-assert res.getTrace(s) != null
+final res3 = modelCheck(new ConsistencyChecker(s2, new ModelCheckingOptions().checkDeadlocks(true)))
+assert res3 instanceof ModelCheckErrorUncovered
+assert res3.getMessage() == "Deadlock found."
+assert res3.getTrace(s2) != null
 
 "model checking works correctly"

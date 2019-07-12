@@ -4,18 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class ProofDescriptionExtractor extends DefaultHandler {
 
-	private final Map<String, String> proofDescriptions = new HashMap<String, String>();
+	private final Map<String, String> proofDescriptions = new HashMap<>();
 
 	@Override
 	public void startElement(final String uri, final String localName,
-			final String qName, final Attributes attributes)
-			throws SAXException {
-		if (qName.equals("org.eventb.core.poSequent")) {
+			final String qName, final Attributes attributes) {
+		if ("org.eventb.core.poSequent".equals(qName)) {
 			String name = attributes.getValue("name");
 			String desc = attributes.getValue("org.eventb.core.poDesc");
 			proofDescriptions.put(name, desc);

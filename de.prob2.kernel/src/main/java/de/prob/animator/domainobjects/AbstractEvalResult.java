@@ -1,6 +1,8 @@
 package de.prob.animator.domainobjects;
 
-public class AbstractEvalResult {
+import groovy.lang.GroovyObjectSupport;
+
+public class AbstractEvalResult extends GroovyObjectSupport {
 
 	private static long idcounter = 0;
 

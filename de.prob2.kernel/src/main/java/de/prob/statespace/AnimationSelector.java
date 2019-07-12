@@ -29,24 +29,16 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 public class AnimationSelector {
+	private static final Logger logger = LoggerFactory.getLogger(AnimationSelector.class);
 
-	// private Animations animations;
-	//
-	// @Inject
-	// public AnimationSelector(Animations animations) {
-	// this.animations = animations;
-	// }
+	List<IAnimationChangeListener> traceListeners = new CopyOnWriteArrayList<>();
+	private List<IModelChangedListener> modelListeners = new CopyOnWriteArrayList<>();
 
-	Logger logger = LoggerFactory.getLogger(AnimationSelector.class);
+	private Map<UUID, Trace> traces = new LinkedHashMap<>();
+	private Set<UUID> protectedTraces = new HashSet<>();
 
-	List<IAnimationChangeListener> traceListeners = new CopyOnWriteArrayList<IAnimationChangeListener>();
-	List<IModelChangedListener> modelListeners = new CopyOnWriteArrayList<IModelChangedListener>();
-
-	Map<UUID, Trace> traces = new LinkedHashMap<UUID, Trace>();
-	Set<UUID> protectedTraces = new HashSet<UUID>();
-
-	Trace currentTrace = null;
-	StateSpace currentStateSpace = null;
+	private Trace currentTrace = null;
+	private StateSpace currentStateSpace = null;
 
 	/**
 	 * An {@link IAnimationChangeListener} can register itself via this method
@@ -144,9 +136,8 @@ public class AnimationSelector {
 	}
 
 	public void clearUnprotected() {
-		ArrayList<Trace> list = new ArrayList<Trace>(traces.values());
 		boolean currentChanged = false;
-		for (Trace trace : list) {
+		for (Trace trace : new ArrayList<>(traces.values())) {
 			if (!protectedTraces.contains(trace.getUUID())) {
 				if (currentTrace != null
 						&& trace.getUUID().equals(currentTrace.getUUID())) {
@@ -171,22 +162,15 @@ public class AnimationSelector {
 	 * @param trace
 	 *            {@link Trace} representing the current animation
 	 */
-	private void notifyAnimationChange(final Trace trace,
-			final boolean currentAnimationChanged) {
+	private void notifyAnimationChange(final Trace trace, final boolean currentAnimationChanged) {
 
 		// Trace may be null, or not busy
-		if (trace == null || trace != null && !trace.getStateSpace().isBusy()) {
-
-			for (IAnimationChangeListener animationChangeListener : traceListeners) {
+		if (trace == null || !trace.getStateSpace().isBusy()) {
+			for (IAnimationChangeListener listener : traceListeners) {
 				try {
-					animationChangeListener.traceChange(trace,
-							currentAnimationChanged);
-				} catch (Exception e) {
-					logger.error("An exception of type "
-							+ e.getClass()
-							+ " was thrown while executing IAnimationChangeListener of class "
-							+ animationChangeListener.getClass()
-							+ " with message " + e.getMessage());
+					listener.traceChange(trace, currentAnimationChanged);
+				} catch (RuntimeException e) {
+					logger.error("An exception was thrown while executing IAnimationChangeListener of class {}", listener.getClass(), e);
 				}
 			}
 		}
@@ -202,14 +186,14 @@ public class AnimationSelector {
 	 *            animation
 	 */
 	private void notifyStatusChange(final boolean busy) {
-		for (IAnimationChangeListener animationChangeListener : traceListeners) {
-			animationChangeListener.animatorStatus(busy);
+		for (IAnimationChangeListener listener : traceListeners) {
+			listener.animatorStatus(busy);
 		}
 	}
 
 	private void notifyModelChanged(final StateSpace s) {
-		for (IModelChangedListener modelChangedListener : modelListeners) {
-			modelChangedListener.modelChanged(s);
+		for (IModelChangedListener listener : modelListeners) {
+			listener.modelChanged(s);
 		}
 	}
 
@@ -224,7 +208,7 @@ public class AnimationSelector {
 	 * @return the list of {@link Trace} objects in the registry.
 	 */
 	public List<Trace> getTraces() {
-		return new ArrayList<Trace>(traces.values());
+		return new ArrayList<>(traces.values());
 	}
 
 	public Trace getTrace(final UUID uuid) {
@@ -276,7 +260,6 @@ public class AnimationSelector {
 			traces.put(uuid, trace);
 			notifyAnimationChange(currentTrace, false);
 		} else {
-			// Trace oldT = traces.get(uuid);
 			traces.put(uuid, trace);
 			if (trace.getUUID().equals(currentTrace.getUUID())) {
 				notifyAnimationChange(trace, true);
@@ -312,6 +295,7 @@ public class AnimationSelector {
 	 *            reference to old {@link Trace} object
 	 * @param newTrace
 	 *            reference to new {@link Trace} object
+	 * @deprecated
 	 */
 	@Deprecated
 	public void replaceTrace(final Trace oldTrace, final Trace newTrace) {

@@ -1,5 +1,7 @@
 package de.prob.statespace
 
+import java.nio.file.Paths
+
 import de.prob.Main
 import de.prob.animator.command.CheckInitialisationStatusCommand
 import de.prob.animator.command.CheckInvariantStatusCommand
@@ -9,16 +11,15 @@ import de.prob.scripting.ClassicalBFactory
 import spock.lang.Specification
 
 class StateSpaceAsAnimatorTest extends Specification {
-
-	static StateSpace s
-	static State root
-	static State firstState
+	private static StateSpace s
+	private static State root
+	private static State firstState
 
 	def setupSpec() {
-		def path = System.getProperties().get("user.dir")+"/groovyTests/machines/scheduler.mch"
-		ClassicalBFactory factory = Main.getInjector().getInstance(ClassicalBFactory.class)
+		final path = Paths.get("groovyTests", "machines", "scheduler.mch").toString()
+		final factory = Main.injector.getInstance(ClassicalBFactory.class)
 		s = factory.extract(path).load([:])
-		root = s.getRoot()
+		root = s.root
 		firstState = root.$initialise_machine()
 	}
 
@@ -27,79 +28,64 @@ class StateSpaceAsAnimatorTest extends Specification {
 	}
 
 	def "sending an interrupt while the animator is not doing anything will not disturb further commands"() {
+		given:
+		final cmd = new ExploreStateCommand(s, "root", [])
+
 		when:
 		s.sendInterrupt()
-		def cmd = new ExploreStateCommand(s, "root", [])
 		s.execute(cmd)
 
 		then:
-		!cmd.isInterrupted()
+		!cmd.interrupted
 	}
 
 	def "it is possible to execute a single command"() {
+		given:
+		final cmd = new CheckInitialisationStatusCommand(root.id)
+
 		when:
-		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(root.getId())
 		s.execute(cmd)
 
 		then:
-		cmd.getResult() == false
+		!cmd.result
 	}
 
 	def "it is possible to execute multiple commmands"() {
+		given:
+		final cmd = new CheckInitialisationStatusCommand(firstState.id)
+		final cmd2 = new CheckInvariantStatusCommand(firstState.id)
+
 		when:
-		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(firstState.getId())
-		CheckInvariantStatusCommand cmd2 = new CheckInvariantStatusCommand(firstState.getId())
 		s.execute(cmd, cmd2)
 
 		then:
-		cmd.getResult() == true
-		cmd2.isInvariantViolated() == false
+		cmd.result
+		!cmd2.invariantViolated
 	}
 
 	def "it is possible to start and end transactions"() {
-		when:
-		def a = s.isBusy()
+		expect:
+		!s.busy
 		s.startTransaction()
-		def b = s.isBusy()
+		s.busy
 		s.endTransaction()
-		def c = s.isBusy()
-
-		then:
-		!a
-		b
-		!c
-	}
-
-	class MyListener implements IAnimationChangeListener {
-
-		boolean i_am_busy = false
-		List<String> notifications = []
-
-		@Override
-		public void traceChange(Trace currentTrace,
-				boolean currentAnimationChanged) {
-		}
-
-		@Override
-		public void animatorStatus(boolean busy) {
-			notifications << "Status: "+ busy
-		}
+		!s.busy
 	}
 
 	def "it is possible to notify animation listeners that the animator is busy"() {
-		when:
-		AnimationSelector animations = Main.getInjector().getInstance(AnimationSelector.class)
+		given:
+		final animations = Main.injector.getInstance(AnimationSelector.class)
 		animations.addNewAnimation(new Trace(s))
-		def mylistener = new MyListener()
+		final IAnimationChangeListener mylistener = Mock()
+
+		when:
 		animations.registerAnimationChangeListener(mylistener)
 		s.startTransaction()
 		s.endTransaction()
 
 		then:
-		mylistener.notifications == [
-			"Status: false",
-			"Status: true",
-			"Status: false"
-		]
+		1 * mylistener.animatorStatus(false)
+		1 * mylistener.animatorStatus(true)
+		1 * mylistener.animatorStatus(false)
 	}
 }

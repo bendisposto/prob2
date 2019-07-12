@@ -2,12 +2,14 @@ package de.prob.model.eventb;
 
 import java.util.Set;
 
+import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.FormulaExpand;
+import de.prob.model.representation.Invariant;
+import de.prob.model.representation.Named;
+
 import org.eventb.core.ast.extension.IFormulaExtension;
 
-import de.prob.animator.domainobjects.EventB;
-import de.prob.model.representation.Invariant;
-
-public class EventBInvariant extends Invariant {
+public class EventBInvariant extends Invariant implements Named {
 
 	private final String name;
 	private final boolean theorem;
@@ -15,7 +17,7 @@ public class EventBInvariant extends Invariant {
 
 	public EventBInvariant(final String name, final String code,
 			final Boolean theorem, final Set<IFormulaExtension> typeEnv) {
-		this(name, new EventB(code, typeEnv), theorem, "");
+		this(name, new EventB(code, typeEnv, FormulaExpand.EXPAND), theorem, "");
 	}
 
 	public EventBInvariant(final String name, final EventB predicate,
@@ -26,6 +28,7 @@ public class EventBInvariant extends Invariant {
 		this.comment = comment == null ? "" : comment;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

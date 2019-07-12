@@ -1,33 +1,31 @@
-import de.prob.animator.prologast.*
-import de.prob.animator.command.*
-import java.util.List
+import java.nio.file.Paths
 
-s = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
+import de.prob.animator.command.GetMachineStructureCommand
+
+final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 assert s != null
 
-c = new GetMachineStructureCommand()
-s.execute(c);
+final c = new GetMachineStructureCommand()
+s.execute(c)
 
-List<PrologASTNode> toTest = c.getPrologASTList()
+final toTest = c.prologASTList
 
-assert "SETS" == toTest.get(0).getName()
+assert toTest[0].name == "SETS"
 
-assert "VARIABLES" == toTest.get(1).getName()
-assert true == toTest.get(1).isExpanded()
-assert false == toTest.get(1).getSubnodes().isEmpty()
-List<PrologASTNode> subnodesVar = toTest.get(1).getSubnodes()
-assert "\n[Formula] : formula(b(identifier(active),set(global('PID')),[nodeid(10)]),active)" == subnodesVar.get(0).toString()
+assert toTest[1].name == "VARIABLES"
+assert toTest[1].expanded
+assert !toTest[1].subnodes.empty
 
-assert "INVARIANTS" == toTest.get(2).getName()
-assert false == toTest.get(2).isExpanded()
-assert false == toTest.get(2).getSubnodes().isEmpty()
+assert toTest[2].name == "INVARIANTS"
+assert !toTest[2].expanded
+assert !toTest[2].subnodes.empty
 
-assert "OPERATIONS" == toTest.get(3).getName()
-assert false == toTest.get(3).isExpanded()
-List<PrologASTNode> subnodesOp = toTest.get(3).getSubnodes()
-assert true == subnodesOp.get(0).isPropagated()
-assert "nr_ready" == subnodesOp.get(0).getName()
-assert true == subnodesOp.get(subnodesOp.size()-1).isPropagated()
-assert "swap" == subnodesOp.get(subnodesOp.size()-1).getName()
+assert toTest[3].name == "OPERATIONS"
+assert !toTest[3].expanded
+final subnodesOp = toTest[3].subnodes
+assert subnodesOp[0].propagated
+assert subnodesOp[0].name == "nr_ready"
+assert subnodesOp[-1].propagated
+assert subnodesOp[-1].name == "swap"
 
 "PrologAST is built properly"

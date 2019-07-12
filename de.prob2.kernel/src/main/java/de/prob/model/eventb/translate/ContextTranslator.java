@@ -29,7 +29,7 @@ import de.prob.util.Tuple2;
 public class ContextTranslator {
 
 	private final Context context;
-	private final Map<Node, Tuple2<String, String>> nodeInfos = new HashMap<Node, Tuple2<String, String>>();
+	private final Map<Node, Tuple2<String, String>> nodeInfos = new HashMap<>();
 
 	public ContextTranslator(final Context context) {
 		this.context = context;
@@ -43,7 +43,7 @@ public class ContextTranslator {
 		AEventBContextParseUnit ast = new AEventBContextParseUnit();
 		ast.setName(new TIdentifierLiteral(context.getName()));
 
-		List<PContextClause> clauses = new ArrayList<PContextClause>();
+		List<PContextClause> clauses = new ArrayList<>();
 		clauses.add(processExtends());
 		clauses.addAll(processConstants());
 		clauses.addAll(processAxiomsAndTheorems());
@@ -54,7 +54,7 @@ public class ContextTranslator {
 	}
 
 	private AExtendsContextClause processExtends() {
-		List<TIdentifierLiteral> extended = new ArrayList<TIdentifierLiteral>();
+		List<TIdentifierLiteral> extended = new ArrayList<>();
 		for (Context c : context.getExtends()) {
 			extended.add(new TIdentifierLiteral(c.getName()));
 		}
@@ -62,9 +62,9 @@ public class ContextTranslator {
 	}
 
 	private List<PContextClause> processConstants() {
-		List<PContextClause> constants = new ArrayList<PContextClause>();
-		List<PExpression> concrete = new ArrayList<PExpression>();
-		List<PExpression> abstractC = new ArrayList<PExpression>();
+		List<PContextClause> constants = new ArrayList<>();
+		List<PExpression> concrete = new ArrayList<>();
+		List<PExpression> abstractC = new ArrayList<>();
 
 		for (EventBConstant eventBConstant : context.getConstants()) {
 			if (eventBConstant.isAbstract()) {
@@ -82,15 +82,14 @@ public class ContextTranslator {
 	}
 
 	private List<PContextClause> processAxiomsAndTheorems() {
-		List<PContextClause> axiomsAndThms = new ArrayList<PContextClause>();
-		List<PPredicate> axioms = new ArrayList<PPredicate>();
-		List<PPredicate> thms = new ArrayList<PPredicate>();
+		List<PContextClause> axiomsAndThms = new ArrayList<>();
+		List<PPredicate> axioms = new ArrayList<>();
+		List<PPredicate> thms = new ArrayList<>();
 
 		for (EventBAxiom axiom : context.getAxioms()) {
 			PPredicate ppred = (PPredicate) ((EventB) axiom.getPredicate())
 					.getAst();
-			nodeInfos.put(ppred, new Tuple2<String, String>(context.getName(),
-					axiom.getName()));
+			nodeInfos.put(ppred, new Tuple2<>(context.getName(), axiom.getName()));
 			if (axiom.isTheorem()) {
 				thms.add(ppred);
 			} else {
@@ -104,10 +103,10 @@ public class ContextTranslator {
 	}
 
 	private ASetsContextClause processSets() {
-		List<PSet> sets = new ArrayList<PSet>();
+		List<PSet> sets = new ArrayList<>();
 
 		for (Set bSet : context.getSets()) {
-			List<TIdentifierLiteral> names = new ArrayList<TIdentifierLiteral>();
+			List<TIdentifierLiteral> names = new ArrayList<>();
 			names.add(new TIdentifierLiteral(bSet.getName()));
 			sets.add(new ADeferredSetSet(names));
 		}

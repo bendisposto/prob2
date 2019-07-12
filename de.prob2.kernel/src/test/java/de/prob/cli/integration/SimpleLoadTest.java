@@ -1,7 +1,7 @@
 package de.prob.cli.integration;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import de.prob.Main;
 import de.prob.scripting.Api;
@@ -25,16 +25,14 @@ public class SimpleLoadTest {
 
 	@Test
 	public void testLoadTLAFile() throws IOException, ModelTranslationError {
-		StateSpace s = api.tla_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
-				+ "tla" + File.separator + "Foo.tla");
+		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "Foo.tla").toString());
 		assertNotNull(s);
 		s.kill();
 	}
 
 	@Test
 	public void testLoadTLAFile2() throws IOException, ModelTranslationError {
-		StateSpace s = api.tla_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
-				+ "tla" + File.separator + "Definitions.tla");
+		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "Definitions.tla").toString());
 		assertNotNull(s);
 		Trace t = new Trace(s);
 		assertEquals(1, t.getNextTransitions().size());
@@ -43,8 +41,7 @@ public class SimpleLoadTest {
 
 	@Test
 	public void testClub() throws IOException, ModelTranslationError {
-		StateSpace s = api.tla_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
-				+ "tla" + File.separator + "ForDistribution" + File.separator + "Club.tla");
+		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "ForDistribution", "Club.tla").toString());
 		assertNotNull(s);
 		Trace t = new Trace(s);
 		assertEquals(1, t.getNextTransitions().size());
@@ -53,24 +50,21 @@ public class SimpleLoadTest {
 
 	@Test
 	public void testLoadBFile() throws IOException, ModelTranslationError {
-		StateSpace s = api.b_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
-				+ "tla" + File.separator + "Foo.mch");
+		StateSpace s = api.b_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "Foo.mch").toString());
 		assertNotNull(s);
 		s.kill();
 	}
 
 	@Test
 	public void testLoadTLAFileChoose() throws IOException, ModelTranslationError {
-		StateSpace s = api.tla_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
-				+ "tla" + File.separator + "Choose.tla");
+		StateSpace s = api.tla_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "tla", "Choose.tla").toString());
 		assertNotNull(s);
 		s.kill();
 	}
 
 	@Test
-	public void testLoadBRulesFile() throws IOException, ModelTranslationError {
-		StateSpace s = api.brules_load("src" + File.separator + "test" + File.separator + "resources" + File.separator
-				+ "brules" + File.separator + "SimpleRulesMachine.rmch");
+	public void testLoadBRulesFile() throws IOException {
+		StateSpace s = api.brules_load(Paths.get("src", "test", "resources", "de", "prob", "testmachines", "brules", "SimpleRulesMachine.rmch").toString());
 		assertNotNull(s);
 		s.kill();
 	}
