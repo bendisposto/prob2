@@ -3,21 +3,21 @@ package de.prob.animator.domainobjects;
 import java.util.Map;
 import java.util.Set;
 
-import de.prob.translator.types.BObject;
+import de.hhu.stups.prob.translator.BValue;
 
 import groovy.lang.MissingPropertyException;
 
 public class TranslatedEvalResult extends AbstractEvalResult {
-	private final BObject value;
-	private final Map<String, BObject> solutions;
+	private final BValue value;
+	private final Map<String, BValue> solutions;
 
-	public TranslatedEvalResult(final BObject value, final Map<String, BObject> solutions) {
+	public TranslatedEvalResult(final BValue value, final Map<String, BValue> solutions) {
 		super();
 		this.value = value;
 		this.solutions = solutions;
 	}
 
-	public Map<String, BObject> getSolutions() {
+	public Map<String, BValue> getSolutions() {
 		return solutions;
 	}
 
@@ -27,7 +27,7 @@ public class TranslatedEvalResult extends AbstractEvalResult {
 	 * @param name of solution
 	 * @return Object representation of solution, or {@code null} if the solution does not exist
 	 */
-	public BObject getSolution(final String name) {
+	public BValue getSolution(final String name) {
 		return solutions.get(name);
 	}
 
@@ -49,7 +49,7 @@ public class TranslatedEvalResult extends AbstractEvalResult {
 		return value.toString();
 	}
 
-	public BObject getValue() {
+	public BValue getValue() {
 		return value;
 	}
 

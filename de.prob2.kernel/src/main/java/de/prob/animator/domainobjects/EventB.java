@@ -7,6 +7,8 @@ import java.util.Set;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
+import de.hhu.stups.prob.translator.BValue;
+import de.hhu.stups.prob.translator.TranslatingVisitor;
 import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.formula.TranslationVisitor;
@@ -14,8 +16,6 @@ import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
-import de.prob.translator.TranslatingVisitor;
-import de.prob.translator.types.BObject;
 import de.prob.unicode.UnicodeTranslator;
 
 import org.eventb.core.ast.ASTProblem;
@@ -213,7 +213,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	@Override
-	public BObject translate() {
+	public BValue translate() {
 		if (!EvalElementType.EXPRESSION.equals(getKind())) {
 			throw new IllegalArgumentException("EventB translation is only supported for expressions, not " + this.getKind());
 		}

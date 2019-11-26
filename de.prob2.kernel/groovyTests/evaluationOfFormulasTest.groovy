@@ -1,10 +1,13 @@
+import de.hhu.stups.prob.translator.BAtom
+
 import java.nio.file.Paths
 
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvalResult
 import de.prob.animator.domainobjects.TranslatedEvalResult
 import de.prob.statespace.Trace
-import de.prob.translator.types.Atom
+import de.hhu.stups.prob.translator.BAtom
+import de.hhu.stups.prob.translator.BNumber
 
 final s = api.b_load(Paths.get(dir, "machines", "scheduler.mch").toString())
 def h = new Trace(s)
@@ -30,7 +33,7 @@ assert t != null && t instanceof TranslatedEvalResult
 assert t.value.value == true
 assert t.solutions.containsKey("x")
 assert t.solutions.containsKey("y")
-assert t.x == new Atom("PID2")
-assert t.y == 1
+assert t.x == new BAtom("PID2")
+assert t.y == new BNumber(1)
 
 "Evaluation of formulas works (scheduler.mch)"
